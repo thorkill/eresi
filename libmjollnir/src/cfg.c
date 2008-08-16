@@ -142,14 +142,13 @@ int			mjr_trace_control(mjrcontext_t *context,
     }
   else if (curins->type & ASM_TYPE_RETPROC)
     {
-
-      context->curfunc = elist_pop(context->func_stack);
+      if (context->func_stack->elmnbr > 1)
+	context->curfunc = elist_pop(context->func_stack);
 
 #if 1 //__DEBUG_FLOW__
-      fprintf(stderr, " [D] ******** %s: " XFMT " ASM_TYPE_RETPROC : CURFUNC BACK to %s\n",
-	      __FUNCTION__, curvaddr, 
-	      (context->curfunc && context->curfunc->data ? 
-	       ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
+      fprintf(stderr, " *********** CURFUNC RET @ " XFMT " : to %s ******** \n",
+	      curvaddr, (context->curfunc && context->curfunc->data ? 
+			 ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
 #endif
     }
   else
@@ -386,8 +385,8 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 	}
       else
 	{
-	  printf("UNKNOWN BRANCH FOR SPARC at addr "XFMT" ! \n", 
-		 context->hist[MJR_HISTORY_CUR].vaddr);
+	  fprintf(stderr, " [D] UNKNOWN BRANCH FOR SPARC at addr "XFMT" ! \n", 
+		  context->hist[MJR_HISTORY_CUR].vaddr);
 	  dest = MJR_BLOCK_INVALID;
 	}
     }
