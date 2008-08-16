@@ -460,14 +460,13 @@ int		revm_graph_blocks(container_t   *cntnr,
 
       switch (lnk->type)
 	{
+	case MJR_LINK_BLOCK_COND_ALWAYS:
 	case MJR_LINK_BLOCK_COND_TRUE:
 	  col_arrow = LNK_COLOR_TRUE;
 	  break;
 	case MJR_LINK_BLOCK_COND_FALSE:
 	  col_arrow = LNK_COLOR_FALSE;
 	  break;
-	case MJR_LINK_BLOCK_COND_ALWAYS:
-	  continue;
 	case MJR_LINK_FUNC_CALL:
 	  col_arrow = LNK_COLOR_CALL;
 	  break;

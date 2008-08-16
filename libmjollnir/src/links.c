@@ -286,7 +286,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Check if we need to split a bloc */
+  /* Check if we need to create a new bloc for destination addr */
   tmpdst = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_FUZZY);
   if (!tmpdst)
     {
@@ -297,7 +297,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, tmpdst);
     }
 
-  /* Find existing symbol for split bloc */
+  /* Or we might find an existing symbol and split existing bloc */
   blkdst = (mjrblock_t *) tmpdst->data;
   sym = elfsh_get_symbol_by_value(ctxt->obj, blkdst->vaddr, NULL, ELFSH_EXACTSYM);
   assert(sym != NULL);

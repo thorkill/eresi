@@ -80,11 +80,11 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                      "asm_read_instr returned <= 0 lenght", -1);
 
-      block->size += ilen;	  
       mjr_history_shift(sess->cur, instr, vaddr + curr);
+      block->size += ilen;	  
 
       /* Increase block size for delay slot if any */
-      delayslotsize = mjr_trace_control(sess->cur, sess->cur->obj, &instr, 
+      delayslotsize = mjr_trace_control(sess->cur, curblock, sess->cur->obj, &instr, 
 					vaddr + curr, &dstaddr, &retaddr);
 
 #if __DEBUG_READ__
@@ -92,6 +92,12 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 	      vaddr + curr, dstaddr, retaddr);
 #endif
 
+      /* If we have found a contiguous block, stop this recursion now */
+      if (dstaddr == MJR_BLOCK_EXIST)
+	{
+	  block->size -= ilen;
+	  break;
+	}
       if (dstaddr != MJR_BLOCK_INVALID) 
 	{
 	  newoff = offset + (dstaddr - vaddr);

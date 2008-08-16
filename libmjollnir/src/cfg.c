@@ -29,14 +29,15 @@
  *
  */
 int			mjr_trace_control(mjrcontext_t *context,
+					  container_t	*curblock,
 					  elfshobj_t    *obj, 
 					  asm_instr     *curins, 
-					  eresi_Addr	  curvaddr,
+					  eresi_Addr	curvaddr,
 					  eresi_Addr	*dstaddr,
 					  eresi_Addr	*retaddr)
 {
   int			ilen;
-  //container_t		*fun;
+  container_t		*bloc;
   u_int			addend;
 
   /* Initialize stuffs */
@@ -44,16 +45,24 @@ int			mjr_trace_control(mjrcontext_t *context,
   context->obj = obj;
   mjr_history_write(context, curins, curvaddr, MJR_HISTORY_CUR);
   mjr_history_write(context, curins, curvaddr, 0);
-
   ilen = asm_instr_len(curins);  
 
-  /* We should not do that here */
-  /*
-  fun = mjr_function_get_by_vaddr(context, curvaddr);
-  if (fun)
-    context->curfunc = fun;
-  else
-  */
+  /* It might be that we are reaching the beginning of an existing bloc */
+  bloc = mjr_block_get_by_vaddr(context, curvaddr, MJR_BLOCK_GET_STRICT);
+  if (bloc && bloc->id != curblock->id)
+    {
+      *dstaddr = MJR_BLOCK_EXIST;
+      *retaddr = MJR_BLOCK_INVALID;
+      mjr_container_add_link(context, curblock, bloc->id, MJR_LINK_BLOCK_COND_ALWAYS, 
+			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(context, bloc, curblock->id, MJR_LINK_BLOCK_COND_ALWAYS, 
+			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
+      
+      fprintf(stderr, " [D] Found contiguous block ! stopping this recursion branch ******** \n");
+      
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   mjr_asm_check_function_start(context);
 
   /* Switch on instruction types provided by libasm */
@@ -421,8 +430,6 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   char			*tmpstr;
   eresi_Addr		tmpaddr;
   container_t		*fun;
-  //elfshsect_t           *dstsect;
-  //u_char		scope;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -431,113 +438,74 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
      - check func-without-fp signature
      - check if history contains a call to us (to detect small functions)
   */
-  if (ctxt->proc.type == ASM_PROC_IA32)
-  {
-    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
-	ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
-	ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
-      {
-	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
-	tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
-
-	fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-	if (!fun)
-	  {
-	    fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	    mjr_function_register(ctxt, tmpaddr, fun);
-	    mjr_function_symbol(ctxt, fun);
-	    mjr_container_add_link(ctxt, ctxt->curfunc, fun->id,
-				   MJR_LINK_FUNC_SLIDE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
-	    elist_push(ctxt->func_stack, fun);
-	    ctxt->curfunc = fun;
-	    fprintf(stderr, " ******* ALLOCATED A STACK FRAME IN THE MIDDLE OF A FUNC ! \n");
-	    fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
-	  }
-
-#if __DEBUG_FLOW__
-	fprintf(D_DESC," [D] FUNCTION START FOUND at "XFMT" for "XFMT" (funcprev = %p)\n",
-		ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr, funcprev);
-#endif
-
-      }
-  }
-
-  /* SPARC architecture */
-  else if (ctxt->proc.type == ASM_PROC_SPARC)
-  {
-    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op[0].baser == ASM_REG_O6 &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op[1].type == ASM_SP_OTYPE_IMMEDIATE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op[2].baser == ASM_REG_O6)
+  switch (ctxt->proc.type)
+    {
+      
+      /* IA32 architecture */
+    case ASM_PROC_IA32:
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
+	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
+	{
+	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
+	  tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
+	  goto finish;
+	}
+      break;
+  
+      /* SPARC architecture */
+    case ASM_PROC_SPARC:
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
+	  ctxt->hist[MJR_HISTORY_CUR].instr.op[0].baser == ASM_REG_O6 &&
+	  ctxt->hist[MJR_HISTORY_CUR].instr.op[1].type == ASM_SP_OTYPE_IMMEDIATE &&
+	  ctxt->hist[MJR_HISTORY_CUR].instr.op[2].baser == ASM_REG_O6)
   	{
   	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_CUR].vaddr);
   	  tmpaddr = ctxt->hist[MJR_HISTORY_CUR].vaddr;
-
-#if __DEBUG_FLOW__
-  	  fprintf(D_DESC," [D] %s: function start found at %x for %x\n",
-        		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
-#endif
-
-  	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-	  if (!ctxt->curfunc)
-	    {
-	      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	      mjr_function_register(ctxt, tmpaddr, fun);
-	      elist_push(ctxt->func_stack, ctxt->curfunc);
-	      ctxt->curfunc = fun;
-	      fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
-	    }
+	  goto finish;
   	}
-  }
+      break;
   
   /* MIPS architecture */
-  else if (ctxt->proc.type == ASM_PROC_MIPS)
-  {
-    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
-	ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
-      {
-	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
-	tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
+    case ASM_PROC_MIPS:
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
+	{
+	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
+	  tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
+	  goto finish;
+	}
+      break;
+      
+    default:
+      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		   "Unsupported architecture in libmjollnir", -1);
+    }
+  
+  /* Nothing to declare */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* We found a prolog */
+ finish:
 
 #if __DEBUG_FLOW__
-	fprintf(D_DESC," [D] %s: function start found at %x for %x\n",
-		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
+  fprintf(D_DESC," [D] FUNCTION START FOUND at "XFMT" for "XFMT" \n",
+	  ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-
-	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-	if (!ctxt->curfunc)
-	  {
-	    fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	    mjr_function_register(ctxt, tmpaddr, fun);
-	    elist_push(ctxt->func_stack, ctxt->curfunc);
-	    ctxt->curfunc = fun;
-
-	    fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
-
-	  }
-      }
-  }
-
-  //if (!funcprev)
-  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-
-  /* Now links functions */
-  /* FIXME: what if a prolog is found in the middle of an obfuscated function ? */
-  /*
-    dstsect = elfsh_get_parent_section(ctxt->obj, tmpaddr, NULL);
-  if (!dstsect || !dstsect->data)
+  
+  fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+  if (!fun)
     {
-      fprintf(stderr, " [D] UNABLE TO FIND SECTION FOR NEW FUNCTION\n");
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+      mjr_function_register(ctxt, tmpaddr, fun);
+      mjr_function_symbol(ctxt, fun);
+      mjr_container_add_link(ctxt, ctxt->curfunc, fun->id,
+			     MJR_LINK_FUNC_SLIDE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      elist_push(ctxt->func_stack, fun);
+      ctxt->curfunc = fun;
+      fprintf(stderr, " ******* ALLOCATED A STACK FRAME IN THE MIDDLE OF A FUNC ! \n");
+      fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
     }
-
-  scope = (!strcmp(dstsect->name, ELFSH_SECTION_NAME_PLT) ?
-           MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
-  mjr_container_add_link(ctxt, ctxt->curfunc, funcprev->id,
-			 MJR_LINK_FUNC_RET, scope, CONTAINER_LINK_IN);
-  mjr_container_add_link(ctxt, funcprev, ctxt->curfunc->id,
-			 MJR_LINK_FUNC_CALL, scope, CONTAINER_LINK_OUT);
-  */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
