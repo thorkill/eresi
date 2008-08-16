@@ -88,12 +88,15 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
   int		revm_quiet,revm_colors;
   int		ret,cur;
   u_int		foffset;
+  u_int		reloff;
+  char		tmpbuf[20];
+  u_int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_quiet = world.state.revm_quiet;
   world.state.revm_quiet = 0;
   revm_colors = nocolor;
-  nocolor = 0;
+  reloff = nocolor = 0;
   cur = 1;
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
@@ -104,6 +107,8 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
       name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &off);
       while ((index < blk->size) && cur)
 	{
+	  len = snprintf(tmpbuf, sizeof(tmpbuf), "%3u: ", reloff);
+	  write(fd, tmpbuf, len);
 	  cur = revm_instr_display(fd, index, blk->vaddr, 0, blk->size,
 				 name, index + off, buffer);
 
@@ -111,6 +116,7 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
 	    goto end;
 
 	  index += cur;
+	  reloff += cur;
 	  write(fd, "\\l", 2);
 	  revm_endline();
 	}

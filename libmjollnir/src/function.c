@@ -269,11 +269,19 @@ int			mjr_function_symbol(mjrcontext_t *ctxt, container_t *csrc)
   elfsh_Sym		bsym;
   char			*prefix;
   char			buffer[BUFSIZ];
+  char			*name;
+  elfsh_SAddr		off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Insert new function symbol */
   func   = (mjrfunc_t *) csrc->data;
+
+  /* Check if symbol already exists */
+  name = elfsh_reverse_metasym(ctxt->obj, func->vaddr, &off);
+  prefix = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
+  if (!off && !strstr(name, prefix))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* If not, inject it */
   prefix = (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX);
   snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, func->vaddr);
   bsym = elfsh_create_symbol(func->vaddr, func->size, STT_FUNC, 0, 0, 0);

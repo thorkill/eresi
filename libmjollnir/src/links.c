@@ -91,9 +91,9 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
       fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", tmpfunc->name);
     }
   else if (!isnew)
-    fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
-  else
     fprintf(stderr, " ******** ALREADY SEEN FUNCTION : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
+  else
+    fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
