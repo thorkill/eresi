@@ -11,37 +11,13 @@
 
 
 #include              "gdbwrapper.h"
+#include              "gdbwrapper-internals.h"
 
 
-char	              *gdbwrap_packet;
-int		      gdbwrap_fd;
-unsigned              gdbwrap_max_packet_size;
-
-
-static unsigned       gdbwrap_calc_checksum(char * str)
+static void          gdbwrap_extract(char * buf, const char * begin,
+                                     const char * end)
 {
-  unsigned            i;
-  uint8_t             sum;
-  char                *packet_start;
-  ptrdiff_t           packet_size;
-
-  packet_start = strstr(str, GDBWRAP_BEGIN_PACKET);
-  
-  if (packet_start == NULL)
-    {
-      packet_start = str;
-      packet_size  = strlen(str);
-    }
-  else
-    {
-      packet_start = GDBWRAP_PACKET_NO_BEGIN(packet_start);
-      packet_size  = (strstr(packet_start, GDBWRAP_END_PACKET) - packet_start); 
-    }
-  
-  for (i = 0, sum = 0; i < packet_size; i++)
-    sum += packet_start[i];
-
-  return  sum;
+   
 }
 
 
@@ -62,7 +38,34 @@ static unsigned      gdbwrap_atoh(const char * str, const unsigned size)
 }
 
 
-static unsigned      gdbwrap_atoh_checksum(const char * str)
+static uint8       gdbwrap_calc_checksum(const char * str)
+{
+  unsigned            i;
+  uint8               sum;
+  const char          *packet_start;
+  ptrdiff             packet_size;
+
+  packet_start = strstr(str, GDBWRAP_BEGIN_PACKET);
+  
+  if (packet_start == NULL)
+    {
+      packet_start = str;
+      packet_size  = strlen(str);
+    }
+  else
+    {
+      GDBWRAP_PACKET_NO_BEGIN(packet_start, packet_start);
+      packet_size  = (strstr(packet_start, GDBWRAP_END_PACKET) - packet_start); 
+    }
+  
+  for (i = 0, sum = 0; i < packet_size; i++)
+    sum += packet_start[i];
+
+  return  sum;
+}
+
+
+static uint8         gdbwrap_atoh_checksum(const char * str)
 {
   char               *checksum_start = strstr(str, GDBWRAP_END_PACKET) + 1;
 
@@ -70,19 +73,61 @@ static unsigned      gdbwrap_atoh_checksum(const char * str)
 }
 
 
-static void          gdbwrap_make_message(char * query, char * buf)
+static void          gdbwrap_make_message(const char * query, char * buf)
 {
-  uint8_t            checksum       = gdbwrap_calc_checksum(query);
-  unsigned           max_query_size = ( max_query_size -
-					strlen(GDBWRAP_BEGIN_PACKET)
-					- strlen(GDBWRAP_END_PACKET)
-					- sizeof(checksum));
-  
+  uint8              checksum       = gdbwrap_calc_checksum(query);
+  unsigned           max_query_size = (max_query_size -
+                                       strlen(GDBWRAP_BEGIN_PACKET)
+                                       - strlen(GDBWRAP_END_PACKET)
+                                       - sizeof(checksum));
   if (strlen(query) < max_query_size)
-    sprintf(buf, GDBWRAP_BEGIN_PACKET"%s"GDBWRAP_END_PACKET"%x",
-	    query, checksum);
+     sprintf(buf, "%s%s%s%x", GDBWRAP_BEGIN_PACKET, query, GDBWRAP_END_PACKET,
+             checksum);
   else
     assert(0);
+}
+
+
+/**
+ * Populate the gdb registers with the values received in the
+ * packet. A packet has the following form:
+ *
+ * $n:r;[n:r;]#checksum
+ *
+ * where n can be a number (the register), or "thread" and r is the
+ * value of the thread/register.
+ *
+ * @param packet: the packet to parse.
+ * @param reg   : the structure in which we want to write the registers.
+ */
+static void          gdbwrap_populate_reg(const char * packet,
+                                          gdbwrap_gdbreg32 * reg)
+{
+   char              *locpacketbegin;
+   char              *locpacketcolon;
+/*    uint8             regnum; */
+/*    char              *locpacketsemicolon; */
+   printf("packet received: %s", packet);
+   fflush(stdout);
+   GDBWRAP_PACKET_NO_BEGIN(packet, locpacketbegin);
+   memset(reg, 0, sizeof(gdbwrap_gdbreg32));
+   
+   while ((locpacketcolon = strstr(locpacketbegin, GDBWRAP_SEP_COLON)) != NULL)
+      {
+         /* If the number of char between a ":" or a ";" is greater
+            than 2, then it's not a register. */
+
+         printf(" The packet is: %s - %#lx ", locpacketcolon, locpacketcolon - locpacketbegin);
+         if (locpacketcolon - locpacketbegin == 2)
+            {
+               LOG("YAHOUUUUUUUUUUU");
+            } else
+            {
+               locpacketbegin = strstr(locpacketcolon, GDBWRAP_SEP_SEMICOLON) + 1;               
+            }
+      }
+
+   
 }
 
 
@@ -109,7 +154,8 @@ static char          *gdbwrap_get_packet(char * buf, const int fd)
 
 
 /* We can still send a pointer with a small buffer */
-static char          *gdbwrap_send_data(char * query, char * buf, const int fd)
+static char          *gdbwrap_send_data(const char * query, char * buf,
+                                        int fd)
 {
   unsigned           rval = 0;
 
@@ -118,12 +164,10 @@ static char          *gdbwrap_send_data(char * query, char * buf, const int fd)
       fprintf(stderr, "please, initialize the connection");
       return NULL;
     }
-  
   gdbwrap_make_message(query, buf);
   send(fd, buf, strlen(buf), 0);
   gdbwrap_get_packet(buf, fd);
-  printf("Query: %s - rval: %#x - buf: %s  \n", query, rval,
-	 buf);
+  printf("Query: %s - rval: %#x - buf: %s  \n", query, rval, buf);
   fflush(stdout);
 
   return buf;
@@ -134,7 +178,7 @@ static char          *gdbwrap_send_data(char * query, char * buf, const int fd)
  * Initialize a connection with the gdb server and allocate memory for
  * packets.
  *
- * @param fd file descriptor of the socket.   
+ * @param fd: file descriptor of the socket.   
  */
 void                   gdbwrap_hello(int fd)
 {
@@ -145,6 +189,7 @@ void                   gdbwrap_hello(int fd)
   gdbwrap_fd = fd;
   /* We set the max value to the size of buf, since we don't know it
      yet */
+
   gdbwrap_max_packet_size = sizeof(buf);
   tok_start = gdbwrap_send_data(GDBWRAP_QSUPPORTED, buf, fd);
   tok_start = strstr(tok_start, "PacketSize=");
@@ -152,7 +197,7 @@ void                   gdbwrap_hello(int fd)
   if (tok_start != NULL)
     {
       tok_start += strlen("PacketSize=");
-      tok_end    = strstr(tok_start, ";");
+      tok_end    = strstr(tok_start, GDBWRAP_SEP_SEMICOLON);
       gdbwrap_max_packet_size = gdbwrap_atoh(tok_start, tok_end - tok_start);
     }
   
@@ -171,3 +216,25 @@ void                   gdbwrap_bye(void)
   printf("\nThx for using gdbwrap :)");
 }
 
+
+gdbwrap_gdbreg32       *gdbwrap_reason_halted(void)
+{
+   char                *received;
+   
+   received = gdbwrap_send_data(GDBWRAP_WHY_HALTED, gdbwrap_packet, gdbwrap_fd);
+
+   LOG("At least we are here");
+   /* Let's populate the gdb registers. We make the (true ?) supposition that */
+   while (2)
+      {
+         gdbwrap_populate_reg(received, &gdbwrap_reg32);
+      }
+   gdbwrap_reg32.eip = 0;
+   return &gdbwrap_reg32;
+}
+
+
+char                   *gdbwrap_own_command(const char * command)
+{
+   return gdbwrap_send_data(command, gdbwrap_packet, gdbwrap_fd);
+}

@@ -16,19 +16,18 @@
 
 #include "gdbwrapper.h"
 
-
 extern int errno;
 extern int h_errno;
 
 int main( int argc, char **argv )
 {
   char                 buffer[4096];
-  struct hostent      *hostaddr;
   int                  port;
-  struct protoent     *protocol;
   int                  rval;
   int                  sd;
   struct sockaddr_in   socketaddr;
+  struct hostent       *hostaddr;
+  struct protoent      *protocol;
   
   if ( argc < 3 )
     {
@@ -114,11 +113,21 @@ int main( int argc, char **argv )
 	  gdbwrap_bye();
 	  exit(0);
 	}
-      else
-	printf("not supported yet\n");
-
-    } while (strncmp("quit", buffer, 4));
-
+      else if(!strncmp("why", buffer,  3))
+         gdbwrap_reason_halted();
+       else if(!strncmp("own", buffer,  3))
+          {
+             while (strncmp("quitown", buffer, 7))
+                {
+                   printf("\nCommand: ");
+                   gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin));
+                }
+          }
+       else
+          printf("not supported yet\n");
+      
+    } while (strncmp("bye", buffer, 3));
+  
   
   close( sd );
   return (0);
