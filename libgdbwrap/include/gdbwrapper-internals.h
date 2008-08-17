@@ -18,6 +18,7 @@ const char  *GDBWRAP_WHY_HALTED          = "?";
 const char  *GDBWRAP_SEP_COLON           = ":";
 const char  *GDBWRAP_SEP_SEMICOLON       = ";";
 const char  *GDBWRAP_SEP_COMMA           = ",";
+const char  GDBWRAP_NULL_CHAR            = '\0';
 
 char	    *gdbwrap_packet;
 int	    gdbwrap_fd;

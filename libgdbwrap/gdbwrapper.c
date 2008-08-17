@@ -14,10 +14,75 @@
 #include              "gdbwrapper-internals.h"
 
 
-static void          gdbwrap_extract(char * buf, const char * begin,
-                                     const char * end)
+/**
+ * This function parses a string *strtoparse* starting at character
+ * *begin* and ending at character *end*. The new parsed string is
+ * saved in *strret*. If *begin* is not found in *strtoparse* then
+ * *strret* is NULL. If *end* is not found in *strtoparse*, then
+ * *strret* has the value from *begin* to GDBWRAP_END_PACKET. No
+ * verification on strret is done.
+ *
+ * @param strtoparse: String to parse.
+ * @param strret    : String to return without *begin* and *end*.
+ * @param begin     : String where to start parsing. If NULL,
+ *                    we start from the beginning.
+ * @param end       : String where to end parsing. 
+ *
+ * @return          : A pointer on *end* + 1;
+ */
+
+static char          *gdbwrap_extract_from_packet(const char * strtoparse,
+						  char * strret,
+						  const char * begin,
+						  const char * end)
 {
-   
+  const char         *loccharbegin;
+  char               *loccharend;
+  char               *retvalue;
+  
+  assert(end != NULL && strtoparse != NULL && strtoparse !=NULL);
+  
+  if (begin != NULL)
+    loccharbegin = strstr(strtoparse, begin);
+  else
+    loccharbegin = strtoparse; 
+
+  if (loccharbegin != NULL)
+    {
+      /* If begin is found, we point on the next char. */
+      loccharbegin++;
+      loccharend = strstr(loccharbegin, end);
+
+      /* ------------------------------------- */
+      if (loccharend != NULL)
+	{
+	  strncpy(strret, loccharbegin, loccharend - loccharbegin);
+	  /* Note that if we didn't copy anything, then we put
+	     GDBWRAP_NULL_CHAR at strret[0]. */
+	  strret[loccharend - loccharbegin] = GDBWRAP_NULL_CHAR;
+	  
+	  retvalue = loccharend + 1;
+	}
+      else
+	{
+	  loccharend = strstr(loccharbegin, GDBWRAP_END_PACKET);
+	  if (loccharend != NULL)
+	    {
+	      strncpy(strret, loccharbegin, loccharend - loccharbegin);
+	      strret[loccharend - loccharbegin] = GDBWRAP_NULL_CHAR;
+	      
+	      retvalue = loccharend + 1;
+	    }
+	  
+	  else
+	    retvalue = NULL;
+	}
+      /* Can be merged --------------------------------- */
+    }
+  else
+    retvalue = NULL;
+
+  return retvalue;
 }
 
 
@@ -100,6 +165,7 @@ static void          gdbwrap_make_message(const char * query, char * buf)
  * @param packet: the packet to parse.
  * @param reg   : the structure in which we want to write the registers.
  */
+
 static void          gdbwrap_populate_reg(const char * packet,
                                           gdbwrap_gdbreg32 * reg)
 {
@@ -117,7 +183,7 @@ static void          gdbwrap_populate_reg(const char * packet,
          /* If the number of char between a ":" or a ";" is greater
             than 2, then it's not a register. */
 
-         printf(" The packet is: %s - %#lx ", locpacketcolon, locpacketcolon - locpacketbegin);
+         printf(" The packet is: %s - %#x ", locpacketcolon, locpacketcolon - locpacketbegin);
          if (locpacketcolon - locpacketbegin == 2)
             {
                LOG("YAHOUUUUUUUUUUU");
@@ -180,6 +246,7 @@ static char          *gdbwrap_send_data(const char * query, char * buf,
  *
  * @param fd: file descriptor of the socket.   
  */
+
 void                   gdbwrap_hello(int fd)
 {
   char                 buf[600];
@@ -190,7 +257,8 @@ void                   gdbwrap_hello(int fd)
   /* We set the max value to the size of buf, since we don't know it
      yet */
 
-  gdbwrap_max_packet_size = sizeof(buf);
+  /* Is there an off by one ? */
+  gdbwrap_max_packet_size = sizeof(buf) - 1;
   tok_start = gdbwrap_send_data(GDBWRAP_QSUPPORTED, buf, fd);
   tok_start = strstr(tok_start, "PacketSize=");
 
@@ -202,7 +270,7 @@ void                   gdbwrap_hello(int fd)
     }
   
   if (gdbwrap_packet == NULL)
-    gdbwrap_packet = malloc(gdbwrap_max_packet_size * sizeof(char));
+    gdbwrap_packet = malloc(gdbwrap_max_packet_size * (sizeof(char) + 1));
 }
 
 
@@ -233,6 +301,20 @@ gdbwrap_gdbreg32       *gdbwrap_reason_halted(void)
    return &gdbwrap_reg32;
 }
 
+
+void                   gdbwrap_test(void)
+{
+  const char *received = "123456::78?aaaa?bbbb;c;uuu?#";
+  char hello[600];
+
+  received = gdbwrap_extract_from_packet(received, hello, "?",
+					 "epad");
+  if (received != NULL)
+    printf("gdbwrap_packet: %s - received: %s\n", hello, received);
+  else
+    printf("Not found :(\n");
+  
+}
 
 char                   *gdbwrap_own_command(const char * command)
 {

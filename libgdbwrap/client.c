@@ -115,6 +115,8 @@ int main( int argc, char **argv )
 	}
       else if(!strncmp("why", buffer,  3))
          gdbwrap_reason_halted();
+      else if(!strncmp("test", buffer,  4))
+         gdbwrap_test();
        else if(!strncmp("own", buffer,  3))
           {
              while (strncmp("quitown", buffer, 7))

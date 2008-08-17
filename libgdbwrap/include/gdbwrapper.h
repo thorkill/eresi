@@ -27,5 +27,6 @@ void             gdbwrap_hello(int fd);
 void             gdbwrap_bye(void);
 gdbwrap_gdbreg32 *gdbwrap_reason_halted(void);
 char             *gdbwrap_own_command(const char * command);
+void             gdbwrap_test(void);
 
 gdbwrap_gdbreg32 gdbwrap_reg32;
