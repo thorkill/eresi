@@ -311,8 +311,13 @@ extern "C" {
 
 /* For writev and struct iovec.  */
 #include <sys/uio.h>
+
 /* For syslog.  */
-#include <sys/syslog.h>
+#ifdef __BEOS__
+#include <syslog.h>
+#else
+ #include <sys/syslog.h>
+#endif
 
 /* For various dynamic linking things.  */
 #include <dlfcn.h>

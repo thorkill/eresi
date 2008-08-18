@@ -39,11 +39,13 @@
 #define __USE_GNU
 #endif
 
-#if !defined(__OpenBSD__)
-#include <sys/ucontext.h>
+#ifdef __BEOS__
+ #include <ucontext.h>
+#elif !defined(__OpenBSD__)
+ #include <sys/ucontext.h>
 #endif
 
-#if !defined(sgi) && !defined(__OpenBSD__) && !defined(__FreeBSD__)
+#if !defined(sgi) && !defined(__OpenBSD__) && !defined(__FreeBSD__) && !defined(__BEOS__)
 #include <sys/user.h>
 #endif
 

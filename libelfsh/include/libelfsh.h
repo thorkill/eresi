@@ -34,18 +34,21 @@
 #ifndef __KERNEL__
 
 #ifdef __BEOS__
-#include <bsd_mem.h>
+ #include <bsd_mem.h>
+ #include <sys/time.h>
 #endif
 
 #if !defined(__USE_GNU)
 #define __USE_GNU
 #endif
 
-#if ! defined(__OpenBSD__)
-#include <sys/ucontext.h>
+#if defined(__BEOS__)
+ #include <ucontext.h>
+#elif !defined(__OpenBSD__)
+ #include <sys/ucontext.h>
 #endif
 
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__BEOS__)
 #include <sys/user.h>
 #endif
 
