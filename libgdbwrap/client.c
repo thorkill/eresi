@@ -102,6 +102,7 @@ int main( int argc, char **argv )
   do
     {
       char * ret;
+      gdbwrap_gdbreg32 * t;
 
       ret = fgets(buffer, sizeof(buffer) - 1, stdin);
       assert(ret != NULL);
@@ -114,7 +115,11 @@ int main( int argc, char **argv )
 	  exit(0);
 	}
       else if(!strncmp("why", buffer,  3))
-         gdbwrap_reason_halted();
+         {
+            t = gdbwrap_reason_halted();
+            if (t != NULL)
+               printf(" Value of eip: %#x ", t->eip);
+         }
       else if(!strncmp("test", buffer,  4))
          gdbwrap_test();
        else if(!strncmp("own", buffer,  3))

@@ -19,7 +19,9 @@
 #define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
 
 
-typedef ptrdiff_t ptrdiff ;    /* Isn't that boring this _t ? */
+typedef ptrdiff_t ptrdiff;   /* Isn't that boring this _t ? */
 typedef uint32_t  uint32;    /* Isn't that boring this _t ? */
-typedef uint8_t   uint8;    /* Isn't that boring this _t ? */
-typedef unsigned  ureg32;    /* To be defined "globally". */
+typedef uint8_t   uint8;     /* Isn't that boring this _t ? */
+typedef uint32    ureg32;    /* 32b register. */
+
+typedef uint32    la32;      /* 32b linear address.  */
