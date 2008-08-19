@@ -323,12 +323,16 @@ eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
 	case ASM_MIPS_JAL:
 	  dest = (ins->op[0].imm << 2) | 
 	    ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
+	  break;
 	case ASM_MIPS_JALR:
 	  dest = MJR_BLOCK_INVALID;
+	  break;
 	case ASM_MIPS_BAL:
 	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[0].imm+1)*4));
+	  break;
 	default:
 	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[1].imm+1)*4));
+	  break;
 	}
     }
   else
@@ -468,7 +472,8 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   /* MIPS architecture */
     case ASM_PROC_MIPS:
       if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
-	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.op[0].baser == ASM_MIPS_REG_SP)
 	{
 	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
 	  tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
@@ -502,7 +507,7 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 			     MJR_LINK_FUNC_SLIDE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
       elist_push(ctxt->func_stack, fun);
       ctxt->curfunc = fun;
-      fprintf(stderr, " ******* ALLOCATED A STACK FRAME IN THE MIDDLE OF A FUNC ! \n");
+      fprintf(stderr, " ******* ALLOCATED STACKFRAME IN MIDDLE OF FUNC at "XFMT" \n", tmpaddr);
       fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
     }
 

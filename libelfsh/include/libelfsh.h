@@ -52,11 +52,13 @@
 #include <sys/user.h>
 #endif
 
+/*
 #if defined(__NetBSD__)
 #include <miscfs/procfs/procfs.h>
 #elif ! (defined(__OpenBSD__))
 #include <sys/procfs.h>
 #endif
+*/
 
 #endif
 

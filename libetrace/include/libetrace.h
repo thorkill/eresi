@@ -27,6 +27,9 @@
 #include <sys/mman.h>
 #include <regex.h>
 
+#include <sys/time.h>
+#include <time.h>
+
 #if !defined(__OpenBSD__)
 #include <elf.h>
 #endif
@@ -49,11 +52,13 @@
 #include <sys/user.h>
 #endif
 
+/*
 #if defined(__NetBSD__)
 #include <miscfs/procfs/procfs.h>
 #elif !defined(__OpenBSD__)
 #include <sys/procfs.h>
 #endif
+*/
 
 #endif /* __KERNEL__ */
 
