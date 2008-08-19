@@ -251,7 +251,7 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
 
       fprintf(stderr, " ******** NO EMPTYING FUNC STACK -- ANALYZING MAIN ****** \n");
 
-      elist_empty(sess->cur->func_stack->name);
+      sess->cur->func_stack = elist_empty(sess->cur->func_stack->name);
       cntnr = mjr_function_get_by_vaddr(sess->cur, main_addr);
       sess->cur->curfunc = cntnr;
       elist_push(sess->cur->func_stack, cntnr);

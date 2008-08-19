@@ -5,9 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int funk3(int b);
-
-int funk1(int a){printf("%d\n",a); funk3(a + 2); return 0;}
+int funk1(int a){printf("%d\n",a);return 0;}
 int funk2(int a){printf("%d\n",a);funk1(a-1);return 1;}
 int funk3(int b){printf("%d\n",b);funk2(b+1);funk1(666);return 0;}
 

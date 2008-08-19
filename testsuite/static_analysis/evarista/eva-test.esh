@@ -1,0 +1,7 @@
+#!../../../evarista/evarista32
+
+load $1
+analyse
+graph
+graph bloc main
+
