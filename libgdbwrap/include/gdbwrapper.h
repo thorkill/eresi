@@ -23,10 +23,18 @@ typedef struct  gdbwrap_gdbreg32
 } gdbwrap_gdbreg32;
 
 
-void             gdbwrap_hello(int fd);
-void             gdbwrap_bye(void);
-gdbwrap_gdbreg32 *gdbwrap_reason_halted(void);
-char             *gdbwrap_own_command(const char * command);
+typedef struct gdbwrap_desc
+{
+   char             *packet;
+   int              fd;
+   unsigned         max_packet_size;
+   gdbwrap_gdbreg32 reg32;
+} gdbwrap_desc;
+
+gdbwrap_desc     *gdbwrap_hello(int fd);
+void             gdbwrap_bye(gdbwrap_desc *desc);
+gdbwrap_gdbreg32 *gdbwrap_reason_halted(gdbwrap_desc *desc);
+char             *gdbwrap_own_command(const char * command, gdbwrap_desc *desc);
 void             gdbwrap_test(void);
 
-gdbwrap_gdbreg32 gdbwrap_reg32;
+

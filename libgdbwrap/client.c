@@ -28,6 +28,7 @@ int main( int argc, char **argv )
   struct sockaddr_in   socketaddr;
   struct hostent       *hostaddr;
   struct protoent      *protocol;
+  gdbwrap_desc         *desc;
   
   if ( argc < 3 )
     {
@@ -108,26 +109,26 @@ int main( int argc, char **argv )
       assert(ret != NULL);
       
       if(!strncmp("hello", buffer,  5))
-	gdbwrap_hello(sd);
+	desc = gdbwrap_hello(sd);
       else if(!strncmp("disconnect", buffer,  5))
 	{
-	  gdbwrap_bye();
+	  gdbwrap_bye(desc);
 	  exit(0);
 	}
       else if(!strncmp("why", buffer,  3))
          {
-            t = gdbwrap_reason_halted();
+            t = gdbwrap_reason_halted(desc);
             if (t != NULL)
                printf(" Value of eip: %#x ", t->eip);
          }
       else if(!strncmp("test", buffer,  4))
-         gdbwrap_test();
+         gdbwrap_test(desc);
        else if(!strncmp("own", buffer,  3))
           {
              while (strncmp("quitown", buffer, 7))
                 {
                    printf("\nCommand: ");
-                   gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin));
+                   gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin), desc);
                 }
           }
        else

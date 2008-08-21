@@ -18,6 +18,9 @@
 #define LODWORD(_qw)    ((uint32)(_qw))                                                                                                        
 #define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
 
+#ifndef __RELEASE
+#define ASSERT(_x)      assert(_x);
+#endif
 
 typedef ptrdiff_t ptrdiff;   /* Isn't that boring this _t ? */
 typedef uint32_t  uint32;    /* Isn't that boring this _t ? */
