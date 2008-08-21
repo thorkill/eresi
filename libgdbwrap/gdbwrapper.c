@@ -30,7 +30,8 @@
  *                    we copy the string from *begin* to then
  *                    end of *strtoparse* (ie a NULL char is found).
  *
- * @return         : A pointer on *end* + 1 or NULL if we've reached the end.
+ * @return          : A pointer on *end* + 1 or NULL if we've reached
+ *                    the end.
  */
 static char          *gdbwrap_extract_from_packet(const char *strtoparse,
 						  char *strret,
@@ -44,9 +45,6 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
   ptrdiff            strsize;
   
   assert(strtoparse != NULL);
-
-  printf(" maxsize is: %#x\n ", maxsize);
-  
   if (begin != NULL)
      {
         loccharbegin = strstr(strtoparse, begin);
@@ -72,8 +70,6 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
                     
                     if (strsize > maxsize)
                        strsize = maxsize;
-                    printf(" strsize is: %#lx\n ", strsize);
-                    fflush(stdout);
                     strncpy(strret, loccharbegin, strsize);
                     /* Note that if we didn't copy anything, then we put
                        GDBWRAP_NULL_CHAR at strret[0]. */
@@ -91,7 +87,7 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
      }
   else
      retvalue = NULL;
-  
+
   return retvalue;
 }
 
@@ -116,7 +112,6 @@ static unsigned      gdbwrap_atoh(const char * str, const unsigned size)
   unsigned           i;
   unsigned           hex;
 
-  printf(" We received in %s - %s:\n ", __PRETTY_FUNCTION__, str);
   for (i = 0, hex = 0; i < size; i++)
     if (str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
@@ -125,8 +120,6 @@ static unsigned      gdbwrap_atoh(const char * str, const unsigned size)
     else
       assert(0); /* will be replaced by false */
 
-  printf(" We return: %#x\n ", hex);
-  fflush(stdout);
   return hex;
 }
 
@@ -137,40 +130,32 @@ static uint8       gdbwrap_calc_checksum(const char * str, gdbwrap_desc *desc)
   uint8               sum;
   char                *result;
   
-  
   result = gdbwrap_extract_from_packet(str, desc->packet, GDBWRAP_BEGIN_PACKET,
-                                       GDBWRAP_END_PACKET, desc->max_packet_size);
+                                       GDBWRAP_END_PACKET,
+				       desc->max_packet_size);
   /* If result == NULL, it's not a packet. */
   if (result == NULL)
      gdbwrap_extract_from_packet(str, desc->packet, NULL, NULL,
                                  desc->max_packet_size);
 
-  fflush(stdout);
   for (i = 0, sum = 0; i < strlen(desc->packet); i++)
      sum += desc->packet[i];
 
   return  sum;
 }
 
-#if 0
-static uint8         gdbwrap_atoh_checksum(const char * str)
-{
-  char               *checksum_start = strstr(str, GDBWRAP_END_PACKET) + 1;
 
-  return gdbwrap_atoh(checksum_start, strlen(checksum_start));
-}
-#endif
-
-static void          gdbwrap_make_message(const char * query, gdbwrap_desc *desc)
+static void          gdbwrap_make_message(const char * query,
+					  gdbwrap_desc *desc)
 {
-   uint8              checksum       = gdbwrap_calc_checksum(query, desc);
+  uint8              checksum       = gdbwrap_calc_checksum(query, desc);
   unsigned           max_query_size = (desc->max_packet_size -
                                        strlen(GDBWRAP_BEGIN_PACKET)
                                        - strlen(GDBWRAP_END_PACKET)
                                        - sizeof(checksum));
   if (strlen(query) < max_query_size)
-     sprintf(desc->packet, "%s%s%s%x", GDBWRAP_BEGIN_PACKET, query, GDBWRAP_END_PACKET,
-             checksum);
+    sprintf(desc->packet, "%s%s%s%x", GDBWRAP_BEGIN_PACKET, query,
+	    GDBWRAP_END_PACKET, checksum);
   else
     assert(0);
 }
@@ -191,54 +176,89 @@ static void          gdbwrap_make_message(const char * query, gdbwrap_desc *desc
 static void          gdbwrap_populate_reg(const char *packet,
                                           gdbwrap_desc *desc)
 {
-   const char        *nextpacket = packet;
-   char              *nextupacket;
-   char              packetsemicolon[100];
-   char              packetcolon[100];
+  const char        *nextpacket = packet;
+  char              *nextupacket;
+  char              packetsemicolon[100];
+  char              packetcolon[100];
 
-   printf("packet received in %s: %s", __PRETTY_FUNCTION__,  packet);
-   fflush(stdout);
-   if (strstr(packet, "*") != NULL)
-      {
-         printf("Sorry, we don't support run-length encoding for now. ");
-         return;
-      }
+  if (strstr(packet, "*") != NULL)
+    {
+      printf("Sorry, we don't support run-length encoding for now. ");
+      return;
+    }
 
-   /*useless since static data + not what we want.
+  while ((nextpacket = gdbwrap_extract_from_packet(nextpacket,
+						   packetsemicolon,
+						   NULL,
+						   GDBWRAP_SEP_SEMICOLON,
+						   sizeof(packetsemicolon)))
+	 != NULL)
+    {
+      nextupacket = gdbwrap_extract_from_packet(packetsemicolon, packetcolon,
+						NULL, GDBWRAP_SEP_COLON,
+						sizeof(packetcolon));
+      /* Depending on the host, we must convert to little
+	 endian. Since the registers are represented as a 1 byte
+	 value, strlen(packetcolon) exactly equals 2.*/
+      if (strlen(packetcolon) == 2)
+	{
+	  uint8 regnumber = gdbwrap_atoh(packetcolon, 2);
+	  la32  regvalue  = gdbwrap_little_endian(gdbwrap_atoh(nextupacket,
+							       strlen(nextupacket)));
 
-
-    */
-   
-   memset(&desc->reg32, 0, sizeof(gdbwrap_gdbreg32));
-   while ((nextpacket = gdbwrap_extract_from_packet(nextpacket,
-                                                    packetsemicolon,
-                                                    NULL,
-                                                    GDBWRAP_SEP_SEMICOLON,
-                                                    sizeof(packetsemicolon)))
-          != NULL)
-      {
-         nextupacket = gdbwrap_extract_from_packet(packetsemicolon, packetcolon,
-                                                   NULL, GDBWRAP_SEP_COLON,
-                                                   sizeof(packetcolon));
-         /* Depending on the host, we must convert to little
-            endian. Since the registers are represented as a 1 byte
-            value, strlen(packetcolon) exactly equals 2.*/
-         if (strlen(packetcolon) == 2)
-            {
-               uint8 regnumber = gdbwrap_atoh(packetcolon, 2);
-               la32  regvalue  = gdbwrap_little_endian(gdbwrap_atoh(nextupacket, strlen(nextupacket)));
-
-               *((uint32)desc->reg32 + regnumber) =  regvalue;
-            }
-      }
-   
-   
+	  *((ureg32 *)&desc->reg32.eax + regnumber) =  regvalue;
+	}
+    }
 }
 
 
 static void          gdbwrap_ack(const int fd)
 {
   send(fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM), 0x0);
+}
+
+
+/**
+ * This function performes a run-length decoding and writes back to
+ * *packet*, but no more than *maxsize* bytes.
+ *
+ * @param packet :  the encoded packet.
+ * @param maxsize:  the maximal size of the decoded packet.
+ */
+void                 gdbwrap_run_length_decode(char *packet, unsigned maxsize)
+{
+  /* Protocol specifies to take the following value and substract 29
+     and repeat by this number the previous character.  Note that the
+     compression may be used multiple times in a packet. */
+  char              *encoding = packet;
+  char              prevchar;
+  uint8             numbertime;
+  uint8             localmax    = strlen(packet);
+  unsigned          iter;
+
+
+  /* ----------------- NEED MORE TESTING. ----------------------- */
+
+  while ((encoding = strstr(encoding + 1, GDBWRAP_START_ENCOD)) != NULL)
+     {
+       prevchar    = encoding[-1];
+       numbertime  = encoding[1] - 29;
+       printf(" encode: %s\n", encoding);
+       fflush(stdout);
+ 
+       /* In case it's used more than one, we have to keep an eye on
+	  the overall size. */
+       localmax += numbertime;  
+       ASSERT(numbertime < 6 && localmax < maxsize);
+
+       for (iter = 0; iter < strlen(encoding); iter++)
+	 encoding[strlen(encoding) - iter + numbertime - 1] = encoding[strlen(encoding)
+								       - iter];
+       memset(encoding, prevchar, numbertime + 1);
+       printf("Locally modified: %s\n", encoding);
+	
+     }
+  printf(" Modified string: %s\n", packet);
 }
 
 
@@ -263,7 +283,7 @@ static char          *gdbwrap_get_packet(gdbwrap_desc *desc)
   if (rval > 0 &&
       gdbwrap_atoh(checksum, strlen(checksum)) ==
       gdbwrap_calc_checksum(desc->packet, desc))
-     gdbwrap_ack(desc->fd);
+    gdbwrap_ack(desc->fd);
 
   return desc->packet;
 }
@@ -275,7 +295,6 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_desc *desc)
   unsigned           rval = 0;
 
   ASSERT(desc != NULL && query != NULL);
-
   gdbwrap_make_message(query, desc);
   send(desc->fd, desc->packet, strlen(desc->packet), 0);
   gdbwrap_get_packet(desc);
@@ -304,20 +323,16 @@ gdbwrap_desc           *gdbwrap_hello(int fd)
   ASSERT(fd && desc.packet != NULL);
 
   received = gdbwrap_send_data(GDBWRAP_QSUPPORTED, &desc);
-  LOG(" CAAAAAAAAAAAAAARA;BA");
   result   = gdbwrap_extract_from_packet(received, desc.packet, "PacketSize=",
                                          GDBWRAP_SEP_SEMICOLON,
                                          desc.max_packet_size);
-  LOG("WE ARE HERE MAN\n");
   /* If we receive the info, we update gdbwrap_max_packet_size. */
   if (result != NULL)
-     {
-        printf("buf is %s\n ", desc.packet);
-        fflush(stdout);
-        desc.max_packet_size = gdbwrap_atoh(desc.packet, strlen(desc.packet));
-        desc.packet = realloc(desc.packet, desc.max_packet_size * (sizeof(char) + 1));
-     }
-  LOG("WE FINISHED THAT CRAP\n");
+    {
+      desc.max_packet_size = gdbwrap_atoh(desc.packet, strlen(desc.packet));
+      desc.packet = realloc(desc.packet,
+			    desc.max_packet_size * (sizeof(char) + 1));
+    }
   return &desc;
 }
 
@@ -327,49 +342,39 @@ gdbwrap_desc           *gdbwrap_hello(int fd)
  */
 void                   gdbwrap_bye(gdbwrap_desc *desc)
 {
+  assert(desc != NULL);
   gdbwrap_send_data(GDBWRAP_DISCONNECT, desc);
   free(desc->packet);
   printf("\nThx for using gdbwrap :)");
 }
 
 
-gdbwrap_gdbreg32       *gdbwrap_reason_halted(gdbwrap_desc *desc)
+void                   gdbwrap_reason_halted(gdbwrap_desc *desc)
 {
    char                *received;
-   
+
    received = gdbwrap_send_data(GDBWRAP_WHY_HALTED, desc);
-
-   if (received != NULL)
-      {
-         printf("At least we are here: %s\n", __PRETTY_FUNCTION__);
-         /* Let's populate the gdb registers. We make the (true ?) supposition that */
-
-         gdbwrap_populate_reg(received, desc->reg32);
-         /* NOT GOOD SHOULD NOT BE RETURNED DIRECTLY TO USER. */
-
-
-         
-         return &desc->reg32;
-
-         
-
-
-         /* kasjkdjaksl dlksajd lksajlsajl */
-      }
-   else
-      return NULL;
+   gdbwrap_populate_reg(received, desc);
 }
 
 
 void                   gdbwrap_test(gdbwrap_desc *desc)
 {
-   const char *received = "T05thread:00000001;05:00000000;04:00000000;08:f0ff0f00;";
-   gdbwrap_gdbreg32 t;
+  
+  char received[800];
+  strncpy(received, "T05thread:00*\"01;05:0* 0000;04:0* 00;08:f0ff0f00;",
+	  strlen("T05thread:00* 01;05:00000000;04:00000000;08:f0ff0f00;"));
 
-   gdbwrap_populate_reg(received, &t);
+   
+   ASSERT(desc != NULL);
+   
+   gdbwrap_run_length_decode(received, sizeof(received));
+   
+
 }
 
-char                   *gdbwrap_own_command(const char *command, gdbwrap_desc *desc)
+char                   *gdbwrap_own_command(const char *command,
+					    gdbwrap_desc *desc)
 {
    return gdbwrap_send_data(command, desc);
 }

@@ -33,8 +33,8 @@ typedef struct gdbwrap_desc
 
 gdbwrap_desc     *gdbwrap_hello(int fd);
 void             gdbwrap_bye(gdbwrap_desc *desc);
-gdbwrap_gdbreg32 *gdbwrap_reason_halted(gdbwrap_desc *desc);
+void             gdbwrap_reason_halted(gdbwrap_desc *desc);
 char             *gdbwrap_own_command(const char * command, gdbwrap_desc *desc);
-void             gdbwrap_test(void);
+void             gdbwrap_test(gdbwrap_desc *desc);
 
 

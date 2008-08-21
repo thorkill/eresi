@@ -28,7 +28,7 @@ int main( int argc, char **argv )
   struct sockaddr_in   socketaddr;
   struct hostent       *hostaddr;
   struct protoent      *protocol;
-  gdbwrap_desc         *desc;
+  gdbwrap_desc         *desc = NULL;
   
   if ( argc < 3 )
     {
@@ -103,7 +103,6 @@ int main( int argc, char **argv )
   do
     {
       char * ret;
-      gdbwrap_gdbreg32 * t;
 
       ret = fgets(buffer, sizeof(buffer) - 1, stdin);
       assert(ret != NULL);
@@ -117,9 +116,7 @@ int main( int argc, char **argv )
 	}
       else if(!strncmp("why", buffer,  3))
          {
-            t = gdbwrap_reason_halted(desc);
-            if (t != NULL)
-               printf(" Value of eip: %#x ", t->eip);
+            gdbwrap_reason_halted(desc);
          }
       else if(!strncmp("test", buffer,  4))
          gdbwrap_test(desc);
@@ -129,7 +126,7 @@ int main( int argc, char **argv )
                 {
                    printf("\nCommand: ");
                    gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin), desc);
-                }
+		}
           }
        else
           printf("not supported yet\n");
@@ -140,5 +137,3 @@ int main( int argc, char **argv )
   close( sd );
   return (0);
 }
-
-  
