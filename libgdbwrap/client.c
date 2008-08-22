@@ -28,7 +28,7 @@ int main( int argc, char **argv )
   struct sockaddr_in   socketaddr;
   struct hostent       *hostaddr;
   struct protoent      *protocol;
-  gdbwrap_desc         *desc = NULL;
+  gdbwrap_t            *desc = NULL;
   
   if ( argc < 3 )
     {
@@ -100,6 +100,7 @@ int main( int argc, char **argv )
    * whatever banner the server sends us and sending it to stdout.
    */
 
+  desc = gdbwrap_init(sd);
   do
     {
       char * ret;
@@ -108,7 +109,7 @@ int main( int argc, char **argv )
       assert(ret != NULL);
       
       if(!strncmp("hello", buffer,  5))
-	desc = gdbwrap_hello(sd);
+	gdbwrap_hello(desc);
       else if(!strncmp("disconnect", buffer,  5))
 	{
 	  gdbwrap_bye(desc);
@@ -125,7 +126,8 @@ int main( int argc, char **argv )
              while (strncmp("quitown", buffer, 7))
                 {
                    printf("\nCommand: ");
-                   gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin), desc);
+                   gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin),
+                                       desc);
 		}
           }
        else

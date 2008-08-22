@@ -14,17 +14,13 @@
 #define LOBYTE(_w)      ((_w) & 0xff)
 #define HIBYTE(_w)      (((_w) >> 8) & 0xff)
 
-#define HIDWORD(_qw)    ((uint32)((_qw) >> 32))                                                                                                
-#define LODWORD(_qw)    ((uint32)(_qw))                                                                                                        
+#define HIDWORD(_qw)    ((uint32)((_qw) >> 32))
+#define LODWORD(_qw)    ((uint32)(_qw)) 
 #define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
 
 #ifndef __RELEASE
-#define ASSERT(_x)      assert(_x);
+#define ASSERT(_x)      assert(_x)
 #endif
 
-typedef ptrdiff_t ptrdiff;   /* Isn't that boring this _t ? */
-typedef uint32_t  uint32;    /* Isn't that boring this _t ? */
-typedef uint8_t   uint8;     /* Isn't that boring this _t ? */
-typedef uint32    ureg32;    /* 32b register. */
-
-typedef uint32    la32;      /* 32b linear address.  */
+typedef uint32_t    ureg32;    /* 32b register. */
+typedef uint32_t    la32;      /* 32b linear address.  */
