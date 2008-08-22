@@ -130,7 +130,8 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 	       dim[1] = fmt;
                dim[2] = (converted >> 16) & 0x3;
 	    } else if (fmt == MIPS_OPCODE_F_CFC1 || fmt == MIPS_OPCODE_F_CTC1
-	               || fmt == MIPS_OPCODE_F_MFC1 || fmt == MIPS_OPCODE_F_MTC1) {
+	               || fmt == MIPS_OPCODE_F_MFC1 || fmt == MIPS_OPCODE_F_MTC1
+		       || fmt == MIPS_OPCODE_DMFC2 || fmt == MIPS_OPCODE_DMTC2) {
 	       dim[1] = fmt;
 	    } else {
 	       dim[1] = tmp;

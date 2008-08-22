@@ -808,6 +808,9 @@ enum e_mips_instr_types
    ASM_MIPS_BC1FL,
    ASM_MIPS_BC1TL,
 
+   /* BUGFIX */
+   ASM_MIPS_DMTC1,
+   ASM_MIPS_DMFC1,
 
    ASM_MIPS_BAD
 };
@@ -1226,3 +1229,7 @@ int asm_mips_movz_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc
 // FPU Absolute Branch Instructions
 int asm_mips_bc1fl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_bc1tl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// BUGFIX
+int asm_mips_dmtc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmfc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

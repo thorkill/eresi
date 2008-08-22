@@ -413,6 +413,10 @@ struct e_mips_instr e_mips_instrs [] = {
   {"bc1fl"    ,ASM_MIPS_BC1FL     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_BCC2      ,0x2		,asm_mips_bc1fl},
   {"bc1tl"    ,ASM_MIPS_BC1TL     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_BCC2      ,0x3		,asm_mips_bc1tl},
 
+  /* BUGFIX */
+  {"dmtc1"    ,ASM_MIPS_DMTC1     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_DMTC2     ,0x0		,asm_mips_dmtc1},
+  {"dmfc1"    ,ASM_MIPS_DMFC1     ,MIPS_OPCODE_COP1          ,MIPS_OPCODE_DMFC2     ,0x0		,asm_mips_dmfc1},
+
      /* mnemonic          code     index1   index 2   index 3   func pointer */
    { (const char *) -1, (int) -1, (int) -1, (int) -1, (int) -1, NULL }
 };
