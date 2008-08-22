@@ -178,6 +178,7 @@ list_t		*elist_copy(list_t *h)
       XALLOC(__FILE__, __FUNCTION__, __LINE__, newelem, size, NULL);
       memcpy(newelem, curent->data, size);
       newent->data = newelem;
+      newent->key = strdup(curent->key);
       newent->next = NULL;
       if (prevent)
 	prevent->next = newent;

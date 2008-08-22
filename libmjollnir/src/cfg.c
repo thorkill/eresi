@@ -58,7 +58,9 @@ int			mjr_trace_control(mjrcontext_t *context,
       mjr_container_add_link(context, bloc, curblock->id, MJR_LINK_BLOCK_COND_ALWAYS, 
 			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
       
+#if __DEBUG_FLOW__
       fprintf(stderr, " [D] Found contiguous block ! stopping this recursion branch ******** \n");
+#endif
       
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -145,7 +147,7 @@ int			mjr_trace_control(mjrcontext_t *context,
       if (context->func_stack->elmnbr > 1)
 	context->curfunc = elist_pop(context->func_stack);
 
-#if 1 //__DEBUG_FLOW__
+#if __DEBUG_FLOW__
       fprintf(stderr, " *********** CURFUNC RET @ " XFMT " : to %s ******** \n",
 	      curvaddr, (context->curfunc && context->curfunc->data ? 
 			 ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
@@ -477,7 +479,8 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 	{
 	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
 	  tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
-	  goto finish;
+	  //goto finish;
+	  
 	}
       break;
       
@@ -508,7 +511,7 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
       elist_push(ctxt->func_stack, fun);
       ctxt->curfunc = fun;
       fprintf(stderr, " ******* ALLOCATED STACKFRAME IN MIDDLE OF FUNC at "XFMT" \n", tmpaddr);
-      fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
+      fprintf(stderr, " **** -> NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

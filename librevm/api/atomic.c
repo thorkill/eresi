@@ -493,7 +493,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (eresi_Addr) val8, ASPECT_TYPE_BYTE);
+			  (void *) (eresi_Addr) val8, ASPECT_TYPE_BYTE);
 	  else if (o1->contype == CONT_LIST)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
 			ASPECT_TYPE_STR);
@@ -511,11 +511,11 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (eresi_Addr) val16, ASPECT_TYPE_SHORT);
+			  (void *) (eresi_Addr) val16, ASPECT_TYPE_SHORT);
 	  else if (o1->contype == CONT_LIST)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (eresi_Addr) val16, ASPECT_TYPE_SHORT);
-	    
+			   (void *) (eresi_Addr) val16, ASPECT_TYPE_SHORT);
+	  
 	}
       else if (o1->set_obj(o1->parent, val16) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -531,11 +531,11 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	{
 	  if (o1->contype == CONT_HASH)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (eresi_Addr) val32, ASPECT_TYPE_INT);
+			  (void *) (eresi_Addr) val32, ASPECT_TYPE_INT);
 	  else if (o1->contype == CONT_LIST)
 	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
-			(void *) (eresi_Addr) val32, ASPECT_TYPE_INT);
-
+			   (void *) (eresi_Addr) val32, ASPECT_TYPE_INT);
+	  
 	}
       else if (o1->set_obj(o1->parent, val32) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -544,7 +544,10 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 
     case ASPECT_TYPE_LONG:
       if (sizeof(u_long) == 4)
-	goto intcopy;
+	{
+	  o1->set_obj = revm_int_setobj;
+	  goto intcopy;
+	}
     case ASPECT_TYPE_CADDR:
     case ASPECT_TYPE_DADDR:
     ptrcopy:

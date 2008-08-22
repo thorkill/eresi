@@ -190,7 +190,13 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
 
   /* Insert symbol on terminated block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
-  assert(csrc != NULL);
+
+  if (!csrc)
+    {
+      printf("missing block at address " XFMT "\n", src);
+      assert(csrc != NULL);
+    }
+
   mjr_block_symbol(ctxt, csrc);
 
   /* Now split destination blocks */

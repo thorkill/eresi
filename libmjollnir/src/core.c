@@ -24,7 +24,8 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 				 int curdepth, int maxdepth)
 {
   asm_instr     instr;
-  unsigned int  curr, ilen;
+  unsigned int  curr;
+  int		ilen;
   eresi_Addr	dstaddr, retaddr;
   container_t	*curblock;
   mjrblock_t	*block;
@@ -77,18 +78,27 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 #endif
       
       if (ilen <= 0) 
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                     "asm_read_instr returned <= 0 lenght", -1);
+	{
+	  printf(" [D] asm_read_instr returned -1 at address " XFMT "\n", vaddr + curr);
+	  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  //"asm_read_instr returned <= 0 lenght", -1);
+	  exit(-1);
+	}
 
       mjr_history_shift(sess->cur, instr, vaddr + curr);
       block->size += ilen;	  
+
+#if __DEBUG_READ__
+      fprintf(stderr, " [D] curaddr WILL BE analyzed: "XFMT" (curr = %d, ilen = %d) \n", 
+	      vaddr + curr, curr, ilen);
+#endif
 
       /* Increase block size for delay slot if any */
       delayslotsize = mjr_trace_control(sess->cur, curblock, sess->cur->obj, &instr, 
 					vaddr + curr, &dstaddr, &retaddr);
 
 #if __DEBUG_READ__
-      fprintf(stderr, " [D] curaddr analyzed: %08x (dstaddr = %08X, retaddr = %08X)\n",
+      fprintf(stderr, " [D] curaddr analyzed: "XFMT" (dstaddr = "XFMT", retaddr = "XFMT")\n",
 	      vaddr + curr, dstaddr, retaddr);
 #endif
 
