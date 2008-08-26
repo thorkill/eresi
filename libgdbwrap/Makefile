@@ -2,7 +2,7 @@ SRC       = gdbwrapper.c
 CLIENT    = client.o
 CLIENT    = client.c
 OBJ       = $(SRC:.c=.o)
-CFLAGS    = -Iinclude/ -Wall -g3 -ansi -pedantic -Werror
+CFLAGS    = -Iinclude/ -Wall -g3 -ansi -pedantic -fprofile-generate
 NAME      = libgdbwrap
 
 CC      ?= gcc

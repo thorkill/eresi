@@ -22,5 +22,8 @@
 #define ASSERT(_x)      assert(_x)
 #endif
 
+#define FALSE       0
+#define TRUE        1
+
 typedef uint32_t    ureg32;    /* 32b register. */
 typedef uint32_t    la32;      /* 32b linear address.  */
