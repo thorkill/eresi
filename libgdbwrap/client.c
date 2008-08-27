@@ -19,6 +19,14 @@
 extern int errno;
 extern int h_errno;
 
+static void dumpreg(gdbwrap_t *desc)
+{
+  unsigned i;
+
+  for (i = 0; i < sizeof(gdbwrap_gdbreg32) / sizeof(ureg32); i++)
+    printf("Reg %d - %#x\n", i, *(&desc->reg32.eax + i));
+}
+
 int main( int argc, char **argv )
 {
   char                 buffer[4096];
@@ -113,7 +121,7 @@ int main( int argc, char **argv )
 	  printf("Salut, je suis le client."
 		 "desc->packet: %p, &desc->packet: %p\n",
 		 desc->packet, &desc->packet[0]);
-	gdbwrap_hello(desc);
+	  gdbwrap_hello(desc);
 	}
       else if(!strncmp("disconnect", buffer,  5))
 	{
@@ -121,28 +129,30 @@ int main( int argc, char **argv )
 	  exit(0);
 	}
       else if(!strncmp("why", buffer,  3))
-         {
-            gdbwrap_reason_halted(desc);
-	    printf("Value of eip: %#x\n", desc->reg32.eip);
-         }
+	{
+	  gdbwrap_reason_halted(desc);
+	  printf("Value of eip: %#x\n", desc->reg32.eip);
+	}
       else if(!strncmp("test", buffer,  4))
-         gdbwrap_test(desc);
+	gdbwrap_test(desc);
       else if(!strncmp("gpr", buffer,  3))
-         gdbwrap_readgenreg(desc);
+	gdbwrap_readgenreg(desc);
       else if(!strncmp("cont", buffer,  4))
-         gdbwrap_continue(desc);
+	gdbwrap_continue(desc);
+      else if(!strncmp("dump", buffer,  4))
+	dumpreg(desc);
       else if(!strncmp("own", buffer,  3))
-          {
-             while (strncmp("quitown", buffer, 7))
-                {
-                   printf("\nCommand: ");
-                   ret = gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin),
-                                       desc);
-		   printf("\n%s - size: %d", ret, strlen(ret));
-		}
-          }
-       else
-          printf("not supported yet\n");
+	{
+	  while (strncmp("quitown", buffer, 7))
+	    {
+	      printf("\nCommand: ");
+	      ret = gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin),
+					desc);
+	      printf("\n%s - size: %d", ret, strlen(ret));
+	    }
+	}
+      else
+	printf("not supported yet\n");
       
     } while (strncmp("bye", buffer, 3));
   
