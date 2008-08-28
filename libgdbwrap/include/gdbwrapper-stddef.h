@@ -18,6 +18,11 @@
 #define LODWORD(_qw)    ((uint32)(_qw)) 
 #define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
 
+#define WORDB           2        
+#define DWORDB          4
+#define QWORDB          8
+
+
 #ifndef __RELEASE
 #define ASSERT(_x)      assert(_x)
 #endif

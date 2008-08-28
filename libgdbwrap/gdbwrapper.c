@@ -133,21 +133,17 @@ static uint8_t       gdbwrap_calc_checksum(const char * str, gdbwrap_t *desc)
 static char          *gdbwrap_make_message(const char * query,
                                            gdbwrap_t *desc)
 {
-
-  char u[3000];
   uint8_t            checksum       = gdbwrap_calc_checksum(query, desc);
   unsigned           max_query_size = (desc->max_packet_size -
 				       strlen(GDBWRAP_BEGIN_PACKET)
 				       - strlen(GDBWRAP_END_PACKET)
 				       - sizeof(checksum));
-   
-   if (strlen(query) < max_query_size)
-     {
-       printf("The message in:%s  is - %s - query: %s \n", __PRETTY_FUNCTION__, desc->packet, query);
-       ASSERT(snprintf(u, desc->max_packet_size, "%s%s%s%x",
-		       GDBWRAP_BEGIN_PACKET, query, GDBWRAP_END_PACKET, checksum) > 0);
-    printf("The message in:%s  is - %s - query: %s \n", __PRETTY_FUNCTION__, u, query);
-     }
+
+  /* Sometimes C sucks... Basic source and destination checking. We do
+     not check the overlapping tho.*/
+  if (strlen(query) < max_query_size && &*query != &*desc->packet)
+    ASSERT(snprintf(desc->packet, desc->max_packet_size, "%s%s%s%.2x",
+		    GDBWRAP_BEGIN_PACKET, query, GDBWRAP_END_PACKET, checksum) > 0);
   else
     ASSERT(FALSE);
 
@@ -179,7 +175,8 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
   
   ASSERT(dstpacket != NULL && srcpacket != NULL &&
 	 strncmp(srcpacket, GDBWRAP_START_ENCOD, 1));
-  strncpy(dstpacket, srcpacket, maxsize);
+  if (&*srcpacket != &*dstpacket)
+    strncpy(dstpacket, srcpacket, maxsize);
   encodestr   = strstr(dstpacket, GDBWRAP_START_ENCOD);
   while (encodestr != NULL)
     {
@@ -291,7 +288,7 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
   rval = send(desc->fd, mes, strlen(mes), 0);
   ASSERT(rval != -1);
   mes  = gdbwrap_get_packet(desc);
-  
+
   return mes;
 }
 
@@ -415,14 +412,18 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
 }
 
 
-void                 gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
-					   uint8_t sizemem)
+/* TODO: error handling. E00, etc */
+char                 *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
+					    uint8_t bytes)
 {
   char               *rec;
+  char               packet[50];
+  
+  snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
+	   linaddr, GDBWRAP_SEP_COMMA, bytes);
+  rec = gdbwrap_send_data(packet, desc);
 
-  snprintf(desc->packet, desc->max_packet_size, "%s%x%s%x", GDBWRAP_MEMCONTENT,
-	   linaddr, GDBWRAP_SEP_COMMA, sizemem);
-  rec = gdbwrap_send_data(desc->packet, desc);
+  return rec;
 }
 
 
@@ -433,10 +434,32 @@ char                 *gdbwrap_own_command(const char *command,
 }
 
 
+#if 0
+/* Set a memory breakpoint en go there. It assumes a continue. To see
+   how it's gonna work when merging with the rest.*/
+void                 *gdbwrap_memorybp(gdbwrap_t *desc)
+{
+  
+}
+#endif
+
+/*  Typical sequence (does it suck ?):
+
+ *  $qSupported#37+$#00++$Hc-1#09+$E00#a5+$qC#b4+$QC1#c5+$?#3f
+ *  +$T05thread:00000001;05:00000000;04:00000000;08:f0ff0f00;#0f+$mffff0,8#99
+ *  +$e906e70000000000#80+$mffff0,7#98+$e906e700000000#20+
+ */
+void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
+{
+  char               *rec;
+
+  gdbwrap_hello(desc);
+  gdbwrap_reason_halted(desc);
+  rec = gdbwrap_memorycontent(desc, desc->reg32.eip, QWORDB);
+}
+
+
 void                 gdbwrap_test(gdbwrap_t *desc)
 {
-  char *ret;
-  gdbwrap_memorycontent(desc, 0x7c00, 8);
-
-  printf("Return: %s\n", ret);
+  gdbwrap_memorycontent(desc,0xb7fc99a0 , QWORDB);
 }

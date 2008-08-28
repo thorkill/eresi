@@ -41,6 +41,6 @@ char             *gdbwrap_own_command(const char * command, gdbwrap_t *desc);
 void             gdbwrap_test(gdbwrap_t *desc);
 gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
-void             gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
-				       uint8_t sizemem);
-
+char             *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
+					uint8_t bytes);
+void             gdbwrap_vmwareinit(gdbwrap_t *desc);

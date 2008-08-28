@@ -117,22 +117,14 @@ int main( int argc, char **argv )
       assert(ret != NULL);
       
       if(!strncmp("hello", buffer,  5))
-	{
-	  printf("Salut, je suis le client."
-		 "desc->packet: %p, &desc->packet: %p\n",
-		 desc->packet, &desc->packet[0]);
 	  gdbwrap_hello(desc);
-	}
       else if(!strncmp("disconnect", buffer,  5))
 	{
 	  gdbwrap_bye(desc);
 	  exit(0);
 	}
       else if(!strncmp("why", buffer,  3))
-	{
 	  gdbwrap_reason_halted(desc);
-	  printf("Value of eip: %#x\n", desc->reg32.eip);
-	}
       else if(!strncmp("test", buffer,  4))
 	gdbwrap_test(desc);
       else if(!strncmp("gpr", buffer,  3))
@@ -141,6 +133,8 @@ int main( int argc, char **argv )
 	gdbwrap_continue(desc);
       else if(!strncmp("dump", buffer,  4))
 	dumpreg(desc);
+      else if(!strncmp("vm", buffer, 2))
+	gdbwrap_vmwareinit(desc);
       else if(!strncmp("own", buffer,  3))
 	{
 	  while (strncmp("quitown", buffer, 7))
