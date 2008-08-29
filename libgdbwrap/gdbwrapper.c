@@ -391,11 +391,10 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
   rec = gdbwrap_send_data(GDBWRAP_GENPURPREG, desc);
   for (i = 0; i < strlen(rec) / sizeof(ureg32); i++)
     {
-      /* The value(8) must be replaced here. */
-       regvalue = gdbwrap_atoh(rec, 8);
+       regvalue = gdbwrap_atoh(rec, DWORDB);
        regvalue = gdbwrap_little_endian(regvalue);
        *(&desc->reg32.eax + i) = regvalue;
-       rec += 8;
+       rec += DWORDB;
     }
 
   return &desc->reg32;
@@ -407,7 +406,7 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   char               *rec;
 
   rec = gdbwrap_send_data(GDBWRAP_CONTINUETHREAD0, desc);
-  if (!strncmp(rec, GDBWRAP_ERROR, 1))
+  if (!strncmp(rec, GDBWRAP_ERROR, strlen(GDBWRAP_ERROR)))
     rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
 }
 
@@ -437,18 +436,74 @@ char                 *gdbwrap_own_command(const char *command,
 #if 0
 /* Set a memory breakpoint en go there. It assumes a continue. To see
    how it's gonna work when merging with the rest.*/
+   
 void                 *gdbwrap_memorybp(gdbwrap_t *desc)
 {
   
 }
 #endif
 
-/*  Typical sequence (does it suck ?):
 
- *  $qSupported#37+$#00++$Hc-1#09+$E00#a5+$qC#b4+$QC1#c5+$?#3f
- *  +$T05thread:00000001;05:00000000;04:00000000;08:f0ff0f00;#0f+$mffff0,8#99
- *  +$e906e70000000000#80+$mffff0,7#98+$e906e700000000#20+
+/* --------------------- NOT TESTED ------------------------- */
+void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
+{
+  char               *rec;
+  
+  snprintf(desc->packet, desc->max_packet_size,  "%s%x=%x", GDBWRAP_WRITEREG,
+	   regNum, val);
+  printf("In %s, Sending: %s\n", __PRETTY_FUNCTION__, desc->packet);
+  rec =  gdbwrap_send_data(desc->packet, desc);
+
+  printf("In %s we received: %s ", __PRETTY_FUNCTION__, desc->packet);
+}
+
+
+/* signal is int ? to verify. */
+/* a transaction:
+ *> $Hg3a47#ae+
+ *< $OK#9a+
+ *> $g#67+
+ *< $0*<d0c6cabf0*4a029f9b792020*
+ *> 730*"7b0*"7b0*"7b0*}0*q7f030*(f*
+ *< 0*}0*}0*}0*%801f0*!b0*"#31+
+ *> $P29=ffffffff#28+
+ *< $#00+
+ *> $G00000000000000000000000000000000d0c6cabf000000000000000000000000a029f9b792020000730000007b0000007b0000007b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007f03000000000000ffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000801f0000ffffffff#fd+
+ *< $OK#9a+
+ *> $Z0,b7fa0610,1#3a+
+ *< $#00+
+ *> $mb7fa0610,1#f1+
+ *< $55#6a+
+ *> $Xb7fa0610,0:#15+
+ *< $OK#9a+
+ *> $Xb7fa0610,1:.#e2+
+ *< $OK#9a+
+ *> $QPassSignals:e;10;14;17;1a;1b;1c;21;24;25;4c;#8f+
+ *< $OK#9a+
+ *> $vCont?#49+
+ *< $vCont;c;C;s;S#62+
+ *> $vCont;C03:3a47;c#c2+
+ *< $X03#bb+
+ *
+ * Ohhhhh maaaaaaaan ! This is a SIGQUIT :S.
  */
+
+ void gdbwrap_signal(int signal, gdbwrap_t *desc)
+ {
+   
+ }
+
+/* Shall we stepi with a known address ? */
+void                 gdbwrap_stepi(gdbwrap_t *desc)
+{
+  char               *rec;
+
+  /* We have to check for errors :( */
+  rec = gdbwrap_send_data(GDBWRAP_STEPI, desc);
+  gdbwrap_populate_reg(rec, desc);
+}
+
+
 void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
 {
   char               *rec;

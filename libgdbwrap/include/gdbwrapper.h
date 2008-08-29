@@ -43,4 +43,6 @@ gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
 char             *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
 					uint8_t bytes);
+void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_vmwareinit(gdbwrap_t *desc);
+void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);

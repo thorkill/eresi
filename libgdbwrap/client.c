@@ -37,7 +37,7 @@ int main( int argc, char **argv )
   struct hostent       *hostaddr;
   struct protoent      *protocol;
   gdbwrap_t            *desc = NULL;
-  
+ 
   if ( argc < 3 )
     {
       printf( "usage:  client  server port \n" );
@@ -107,7 +107,7 @@ int main( int argc, char **argv )
    * I've decided to use this example as a means of simply grabbing
    * whatever banner the server sends us and sending it to stdout.
    */
-  
+
   desc = gdbwrap_init(sd);
   do
     {
@@ -135,6 +135,8 @@ int main( int argc, char **argv )
 	dumpreg(desc);
       else if(!strncmp("vm", buffer, 2))
 	gdbwrap_vmwareinit(desc);
+      else if(!strncmp("stepi", buffer, 2))
+	gdbwrap_stepi(desc);
       else if(!strncmp("own", buffer,  3))
 	{
 	  while (strncmp("quitown", buffer, 7))
