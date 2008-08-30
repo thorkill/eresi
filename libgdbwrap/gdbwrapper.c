@@ -13,6 +13,26 @@
 #include              "gdbwrapper-internals.h"
 
 
+static Bool          gdbwrap_errorhandler(const char *error)
+{
+  ASSERT(error != NULL);
+
+  if (!strncmp(GDBWRAP_REPLAY_OK, error, strlen(GDBWRAP_REPLAY_OK)))
+    return FALSE;
+  
+  if (error[0] == GDBWRAP_REPLAY_ERROR)
+    fprintf(stdout, "Error: %s\n", error);
+  
+  if (error[0] == GDBWRAP_EXIT_W_STATUS)
+    fprintf(stdout, "Exit with status: %s\n", error);
+  
+  if (error[0] == GDBWRAP_EXIT_W_STATUS)
+    fprintf(stdout, "Exit with signal: %s\n", error);
+
+  return TRUE;
+}
+
+
 /**
  * This function parses a string *strtoparse* starting at character
  * *begin* and ending at character *end*. The new parsed string is
@@ -83,8 +103,8 @@ static la32          gdbwrap_little_endian(la32 addr)
 
   for (i = 0; addr > 0; i++)
     {
-      addrlittle += (LOBYTE(addr) << (8 * (sizeof(addr) - 1 - i)));
-      addr >>= 8;
+      addrlittle += (LOBYTE(addr) << (BYTE_IN_BIT * (sizeof(addr) - 1 - i)));
+      addr >>= BYTE_IN_BIT;
     }
 
   return addrlittle;
@@ -147,7 +167,6 @@ static char          *gdbwrap_make_message(const char * query,
   else
     ASSERT(FALSE);
 
-
   return desc->packet;
 }
 
@@ -191,7 +210,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       for (iter = 0; iter < strlenc; iter++)
 	encodestr[strlenc + numberoftimes - iter - 2] = encodestr[strlenc - iter];
       memset(encodestr, valuetocopy, numberoftimes);
-      encodestr = strstr(encodestr + 1, GDBWRAP_START_ENCOD);
+      encodestr = strstr(NEXT_CHAR(encodestr), GDBWRAP_START_ENCOD);
     }
   
   return dstpacket;
@@ -262,19 +281,26 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
   /* The result of the previous recv must be a "+". */
   ASSERT(rval != -1  && !strncmp(desc->packet, GDBWRAP_COR_CHECKSUM, 1));
   rval = recv(desc->fd, desc->packet, desc->max_packet_size, 0);
-  desc->packet[rval] = GDBWRAP_NULL_CHAR;
-  gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET, NULL,
-                              sizeof(checksum));
-  /* If no error, we ack the packet. */
-  if (rval != -1 &&
-      gdbwrap_atoh(checksum, strlen(checksum)) ==
-      gdbwrap_calc_checksum(desc->packet, desc))
-    send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM), 0x0);
-  else
-    ASSERT(FALSE);
+  /* if rval == 0, it means the host is disconnected/dead. */
+  if (rval) {
+    desc->packet[rval] = GDBWRAP_NULL_CHAR;
+    gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET, NULL,
+				sizeof(checksum));
+    /* If no error, we ack the packet. */
+    if (rval != -1 && rval != 1 &&
+	gdbwrap_atoh(checksum, strlen(checksum)) ==
+	gdbwrap_calc_checksum(desc->packet, desc))
+      {
+	rval = send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM),
+		    0x0);
+	return gdbwrap_run_length_decode(desc->packet, desc->packet,
+					 desc->max_packet_size);
+      }
+    else
+      ASSERT(FALSE);
+  }
 
-  return gdbwrap_run_length_decode(desc->packet, desc->packet,
-				   desc->max_packet_size);
+  return NULL;
 }
 
 
@@ -391,10 +417,11 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
   rec = gdbwrap_send_data(GDBWRAP_GENPURPREG, desc);
   for (i = 0; i < strlen(rec) / sizeof(ureg32); i++)
     {
-       regvalue = gdbwrap_atoh(rec, DWORDB);
+      /* 1B = 2 characters */
+       regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
        regvalue = gdbwrap_little_endian(regvalue);
        *(&desc->reg32.eax + i) = regvalue;
-       rec += DWORDB;
+       rec += 2 * DWORD_IN_BYTE;
     }
 
   return &desc->reg32;
@@ -411,7 +438,6 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
 }
 
 
-/* TODO: error handling. E00, etc */
 char                 *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
 					    uint8_t bytes)
 {
@@ -421,14 +447,19 @@ char                 *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
   snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes);
   rec = gdbwrap_send_data(packet, desc);
+  gdbwrap_errorhandler(rec);
 
   return rec;
 }
 
 
-char                 *gdbwrap_own_command(const char *command,
+char                 *gdbwrap_own_command(char *command,
 					  gdbwrap_t *desc)
 {
+  printf("Received command in %s: %s - size: %d\n", __PRETTY_FUNCTION__,
+	 command, strlen(command));
+  /* This is hacky. I'll remove this shit. */
+  command[strlen(command) - 1] = GDBWRAP_NULL_CHAR;
   return gdbwrap_send_data(command, desc);
 }
 
@@ -448,59 +479,52 @@ void                 *gdbwrap_memorybp(gdbwrap_t *desc)
 void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
 {
   char               *rec;
+  char               regpacket[50];
   
-  snprintf(desc->packet, desc->max_packet_size,  "%s%x=%x", GDBWRAP_WRITEREG,
-	   regNum, val);
-  printf("In %s, Sending: %s\n", __PRETTY_FUNCTION__, desc->packet);
-  rec =  gdbwrap_send_data(desc->packet, desc);
-
-  printf("In %s we received: %s ", __PRETTY_FUNCTION__, desc->packet);
+  snprintf(regpacket, sizeof(regpacket), "%s%x=%x",
+	   GDBWRAP_WRITEREG, regNum, val);
+  printf("In %s, Sending: %s\n", __PRETTY_FUNCTION__, regpacket);
+  fflush(stdout);
+  rec =  gdbwrap_send_data(regpacket, desc);
+  gdbwrap_errorhandler(rec);
+  printf("In %s we received: %s ", __PRETTY_FUNCTION__, regpacket);
+  fflush(stdout);
 }
 
 
-/* signal is int ? to verify. */
-/* a transaction:
- *> $Hg3a47#ae+
- *< $OK#9a+
- *> $g#67+
- *< $0*<d0c6cabf0*4a029f9b792020*
- *> 730*"7b0*"7b0*"7b0*}0*q7f030*(f*
- *< 0*}0*}0*}0*%801f0*!b0*"#31+
- *> $P29=ffffffff#28+
- *< $#00+
- *> $G00000000000000000000000000000000d0c6cabf000000000000000000000000a029f9b792020000730000007b0000007b0000007b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007f03000000000000ffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000801f0000ffffffff#fd+
- *< $OK#9a+
- *> $Z0,b7fa0610,1#3a+
- *< $#00+
- *> $mb7fa0610,1#f1+
- *< $55#6a+
- *> $Xb7fa0610,0:#15+
- *< $OK#9a+
- *> $Xb7fa0610,1:.#e2+
- *< $OK#9a+
- *> $QPassSignals:e;10;14;17;1a;1b;1c;21;24;25;4c;#8f+
- *< $OK#9a+
- *> $vCont?#49+
- *< $vCont;c;C;s;S#62+
- *> $vCont;C03:3a47;c#c2+
- *< $X03#bb+
+/*
+ * Here's the format of a signal:
  *
- * Ohhhhh maaaaaaaan ! This is a SIGQUIT :S.
+ * $vCont;C<signum>[:process_pid]#<checksum>
+ *
+ * Note that que process pid can be retrieved with a "X" command. If
+ * process_pid is omited, then we apply to the current process
+ * (default behavior).
  */
-
+ 
  void gdbwrap_signal(int signal, gdbwrap_t *desc)
  {
-   
+   char              *rec;
+   char              signalpacket[50];
+
+   snprintf(signalpacket, sizeof(signalpacket), "%s;C%.2x",
+	    GDBWRAP_CONTINUEWITH, signal);
+   rec = gdbwrap_send_data(signalpacket, desc);
+   gdbwrap_errorhandler(rec);
  }
 
 /* Shall we stepi with a known address ? */
 void                 gdbwrap_stepi(gdbwrap_t *desc)
 {
   char               *rec;
+  Bool               error;
 
-  /* We have to check for errors :( */
   rec = gdbwrap_send_data(GDBWRAP_STEPI, desc);
-  gdbwrap_populate_reg(rec, desc);
+  error = gdbwrap_errorhandler(rec);
+  if (error)
+    gdbwrap_populate_reg(rec, desc);
+  else
+    fprintf(stdout, "Not populating the table\n");
 }
 
 
@@ -510,11 +534,13 @@ void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
 
   gdbwrap_hello(desc);
   gdbwrap_reason_halted(desc);
-  rec = gdbwrap_memorycontent(desc, desc->reg32.eip, QWORDB);
+  rec = gdbwrap_memorycontent(desc, desc->reg32.eip, QWORD_IN_BYTE);
 }
 
 
 void                 gdbwrap_test(gdbwrap_t *desc)
 {
-  gdbwrap_memorycontent(desc,0xb7fc99a0 , QWORDB);
+  gdbwrap_memorycontent(desc, 0xb7fc99a0 , QWORD_IN_BYTE);
+  gdbwrap_writereg(0x183838, 0xff1234, desc);
+  /* gdbwrap_signal(01, desc); */
 }
