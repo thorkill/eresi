@@ -10,7 +10,7 @@ CC		?= gcc
 LD		= ld
 RM		= rm -f 
 AR		= ar rc
-CFLAGS	        += -Iinclude -fPIC -g3 -DERESI32
+CFLAGS	        += -Iinclude -fPIC -g3 -O2 -DERESI32
 SRC		= regex.c
 OBJ		= $(SRC:.c=.o)
 NAME		= libregex

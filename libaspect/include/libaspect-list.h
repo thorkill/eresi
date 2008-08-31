@@ -59,5 +59,8 @@ int		elist_replace(list_t *h, char *k, list_t *nl); /* Replace one elem by a lis
 int		elist_compare(list_t *first, list_t *two);     /* Compare the content of 2 lists */
 u_char		elist_linearity_get(list_t *l);		      /* Get linearity of a list */
 void		elist_linearity_set(list_t *l, u_char val);    /* Set linearity of a list */
+void		*elist_pop(list_t *h);				/* Remove the head of the list */
+int		elist_push(list_t *h, void *data);	/* Add an element in first of the list */
+void		*elist_get_headptr(list_t *h);		/* Get list head data without popping */
 
 #endif /* _LIBLIST_H_ */

@@ -29,7 +29,7 @@ int		cmd_network()
   job->ws.createtime = time(&job->ws.createtime);
 
   hash_add(&world.jobs, "net_init", job);
-/*   world.curjob = job;				// to comment again ? */
+  //world.curjob = job;				// to comment again ?
   world.state.revm_net = 1;
 
   if (revm_net_init() < 0)
@@ -107,7 +107,7 @@ int		cmd_netkill()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tokill = revm_cur_job_param(0);
+  tokill = revm_GetCurJobParameter(0);
 
   tokill = revm_lookup_string(tokill);
 
@@ -184,7 +184,7 @@ int		cmd_connect()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  toconnect = revm_cur_job_param(0);
+  toconnect = revm_GetCurJobParameter(0);
   toconnect = revm_lookup_string(toconnect);
 
   if (world.state.revm_net != 1)
@@ -232,7 +232,7 @@ int		cmd_discon()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  todisconnect = revm_cur_job_param(0);
+  todisconnect = revm_GetCurJobParameter(0);
 
   todisconnect = revm_lookup_string(todisconnect);
 
@@ -281,25 +281,24 @@ int			cmd_rcmd()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* NOT GOOD, to remove, should be able to connnect + rcmd without net */
-   if (!revm_is_net_enabled())
+  if (world.state.revm_net != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Not in 'net' mode", (-1));
 
-   
-   data[0] = REVM_DUMP_CMD;
-   data[1] = '\0';
+
+  /* 1 char for the REVM_DUMP_CMD */
+  data[0] = ' ';
+  data[1] = '\0';
 
   sz -= 2;
 
-  fprintf(stderr, " Sizeof param: %#x ", strlen(revm_cur_job_param(0)));
-  for (idx = 0; revm_cur_job_param(idx) != NULL; idx++)
+  for (idx = 1; revm_GetCurJobParameter(idx) != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
       sz -= 1;
       if (sz < 2)
 	break;
-      strncat(data, revm_cur_job_param(idx), sz - 1);
-      sz -= strlen(revm_cur_job_param(idx));
+      strncat(data, revm_GetCurJobParameter(idx), sz - 1);
+      sz -= strlen(revm_GetCurJobParameter(idx));
       if (sz < 2)
 	break;
     }
@@ -307,8 +306,7 @@ int			cmd_rcmd()
   if (idx < 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid number of parameters", (-1));
 
-  fprintf(stderr, " Hey man: %s ", revm_cur_job_param(idx - 1));
-  to = revm_cur_job_param(idx - 1);
+  to = revm_GetCurJobParameter(idx);
 
   to = revm_lookup_string(to);
 
@@ -326,7 +324,8 @@ int			cmd_rcmd()
   revm_output(buf);
   revm_output("\n");
 
- 
+  data[0] = REVM_DUMP_CMD;
+
   ret = dump_send(serv_addr.sin_addr, strdup(data), 1 + strlen(data + 1) + 1);
  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));

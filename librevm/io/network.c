@@ -40,8 +40,9 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Already connected", NULL);
 
-  DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] adding client on socket %d .\n",
-                    socket));
+#if __DEBUG_NETWORK__
+  fprintf(stderr, "[DEBUG NETWORK] adding client on socket %d .\n", socket);
+#endif
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof (revmjob_t), NULL);
 
@@ -135,8 +136,10 @@ int		revm_socket_get_nb_recvd(char *inet)
 	  else
 	    /* recvd is NULL so return 0  but marked as NEW */
             {
-               DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Not really a consistant"
-                                 " state in a revmsock_t recvd data.\n"));
+#if __DEBUG_NETWORK__ 
+	      fprintf(stderr, "[DEBUG NETWORK] Not really a consistant"
+		      " state in a revmsock_t recvd data.\n");
+#endif
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
             }
         }
@@ -225,8 +228,10 @@ int		 revm_socket_del(char *inet_addr)
       for (i = 0 ; i < nbargc ; i++)
 	XFREE (__FILE__, __FUNCTION__, __LINE__, tmp->ws.io.sock.recvd[i]);
 
-      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] We are deleting a socket struct which has"
-                        "new received data.\n"));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] We are deleting a socket struct which has"
+	      "new received data.\n");
+#endif
     }
 
   XFREE(__FILE__, __FUNCTION__, __LINE__,tmp->ws.io.sock.recvd);
@@ -269,9 +274,11 @@ int	revm_net_output(char *buf)
 
   if (strlen(buf) > REVM_MAX_SEND_SIZE)
     {
-DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Socket [%u] attempt to "
-                  "send too much data.\n",
-                  world.curjob->ws.io.output_fd));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] Socket [%u] attempt to "
+	      "send too much data.\n",
+	      world.curjob->ws.io.output_fd);
+#endif
       if (revm_netsend(buf, REVM_MAX_SEND_SIZE) >= 0)
 	{
 	  ret = revm_net_output((char *) (buf + REVM_MAX_SEND_SIZE));
@@ -313,18 +320,14 @@ int	revm_create_server(int			*serv_sock,
   addr->sin_port   = htons(port);
   inet_aton("0.0.0.0", &addr->sin_addr);
 
-/*   /\* For now, we don't even bind  and listen*\/ */
-     
   if (bind((*serv_sock), (struct sockaddr *) addr,
 	   sizeof (struct sockaddr_in)) < 0)
-     {
-        close((*serv_sock));
-        /* Fatal is too much... */
-        FATAL("bind"); 
-      return -1;
+    {
+      close((*serv_sock));
+      FATAL("bind");
     }
 
-  if (listen((*serv_sock), 5) < 0)
+  if (listen((*serv_sock), 5) < 0) 
     FATAL("listen");
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -366,17 +369,19 @@ int		revm_update_recvd(revmsock_t *socket)
   else
     {
 
-       DEBUG_NET(fprintf(stderr, "[DBG_NETWORK] read(%d) [OK] with"
-                         "ret = %d \n",
-                         socket->socket, size));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DBG_NETWORK] read(%d) [OK] with ret = %d \n",
+	      socket->socket, size);
+#endif
 
       if (size == 0)
         {
 
-           DEBUG_NET(fprintf(stderr,
-                             "[DBG_NETWORK] connection to %s closed "
-                             "by remote host.\n",
-                             inet_ntoa(socket->addr.sin_addr)));
+#if __DEBUG_NETWORK__
+	  fprintf(stderr,
+		  "[DBG_NETWORK] connection to %s closed by remote host.\n",
+		  inet_ntoa(socket->addr.sin_addr));
+#endif
 
 	  if (socket->recvd_f == OLD)
             {
@@ -427,9 +432,11 @@ int		revm_update_recvd(revmsock_t *socket)
   if (socket->recvd_f == NEW)
     {
 
-DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Select said there is something \n"
-                  "new to read on the socket BUT there is already \n"
-                  "data in the buffer which has not been read.\n"));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] Select said there is something \n"
+	     "new to read on the socket BUT there is already \n"
+	     "data in the buffer which has not been read.\n");
+#endif
 
       /* Something got wrong in revm_socket_get_nb_recvd() */	
       bufnb = revm_socket_get_nb_recvd(inet_ntoa(socket->addr.sin_addr));
@@ -453,7 +460,9 @@ DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Select said there is something \n"
 	    buf2[i] = oldrecvd[i];
 
 	  /* Now we append the new buffer's pointer and set the NEW flag*/
-          DEBUG_NET(fprintf(stderr, "buf : %s",buf));
+#if __DEBUG_NETWORK__
+	  fprintf(stderr, "buf : %s",buf);
+#endif
 	  buf2[i++] = buf;
 	  buf2[i++] = NULL;
 	  socket->recvd = buf2;
@@ -466,7 +475,9 @@ DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Select said there is something \n"
       /* buffers have already be read so we can overwrite 
 	 recvd and set recvd_flag to NEW */
       XALLOC(__FILE__, __FUNCTION__, __LINE__,buf2, sizeof (char *)*2, -1);
-      DEBUG_NET(fprintf(stderr, "buf : %s", buf));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "buf : %s", buf);
+#endif
       buf2[0] = buf;
       buf2[1] = NULL;
       socket->recvd = buf2;
@@ -544,21 +555,27 @@ int			revm_dump_accept()
 		  &cli_len);
   if (new_sd > 0)
     {
-DEBUG_NET(fprintf(stderr, "[+] Connection from : %s\n",
-                  inet_ntoa(cli_addr.sin_addr)));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[+] Connection from : %s\n",
+	     inet_ntoa(cli_addr.sin_addr));
+#endif
 
       /* getsockname ()*/
       getsockname(new_sd, &loc, &lloc);
 
-      DEBUG_NET(fprintf(stderr, "[+] add new id \n"));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[+] add new id \n");
+#endif
 
       dump_add_myid(((struct sockaddr_in *) &loc)->sin_addr, new_sd);
 
-      DEBUG_NET(fprintf(stderr, "[+] added\n");
-                fprintf(stderr, "[+] my new id : %s \n",
-                        inet_ntoa(dump_get_myid(new_sd)));
-                fprintf(stderr, "[+] Adding a DUMP neighbor : [%d,%s]\n",
-                        new_sd, inet_ntoa(cli_addr.sin_addr)));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[+] added\n");
+      fprintf(stderr, "[+] my new id : %s \n",
+	     inet_ntoa(dump_get_myid(new_sd)));
+      fprintf(stderr, "[+] Adding a DUMP neighbor : [%d,%s]\n",
+	     new_sd, inet_ntoa(cli_addr.sin_addr));
+#endif
 
       dump_add_neighbor(new_sd, cli_addr.sin_addr);
 
@@ -589,8 +606,10 @@ int			revm_net_accept()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* There was noise on main socket */
-  DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] There is somebody"
-                    " knocking at the door...\n"));
+#if __DEBUG_NETWORK__
+  fprintf(stderr, "[DEBUG NETWORK] There is somebody"
+	  " knocking at the door...\n");
+#endif
 
   init = hash_get(&world.jobs, "net_init");
   if (init == NULL)
@@ -605,14 +624,17 @@ int			revm_net_accept()
   if (temp_sock >= 0)
     {
       // Somebody want to join us. We are so "attractive" ...
-       DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Client accepted on socket %d.\n",
-                         temp_sock));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] Client accepted on socket %d.\n",temp_sock);
+#endif
 
       curjob = revm_socket_add(temp_sock, temp_addr);
       if (curjob == NULL)
         {
-        DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] We have "
-                          "decided to abort the connection\n"));
+#if __DEBUG_NETWORK__
+	  fprintf(stderr, "[DEBUG NETWORK] We have "
+		  "decided to abort the connection\n");
+#endif
 	  close(temp_sock);
 	  XFREE(__FILE__, __FUNCTION__, __LINE__,temp_addr);
 	  ret = -1;
@@ -620,8 +642,10 @@ int			revm_net_accept()
     }
   else
     {
-       // Maybe he was afraid of us
-       DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] He might have been afraid.\n"));
+      // Maybe he was afraid of us
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] He might have been afraid.\n");
+#endif
       XFREE(__FILE__, __FUNCTION__, __LINE__,temp_addr);
       ret = -1;
     }
@@ -683,9 +707,11 @@ int			revm_net_recvd(fd_set *sel_sockets)
 
 	  if (FD_ISSET(temp_socket->socket, sel_sockets))
             {
-               DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Client on socket %d "
-                                 "is trying to say something...\n",
-                                 temp_socket->socket));
+#if __DEBUG_NETWORK__
+	      fprintf(stderr, "[DEBUG NETWORK] Client on socket %d "
+		      "is trying to say something...\n",
+		      temp_socket->socket);
+#endif
 	      // Let's update the revmsock_t recvd data */
 	      if (revm_update_recvd(temp_socket) < 0)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -708,29 +734,37 @@ int			revm_net_recvd(fd_set *sel_sockets)
 	  sd = (long) actual->data;
 	  if (FD_ISSET(sd, sel_sockets))
             {
-               DEBUG_NET(fprintf(stderr, "[+] Calling DUMP recv callback [%d]\n", sd));
+#if __DEBUG_NETWORK__
+              fprintf(stderr, "[+] Calling DUMP recv callback [%d]\n", sd);
+#endif
               data = dump_receive_cb(sd);
 
               /* connection closed by libdump */
               if (data == (void *) (-1))
                 {
-                   DEBUG_NET(fprintf(stderr, " socket %d considered as close \n", sd));
+#if __DEBUG_NETWORK__
+                  fprintf(stderr, " socket %d considered as close \n", sd);
+#endif
 		  /* XXX delete pending jobs */
 
                   continue;
                 }
-              DEBUG_NET(dump_print_pkt((pkt_t *) data));
-
+#if __DEBUG_NETWORK__
+	      dump_print_pkt((pkt_t *) data);
+#endif
 
 	      /* we have something to do */
 	      if (data != NULL)
                 {
 
-                   DEBUG_NET(fprintf(stderr, "[+] packet type : %s\n",
-                                     (((pkt_t *) data)->type   == htons(RR))   ? "RR"   :
-                                     ((((pkt_t *) data)->type  == htons(Rr))   ? "Rr"   :
-                                      ((((pkt_t *) data)->type == htons(DATA)) ? "DATA" :
-                                       "Unknown"))));
+#if __DEBUG_NETWORK__
+                  fprintf(stderr, "[+] packet type : %s\n",
+			  (((pkt_t *) data)->type   == htons(RR))   ? "RR"   :
+			  ((((pkt_t *) data)->type  == htons(Rr))   ? "Rr"   :
+			   ((((pkt_t *) data)->type == htons(DATA)) ? "DATA" :
+			    "Unknown")));
+#endif
+
 		  /* sanity check */
 		  if (ntohl(data->size) != 0)
 		    {
@@ -793,10 +827,11 @@ int			revm_net_recvd(fd_set *sel_sockets)
 			  break;
 			}
 		    }
-                } else
-                 {
-                    DEBUG_NET(fprintf(stderr, "[+] null (non-data packet)\n"));
-                 }
+                }
+#if __DEBUG_NETWORK__
+              else
+                fprintf(stderr, "[+] null (non-data packet)\n");
+#endif
             }
 	}
     }
@@ -861,11 +896,15 @@ char			*revm_net_input()
   listent_t		*actual;
   int			index;
   char			*ret;
-  int		        i;
+#if __DEBUG_NETWORK__
+  int			i;
+#endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] revm_net_input\n"));
+#if __DEBUG_NETWORK__
+  fprintf(stderr, "[DEBUG NETWORK] revm_net_input\n");
+#endif
 
   for (index = 0; index < world.jobs.size; index++)
     {
@@ -883,15 +922,19 @@ char			*revm_net_input()
 	    if (temp_socket->recvd_f == NEW &&
 		temp_socket->ready_f == YES)
             {
-               DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] revm_network_input "
-                                 "on %d -> NEW buffer\n",
-                                 temp_socket->socket));
+#if __DEBUG_NETWORK__
+	      fprintf(stderr, "[DEBUG NETWORK] revm_network_input "
+		      "on %d -> NEW buffer\n",
+		      temp_socket->socket);
+#endif
 
 	      ret = revm_socket_merge_recvd(temp_socket);
 
-              DEBUG_NET(fprintf(stderr, "ret : %s\n", ret));
+#if __DEBUG_NETWORK__
+	      fprintf(stderr, "ret : %s\n", ret);
 	      for (i = 0 ; i < strlen(ret) ; i++)
 		fprintf(stderr, "%#x\n", ret[i]);
+#endif
 
 	      temp_socket->recvd_f = OLD;
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
@@ -900,8 +943,10 @@ char			*revm_net_input()
     }
 
   /* No new buffer */
-            DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] revm_network_input"
-                              "no new buffer\n"));
+#if __DEBUG_NETWORK__
+  fprintf(stderr, "[DEBUG NETWORK] revm_network_input no new buffer\n");
+#endif 
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		(char *) REVM_INPUT_VOID);
 }
@@ -971,15 +1016,16 @@ int		      revm_net_stop()
         {  
 	  temp_socket = &((revmjob_t *) actual->data)->ws.io.sock;
 
-
-	  DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Closing "
-                            "socket : %d \n", temp_socket->socket));
-
+#if __DEBUG_NETWORK__
+	  fprintf(stderr, "[DEBUG NETWORK] Closing "
+		  "socket : %d \n", temp_socket->socket);
+#endif
 
 	  if (revm_socket_del(inet_ntoa(temp_socket->addr.sin_addr)) < 0)
             {
-               DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] error on deleting"
-                                 "a socket\n"));    
+#if __DEBUG_NETWORK__
+	      fprintf(stderr, "[DEBUG NETWORK] error on deleting a socket\n");    
+#endif
             }
         }
     }
@@ -987,8 +1033,10 @@ int		      revm_net_stop()
   /* Closing serv socket */
   serv = hash_get(&world.jobs, "net_init");
 
-DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Closing socket : %d \n", 
-	  serv->ws.io.sock.socket));
+#if __DEBUG_NETWORK__
+  fprintf(stderr, "[DEBUG NETWORK] Closing socket : %d \n", 
+	  serv->ws.io.sock.socket);
+#endif
 
   /* Closing DUMP connections */
   for (index = 0; index < dump_world.ports.size; index++)
@@ -1033,8 +1081,9 @@ int			revm_clean_jobs()
 	case REVM_IO_DUMP:
 	  if (job->ws.io.new == 0)
 	    {
-               DEBUG_NET(printf("CLEAN : %s\n", keys[index]));
-                  
+#if __DEBUG_NETWORK__
+	      printf("CLEAN : %s\n", keys[index]);
+#endif
 	      /* If we delete jobs here, we do not have
 		 session persistence and every load must be
 		 done through shared load */
@@ -1047,63 +1096,6 @@ int			revm_clean_jobs()
 }
 
 
-/*******************************************************************************
- *
- *    -- revm_is_net_supported(void)
- *
- *   Function to know if the network support is supported, ie
- *   ERESI_NET is enabled.
- *
- *
- *   Return:
- *
- *   True if it is enabled, False otherwise.
- *
- *
- *   Side effect(s):
- *
- *   None.
- *
- ******************************************************************************/   
-
-
-
-Bool            revm_is_net_supported(void)
-{
-#if defined(ERESI_NET)
-  return TRUE;
-#else
-  return FALSE;
-#endif
-}
-
-
-/*******************************************************************************
- *
- *    -- revm_is_net_enabled(void)
- *
- *   Function to know if the network support is enabled within eresi.
- *
- *
- *   Return:
- *
- *   True if it is enabled. False otherwise.
- *
- *
- *   Side effect(s):
- *
- *   None.
- *
- ******************************************************************************/   
-
-
-Bool            revm_is_net_enabled(void)
-{
-   if (world.state.revm_net)
-      return TRUE;
-   else
-      return FALSE;
-}
 
 
 /* Case where the network is not enabled */
@@ -1266,15 +1258,6 @@ int		revm_net_init()
 int		revm_net_stop()
 {
   return (0);
-}
-
-/**
- * @brief TO COMPLETE
- * @ingroup io
- */
-Bool            revm_is_net_enabled(void)
-{
-   return FALSE;
 }
 
 #endif

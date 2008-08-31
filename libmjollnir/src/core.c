@@ -5,8 +5,8 @@
 ** @brief Implement low-level functions of the libmjollnir library
 **
 */
-
 #include "libmjollnir.h"
+
 
 /**
  * @brief Core control flow analysis function at a given address
@@ -17,17 +17,20 @@
  * @param len Size of code to analyse
  * @param curdepth current depth of cfg being analyzed
  * @param maxdepth depth limit of analysis (== MJR_MAX_DEPTH for limitless)
+ * @return Success (0) or error (-1).
  */
 int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, 
 				 unsigned int offset, eresi_Addr vaddr, int len, 
 				 int curdepth, int maxdepth)
 {
   asm_instr     instr;
-  unsigned int  curr, ilen;
+  unsigned int  curr;
+  int		ilen;
   eresi_Addr	dstaddr, retaddr;
   container_t	*curblock;
   mjrblock_t	*block;
   int		newoff;
+  u_int		delayslotsize;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -39,12 +42,14 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   // Please use this config variable when doing CFG recursive analysis
 
   dstaddr = retaddr = MJR_BLOCK_INVALID;
+  delayslotsize = 0;
 
   /* Create a new block if current address is out of all existing ones */
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
   
-#if 1 //__DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr %08X\n", vaddr);
+#if __DEBUG_MJOLLNIR__
+  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr " XFMT " offset %u\n", 
+	  vaddr, offset);
 #endif
 
   assert(curblock != NULL);
@@ -52,14 +57,12 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   block = (mjrblock_t *) curblock->data;
 
 #if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] bloc %x: seen %d\n",
-          __FUNCTION__,
-          ((mjrblock_t *) curblock->data)->vaddr,
-          ((mjrblock_t *) curblock->data)->seen);
+  fprintf(D_DESC, "[D] %s: bloc " XFMT ": seen %hhd\n",
+          __FUNCTION__, block->vaddr, block->seen);
 #endif
 
   /* Avoid loops */
-  if (block->seen)
+  if (block->seen == 1)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   block->seen = 1;
 
@@ -70,25 +73,41 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
                             len - curr - offset, &sess->cur->proc);
 
 #if __DEBUG_READ__
-      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d\n", 
-	      __FUNCTION__, __FILE__, __LINE__, ilen);
+      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d first byte=%02x\n", 
+	      __FUNCTION__, __FILE__, __LINE__, ilen, *(ptr+offset+curr));
 #endif
       
       if (ilen <= 0) 
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                     "asm_read_instr returned <= 0 lenght", -1);
+	{
+	  printf(" [D] asm_read_instr returned -1 at address " XFMT "\n", vaddr + curr);
+	  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	  //"asm_read_instr returned <= 0 lenght", -1);
+	  exit(-1);
+	}
 
-      block->size += ilen;	  
       mjr_history_shift(sess->cur, instr, vaddr + curr);
-
-      mjr_trace_control(sess->cur, sess->cur->obj, &instr, 
-			vaddr + curr, &dstaddr, &retaddr);
+      block->size += ilen;	  
 
 #if __DEBUG_READ__
-      fprintf(stderr, " [D] curaddr analyzed: %08x (dstaddr = %08X, retaddr = %08X)\n",
+      fprintf(stderr, " [D] curaddr WILL BE analyzed: "XFMT" (curr = %d, ilen = %d) \n", 
+	      vaddr + curr, curr, ilen);
+#endif
+
+      /* Increase block size for delay slot if any */
+      delayslotsize = mjr_trace_control(sess->cur, curblock, sess->cur->obj, &instr, 
+					vaddr + curr, &dstaddr, &retaddr);
+
+#if __DEBUG_READ__
+      fprintf(stderr, " [D] curaddr analyzed: "XFMT" (dstaddr = "XFMT", retaddr = "XFMT")\n",
 	      vaddr + curr, dstaddr, retaddr);
 #endif
 
+      /* If we have found a contiguous block, stop this recursion now */
+      if (dstaddr == MJR_BLOCK_EXIST)
+	{
+	  block->size -= ilen;
+	  break;
+	}
       if (dstaddr != MJR_BLOCK_INVALID) 
 	{
 	  newoff = offset + (dstaddr - vaddr);
@@ -105,7 +124,16 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
       /* If we have recursed, the current block is over */
       if (retaddr != MJR_BLOCK_INVALID || dstaddr != MJR_BLOCK_INVALID || 
 	  (instr.type & ASM_TYPE_RETPROC) || (instr.type & ASM_TYPE_STOP))
-	break;
+	{
+
+#if __DEBUG_MJOLLNIR__
+	  fprintf(D_DESC, "[D] core.c:analyse_code: bloc at vaddr " XFMT " with delayslot size %u\n", 
+		  block->vaddr, delayslotsize);
+#endif
+
+	  block->size += delayslotsize;
+	  break;
+	}
     }
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -224,10 +252,26 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		  "Error during section entry code analysis", -1);
 
+  /* FIXME: Check if we have found a control flow inconsistency yet */
+  /* XXX: see depth */
+
   /* Also analyse the main code -- it is generally not directly linked with the entry point */
-  if (main_addr && mjr_analyse_code(sess, ptr, 0, main_addr, len, 0, MJR_MAX_DEPTH) < 0)
-     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		  "Error during main code analysis", -1);
+  if (main_addr)
+    {
+
+      fprintf(stderr, " ******** NO EMPTYING FUNC STACK -- ANALYZING MAIN ****** \n");
+
+      sess->cur->func_stack = elist_empty(sess->cur->func_stack->name);
+      cntnr = mjr_function_get_by_vaddr(sess->cur, main_addr);
+      sess->cur->curfunc = cntnr;
+      elist_push(sess->cur->func_stack, cntnr);
+      mjr_analyse_code(sess, ptr, (main_addr - vaddr), main_addr, len, 0, MJR_MAX_DEPTH);
+    }
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Error during main code analysis", -1);
+
+  /* FIXME: Check if we have found a control flow inconsistency yet */
+  /* XXX: see depth */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -342,7 +386,7 @@ int             mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int maxdepth, 
 
 #if __DEBUG_MJOLLNIR__
       fprintf(D_DESC, "[__DEBUG__] %s: 1st run - Executable section name=(%14s) "
-              "index=(%02i) vaddr=(%x) size=(%d)\n",
+              "index=(%02i) vaddr=("XFMT") size=("DFMT")\n",
               __FUNCTION__, shtName, idx_sht, sct->shdr->sh_addr, sct->shdr->sh_size);
 #endif
 
@@ -393,7 +437,9 @@ int             mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int maxdepth, 
           mjr_create_block_container(sess->cur, 0, addr, blocksize, 0);
           lastsym = sym;
 
+#if __DEBUG_MJOLLNIR__
           fprintf(stderr, " [D] Adding UNLINKED block at " XFMT " ! \n", addr);
+#endif
 
         }
     }

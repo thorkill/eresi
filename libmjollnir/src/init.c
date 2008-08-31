@@ -95,11 +95,14 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
  hash_init(&ctx->funchash , "functions", mjrHashVerySmall, ASPECT_TYPE_FUNC);
- hash_init(&ctx->blkhash  , "blocks"   , mjrHashLarge    , ASPECT_TYPE_BLOC);
- hash_init(&ctx->linkhash  , "links"    , mjrHashLarge    , ASPECT_TYPE_LINK);
+ hash_init(&ctx->blkhash  , "blocks"   , mjrHashMedium    , ASPECT_TYPE_BLOC);
+ hash_init(&ctx->linkhash  , "links"    , mjrHashMedium    , ASPECT_TYPE_LINK);
+ XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->func_stack, sizeof(list_t), NULL);
+ elist_init(ctx->func_stack, "funcpath", ASPECT_TYPE_FUNC);
  ctx->cntnrs_size = MJR_CNTNRS_INCREMENT;
  ctx->next_id = 1;
  ctx->block_btree = NULL;
+ ctx->curfunc = NULL;
  mjr_init_containers(ctx);
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctx));
 }

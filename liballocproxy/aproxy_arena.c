@@ -47,8 +47,8 @@ typedef enum
   } Bool;
 
 /* The names `True' and `False' must also be made available as macros.  */
-#define FALSE   False
-#define TRUE    True
+#define False   False
+#define True    True
 
 #ifndef THREAD_STATS
 #define THREAD_STATS 0

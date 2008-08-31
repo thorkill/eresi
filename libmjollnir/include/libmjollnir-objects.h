@@ -27,7 +27,7 @@ typedef struct	s_iblock
   eresi_Addr	vaddr;		/* !< @brief block starting virtual address    */
   u_int		size;		/* !< @brief block code size                   */
   u_int		symoff;		/* !< @brief block name offset in string table */
-  u_char	seen;		/* !< @brief block live status (0 means dead)  */
+  u_char	seen;		/* !< @brief block live status (0 or 1)        */
 }		mjrblock_t;
 
 /** 
@@ -58,13 +58,14 @@ typedef struct	s_function
 typedef	struct	s_link 
 {
   unsigned int	id;
-#define MJR_LINK_FUNC_CALL		0 /* !< @brief a call between functions	*/
-#define MJR_LINK_FUNC_RET		1 /* !< @brief a function returning control */
-#define MJR_LINK_BLOCK_COND_TRUE	2 /* !< @brief 'true' condition of a branch */
-#define MJR_LINK_BLOCK_COND_FALSE	3 /* !< @brief 'false' condition of a branch */
-#define MJR_LINK_BLOCK_COND_ALWAYS	4 /* !< @brief uncoditional branch */
-#define MJR_LINK_TYPE_DELAY		5 /* !< @brief generally ignored but useful */
-#define	MJR_LINK_UNKNOWN		6 /* !< @brief unknown type */
+#define MJR_LINK_FUNC_CALL		0 /* !< @brief A call between functions	*/
+#define MJR_LINK_FUNC_RET		1 /* !< @brief A returning control */
+#define	MJR_LINK_FUNC_SLIDE		2 /* !< @brief A new stack frame happening in the middle */
+#define MJR_LINK_BLOCK_COND_TRUE	3 /* !< @brief 'true' condition of a branch */
+#define MJR_LINK_BLOCK_COND_FALSE	4 /* !< @brief 'false' condition of a branch */
+#define MJR_LINK_BLOCK_COND_ALWAYS	5 /* !< @brief uncoditional branch */
+#define MJR_LINK_TYPE_DELAY		6 /* !< @brief generally ignored but useful */
+#define	MJR_LINK_UNKNOWN		7 /* !< @brief unknown type */
   u_char	type;
 #define MJR_LINK_SCOPE_UNKNOWN		0 /* !< @brief Link type is unknown */
 #define MJR_LINK_SCOPE_LOCAL	        1 /* !< @brief Link within the current parent object */
@@ -89,16 +90,20 @@ typedef struct		s_history
 typedef struct		_mjrContext 
 {
   elfshobj_t		*obj;			/* !< @brief ELF binary object */
-  elfshsect_t		*cursct;		/* !< @brief Current analysed section */
   asm_processor		proc;			/* !< @brief ASM processor */
+
+  elfshsect_t		*cursct;		/* !< @brief Current analysed section */
   container_t		*curblock;		/* !< @brief Current working block */
   container_t		*curfunc;		/* !< @brief Current working function */
+  list_t		*func_stack;		/* !< @brief Stack of analyzed functions */
+
   container_t		**reg_containers;	/* !< @brief Registered containers */
   btree_t		*block_btree;		/* !< @brief Blocks Binary tree (speedup parent search) */
   u_int			cntnrs_size;		/* !< @brief Size of current containers */
   u_int			next_id;		/* !< @brief Next free container id */
 
 #define			MJR_HISTORY_LEN		5
+#define			MJR_HISTORY_PPPREV	(MJR_HISTORY_LEN - 4)
 #define			MJR_HISTORY_PPREV	(MJR_HISTORY_LEN - 3)
 #define			MJR_HISTORY_PREV	(MJR_HISTORY_LEN - 2)
 #define			MJR_HISTORY_CUR		(MJR_HISTORY_LEN - 1)

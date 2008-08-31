@@ -11,12 +11,20 @@ CC			?= gcc
 LD			?= ld
 RM			= rm -f 
 AR			= ar rc
-CFLAGS32		+= -Iinclude -Wall -fPIC -g3 	      \
-			-I../libasm/include/ -I../libaspect/include/        \
+CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 $(EXTRACFLAGS) \
+			-I../libasm/include/ -I../libaspect/include/    \
 			$(KERNSHINC) $(KERNSH) -DERESI32 $(BUILDOP)
-CFLAGS64		+= -Iinclude -Wall -fPIC -g3 	      \
-			-I../libasm/include/ -I../libaspect/include/        \
+
+CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 $(EXTRACFLAGS) \
+			-I../libasm/include/ -I../libaspect/include/    \
 			$(KERNSHINC) $(KERNSH) -DERESI64 $(BUILDOP)
+
+LDFLAGS32		= -L../liballocproxy/ -lallocproxy -L../libaspect/ \
+			-laspect32 -L../libasm -lasm32 $(KERNSHLIB32)
+
+LDFLAGS64		= -L../liballocproxy/ -lallocproxy -L../libaspect/ \
+			-laspect64 -L../libasm -lasm64
+
 SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			interp.c pht.c plt.c section.c sht.c stab.c         \
 			symbol.c notes.c reloc.c ctors.c dtors.c search.c   \
@@ -37,9 +45,7 @@ all			: all32 all64
 
 
 libelfsh32.so		: $(OBJ32)
-			@$(CC) -L../liballocproxy/ -lallocproxy \
-                        -L../libaspect/ -laspect32 -DERESI32 \
-			$(KERNSHLIB32) -shared $(OBJ32) -o $(NAME32).so
+			@$(CC) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
@@ -48,9 +54,7 @@ all32: libelfsh32.so
 
 
 libelfsh64.so		:  $(OBJ64)
-			@$(CC) -L../liballocproxy/ -lallocproxy \
-                        -L../libaspect/ -laspect64 -DERESI64 \
-			$(KERNSHLIB64) -shared $(OBJ64) -o $(NAME64).so 
+			@$(CC) $(LDFLAGS64) -shared $(OBJ64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o

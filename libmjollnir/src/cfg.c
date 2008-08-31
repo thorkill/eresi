@@ -1,6 +1,5 @@
 /*
-** (C) 2006-2008 Devhell Labs / Asgard Labs 
-**  - sk, jfv, thorolf, strauss, pi3
+** (C) 2006-2008 The ERESI team
 **
 ** @file libmjollnir/types.c
 ** 
@@ -8,6 +7,7 @@
 **
 */
 #include "libmjollnir.h"
+
 
 
 /** 
@@ -29,14 +29,15 @@
  *
  */
 int			mjr_trace_control(mjrcontext_t *context,
+					  container_t	*curblock,
 					  elfshobj_t    *obj, 
 					  asm_instr     *curins, 
-					  eresi_Addr	  curvaddr,
+					  eresi_Addr	curvaddr,
 					  eresi_Addr	*dstaddr,
 					  eresi_Addr	*retaddr)
 {
   int			ilen;
-  container_t		*fun;
+  container_t		*bloc;
   u_int			addend;
 
   /* Initialize stuffs */
@@ -44,20 +45,34 @@ int			mjr_trace_control(mjrcontext_t *context,
   context->obj = obj;
   mjr_history_write(context, curins, curvaddr, MJR_HISTORY_CUR);
   mjr_history_write(context, curins, curvaddr, 0);
-
   ilen = asm_instr_len(curins);  
-  fun = mjr_function_get_by_vaddr(context, curvaddr);
 
-  if (fun)
-    context->curfunc = fun;
-  else
-    mjr_asm_check_function_start(context);
+  /* It might be that we are reaching the beginning of an existing bloc */
+  bloc = mjr_block_get_by_vaddr(context, curvaddr, MJR_BLOCK_GET_STRICT);
+  if (bloc && bloc->id != curblock->id)
+    {
+      *dstaddr = MJR_BLOCK_EXIST;
+      *retaddr = MJR_BLOCK_INVALID;
+      mjr_container_add_link(context, curblock, bloc->id, MJR_LINK_BLOCK_COND_ALWAYS, 
+			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(context, bloc, curblock->id, MJR_LINK_BLOCK_COND_ALWAYS, 
+			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
+      
+#if __DEBUG_FLOW__
+      fprintf(stderr, " [D] Found contiguous block ! stopping this recursion branch ******** \n");
+#endif
+      
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  mjr_asm_check_function_start(context);
 
   /* Switch on instruction types provided by libasm */
   if (curins->type & ASM_TYPE_CONDBRANCH)
     {
       /* MIPS use delay slots for jump instructions too */
-      addend = (context->proc.type == ASM_PROC_MIPS ? 4 : 0);
+      addend = (context->proc.type == ASM_PROC_MIPS || 
+		context->proc.type == ASM_PROC_SPARC ? 4 : 0);
       
       *dstaddr = mjr_get_jmp_destaddr(context);
       
@@ -67,9 +82,9 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      " F:" XFMT"\n", __FUNCTION__, __LINE__, 
 	      curvaddr, *dstaddr, curvaddr + ilen + addend);
 #endif
-      
-      mjr_link_block_jump(context, curvaddr, *dstaddr, curvaddr + ilen + addend);
-      *retaddr = curvaddr + ilen + addend;
+
+      *retaddr = curvaddr + ilen + addend;      
+      mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
     }
   else if (curins->type & ASM_TYPE_IMPBRANCH)
     {
@@ -82,7 +97,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 #endif
       
       if (*dstaddr != MJR_BLOCK_INVALID)
-	mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
+	mjr_link_block_jump(context, curvaddr, *dstaddr, MJR_BLOCK_INVALID);
     }
   
   else if (curins->type & ASM_TYPE_CALLPROC)
@@ -105,8 +120,9 @@ int			mjr_trace_control(mjrcontext_t *context,
       if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
 	{
 
-#if __DEBUG_FLOW__
-	  fprintf(D_DESC,"[W] %s: unusual retaddr found - expected ret:%x section end:%x\n",
+#if 1 //__DEBUG_FLOW__
+	  fprintf(D_DESC,"[W] *** %s: unusual retaddr found - expected ret: "
+		  XFMT" section end: "XFMT" ***\n",
 		  __FUNCTION__, curvaddr + ilen + addend, 
 		  context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
 #endif
@@ -128,10 +144,13 @@ int			mjr_trace_control(mjrcontext_t *context,
     }
   else if (curins->type & ASM_TYPE_RETPROC)
     {
-      
+      if (context->func_stack->elmnbr > 1)
+	context->curfunc = elist_pop(context->func_stack);
+
 #if __DEBUG_FLOW__
-      fprintf(D_DESC,"[D] %s: " XFMT " ASM_TYPE_RETPROC\n",
-	      __FUNCTION__, curvaddr);
+      fprintf(stderr, " *********** CURFUNC RET @ " XFMT " : to %s ******** \n",
+	      curvaddr, (context->curfunc && context->curfunc->data ? 
+			 ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
 #endif
     }
   else
@@ -141,8 +160,11 @@ int			mjr_trace_control(mjrcontext_t *context,
 	      __FUNCTION__, curvaddr, curins->type);
 #endif
     }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* Return the delay slot size if any */
+  addend = (context->proc.type == ASM_PROC_MIPS || 
+	    context->proc.type == ASM_PROC_SPARC ? 4 : 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addend);
 }
 
 
@@ -303,12 +325,16 @@ eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
 	case ASM_MIPS_JAL:
 	  dest = (ins->op[0].imm << 2) | 
 	    ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
+	  break;
 	case ASM_MIPS_JALR:
 	  dest = MJR_BLOCK_INVALID;
+	  break;
 	case ASM_MIPS_BAL:
 	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[0].imm+1)*4));
+	  break;
 	default:
 	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[1].imm+1)*4));
+	  break;
 	}
     }
   else
@@ -351,10 +377,24 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
     }
   else if (context->proc.type == ASM_PROC_SPARC)
     {
-      if (ins->instr & ASM_SP_JMPL) /* Indirect jump */
-	dest = MJR_BLOCK_INVALID;
-      else if (ins->type & ASM_TYPE_CONDBRANCH)
-	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+      /*
+      if (ins->instr & ASM_SP_JMPL)  //Indirect jump
+	{
+	  printf("INDIRECT BRANCH TYPE FOR SPARC at addr "XFMT" ! \n", 
+		 context->hist[MJR_HISTORY_CUR].vaddr);
+	  dest = MJR_BLOCK_INVALID;
+	}
+      */
+      if (ins->type & ASM_TYPE_CONDBRANCH || ins->type & ASM_TYPE_IMPBRANCH)
+	{
+	  dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
+	}
+      else
+	{
+	  fprintf(stderr, " [D] UNKNOWN BRANCH FOR SPARC at addr "XFMT" ! \n", 
+		  context->hist[MJR_HISTORY_CUR].vaddr);
+	  dest = MJR_BLOCK_INVALID;
+	}
     }
   else if (context->proc.type == ASM_PROC_MIPS) 
     {
@@ -385,6 +425,7 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
+
 /**
  * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
@@ -392,67 +433,86 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char			*tmpstr;
-  u_int			tmpaddr;
+  eresi_Addr		tmpaddr;
   container_t		*fun;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* check function prologue */
-  if (ctxt->proc.type == ASM_PROC_IA32)
-  {
-    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
-    	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
-    	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
-      {
-	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
-	tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
-	
-#if __DEBUG_FLOW__
-	fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
-		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
-#endif
-	fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	mjr_function_register(ctxt, tmpaddr, fun);
-	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-      }
-  }
-  else if (ctxt->proc.type == ASM_PROC_SPARC)
-  {
-    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op[0].baser == ASM_REG_O6 &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op[1].type == ASM_SP_OTYPE_IMMEDIATE &&
-        ctxt->hist[MJR_HISTORY_CUR].instr.op[2].baser == ASM_REG_O6)
+  /* FIXME: does not support function without frame pointer or without local variables,
+     - check func-without-fp signature
+     - check if history contains a call to us (to detect small functions)
+  */
+  switch (ctxt->proc.type)
+    {
+      
+      /* IA32 architecture */
+    case ASM_PROC_IA32:
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
+	  ctxt->hist[MJR_HISTORY_PPREV].instr.instr == ASM_PUSH)
+	{
+	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PPREV].vaddr);
+	  tmpaddr = ctxt->hist[MJR_HISTORY_PPREV].vaddr;
+	  goto finish;
+	}
+      break;
+  
+      /* SPARC architecture */
+    case ASM_PROC_SPARC:
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
+	  ctxt->hist[MJR_HISTORY_CUR].instr.op[0].baser == ASM_REG_O6 &&
+	  ctxt->hist[MJR_HISTORY_CUR].instr.op[1].type == ASM_SP_OTYPE_IMMEDIATE &&
+	  ctxt->hist[MJR_HISTORY_CUR].instr.op[2].baser == ASM_REG_O6)
   	{
   	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_CUR].vaddr);
   	  tmpaddr = ctxt->hist[MJR_HISTORY_CUR].vaddr;
-
-#if __DEBUG_FLOW__
-  	  fprintf(D_DESC,"[D] %s: function start found at %x for %x\n",
-        		  __FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
-#endif
-
-  	  fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	  mjr_function_register(ctxt, tmpaddr, fun);
-  	  ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+	  goto finish;
   	}
-  }
-  else if (ctxt->proc.type == ASM_PROC_MIPS)
-  {
-    if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
-    	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU)
-      {
-	tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
-	tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
+      break;
+  
+  /* MIPS architecture */
+    case ASM_PROC_MIPS:
+      if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU &&
+	  ctxt->hist[MJR_HISTORY_PREV].instr.op[0].baser == ASM_MIPS_REG_SP)
+	{
+	  tmpstr = _vaddr2str(ctxt->hist[MJR_HISTORY_PREV].vaddr);
+	  tmpaddr = ctxt->hist[MJR_HISTORY_PREV].vaddr;
+	  //goto finish;
+	  
+	}
+      break;
+      
+    default:
+      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		   "Unsupported architecture in libmjollnir", -1);
+    }
+  
+  /* Nothing to declare */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* We found a prolog */
+ finish:
 
 #if __DEBUG_FLOW__
-	fprintf(D_DESC,"[pi3] -> [D] %s: function start found at %x for %x\n",
-		__FUNCTION__, ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
+  fprintf(D_DESC," [D] FUNCTION START FOUND at "XFMT" for "XFMT" \n",
+	  ctxt->hist[MJR_HISTORY_CUR].vaddr, tmpaddr);
 #endif
-	fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
-	mjr_function_register(ctxt, tmpaddr, fun);
-	ctxt->curfunc = mjr_function_get_by_vaddr(ctxt, tmpaddr);
-      }
-  }
+  
+  fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+  if (!fun)
+    {
+      fun = mjr_create_function_container(ctxt, tmpaddr, 0, tmpstr, NULL, NULL);
+      mjr_function_register(ctxt, tmpaddr, fun);
+      mjr_function_symbol(ctxt, fun);
+      mjr_container_add_link(ctxt, ctxt->curfunc, fun->id,
+			     MJR_LINK_FUNC_SLIDE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      elist_push(ctxt->func_stack, fun);
+      ctxt->curfunc = fun;
+      fprintf(stderr, " ******* ALLOCATED STACKFRAME IN MIDDLE OF FUNC at "XFMT" \n", tmpaddr);
+      fprintf(stderr, " **** -> NOW NEW CURFUNC @ %s \n", ((mjrfunc_t *) fun->data)->name);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

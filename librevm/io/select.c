@@ -7,17 +7,16 @@
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
 ** $Id: select.c,v 1.15 2007-11-29 14:01:56 may Exp $
-**/
+**
+*/
 #include "revm.h"
+
 
 
 /**
  * @brief Return the greatest socket from the elfsh_net_client_list and sock. 
  * @ingroup io
  */
-
-/* We should rewrite this. revm_getmaxfd_net() would be ok */
-
 #if defined(ERESI_NET)
 int             revm_getmaxfd()
 {
@@ -43,7 +42,9 @@ int             revm_getmaxfd()
       port = (u_long) hash_get(&dump_world.ports, keys[index]);
       if (port > ret)
 	ret = port;
-      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port));
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] Socket (DUMP) ["DFMT"] \n", port);
+#endif
     }
   
   hash_free_keys(keys);
@@ -57,10 +58,10 @@ int             revm_getmaxfd()
 	continue;
       if (serv->ws.io.sock.socket > ret)
 	ret = serv->ws.io.sock.socket;
-      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
-			serv->ws.io.sock.socket, keys[index]);
-/* 		__asm__ __volatile__("int3"); */
-		);
+#if __DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] Socket [%u] key = %10s \n",
+	      serv->ws.io.sock.socket, keys[index]);
+#endif
     }
 
   hash_free_keys(keys);
@@ -97,24 +98,22 @@ int		revm_prepare_select(fd_set *sel_sockets)
   char		**keys;
   int		keynbr;
   revmjob_t	*job;
+#if defined(ERESI_NET)
+  u_long	port;
 
-
-
-  if (revm_is_net_supported())
+  keys = hash_get_keys(&dump_world.ports, &keynbr);
+  for (index = 0; index < keynbr; index++)
     {
-      u_long	port;
-      keys = hash_get_keys(&dump_world.ports, &keynbr);
-      for (index = 0; index < keynbr; index++)
-	{
-	  port = (u_long) hash_get(&dump_world.ports, keys[index]);
-	  DEBUG_NET(fprintf(stderr, 
-			    "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
-			    port));
-	  FD_SET(port, sel_sockets);
-	}
-      hash_free_keys(keys);
+      port = (u_long) hash_get(&dump_world.ports, keys[index]);
+#if __DEBUG_NETWORK__
+      fprintf(stderr, 
+	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",
+	      port);
+#endif
+      FD_SET(port, sel_sockets);
     }
-
+  hash_free_keys(keys);
+#endif
 
   /* Now get the keys for jobs */
   keys = hash_get_keys(&world.jobs, &keynbr);
@@ -126,19 +125,17 @@ int		revm_prepare_select(fd_set *sel_sockets)
       if (!job->ws.active)
 	continue;
       
+#if _DEBUG_NETWORK__
+      fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
+	      job->ws.sock.socket);
+#endif
 
-      DEBUG_NET(fprintf(stderr, "[DEBUG NETWORK] prepare_4_select : socket : %d \n",
-			job->ws.io.sock.socket));
-
-      /* -- We have to find smth better here. */
-      if (revm_is_net_supported())
-	{
-	  if (job->ws.io.type == REVM_IO_DUMP)
-	    continue;
-	  if (job->ws.io.type == REVM_IO_NET)
-	    FD_SET(job->ws.io.sock.socket, sel_sockets);
-	}
-
+#if defined(ERESI_NET)
+      if (job->ws.io.type == REVM_IO_DUMP)
+	continue;
+      if (job->ws.io.type == REVM_IO_NET)
+	FD_SET(job->ws.io.sock.socket, sel_sockets);
+#endif
       
       if (job->ws.io.type == REVM_IO_STD)
 	FD_SET(job->ws.io.input_fd, sel_sockets);
@@ -154,7 +151,6 @@ int		revm_prepare_select(fd_set *sel_sockets)
     }
 
   hash_free_keys(keys);
-  
   return (revm_getmaxfd());
 }
 
@@ -164,18 +160,22 @@ int		revm_prepare_select(fd_set *sel_sockets)
  * @brief Check if we had any network event
  * @ingroup io
  */
-void			revm_check_net_select(fd_set *sel_sockets, 
-					    int cursock)
+int			revm_check_net_select(fd_set *sel_sockets, int cursock)
 {
+#if defined(ERESI_NET)
   // Read net command if any.
   if (revm_net_recvd(sel_sockets) < 0)
-    fprintf(stderr, "vmnet_select : revm_net_recvd() failed\n");
-  
+    {
+      fprintf(stderr, "vmnet_select : revm_net_recvd() failed\n");
+      return (1);
+    }
+
   /* Check remote clients */
   if (FD_ISSET(cursock, sel_sockets))
     {
       if (revm_net_accept() < 0)
 	fprintf(stderr, "Connection rejected\n");
+      return (1);
     }
   
   /* Check the DUMP connection */
@@ -183,8 +183,14 @@ void			revm_check_net_select(fd_set *sel_sockets,
     {
       if (revm_dump_accept() < 0)
 	fprintf(stderr, "Connection rejected\n");
+      return (1);
     }
+#endif
+
+  return (0);
 }
+
+
 
 
 
@@ -277,15 +283,13 @@ int                     revm_select()
     {
       FD_ZERO(&sel_sockets);
 
-      if (revm_is_net_supported())
-	{
-	  if (world.state.revm_net && init)
-	    {
-	      FD_SET(init->ws.io.sock.socket, &sel_sockets);
-	      FD_SET(dump_world.sock, &sel_sockets);
-	    }
-	}
-
+#if defined(ERESI_NET)
+      if (world.state.revm_net && init)
+        {
+          FD_SET(init->ws.io.sock.socket, &sel_sockets);
+	  FD_SET(dump_world.sock, &sel_sockets);
+        }
+#endif
 
       // Prepare for the select() call
       max_fd = revm_prepare_select(&sel_sockets);
@@ -293,28 +297,32 @@ int                     revm_select()
       /* Display the prompt */
       revm_preselect_prompt();
       
-      do
-	{
-	  err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
-	  /* Retry in case of error */
-	} while(err < 1 && errno == EINTR);
-	
+    retry:
+      err = select(max_fd + 1, &sel_sockets, NULL, NULL, NULL);
+      
+      /* Retry in case of error */
+      if (err < 1 && errno == EINTR)
+	goto retry;
+      
       /* Select which command will be proceded */
-      if (revm_is_net_supported())
+#if defined(ERESI_NET)
+      if (world.state.revm_net)
 	{
-	  if (world.state.revm_net)
+	  if (init)
+	    err = revm_check_net_select(&sel_sockets, init->ws.io.sock.socket);
+	  if (err)
 	    {
-	      if (init)
-		revm_check_net_select(&sel_sockets, init->ws.io.sock.socket);
-	  
 	      if (revm_socket_getnew())
 		PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(0));
-	  
-	      DEBUG_NET(fprintf(stderr, 
-				"[DEBUG NETWORK] Select broken by a new connexion.\n"));
+	      
+#if __DEBUG_NETWORK__
+	      fprintf(stderr, 
+		      "[DEBUG NETWORK] Select broken by a new connexion.\n");
+#endif
 	      continue;
 	    }
 	}
+#endif
       
       /* Come back now if we are in command line */
       if (world.state.revm_mode == REVM_STATE_CMDLINE)
@@ -340,13 +348,15 @@ int                     revm_select()
 	      world.curjob->ws.io.old_input = world.curjob->ws.io.input;
 	      world.curjob->ws.io.input = revm_fifoinput;
 	      
-	      DEBUG_NET(
-			if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
-			    world.state.revm_side == REVM_SIDE_CLIENT)
-			  fprintf(stderr, "(client) Event appeared on fifo \n");
-			else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
-				 world.state.revm_side == REVM_SIDE_SERVER)
-			  fprintf(stderr, "(server) Event appeared on fifo \n"));
+#if __DEBUG_NETWORK__
+	      if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+		  world.state.revm_side == REVM_SIDE_CLIENT)
+		fprintf(stderr, "(client) Event appeared on fifo \n");
+	      else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+		       world.state.revm_side == REVM_SIDE_SERVER)
+		fprintf(stderr, "(server) Event appeared on fifo \n");
+#endif
+
 	    }
 	}
       revm_prompt_postselect_restore(&sel_sockets);

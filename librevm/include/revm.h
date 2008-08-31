@@ -38,9 +38,13 @@
 #include <sys/types.h>
 #include <dirent.h>
 #define __USE_GNU
-#if !defined(__OpenBSD__)
-#include <sys/ucontext.h>
+
+#if defined(__BEOS__)
+ #include <ucontext.h>
+#elif !defined(__OpenBSD__)
+ #include <sys/ucontext.h>
 #endif
+
 #include <pthread.h>
 #include <stdarg.h> 
 #include <regex.h>
@@ -77,19 +81,19 @@
 extern asm_processor	proc;
 
 /* Now come INTERNAL DEBUGGING VARIABLES for various part of the ERESI code */
-#define	__DEBUG_DISASM__	FALSE
-#define	__DEBUG_SIGHANDLER__	FALSE
-#define	__DEBUG_LANG__		FALSE
-#define	__DEBUG_SCANNER__	FALSE
-#define	__DEBUG_ASLR__		FALSE
-#define __DEBUG_NETWORK__	TRUE
-#define __DEBUG_RESOLVE__	FALSE
-#define __DEBUG_HIJACK__	FALSE
-#define __DEBUG_TEST__		FALSE
-#define	__DEBUG_GRAPH__		FALSE
-#define __DEBUG_ARG_COUNT__	FALSE
-#define	__DEBUG_EXPRS__		FALSE
-#define	__DEBUG_EXPRS_MORE__	FALSE
+#define	__DEBUG_DISASM__	0
+#define	__DEBUG_SIGHANDLER__	0
+#define	__DEBUG_LANG__		0
+#define	__DEBUG_SCANNER__	0
+#define	__DEBUG_ASLR__		0
+#define __DEBUG_NETWORK__	1
+#define __DEBUG_RESOLVE__	0
+#define __DEBUG_HIJACK__	0
+#define __DEBUG_TEST__		0
+#define	__DEBUG_GRAPH__		0
+#define __DEBUG_ARG_COUNT__	0
+#define	__DEBUG_EXPRS__		0
+#define	__DEBUG_EXPRS_MORE__	0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
@@ -224,17 +228,6 @@ extern asm_processor	proc;
 #define ERESI_VMCONFIG_HISTORY		"history"
 
 #define ERESI_DEFAULT_HISTORY		".eresi_history"
-
-/* Debug fonctions */
-#if __DEBUG_NETWORK__
-#define DEBUG_NET(_x)				\
-  do						\
-    {						\
-      _x;					\
-    } while(0)
-#else
-#define DEBUG_NET(_x)
-#endif
 
 /* Manage string table */
 #define REVM_STRTABLE_GET(_out, _in) 	\
@@ -625,10 +618,7 @@ int		revm_source(char **params);
 int		revm_help(char *command);
 void		revm_print_actual(revmargv_t *cur);
 int		revm_printscript(revmargv_t *start);
-char            *revm_cur_job_param(uint8 p);
 
-Bool            revm_is_net_supported(void);
-Bool            revm_is_net_enabled(void);
 /* Vector related functions */
 int		revm_vectors_getdims(char *str, unsigned int *dims);
 char		*revm_ascii_vtype(vector_t *cur);
@@ -761,7 +751,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr);
 int              revm_screen_switch();
 int              revm_screen_clear(int i, char c);
 int              revm_screen_update(u_short isnew, u_short prompt_display);
-int		 revm_workspace_next();
+int		revm_workspace_next();
 
 /* libedfmt related functions */
 int		revm_edfmt_parse(elfshobj_t *file);

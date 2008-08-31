@@ -484,6 +484,14 @@ fi
     echo "CC = gcc"                       >> $CONFIGFILE
 ;;
 
+Haiku*|BeOS*)
+   SHELL="/bin/sh"
+   echo "#define BEOS 1"		 >> $LIBVARSFILE
+   echo "RANLIB  = ranlib"               >> $CONFIGFILE
+   LPTHREAD=""
+   BEOS=1;
+;;
+
 *)
 
 if [ "$STATIC" = "0" ]; then
@@ -575,6 +583,9 @@ echo "MOD_TARGET = $MOD_TARGET"					>> Makefile
 
 if [ "$FREEBSD" = "1" ]; then
 echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
+echo "MANPATH = \$(BASEPATH)/man"				>> Makefile
+elif [ "$BEOS" = "1" ]; then
+echo "BASEPATH = \$(DESTDIR)"					>> Makefile
 echo "MANPATH = \$(BASEPATH)/man"				>> Makefile
 else
 echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
@@ -728,7 +739,7 @@ if [ "$TESTING" = "1" ]; then
 echo ""								>> Makefile
 echo ".PHONY: testsuite "					>> Makefile
 echo "testsuite:"						>> Makefile
-echo "	source env.sh"						>> Makefile
+echo "	\$(shell source env.sh)"			       	>> Makefile
 echo "	@echo 'Building ERESI testsuite...' "			>> Makefile
 echo "	cd testsuite && \$(MAKE) -s \$(BUILD_TARGET)"		>> Makefile 
 echo "	@echo 'ERESI testsuite built successfully.' "		>> Makefile  

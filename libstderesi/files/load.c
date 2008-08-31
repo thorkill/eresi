@@ -88,12 +88,13 @@ int		revm_file_loads(char *regex)
   return (0);
 }
 
+
 /** 
- * Load a file in elfsh 
- * @param name 
- * @param base
- * @param lm
- * @return
+ * @brief Load a file in e2dbg.
+ * @param name  File path.
+ * @param base Object memory base address.
+ * @param lm Linkmap entry for that object.
+ * @return Success (0) or Error (-1).
  */
 int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
 {

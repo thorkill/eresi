@@ -128,7 +128,7 @@ static unsigned      gdbwrap_atoh(const char * str, unsigned size)
 }
 
 
-static uint8_t       gdbwrap_calc_checksum(const char * str, gdbwrap_t *desc)
+static uint8_t       gdbwrap_calc_checksum(const char *str, gdbwrap_t *desc)
 {
   unsigned           i;
   uint8_t            sum;
@@ -150,7 +150,7 @@ static uint8_t       gdbwrap_calc_checksum(const char * str, gdbwrap_t *desc)
 }
 
 
-static char          *gdbwrap_make_message(const char * query,
+static char          *gdbwrap_make_message(const char *query,
                                            gdbwrap_t *desc)
 {
   uint8_t            checksum       = gdbwrap_calc_checksum(query, desc);
@@ -326,7 +326,7 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
  */
 gdbwrap_t            *gdbwrap_init(int fd)
 {
-  gdbwrap_t         *desc = malloc(sizeof(gdbwrap_t));
+  gdbwrap_t          *desc = malloc(sizeof(gdbwrap_t));
       
   ASSERT(fd && desc != NULL);
   desc->max_packet_size   = 600;

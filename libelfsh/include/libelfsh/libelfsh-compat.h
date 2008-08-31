@@ -16,8 +16,10 @@
  #define MAP_ANONYMOUS  MAP_ANON
 #endif
 
-#if !defined(__BEOS__)
-typedef char uint8;
+#if defined(__BEOS__)
+ #include <elf.h>
+#else
+ typedef char uint8;
 #endif
 
 #include "libelfsh-ia64.h"	/* IA64 defines sometimes not present */

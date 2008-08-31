@@ -38,7 +38,7 @@ void             gdbwrap_close(gdbwrap_t *desc);
 void             gdbwrap_hello(gdbwrap_t *desc);
 void             gdbwrap_bye(gdbwrap_t *desc);
 void             gdbwrap_reason_halted(gdbwrap_t *desc);
-char             *gdbwrap_own_command(char * command, gdbwrap_t *desc);
+char             *gdbwrap_own_command(char *command, gdbwrap_t *desc);
 void             gdbwrap_test(gdbwrap_t *desc);
 gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);

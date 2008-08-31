@@ -34,26 +34,31 @@
 #ifndef __KERNEL__
 
 #ifdef __BEOS__
-#include <bsd_mem.h>
+ #include <bsd_mem.h>
+ #include <sys/time.h>
 #endif
 
 #if !defined(__USE_GNU)
 #define __USE_GNU
 #endif
 
-#if ! defined(__OpenBSD__)
-#include <sys/ucontext.h>
+#if defined(__BEOS__)
+ #include <ucontext.h>
+#elif !defined(__OpenBSD__)
+ #include <sys/ucontext.h>
 #endif
 
-#if !defined(sgi)
+#if !defined(sgi) && !defined(__BEOS__)
 #include <sys/user.h>
 #endif
 
+/*
 #if defined(__NetBSD__)
 #include <miscfs/procfs/procfs.h>
 #elif ! (defined(__OpenBSD__))
 #include <sys/procfs.h>
 #endif
+*/
 
 #endif
 
@@ -315,6 +320,13 @@
                          elfsh_get_symbol_type(sym) == STT_COMMON || \
                          elfsh_get_symbol_type(sym) == STT_SECTION || \
 			  elfsh_get_symbol_type(sym) == STT_BLOCK)
+
+#define	BESTYPE(cand, best)	(elfsh_get_symbol_type(cand)  == STT_FUNC    || \
+				 (elfsh_get_symbol_type(cand) == STT_SECTION && \
+				  elfsh_get_symbol_type(best) != STT_FUNC)   || \
+				 (elfsh_get_symbol_type(cand) == STT_BLOCK   && \
+				  elfsh_get_symbol_type(best) != STT_FUNC    && \
+				  elfsh_get_symbol_type(best) != STT_SECTION))
 
 #define	FILE_IS_SPARC(obj)   (FILE_IS_SPARC32(obj) || FILE_IS_SPARC64(obj))
 #define FILE_IS_SPARC32(obj) (((elfsh_get_arch((obj)->hdr) == EM_SPARC) || \

@@ -456,6 +456,28 @@ enum COP1_fmt {
    MIPS_OPCODE_FMT_PS// = Ob(10110)
 
 };
+
+enum COP1_cond {
+
+   MIPS_OPCODE_COND_F,
+   MIPS_OPCODE_COND_UN,
+   MIPS_OPCODE_COND_EQ,
+   MIPS_OPCODE_COND_UEQ,
+   MIPS_OPCODE_COND_OLT,
+   MIPS_OPCODE_COND_ULT,
+   MIPS_OPCODE_COND_OLE,
+   MIPS_OPCODE_COND_ULE,
+   MIPS_OPCODE_COND_SF,
+   MIPS_OPCODE_COND_NGLE,
+   MIPS_OPCODE_COND_SEQ,
+   MIPS_OPCODE_COND_NGL,
+   MIPS_OPCODE_COND_LT,
+   MIPS_OPCODE_COND_NGE,
+   MIPS_OPCODE_COND_LE,
+   MIPS_OPCODE_COND_NGT
+
+};
+
 /* XXX: privileged and fpu stuff.. not implemented yet*/
 /* 
 enum {} COP0_rs_field_encoding;
@@ -808,6 +830,59 @@ enum e_mips_instr_types
    ASM_MIPS_BC1FL,
    ASM_MIPS_BC1TL,
 
+   /* BUGFIX */
+   ASM_MIPS_DMTC1,
+   ASM_MIPS_DMFC1,
+
+   /* C.cond.fmt glupie instrukcje :) */
+   ASM_MIPS_C_F_S,
+   ASM_MIPS_C_F_D,
+   ASM_MIPS_C_F_PS,
+   ASM_MIPS_C_UN_S,
+   ASM_MIPS_C_UN_D,
+   ASM_MIPS_C_UN_PS,
+   ASM_MIPS_C_EQ_S,
+   ASM_MIPS_C_EQ_D,
+   ASM_MIPS_C_EQ_PS,
+   ASM_MIPS_C_UEQ_S,
+   ASM_MIPS_C_UEQ_D,
+   ASM_MIPS_C_UEQ_PS,
+   ASM_MIPS_C_OLT_S,
+   ASM_MIPS_C_OLT_D,
+   ASM_MIPS_C_OLT_PS,
+   ASM_MIPS_C_ULT_S,
+   ASM_MIPS_C_ULT_D,
+   ASM_MIPS_C_ULT_PS,
+   ASM_MIPS_C_OLE_S,
+   ASM_MIPS_C_OLE_D,
+   ASM_MIPS_C_OLE_PS,
+   ASM_MIPS_C_ULE_S,
+   ASM_MIPS_C_ULE_D,
+   ASM_MIPS_C_ULE_PS,
+   ASM_MIPS_C_SF_S,
+   ASM_MIPS_C_SF_D,
+   ASM_MIPS_C_SF_PS,
+   ASM_MIPS_C_NGLE_S,
+   ASM_MIPS_C_NGLE_D,
+   ASM_MIPS_C_NGLE_PS,
+   ASM_MIPS_C_SEQ_S,
+   ASM_MIPS_C_SEQ_D,
+   ASM_MIPS_C_SEQ_PS,
+   ASM_MIPS_C_NGL_S,
+   ASM_MIPS_C_NGL_D,
+   ASM_MIPS_C_NGL_PS,
+   ASM_MIPS_C_LT_S,
+   ASM_MIPS_C_LT_D,
+   ASM_MIPS_C_LT_PS,
+   ASM_MIPS_C_NGE_S,
+   ASM_MIPS_C_NGE_D,
+   ASM_MIPS_C_NGE_PS,
+   ASM_MIPS_C_LE_S,
+   ASM_MIPS_C_LE_D,
+   ASM_MIPS_C_LE_PS,
+   ASM_MIPS_C_NGT_S,
+   ASM_MIPS_C_NGT_D,
+   ASM_MIPS_C_NGT_PS,
 
    ASM_MIPS_BAD
 };
@@ -1226,3 +1301,57 @@ int asm_mips_movz_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc
 // FPU Absolute Branch Instructions
 int asm_mips_bc1fl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
 int asm_mips_bc1tl(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// BUGFIX
+int asm_mips_dmtc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_dmfc1(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+
+// C.cond.fmt glupie instrukcje :)
+int asm_mips_c_f_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_f_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_f_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_un_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_un_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_un_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_eq_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_eq_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_eq_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ueq_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ueq_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ueq_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_olt_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_olt_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_olt_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ult_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ult_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ult_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ole_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ole_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ole_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ule_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ule_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ule_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_sf_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_sf_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_sf_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngle_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngle_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngle_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_seq_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_seq_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_seq_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngl_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngl_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngl_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_lt_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_lt_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_lt_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_nge_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_nge_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_nge_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_le_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_le_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_le_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngt_s(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngt_d(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);
+int asm_mips_c_ngt_ps(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc);

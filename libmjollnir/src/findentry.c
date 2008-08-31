@@ -14,7 +14,7 @@
  *
  * This function inspect the code at entry point and inject the resolved
  * symbol for the main function. This is a separate function so that it
- * can be called frmo the tracer and benefit from the main symbol presence
+ * can be called from the tracer and benefit from the main symbol presence
  */
 eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
 				 asm_processor	*proc,
@@ -25,7 +25,7 @@ eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
 {
   int		   stop;
   elfsh_Sym	   *sym;
-  u_int		   ilen;
+  u_int		   ilen,done;
   eresi_Addr	   init_addr;
   asm_instr	   ins;
   int		   arch_bin;
@@ -33,6 +33,8 @@ eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
   eresi_Addr	   main_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  done = 0;
 
   for (*dis = stop = 0; !stop; *dis += ilen) 
     {
@@ -140,11 +142,18 @@ eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
     else
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Architecture not supported", -1);
-
-  }
+ 
+    done += ilen;
+    /* If we reached this point it probably means that we analyse 
+       self made software, written in asm and compiled with nasm */
+    if (done >= len)
+      {
+	main_addr = vaddr;
+	stop = 1;
+      }
+    }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }
-
 
 /** 
  * This function traces the entry point and save the last push argument until 
@@ -162,7 +171,7 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
   u_int		dis;
   elfsh_Sym	*sym;
   elfsh_Sym	bsym;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!context || !buf)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -170,13 +179,13 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
   
   if (!(elfsh_get_objtype(elfsh_get_hdr(context->obj)) == ET_EXEC))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Object is not ET_EXEC", 0);
+		 "Object is not ET_EXEC", 0);
   
 #if defined(__DEBUG_MJOLLNIR__)
   printf(" [*] _start found at 0x%lx\n", (unsigned long) vaddr);
 #endif
 
-//  sym = elfsh_get_symbol_by_name(context->obj, "main");
+ //  sym = elfsh_get_symbol_by_name(context->obj, "main");
   sym = elfsh_get_metasym_by_name(context->obj, "main");
   if (sym && sym->st_value)
     {
@@ -190,27 +199,31 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Could not find address of main", 0);
 
-  tmpcntnr = mjr_create_function_container(context, vaddr, 0, "_start", 0, NULL);
-  mjr_function_register(context, vaddr, tmpcntnr);
-
-  fprintf(stderr, "CREATING MAIN FUNC at " XFMT "\n", main_addr);  
-
-  main_container = mjr_create_function_container(context, main_addr, 0, "main", 0, NULL);
-  mjr_function_register(context, main_addr, main_container);
-
-  mjr_container_add_link(context, tmpcntnr, main_container->id, 
-			 MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
-  mjr_container_add_link(context, main_container, tmpcntnr->id, 
-			 MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
-  mjr_link_block_call(context, vaddr, main_addr, vaddr + dis);
-
-  /* Create symbols for main */
-  /* Then we create the symbol for the bloc and returns */
-  if (!sym || !sym->st_value)
+  if (main_addr != vaddr) 
     {
-      bsym = elfsh_create_symbol(main_addr, 0, STT_FUNC, 0, 0, 0);
-      elfsh_insert_symbol(context->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, "main");
+      tmpcntnr = mjr_create_function_container(context, vaddr, 0, "_start", 0, NULL);
+      mjr_function_register(context, vaddr, tmpcntnr);
+      
+#if defined(__DEBUG_MJOLLNIR__)
+      fprintf(stderr, " [D] Creating MAIN Func at " XFMT "\n", main_addr);  
+#endif
+      
+      main_container = mjr_create_function_container(context, main_addr, 0, "main", 0, NULL);
+      mjr_function_register(context, main_addr, main_container);
+      
+      mjr_container_add_link(context, tmpcntnr, main_container->id, 
+			     MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(context, main_container, tmpcntnr->id, 
+			     MJR_LINK_FUNC_RET, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
+      mjr_link_block_call(context, vaddr, main_addr, vaddr + dis);
+      
+      /* Create symbols for main */
+      /* Then we create the symbol for the bloc and returns */
+      if (!sym || !sym->st_value)
+	{
+	  bsym = elfsh_create_symbol(main_addr, 0, STT_FUNC, 0, 0, 0);
+	  elfsh_insert_symbol(context->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, "main");
+	}
     }
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);
 }

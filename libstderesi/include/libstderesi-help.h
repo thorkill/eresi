@@ -143,15 +143,15 @@
 #define	HLP_CONNECT		"Add an DUMP connection to given host"
 #define	HLP_DISCON		"Kill the DUMP connection from IP"
 #define	HLP_PEERSLIST		"List connected DUMP peers"
-#define HLP_RCMD		"Execute a command on a remote machine\n\n\t" \
-                                CMD_RCMD" <command> <host>" 
-
+#define HLP_RCMD		"Execute a command on a remote machine"
 
 /* Flow analysis commands */
-#define HLP_GRAPH	        "Generate GVZ files:\n\n\t" \
-				CMD_GRAPH " - will plot a function dependency graph\n\t" \
-				CMD_GRAPH " func <vaddr|symbol> - will plot dependency graph of given function\n\t" \
-				CMD_GRAPH " bloc <vaddr|symbol> - will plot control flow graph of given function\n"
+#define HLP_GRAPH	        "Explore program graphs:\n\n\t" \
+				CMD_GRAPH " - Plot entire functions call graph\n\t" \
+				CMD_GRAPH " func [vaddr|symbol] <in|out|all> <maxdepth> - Plot call " \
+				          "graph of ancestors/successors of a given function \n\t" \
+				CMD_GRAPH " bloc [vaddr|symbol] <in|out|all> <maxdepth> - Plot control " \
+					  "flow graph of ancestors/successors of a given basic bloc\n"
 
 #define	HLP_SETGVL              "Set graph verbosity level \n\n\t"CMD_SETGVL" <0-5> \n"
 #define	HLP_INSPECT	        "Disassemble block at symbol/address\n"

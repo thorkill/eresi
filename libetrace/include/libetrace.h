@@ -27,6 +27,9 @@
 #include <sys/mman.h>
 #include <regex.h>
 
+#include <sys/time.h>
+#include <time.h>
+
 #if !defined(__OpenBSD__)
 #include <elf.h>
 #endif
@@ -39,19 +42,23 @@
 #define __USE_GNU
 #endif
 
-#if !defined(__OpenBSD__)
-#include <sys/ucontext.h>
+#ifdef __BEOS__
+ #include <ucontext.h>
+#elif !defined(__OpenBSD__)
+ #include <sys/ucontext.h>
 #endif
 
-#if !defined(sgi) && !defined(__OpenBSD__) && !defined(__FreeBSD__)
+#if !defined(sgi) && !defined(__OpenBSD__) && !defined(__FreeBSD__) && !defined(__BEOS__)
 #include <sys/user.h>
 #endif
 
+/*
 #if defined(__NetBSD__)
 #include <miscfs/procfs/procfs.h>
 #elif !defined(__OpenBSD__)
 #include <sys/procfs.h>
 #endif
+*/
 
 #endif /* __KERNEL__ */
 

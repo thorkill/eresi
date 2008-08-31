@@ -71,8 +71,7 @@ int main( int argc, char **argv )
       perror( "socket()" );
       return (errno);
     }
-  
-  /*
+   /*
    * Setup info about the remote host
    */
   

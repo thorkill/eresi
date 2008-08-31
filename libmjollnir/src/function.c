@@ -216,15 +216,16 @@ int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if 1 //__DEBUG_FUNCS__
+#if __DEBUG_FUNCS__
   fprintf(D_DESC, "[D] %s: vaddr:%x ID:%d\n",
 	  __FUNCTION__, vaddr, fun->id);
 #endif
 
   if (!mjr_function_get_by_vaddr(ctx, vaddr))
     {
+#if __DEBUG_FUNCS__
       fprintf(stderr, " [*] Registered new function starting at 0x%08X \n", vaddr);
-
+#endif
       tmpstr = _vaddr2str(vaddr);
       hash_add(&ctx->funchash, tmpstr, fun);
     }
@@ -268,11 +269,19 @@ int			mjr_function_symbol(mjrcontext_t *ctxt, container_t *csrc)
   elfsh_Sym		bsym;
   char			*prefix;
   char			buffer[BUFSIZ];
+  char			*name;
+  elfsh_SAddr		off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Insert new function symbol */
   func   = (mjrfunc_t *) csrc->data;
+
+  /* Check if symbol already exists */
+  name = elfsh_reverse_metasym(ctxt->obj, func->vaddr, &off);
+  prefix = (char *) config_get_data(MJR_CONFIG_BLOC_PREFIX);
+  if (!off && !strstr(name, prefix))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* If not, inject it */
   prefix = (char *) config_get_data(MJR_CONFIG_FUNC_PREFIX);
   snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, func->vaddr);
   bsym = elfsh_create_symbol(func->vaddr, func->size, STT_FUNC, 0, 0, 0);

@@ -87,6 +87,7 @@ int		mjr_setup_processor(mjrsession_t *);
  */
 #define		MJR_MAX_DEPTH		-1
 #define		MJR_BLOCK_INVALID	((eresi_Addr) -1)
+#define		MJR_BLOCK_EXIST		((eresi_Addr) -2)
 
 int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);
 int		mjr_analyse_section(mjrsession_t *s, char *sectname);
@@ -96,12 +97,12 @@ int		mjr_analyse_finished(mjrsession_t *sess);
 
 /* blocks.c */
 int		mjr_blocks_get(mjrcontext_t *ctxt);
-container_t* mjr_block_get_by_vaddr(mjrcontext_t *ctxt, eresi_Addr, int);
+container_t*	mjr_block_get_by_vaddr(mjrcontext_t *ctxt, eresi_Addr, int);
 int		mjr_block_point(mjrcontext_t*, asm_instr*, eresi_Addr, eresi_Addr);
 char 		*_vaddr2str(eresi_Addr);
 int		mjr_block_relink_cond_always(container_t *, container_t *, int);
 int		mjr_block_dump(mjrcontext_t*, container_t *);
-int		mjr_block_symbol(mjrcontext_t*, container_t*, eresi_Addr curaddr, u_char resize);
+int		mjr_block_symbol(mjrcontext_t*, container_t*);
 
 /* fingerprint.c */
 int		mjr_block_funcstart(container_t *cntnr);
@@ -115,7 +116,9 @@ void		mjr_function_display(mjrfunc_t *func);
 void		mjr_funcs_display(mjrcontext_t *c);
 
 /* cfg.c */
-int       	mjr_trace_control(mjrcontext_t *context, elfshobj_t *obj, asm_instr *curins, eresi_Addr curvaddr, eresi_Addr *dstaddr, eresi_Addr *retaddr);
+int       	mjr_trace_control(mjrcontext_t *context, container_t *curblock,
+				  elfshobj_t *obj, asm_instr *curins, eresi_Addr curvaddr, 
+				  eresi_Addr *dstaddr, eresi_Addr *retaddr);
 eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context);
 eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context);
 eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context);

@@ -36,8 +36,8 @@ extern char **environ;
 #define __USE_GNU
 #include <sys/ucontext.h>
 
-#define		__DEBUG_E2DBG__	        1
-#define		__DEBUG_BP__		1
+#define		__DEBUG_E2DBG__	        0
+#define		__DEBUG_BP__		0
 #define		__DEBUG_EMALLOC__	0
 #define		__DEBUG_LINKMAP__	0
 #define		__DEBUG_THREADS__	0
@@ -166,9 +166,10 @@ extern char **environ;
  signal(SIGINT, SIG_IGN);				\
  signal(SIGTRAP, SIG_IGN);				\
  signal(SIGUSR2, SIG_IGN);				\
- signal(SIGSEGV, SIG_IGN);				\
- signal(SIGBUS, SIG_IGN);				\
 }		while (0);
+ //signal(SIGSEGV, SIG_IGN);				
+ //signal(SIGBUS, SIG_IGN);				
+
 
 #define		SETSIG					\
 do							\
@@ -183,11 +184,12 @@ do							\
  sigaction(SIGINT, &ac, NULL);				\
  ac.sa_sigaction   = e2dbg_thread_sigusr2;		\
  sigaction(SIGUSR2, &ac, NULL);				\
- ac.sa_sigaction   = e2dbg_sigsegv_handler;		\
- sigaction(SIGSEGV, &ac, NULL);				\
- ac.sa_sigaction   = e2dbg_sigsegv_handler;		\
- sigaction(SIGBUS, &ac, NULL);				\
 } while (0)
+ //ac.sa_sigaction   = e2dbg_sigsegv_handler;		
+ //sigaction(SIGSEGV, &ac, NULL);			
+ //ac.sa_sigaction   = e2dbg_sigsegv_handler;		
+ //sigaction(SIGBUS, &ac, NULL);		 
+
 
 
 // was in SETSIG -> commenting it make the core available

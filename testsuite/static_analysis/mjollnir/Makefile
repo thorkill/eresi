@@ -1,5 +1,5 @@
 
-SRC	= test-ptrfn1.c test-ptrfn2.c test-ptrfn3.c test-recur.c
+SRC	= test-ptrfn1.c test-ptrfn2.c test-ptrfn3.c test-recur.c test-moredepth.c
 OBJ	= $(SRC:.c=.o)
 CC	?= gcc
 RM	= rm -fr
@@ -18,6 +18,9 @@ test-ptrfn3.o:
 
 test-recur.o:
 	$(CC) test-recur.c -o test-recur.elf
+
+test-moredepth.o:
+	$(CC) test-moredepth.c -o test-moredepth.elf
 
 fclean: clean
 clean:

@@ -11,7 +11,7 @@ OBJ	= $(SRC:.c=.o)
 CC	= gcc
 LIB	= -L/usr/pkg/lib -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32 \
 	-L../../libetrace/ -letrace32 -L../../libaspect/ -laspect32 \
-	-L../../libstderesi -lstderesi32 -L../../libdump/ -ldump32
+	-L../../libstderesi -lstderesi32 $(LDDUMPOPT32)
 NAM	= tracer
 RM	= rm -f 
 OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ 	\

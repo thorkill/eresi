@@ -1,4 +1,5 @@
 // Test pointer-follow function calls detection.
+#include <stdio.h>
 
 f1() {printf("dupa\n"); }
 f2() {printf("dupa2\n");}

@@ -12,7 +12,7 @@ include ../config.h
 #
 
 #CFLAGS += -ggdb
-CFLAGS += $(CFLAGS_libasm)
+CFLAGS += $(CFLAGS_libasm) $(EXTRACFLAGS)
 
 SRCS_libasm 	=				\
 		src/generic.c			\
@@ -140,7 +140,6 @@ dep:
 	@rm -f src/build.o
 
 libasm32.so: $(PACKED_ARCH) $(OBJS32_libasm)
-	$(LD) -L../libaspect/ -laspect32 -shared ${OBJS32_libasm} -o libasm32.so
 	ar rc ${NAME32_libasm} ${OBJS32_libasm}
 #echo "[AR] ${NAME32_libasm}"
 	${RANLIB} ${NAME32_libasm}
@@ -148,13 +147,12 @@ libasm32.so: $(PACKED_ARCH) $(OBJS32_libasm)
 	$(LD) -r $(OBJS32_libasm) -o ${NAME32_libasm_o}
 #echo "[CC -shared] libasm32.so"
 ifeq ($(IRIX),1)
-	$(LD) ${OBJS32_libasm} -o libasm32.so -shared
+	$(LD) -L../libaspect/ -laspect32 ${OBJS32_libasm} -o libasm32.so -shared
 else
-	$(CC) ${OBJS32_libasm} -o libasm32.so -shared
+	$(CC) -L../libaspect/ -laspect32 ${OBJS32_libasm} -o libasm32.so -shared
 endif
 
 libasm64.so: $(PACKED_ARCH) $(OBJS64_libasm)
-	$(LD) -L../libaspect/ -laspect64 -shared ${OBJS64_libasm} -o libasm64.so
 	ar rc ${NAME64_libasm} ${OBJS64_libasm}
 #echo "[AR] ${NAME64_libasm}"
 	${RANLIB} ${NAME64_libasm}
@@ -162,9 +160,9 @@ libasm64.so: $(PACKED_ARCH) $(OBJS64_libasm)
 	$(LD) -r $(OBJS64_libasm) -o ${NAME64_libasm_o}
 #echo "[CC -shared] libasm64.so"
 ifeq ($(IRIX),1)
-	$(LD) ${OBJS64_libasm} -o libasm64.so -shared
+	$(LD) -L../libaspect/ -laspect64 ${OBJS64_libasm} -o libasm64.so -shared
 else
-	$(CC) ${OBJS64_libasm} -o libasm64.so -shared
+	$(CC) -L../libaspect/ -laspect64 ${OBJS64_libasm} -o libasm64.so -shared
 endif
 
 clean:

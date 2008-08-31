@@ -81,10 +81,12 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
                dim[2] = (converted & 0x10000 ) >> 16;
                break;
             case MIPS_OPCODE_SRL:
-               dim[2] = ((converted & 0x200000 ) >> 21) + 2;
+//               dim[2] = ((converted & 0x200000 ) >> 21) + 2;
+               dim[2] = ((converted >> 21) & 0x1F);
                break;
             case MIPS_OPCODE_SRLV:
-               dim[2] = ((converted & 0x40) >> 6) + 4;
+//               dim[2] = ((converted & 0x40) >> 6) + 4;
+               dim[2] = ((converted >> 6) & 0x1F);
                break;
          }
          break;
@@ -123,15 +125,21 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
       case MIPS_OPCODE_COP1:
          do {
 	
-	    u_int tmp = (converted >> 0) & 0x3F;
-	    u_int fmt = (converted >> 21) & 0x1F;
+	    u_int tmp  = (converted >> 0) & 0x3F;
+	    u_int fmt  = (converted >> 21) & 0x1F;
+	    u_int jajo = (converted >> 4) & 0xF;
+	    u_int kupa = (converted >> 0) & 0xF;
 
             if (fmt == MIPS_OPCODE_BCC2) {
 	       dim[1] = fmt;
                dim[2] = (converted >> 16) & 0x3;
 	    } else if (fmt == MIPS_OPCODE_F_CFC1 || fmt == MIPS_OPCODE_F_CTC1
-	               || fmt == MIPS_OPCODE_F_MFC1 || fmt == MIPS_OPCODE_F_MTC1) {
+	               || fmt == MIPS_OPCODE_F_MFC1 || fmt == MIPS_OPCODE_F_MTC1
+		       || fmt == MIPS_OPCODE_DMFC2 || fmt == MIPS_OPCODE_DMTC2) {
 	       dim[1] = fmt;
+	    } else if (jajo == 0x3) {
+	       dim[1] = kupa;
+	       dim[2] = fmt;
 	    } else {
 	       dim[1] = tmp;
 	       dim[2] = fmt;
