@@ -134,8 +134,10 @@ int main( int argc, char **argv )
 	dumpreg(desc);
       else if(!strncmp("vm", buffer, 2))
 	gdbwrap_vmwareinit(desc);
-      else if(!strncmp("stepi", buffer, 2))
+      else if(!strncmp("stepi", buffer, 5))
 	gdbwrap_stepi(desc);
+      else if(strncmp("signal", buffer, 5))
+	gdbwrap_signal(0x1, desc);
       else if(!strncmp("own", buffer,  3))
 	{
 	  while (strncmp("quitown", buffer, 7))

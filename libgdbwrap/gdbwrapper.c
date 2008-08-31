@@ -13,23 +13,50 @@
 #include              "gdbwrapper-internals.h"
 
 
-static Bool          gdbwrap_errorhandler(const char *error)
+static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
 {
   ASSERT(error != NULL);
 
   if (!strncmp(GDBWRAP_REPLAY_OK, error, strlen(GDBWRAP_REPLAY_OK)))
     return FALSE;
-  
+
+  if (!strncmp(GDBWRAP_NO_SPACE, error, strlen(GDBWRAP_NO_SPACE)))
+    fprintf(stderr, "space was not updated.\n");
+
+  if (!strncmp(GDBWRAP_NO_TABLE, error, strlen(GDBWRAP_NO_TABLE)))
+    fprintf(stdout, "Not populating the table\n");
+
+  if (!strncmp(GDBWRAP_DEAD, error, strlen(GDBWRAP_DEAD)))
+    fprintf(stdout, "The server seems to be dead. Message not sent.\n");
+
   if (error[0] == GDBWRAP_REPLAY_ERROR)
     fprintf(stdout, "Error: %s\n", error);
   
   if (error[0] == GDBWRAP_EXIT_W_STATUS)
-    fprintf(stdout, "Exit with status: %s\n", error);
+    {
+      fprintf(stdout, "Exit with status: %s\n", error);
+      desc->is_active = FALSE;
+    }
   
-  if (error[0] == GDBWRAP_EXIT_W_STATUS)
-    fprintf(stdout, "Exit with signal: %s\n", error);
+  if (error[0] == GDBWRAP_EXIT_W_SIGNAL)
+    {
+      fprintf(stdout, "Exit with signal: %s\n", error);
+      desc->is_active = FALSE;
+    }
+
+  if (error[0] == GDBWRAP_NULL_CHAR)
+    fprintf(stdout, "Command not supported\n");
 
   return TRUE;
+}
+
+
+static Bool          gdbwrap_is_active(gdbwrap_t *desc)
+{
+  if (desc->is_active)
+    return TRUE;
+  else
+    return FALSE;
 }
 
 
@@ -287,18 +314,21 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
     gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET, NULL,
 				sizeof(checksum));
     /* If no error, we ack the packet. */
-    if (rval != -1 && rval != 1 &&
+    if (rval != -1 &&
 	gdbwrap_atoh(checksum, strlen(checksum)) ==
 	gdbwrap_calc_checksum(desc->packet, desc))
       {
 	rval = send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM),
 		    0x0);
+	gdbwrap_errorhandler(desc->packet, desc);
+
 	return gdbwrap_run_length_decode(desc->packet, desc->packet,
 					 desc->max_packet_size);
       }
     else
       ASSERT(FALSE);
-  }
+  } else
+    desc->is_active = FALSE;
 
   return NULL;
 }
@@ -310,11 +340,20 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
   char               *mes;
 
   ASSERT(desc != NULL && query != NULL);
-  mes  = gdbwrap_make_message(query, desc);
-  rval = send(desc->fd, mes, strlen(mes), 0);
-  ASSERT(rval != -1);
-  mes  = gdbwrap_get_packet(desc);
 
+  if (gdbwrap_is_active(desc))
+    {
+      mes  = gdbwrap_make_message(query, desc);
+      rval = send(desc->fd, mes, strlen(mes), 0);
+      ASSERT(rval != -1);
+      mes  = gdbwrap_get_packet(desc);
+    }
+  else
+    {
+      gdbwrap_errorhandler(GDBWRAP_DEAD, desc);
+      mes = NULL;
+    }
+  
   return mes;
 }
 
@@ -332,6 +371,7 @@ gdbwrap_t            *gdbwrap_init(int fd)
   desc->max_packet_size   = 600;
   desc->packet            = malloc((desc->max_packet_size + 1) * sizeof(char));
   desc->fd                = fd;
+  desc->is_active         = TRUE;
   ASSERT(desc->packet != NULL);
 
   return desc;
@@ -353,33 +393,39 @@ void                gdbwrap_close(gdbwrap_t *desc)
  */
 void                gdbwrap_hello(gdbwrap_t *desc)
 {
-  char              *received;
-  char              *result;
-  unsigned          previousmax;
-  
+  char              *received    = NULL;
+  char              *result      = NULL;
+  unsigned          previousmax  = 0;
+
   received = gdbwrap_send_data(GDBWRAP_QSUPPORTED, desc);
-  result   = gdbwrap_extract_from_packet(received, desc->packet, "PacketSize=",
-					 GDBWRAP_SEP_SEMICOLON,
-					 desc->max_packet_size);
-  /* If we receive the info, we update gdbwrap_max_packet_size. */
-  if (result != NULL)
+
+  if (received != NULL)
     {
-      char *reallocptr;
-      
-      previousmax = desc->max_packet_size;
-      desc->max_packet_size = gdbwrap_atoh(desc->packet, strlen(desc->packet));
-      reallocptr = realloc(desc->packet, desc->max_packet_size + 1);
-      if (realloc != NULL)
-	desc->packet = reallocptr;
-      else
+      result   = gdbwrap_extract_from_packet(received, desc->packet,
+					     GDBWRAP_PACKETSIZE,
+					     GDBWRAP_SEP_SEMICOLON,
+					     desc->max_packet_size);
+
+      /* If we receive the info, we update gdbwrap_max_packet_size. */
+      if (result != NULL)
 	{
-	  fprintf(stderr, "space was not updated.\n");
-	  desc->max_packet_size = previousmax;
+	  char *reallocptr;
+      
+	  previousmax = desc->max_packet_size;
+	  desc->max_packet_size = gdbwrap_atoh(desc->packet, strlen(desc->packet));
+	  reallocptr = realloc(desc->packet, desc->max_packet_size + 1);
+	  if (realloc != NULL)
+	    desc->packet = reallocptr;
+	  else
+	    {
+	      gdbwrap_errorhandler(GDBWRAP_NO_SPACE, desc);
+	      desc->max_packet_size = previousmax;
+	    }
 	}
+      /* We set the last bit to a NULL char to avoid getting out of the
+	 weeds with a (unlikely) bad strlen. */
+      desc->packet[desc->max_packet_size] = GDBWRAP_NULL_CHAR;
     }
-  /* We set the last bit to a NULL char to avoid getting out of the
-     weeds with a (unlikely) bad strlen. */
-  desc->packet[desc->max_packet_size] = GDBWRAP_NULL_CHAR;
 }
 
 
@@ -399,7 +445,10 @@ void                gdbwrap_reason_halted(gdbwrap_t *desc)
   char              *received;
 
   received = gdbwrap_send_data(GDBWRAP_WHY_HALTED, desc);
-  gdbwrap_populate_reg(received, desc);
+  if (gdbwrap_is_active(desc))
+    gdbwrap_populate_reg(received, desc);
+  else
+    gdbwrap_errorhandler(GDBWRAP_NO_TABLE, desc);
 }
 
 
@@ -447,7 +496,7 @@ char                 *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
   snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes);
   rec = gdbwrap_send_data(packet, desc);
-  gdbwrap_errorhandler(rec);
+/*   gdbwrap_errorhandler(rec); */
 
   return rec;
 }
@@ -478,17 +527,11 @@ void                 *gdbwrap_memorybp(gdbwrap_t *desc)
 /* --------------------- NOT TESTED ------------------------- */
 void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
 {
-  char               *rec;
   char               regpacket[50];
   
   snprintf(regpacket, sizeof(regpacket), "%s%x=%x",
 	   GDBWRAP_WRITEREG, regNum, val);
-  printf("In %s, Sending: %s\n", __PRETTY_FUNCTION__, regpacket);
-  fflush(stdout);
-  rec =  gdbwrap_send_data(regpacket, desc);
-  gdbwrap_errorhandler(rec);
-  printf("In %s we received: %s ", __PRETTY_FUNCTION__, regpacket);
-  fflush(stdout);
+  gdbwrap_send_data(regpacket, desc);
 }
 
 
@@ -502,7 +545,7 @@ void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
  * (default behavior).
  */
  
- void gdbwrap_signal(int signal, gdbwrap_t *desc)
+ void                gdbwrap_signal(int signal, gdbwrap_t *desc)
  {
    char              *rec;
    char              signalpacket[50];
@@ -510,21 +553,20 @@ void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
    snprintf(signalpacket, sizeof(signalpacket), "%s;C%.2x",
 	    GDBWRAP_CONTINUEWITH, signal);
    rec = gdbwrap_send_data(signalpacket, desc);
-   gdbwrap_errorhandler(rec);
  }
+
 
 /* Shall we stepi with a known address ? */
 void                 gdbwrap_stepi(gdbwrap_t *desc)
 {
   char               *rec;
-  Bool               error;
 
   rec = gdbwrap_send_data(GDBWRAP_STEPI, desc);
-  error = gdbwrap_errorhandler(rec);
-  if (error)
+
+  if (gdbwrap_is_active(desc))
     gdbwrap_populate_reg(rec, desc);
   else
-    fprintf(stdout, "Not populating the table\n");
+    gdbwrap_errorhandler(GDBWRAP_DEAD, desc);
 }
 
 

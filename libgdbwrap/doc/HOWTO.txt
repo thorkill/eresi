@@ -1,0 +1,215 @@
+* libgdbwrap : HOWTO *
+
+
+This is a quick and dirty howto to test the features of libgdbwrap.
+
+The aim of the project is to implement a gdb capable client for
+eresi, thus we'd be able to connect to different "tools", like VMWare,
+qemu, etc. For now, only a 32b version is available.
+
+In libgdbwrap, you will find the following:
+
+- client.c
+- gdbwrapper.c
+- Makefile
+- include/
+  - gdbwrapper-internals.h
+  - gdbwrapper-stddef.h
+  - gdbwrapper.h
+
+
+The gdb wrapper provides to the programmer an API, whose functions are
+defined in include/gdbwrapper.h.
+The available functions are:
+
+gdbwrap_t        *gdbwrap_init(int fd);
+void             gdbwrap_close(gdbwrap_t *desc);
+void             gdbwrap_hello(gdbwrap_t *desc);
+void             gdbwrap_bye(gdbwrap_t *desc);
+void             gdbwrap_reason_halted(gdbwrap_t *desc);
+char             *gdbwrap_own_command(char *command, gdbwrap_t *desc);
+void             gdbwrap_test(gdbwrap_t *desc);
+gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
+void             gdbwrap_continue(gdbwrap_t *desc);
+char             *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
+                                        uint8_t bytes);
+void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+void             gdbwrap_signal(int signal, gdbwrap_t *desc);
+void             gdbwrap_stepi(gdbwrap_t *desc);
+void             gdbwrap_vmwareinit(gdbwrap_t *desc);
+void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+
+
+To get a gdbwrap_t "object", you must use the gdbwrap_init
+function and provide a file descriptor.
+
+Suppose that you want to connect to a gdb client and retrieve the
+state of the general purpose registers. Basically, in terms of
+"functions", you will do the following:
+
+gdbwrap_t        *gdbwrap_init(int fd);
+gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
+
+From now, if you want to do some instruction stepping, just do
+
+void             gdbwrap_stepi(gdbwrap_t *desc);
+
+and eventually, if you want to disconnect and free the memory, you
+will do:
+
+void             gdbwrap_bye(gdbwrap_t *desc);
+void             gdbwrap_close(gdbwrap_t *desc);
+
+Maybe I should come out with better names for these functions.
+
+
+Now, if you want absolutely to try the functions, client.c contains some
+commands:
+
+- hello: gdbwrap_reason_halted(desc);
+- why: gdbwrap_reason_halted(desc);
+- test: gdbwrap_test(desc);
+- gpr: gdbwrap_readgenreg(desc);
+- cont: gdbwrap_continue(desc);
+- dump: dumpreg(desc); (client side)
+- vm: gdbwrap_vmwareinit(desc);
+- stepi:  gdbwrap_stepi(desc);
+- signal: gdbwrap_signal(int signal, gdbwrap_t *desc); 
+- own: own commands to send directly to the gdb server.
+
+Note that the "dump" command is dumping the value of the registers and
+is implemented on the client side. This is just a way to debug the
+values received by the server and will be removed when ported to
+eresi.
+
+To try it, do the following:
+
+> gdbserver localhost:4444 /bin/ls 
+Process /bin/ls created; pid = 8556
+Listening on port 4444
+
+and somewhere else:
+
+> make fclean && make && make client && ./client 127.0.0.1 4444
+rm -f gdbwrapper.o gdbwrapper.o *~ *\# \#* .\#* 
+rm -f include/*~ include/*\# include/\#* include/.\#* 
+rm -f libgdbwrap.a libgdbwrap.o *.o client
+cc -Iinclude/ -Wall -g3 -ansi -pedantic -fprofile-generate -c -o gdbwrapper.o gdbwrapper.c
+gdbwrapper.c: In function 'gdbwrap_make_message':
+gdbwrapper.c:165: warning: implicit declaration of function 'snprintf'
+ar rc libgdbwrap.a gdbwrapper.o
+ranlib libgdbwrap.a
+ld -r gdbwrapper.o -o libgdbwrap.o 
+cc client.c -Iinclude/ -Wall -g3 -ansi -pedantic -fprofile-generate libgdbwrap.a -o client
+
+[now the client is ready for the commands]
+
+
+The warning is because it's compiling with the -pedantic -ansi
+function and snprintf is a C99 function... (NB: ...that really sucks, cf
+code).
+
+Now you're ready to play with the small client:
+
+-> hello (...server, how are you?)
+-> dump
+Reg 0 - 0
+Reg 1 - 0
+Reg 2 - 0
+Reg 3 - 0
+Reg 4 - 0
+Reg 5 - 0
+Reg 6 - 0
+Reg 7 - 0
+Reg 8 - 0
+Reg 9 - 0
+Reg 10 - 0
+Reg 11 - 0
+Reg 12 - 0
+Reg 13 - 0
+Reg 14 - 0
+Reg 15 - 0
+-> why (...did you halt ?)
+-> dump
+Reg 0 - 0
+Reg 1 - 0
+Reg 2 - 0
+Reg 3 - 0
+Reg 4 - 0xbfad8140
+Reg 5 - 0
+Reg 6 - 0
+Reg 7 - 0
+Reg 8 - 0xb7fc09a0
+Reg 9 - 0
+Reg 10 - 0
+Reg 11 - 0
+Reg 12 - 0
+Reg 13 - 0
+Reg 14 - 0
+Reg 15 - 0
+-> gpreg (...gimme the general purp reg state)
+-> dump
+Reg 0 - 0
+Reg 1 - 0
+Reg 2 - 0
+Reg 3 - 0
+Reg 4 - 0xbfad8140
+Reg 5 - 0
+Reg 6 - 0
+Reg 7 - 0
+Reg 8 - 0xb7fc09a0
+Reg 9 - 0x292
+Reg 10 - 0x73
+Reg 11 - 0x7b
+Reg 12 - 0x7b
+Reg 13 - 0x7b
+Reg 14 - 0
+Reg 15 - 0
+-> stepi 
+-> dump
+Reg 0 - 0
+Reg 1 - 0
+Reg 2 - 0
+Reg 3 - 0
+Reg 4 - 0xbfad8140
+Reg 5 - 0
+Reg 6 - 0
+Reg 7 - 0
+Reg 8 - 0xb7fc09a2 <--- this is the eip reg. It has been updated :)
+Reg 9 - 0x292
+Reg 10 - 0x73
+Reg 11 - 0x7b
+Reg 12 - 0x7b
+Reg 13 - 0x7b
+Reg 14 - 0
+Reg 15 - 0
+
+
+The correspondence between the numbers and the registers is:
+
+  00:   eax;
+  01:   ecx;
+  02:   edx;
+  03:   ebx;
+  04:   esp;
+  05:   ebp;
+  06:   esi;
+  07:   edi;
+  08:   eip;
+  09:   eflags;
+  10:   cs;
+  11:   ss;
+  12:   ds;
+  13:   es;
+  14:   fs;
+  15:   gs;
+
+
+The breakpoints are not implemented. The reason is that the gdb client
+sets the breakpoint when resuming the program (ie cont) and I'm a bit afraid
+that it'll cause an issue when porting it to eresi :/.
+
+
+Thanks for trying it.
+
+camoroz0

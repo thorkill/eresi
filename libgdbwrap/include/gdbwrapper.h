@@ -30,8 +30,9 @@ typedef struct gdbwrap_t
   int              fd;
   unsigned         max_packet_size;
   gdbwrap_gdbreg32 reg32;
-  uint8_t          execB;
+  Bool             is_active;
 } gdbwrap_t;
+
 
 gdbwrap_t        *gdbwrap_init(int fd);
 void             gdbwrap_close(gdbwrap_t *desc);
@@ -44,6 +45,8 @@ gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
 char             *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
 					uint8_t bytes);
+void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_vmwareinit(gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
