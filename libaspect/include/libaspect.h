@@ -121,9 +121,31 @@
 #if defined(ERESI32)
  typedef uint32_t	eresi_Addr;
  typedef uint32_t	eresi_Off;
+
+#define	XFMT		"0x%08X"
+#define	AFMT		"%08X"
+#define UFMT		"%08u"
+#define DFMT		"%08d"
+#define	RDFMT		"%d"
+
 #elif defined(ERESI64)
  typedef uint64_t	eresi_Addr;
  typedef uint64_t	eresi_Off;
+
+#if __WORDSIZE == 32
+ #define XFMT		"0x%016llX"
+ #define AFMT		"%016llX"
+ #define UFMT		"%016llu"
+ #define DFMT		"%016lld"
+ #define RDFMT		"%lld"
+#elif __WORDSIZE == 64
+ #define XFMT		"0x%016lX"
+ #define AFMT		"%016lX"
+ #define UFMT		"%016lu"
+ #define DFMT		"%016ld"
+ #define RDFMT		"%ld"
+#endif
+
 #else
  #error "You must define either ERESI32 or ERESI64 built"
 #endif

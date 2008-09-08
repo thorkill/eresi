@@ -144,7 +144,7 @@ int		cmd_kvirtm_write_pid()
     }
   else
     {
-      e1 = revm_lookup_param(world.curjob->curcmd->param[1]);
+      e1 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
       o1 = e1->value;
       switch (o1->otype->type)
 	{
@@ -160,7 +160,7 @@ int		cmd_kvirtm_write_pid()
 	}
     }
 
-  e2 = revm_lookup_param(world.curjob->curcmd->param[2]); 
+  e2 = revm_lookup_param(world.curjob->curcmd->param[2], 1); 
 
   o2 = e2->value;
 

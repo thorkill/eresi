@@ -67,7 +67,7 @@ revmobj_t	*parse_vector(char *param, char *fmt)
   ret->otype    = aspect_type_get_by_id(cur->type);
   ret->perm     = 1;
   ret->immed    = 0;
-  ret->get_obj  = (void *) revm_generic_getobj;
+  ret->get_obj  = (void *) revm_long_getobj;
   ret->set_obj  = (void *) revm_long_setobj;
 
   /* Success */
@@ -430,12 +430,12 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   int			isversion;
   u_int			size;
   revmobj_t		*pobj;
-  char			obj[ERESI_MEANING];
-  char			L1field[ERESI_MEANING];
-  char			L2field[ERESI_MEANING];
-  char			index[ERESI_MEANING];
-  char			offfield[ERESI_MEANING];
-  char			sizelemfield[ERESI_MEANING];
+  char			obj[ERESI_MEANING] = {0x00};
+  char			L1field[ERESI_MEANING] = {0x00};
+  char			L2field[ERESI_MEANING] = {0x00};
+  char			index[ERESI_MEANING] = {0x00};
+  char			offfield[ERESI_MEANING] = {0x00};
+  char			sizelemfield[ERESI_MEANING] = {0x00};
   u_int			off;
   u_int			sizelem;
   int			ret;

@@ -171,7 +171,7 @@ int		kernsh_addrlen(revmlist_t *actual, eresi_Addr *addr, int *len)
   /* Get the value of the object */
   else
     {
-      expr = revm_lookup_param(actual->rname);
+      expr = revm_lookup_param(actual->rname, 1);
       
       obj = expr->value;
       

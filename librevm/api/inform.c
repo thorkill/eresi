@@ -192,7 +192,7 @@ revmexpr_t	*revm_inform_type_addr(char		*type,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, addrbuf, 20, NULL);
-  snprintf(addrbuf, 20, "0x%08lX", (unsigned long) addr);
+  snprintf(addrbuf, 20, XFMT, (eresi_Addr) addr);
   ret = revm_inform_type(type, varname, addrbuf, expr, print, rec);
   if (ret)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -236,8 +236,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   fprintf(stderr, "\n [D] Variable %40s LOOKED UP\n", varname);
 #endif
 
-  /* The address is given, lookup it */
-  if (!hash_get(&exprs_hash, varname))
+  /* The address is given, look it up */
+  if (!revm_expr_get(varname))
     realname = revm_lookup_string(varname);
   else
     realname = varname;
@@ -245,7 +245,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 
   /* Adding expression and its type to hash tables */
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Variable %40s TO BE added to exprs_hash with type %s \n", realname, rtype->name);
+  fprintf(stderr, " [D] Variable %40s TO BE added to local exprs table with type %s \n", 
+	  realname, rtype->name);
 #endif
 
   /* Only check for addr range if print flag (manual inform) is on */
@@ -255,9 +256,6 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   if (!realname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid variable name", NULL);
-
-  if (hash_get(&exprs_hash, realname))
-    hash_del(&exprs_hash, realname);
 
   /* If just the address was given, lookup or create a name for the variable */
   if (IS_VADDR(realname))
@@ -311,11 +309,13 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   
   /* Register the expression */
   annot->expr = expr;
-  hash_set(&exprs_hash, (char *) strdup(realname), (void *) expr);
+  hash_set(&world.curjob->recur[world.curjob->curscope].exprs, 
+	   (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Variable %40s ADDED to exprs_hash with type %s \n", realname, rtype->name);
+  fprintf(stderr, " [D] Variable %40s ADDED to local exprs hash with type %s \n", 
+	  realname, rtype->name);
 #endif
 
   /* Success message and exit */

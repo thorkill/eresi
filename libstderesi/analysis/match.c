@@ -9,6 +9,7 @@
 */
 #include "libstderesi.h"
 
+
 /** 
  * Retreive the annotation for a given expression
  * @param name Expression name
@@ -54,8 +55,8 @@ static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fnam
   revmannot_t	*annot;
   revmannot_t	*dstannot;
   revmannot_t	*addedannot;
-  /*eresi_Addr	addr;
-    char	*newdata;*/
+  char		*newdata;
+  /*eresi_Addr	addr; */
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -77,8 +78,10 @@ static int	revm_field_propagate(revmexpr_t *dest, revmexpr_t *source, char *fnam
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to lookup annotations for input expressions", -1);
 
-      XREALLOC(__FILE__, __FUNCTION__, __LINE__, dstannot->addr, 
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__, newdata, 
 	       (char *) dstannot->addr, dest->type->size + child->type->size, -1);
+      dstannot->addr = (eresi_Addr) newdata;
+
       dst = revm_expr_copy(child, dstname, 1);
       dst->next = dest->childs;
       dest->childs = dst;
@@ -150,6 +153,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   char		namebuf[BUFSIZ];
   char		*rname;
   revmexpr_t	*candid;
+  list_t	*looplist;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -157,7 +161,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   dstnbr = 1;
   XALLOC(__FILE__, __FUNCTION__, __LINE__, exprlist, sizeof(list_t), -1);
   elist_init(exprlist, "curdestlist", ASPECT_TYPE_EXPR);
-  for (curidx = *world.curjob->iter.curindex - 1, curptr = destvalue; 
+  for (curidx = world.curjob->iter[world.curjob->curiter].listidx - 1, curptr = destvalue; 
        curptr && *curptr; 
        curptr = foundptr + 2, curidx++, dstnbr++)
     {
@@ -167,7 +171,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       if (foundptr)
 	*foundptr = 0x00;
       type   = revm_exprtype_get(curptr);
-      snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter.curkey, curidx); 
+      snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter[world.curjob->curiter].curkey, curidx); 
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
       if (!candid)
@@ -181,13 +185,14 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	break;
     }
 
-  /* FIXME: The rewritten element is not part of any list or is part of an alien list */
-  if (!world.curjob->iter.list)
+  /* UNIMPLEMENTED: The rewritten element is not part of any list or is part of an alien list */
+  looplist = (list_t *) world.curjob->iter[world.curjob->curiter].list;
+  if (!looplist)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Rewriting of non-list element currently not supported", -1);
-  else if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
+		 "Rewriting of non-list element unimplemented", -1);
+  else if (looplist->type != ASPECT_TYPE_EXPR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Rewriting is currently only supported for expression lists", -1);
+		 "Rewrite of non-expression variables unimplemented", -1);
   
   /* Simply replace the current list element now */
   /* The type of the list (list_t->type) does not change : it still is a list of revmexpr_t */
@@ -218,12 +223,17 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
 	  /* initialisation de subexpr par une autre expr est bugge ! */
 	  /* il nomme le field par le nom de la variable .. */
-	  elist_set(world.curjob->iter.list, strdup(world.curjob->iter.curkey), candid);
+	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curiter].curkey), candid);
 	  rname = strdup(matchme->label);
 	  revm_expr_destroy(matchme->label);
 	  matchme = revm_expr_copy(candid, rname, 0);
-	  revm_expr_destroy(candid->label);
+	  world.curjob->iter[world.curjob->curiter].curind = matchme;
+	  //revm_expr_destroy(candid->label);
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
+	  
+	  revm_expr_print(candid->label);
+	  revm_output("\n");
+	  
 	  if (!matchme)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to write back list element", -1);
@@ -233,8 +243,8 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   /* Insert a list at a certain offset of the list */
   else
     {
-      elist_replace(world.curjob->iter.list, world.curjob->iter.curkey, elist_copy(exprlist));
-      *world.curjob->iter.curindex += exprlist->elmnbr - 1;
+      elist_replace(looplist, world.curjob->iter[world.curjob->curiter].curkey, elist_copy(exprlist));
+      world.curjob->iter[world.curjob->curiter].listidx += exprlist->elmnbr - 1;
       elist_destroy(exprlist);
     }
 
@@ -253,9 +263,10 @@ static int	revm_case_execmd(char *str)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  world.curjob->sourced++;
-  snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
-  hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 11, ASPECT_TYPE_STR);
+  world.curjob->curscope++;
+  snprintf(actual, sizeof(actual), "job%u_rec%u_labels", world.curjob->id, world.curjob->curscope);
+  hash_init(&world.curjob->recur[world.curjob->curscope].labels, 
+	    strdup(actual), 11, ASPECT_TYPE_STR);
 
   curcmd = world.curjob->curcmd;
 
@@ -263,15 +274,15 @@ static int	revm_case_execmd(char *str)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Side-effects preparation failed", -1);
 
-  world.curjob->curcmd = world.curjob->script[world.curjob->sourced];
+  world.curjob->curcmd = world.curjob->recur[world.curjob->curscope].script;
   if (revm_execmd() < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Side-effects execution failed", -1);
   world.curjob->curcmd = curcmd;
 
-  world.curjob->script[world.curjob->sourced] = NULL;
-  hash_destroy(&labels_hash[world.curjob->sourced]);
-  world.curjob->sourced--;
+  world.curjob->recur[world.curjob->curscope].script = NULL;
+  hash_destroy(&world.curjob->recur[world.curjob->curscope].labels);
+  world.curjob->curscope--;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -282,19 +293,19 @@ static int	revm_case_execmd(char *str)
 int		cmd_into()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!world.curjob->rwrt.matched)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matched)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  if (world.curjob->rwrt.replaced)
+  if (world.curjob->recur[world.curjob->curscope].rwrt.replaced)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot transform a second time", -1);
-  if (!world.curjob->rwrt.matchexpr)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot transform outside a rewrite", -1);
-  if (revm_case_transform(world.curjob->rwrt.matchexpr, 
+  if (revm_case_transform(world.curjob->recur[world.curjob->curscope].rwrt.matchexpr, 
 			  strdup(world.curjob->curcmd->param[0])) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to transform expression", -1);
-  world.curjob->rwrt.replaced = 1;
+  world.curjob->recur[world.curjob->curscope].rwrt.replaced = 1;
   if (!world.state.revm_quiet)
     revm_output(" [*] Expression transformed succesfully \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -308,12 +319,12 @@ int		cmd_pre()
   char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!world.curjob->rwrt.matched)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matched)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  if (world.curjob->rwrt.replaced)
+  if (world.curjob->recur[world.curjob->curscope].rwrt.replaced)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot perform pre-side-effects after transformation", -1);
-  if (!world.curjob->rwrt.matchexpr)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Command cannot execute outside a rewrite", -1);
   str = revm_string_get(world.curjob->curcmd->param);
@@ -331,12 +342,12 @@ int		cmd_post()
   char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!world.curjob->rwrt.matched)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matched)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  if (!world.curjob->rwrt.replaced)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.replaced)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot perform post-side-effects before transformation", -1);
-  if (!world.curjob->rwrt.matchexpr)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Command cannot execute outside a rewrite", -1);
   str = revm_string_get(world.curjob->curcmd->param);
@@ -358,7 +369,7 @@ int		cmd_case()
   int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!world.curjob->rwrt.matchexpr)
+  if (!world.curjob->recur[world.curjob->curscope].rwrt.matchexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Case is not in a match", -1);
 
@@ -370,14 +381,14 @@ int		cmd_case()
   /* If a previous case has already matched, simply end the transformation now :
      We must do that here because some "post" commands can be put after a matching 
      "case", so we only stop rewriting at the first case -following- a matchcase */
-  if (world.curjob->rwrt.matched)
+  if (world.curjob->recur[world.curjob->curscope].rwrt.matched)
     {
       revm_move_pc(world.curjob->curcmd->endlabel);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Check if we match */
-  matchme = (revmexpr_t *) world.curjob->rwrt.matchexpr;
+  matchme = (revmexpr_t *) world.curjob->recur[world.curjob->curscope].rwrt.matchexpr;
   if (!matchme->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid type for matchme expression", -1);
@@ -387,12 +398,12 @@ int		cmd_case()
   /* No match or bad match : nothing happens */
   if (ret)
     {
-      world.curjob->rwrt.matched = 0;
+      world.curjob->recur[world.curjob->curscope].rwrt.matched = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Matched : transform and execute post side effects if any */
-  world.curjob->rwrt.matched = 1;
+  world.curjob->recur[world.curjob->curscope].rwrt.matched = 1;
 
   /* Sometimes the case command comes directly with appended post side-effects */
   if (!world.curjob->curcmd->param[1])
@@ -413,25 +424,33 @@ int		cmd_case()
  */
 int			cmd_match()
 {
+  list_t		*list;
+  revmexpr_t		*ind;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* The first time we enter this command, we have to fetch the params */
-  if (world.curjob->iter.list && !strcmp(world.curjob->iter.curname, world.curjob->curcmd->param[0]))
+  list = (list_t *) world.curjob->iter[world.curjob->curiter].list;
+  ind  = world.curjob->iter[world.curjob->curiter].curind;
+  if (list && ind && !strcmp(ind->label, world.curjob->curcmd->param[0]))
     {
-      if (world.curjob->iter.list->type != ASPECT_TYPE_EXPR)
+      if (list->type != ASPECT_TYPE_EXPR)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Match/Rewrite can only works on expressions", -1);
 #if __DEBUG_REWRITE__
-      fprintf(stderr, "\n *** We -ARE- matching elements of a list *** \n");
+      fprintf(stderr, "\n [DEBUG] We -ARE- matching elements of a list *** \n");
 #endif
-    }
-#if __DEBUG_REWRITE__
-  else
-    fprintf(stderr, "\n *** We are -NOT- matching elements of a list *** \n");
-#endif
-    
 
-  world.curjob->rwrt.matchexpr = revm_lookup_param(world.curjob->curcmd->param[0]);
+      world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+#if __DEBUG_REWRITE__
+  fprintf(stderr, "\n [DEBUG] We are -NOT- matching elements of a list *** \n");
+#endif    
+
+  ind = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -442,7 +461,7 @@ int			cmd_match()
 int		cmd_matchend()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  bzero(&world.curjob->rwrt, sizeof(revmrewrite_t));
+  bzero(&world.curjob->recur[world.curjob->curscope].rwrt, sizeof(revmrewrite_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -454,30 +473,42 @@ int		cmd_default()
 {
   char		*str;
   revmargv_t	*cur;
-  char          actual[26];
+  char          actual[ERESI_MEANING];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cur = world.curjob->curcmd;
 
+  /* Dont execute if we matched something */
+  if (world.curjob->recur[world.curjob->curscope].rwrt.matched)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
   /* Execute parameter command */
-  world.curjob->sourced++;
-  snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
-  hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 11, ASPECT_TYPE_STR);
+  world.curjob->curscope++;
+
+  snprintf(actual, sizeof(actual), "job%u_rec%u_labels", 
+	   world.curjob->id, world.curjob->curscope);
+  hash_init(&world.curjob->recur[world.curjob->curscope].labels, strdup(actual), 3, ASPECT_TYPE_UNKNOW);
+
+  snprintf(actual, sizeof(actual), "job%u_rec%u_exprs", 
+	   world.curjob->id, world.curjob->curscope);
+  hash_init(&world.curjob->recur[world.curjob->curscope].exprs, strdup(actual), 7, ASPECT_TYPE_UNKNOW);
+
   str = revm_string_get(world.curjob->curcmd->param);
   cur = world.curjob->curcmd;
   if (revm_exec_str(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Display execrequest failed", -1);
-  world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
+  world.curjob->curcmd = world.curjob->recur[world.curjob->curscope].script; 
   if (revm_execmd() < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Default command execution failed", -1);
 
   /* Restore previous context */
   world.curjob->curcmd = cur;
-  world.curjob->script[world.curjob->sourced] = NULL;
-  hash_destroy(&labels_hash[world.curjob->sourced]);
-  world.curjob->sourced--;
+  world.curjob->recur[world.curjob->curscope].script = NULL;
+  hash_destroy(&world.curjob->recur[world.curjob->curscope].labels);
+  hash_destroy(&world.curjob->recur[world.curjob->curscope].exprs);
+  world.curjob->curscope--;
 
   /* Jump to end of the match construct */
   revm_move_pc(world.curjob->curcmd->endlabel);

@@ -881,6 +881,8 @@ void	elfsh_setup_hooks()
 			   ELFSH_OS_SOLARIS, elfsh_cflow_mips64);
   elfsh_register_cflowhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			   ELFSH_OS_LINUX, elfsh_cflow_ia32);
+  elfsh_register_cflowhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,
+			   ELFSH_OS_BEOS, elfsh_cflow_ia32);
 
   /* Usual REL/PLT/ALTPLT targets for ET_DYN/x86 */
   elfsh_register_plthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
@@ -927,6 +929,8 @@ void	elfsh_setup_hooks()
 			       ELFSH_OS_OPENBSD, elfsh_encodeplt_ia32);
   elfsh_register_encodeplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			       ELFSH_OS_SOLARIS, elfsh_encodeplt_ia32);
+  elfsh_register_encodeplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,
+			       ELFSH_OS_BEOS, elfsh_encodeplt_ia32);
 
   /* Usual ENCODEPLT1 targets for ET_EXEC/IA32 */
   elfsh_register_encodeplt1hook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
@@ -949,6 +953,9 @@ void	elfsh_setup_hooks()
 				ELFSH_OS_OPENBSD, elfsh_encodeplt1_ia32);
   elfsh_register_encodeplt1hook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 				ELFSH_OS_SOLARIS, elfsh_encodeplt1_ia32);
+  elfsh_register_encodeplt1hook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,
+				ELFSH_OS_BEOS, elfsh_encodeplt1_ia32);
+
 
   /*** Now EXTPLT handlers ***/
 
@@ -973,6 +980,9 @@ void	elfsh_setup_hooks()
 			    ELFSH_OS_OPENBSD, elfsh_extplt_ia32);
   elfsh_register_extplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
 			    ELFSH_OS_SOLARIS, elfsh_extplt_ia32);
+  elfsh_register_extplthook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,
+			    ELFSH_OS_BEOS, elfsh_extplt_ia32);
+
 
   /***************************************/
   /****** ARGC arguments counting  ******/
@@ -989,6 +999,8 @@ void	elfsh_setup_hooks()
 			  ELFSH_OS_OPENBSD, elfsh_args_count_ia32);
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
 			  ELFSH_OS_SOLARIS, elfsh_args_count_ia32);
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,
+			  ELFSH_OS_BEOS, elfsh_args_count_ia32);
   
   done++;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

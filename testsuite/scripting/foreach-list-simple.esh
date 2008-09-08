@@ -17,6 +17,9 @@ jne error
 beginning:
 print Starting first foreach
 
+#profile enable warn
+#profile enable trace
+
 foreach $elem of test2 matching Sparc
   print Regex Matched $elem
 forend

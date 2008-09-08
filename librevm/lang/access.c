@@ -242,56 +242,72 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   
   /* Create the revmobj and fill its handlers */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, path, sizeof(revmobj_t), NULL);
-  path->root     = (void *) type;
+  path->root = (void *) type;
 
-  /* Lookup again in the file if we are dealing with a pointer */
-  if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
-    {
-      data = (void *) *(eresi_Addr *) data;
-      if (translateaddr)
-	data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
-    }
-
-  /* In case of list or hashes */
-  if (type->isptr && (type->type == ASPECT_TYPE_LIST || type->type == ASPECT_TYPE_HASH))
-    path->get_obj  = (void *) revm_hash_getobj;
-  else
-    path->get_obj  = (void *) revm_generic_getobj;
-
-  /* Fill type specific object handlers */
-  path->parent   = (void *) data;
-  if (type->type == ASPECT_TYPE_STR)
-    {
-      path->get_name = (void *) revm_generic_getname;
-      path->set_name = (void *) revm_generic_setname;
-    }
+  /* In case type is unknown */
   if (!type)
     {
       path->get_data = (void *) revm_generic_getdata;
       path->set_data = (void *) revm_generic_setdata;
+      goto end;
     }
 
-  /* This handler is size dependant */
-  if (type)
-    switch (type->type)
-      {
-      case ASPECT_TYPE_BYTE:
-	path->set_obj  = (void *) revm_byte_setobj;
-	break;
-      case ASPECT_TYPE_SHORT:
-	path->set_obj  = (void *) revm_short_setobj;
-	break;
-      case ASPECT_TYPE_INT:
-	path->set_obj  = (void *) revm_int_setobj;
-	break;
-      case ASPECT_TYPE_CADDR:
-      case ASPECT_TYPE_DADDR:
-      case ASPECT_TYPE_LONG:
-	path->set_obj  = (void *) revm_long_setobj;
-	break;
-      default:
-	break;
-      }
+  /* Lookup again in the file if we are dealing with a pointer */
+  if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
+    { 
+      // FIXME: VALGRIND : 'data' 0byte after end of allocated block..
+      data = (void *) *(eresi_Addr *) data; 
+      if (translateaddr)
+	data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
+    }
+  path->parent = (void *) data;
+
+  /* In case of list or hashes */
+  if (type->isptr)
+    {
+      if (type->type == ASPECT_TYPE_LIST || type->type == ASPECT_TYPE_HASH)
+	path->get_obj  = (void *) revm_hash_getobj;
+      else
+	{
+	  path->get_obj  = (void *) revm_long_getobj;
+	  path->set_obj  = (void *) revm_long_setobj;
+	}
+      goto end;
+    }
+
+  /* Then put type dependent handlers */
+  switch (type->type)
+    {
+    case ASPECT_TYPE_BYTE:
+      path->get_obj  = (void *) revm_byte_getobj;
+      path->set_obj  = (void *) revm_byte_setobj;
+      break;
+    case ASPECT_TYPE_SHORT:
+      path->get_obj  = (void *) revm_short_getobj;
+      path->set_obj  = (void *) revm_short_setobj;
+      break;
+    case ASPECT_TYPE_INT:
+    case ASPECT_TYPE_OID:
+      path->get_obj  = (void *) revm_int_getobj;
+      path->set_obj  = (void *) revm_int_setobj;
+      break;
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
+      path->get_obj  = (void *) revm_addr_getobj;
+      path->set_obj  = (void *) revm_addr_setobj;
+      break;
+    case ASPECT_TYPE_LONG:
+      path->get_obj  = (void *) revm_long_getobj;
+      path->set_obj  = (void *) revm_long_setobj;
+      break;
+    case ASPECT_TYPE_STR:
+      path->get_name = (void *) revm_generic_getname;
+      path->set_name = (void *) revm_generic_setname;
+    default:
+      break;
+    }
+  
+ end:
   path->otype = type;
   path->immed = 0;		/* Value is not immediate */
   path->perm  = 1;		/* Do not free after use  */
@@ -395,9 +411,6 @@ revmobj_t	*revm_object_lookup(char *str)
 
 
 /**************** Generic handlers *********************************/
-
-
-
 char		*revm_generic_getname(void *type, void *data)
 {
   return (data);
@@ -409,14 +422,48 @@ int		revm_generic_setname(void *type, void *data, void *newdata)
   return (0);
 }
 
-eresi_Addr	revm_generic_getobj(void *data)
+eresi_Addr	revm_addr_getobj(void *data)
 {
   return (*(eresi_Addr *) data);
+}
+
+eresi_Addr	revm_byte_getobj(void *data)
+{
+  u_char	byte;
+  
+  byte = *(u_char *) data;
+  return ((eresi_Addr) byte);
+}
+
+eresi_Addr	revm_short_getobj(void *data)
+{
+  u_short	sh;
+  
+  sh = *(u_short *) data;
+  return ((eresi_Addr) sh);
+}
+
+eresi_Addr	revm_int_getobj(void *data)
+{
+  u_int		ent;
+
+  ent = *(u_int *) data;
+  return ((eresi_Addr) ent);
 }
 
 eresi_Addr	revm_hash_getobj(void *data)
 {
   return ((eresi_Addr) data);
+}
+
+eresi_Addr	revm_long_getobj(void *data)
+{
+  eresi_Addr	addr;
+  u_long	l;
+
+  l = *(long *) data;
+  addr = (eresi_Addr) l;
+  return (addr);
 }
 
 int		revm_byte_setobj(void *data, eresi_Addr value)
@@ -447,6 +494,15 @@ int		revm_int_setobj(void *data, eresi_Addr value)
 }
 
 int		revm_long_setobj(void *data, eresi_Addr value)
+{
+  long		*dst;
+
+  dst = (long *) data;
+  *dst = value;
+  return (0);
+}
+
+int		revm_addr_setobj(void *data, eresi_Addr value)
 {
   eresi_Addr	*dst;
 

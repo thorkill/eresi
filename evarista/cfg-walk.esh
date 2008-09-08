@@ -1,5 +1,7 @@
 #!evarista/evarista32
 
+quiet
+
 print ENTERED CFG-WALK
 
 cmp $# 1
@@ -11,32 +13,49 @@ set $hash[visitedblocks:$1] 1
 #print $block
 
 print Now ASM to ELIR on block at $block.vaddr
+
 #print $hash[visitedblocks:$1]
 
 bin2lir $1
 
 #lir-dataflow $1
+#profile enable warn
+
+print Now walking CFG
 
 foreach $link of $block.outlinks
 
-  # Dont analyse blocks outside current function
-  cmp $link.scope SCOPE_GLOBAL
-  je next
-
   set $nextblock $link.id
+  set $addr $nextblock.vaddr
   #print $nextblock
   #print $nextblock.vaddr
 
-  set $addr $nextblock.vaddr
+  # Dont analyse blocks outside current function
+  cmp $link.scope SCOPE_GLOBAL
+  jne ok
+  print Block SCOPE GLOBAL passed at $addr
+  jmp next
+
+ok:
   set $found $hash[visitedblocks:$addr]
   cmp $found 1
-  je next
+  jne ok2
 
+  print Block already VISITED at $addr
+  jmp next
+
+ok2:
   cfg-walk $addr
 
   #print $nextblock
 
-next: forend
+next: 
+  vlist
+  print Now next block in list after $addr
+
+forend
+
+return 0
 
 end:
 print This function needs two parameters

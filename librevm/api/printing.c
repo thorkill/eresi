@@ -29,7 +29,7 @@ int		revm_printscript(revmargv_t *start)
   if (start)
     list = start;
   else
-    list = world.curjob->script[world.curjob->sourced];
+    list = world.curjob->recur[world.curjob->curscope].script;
 
   for (index = 0; list; list = list->next, index++)
     {

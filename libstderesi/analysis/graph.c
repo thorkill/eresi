@@ -52,6 +52,7 @@ void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
 {
   char	buf[BUFSIZ];
 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   snprintf(buf,BUFSIZ-1,"graph [label=<\n\
 		<table border=\"1\">\n\
 			<tr><td>Legend:</td><td>%s</td></tr>\
@@ -70,7 +71,37 @@ void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
 	   LNK_COLOR_DELAY);
 
   write(fd,buf,strlen(buf));
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
 
+
+/* Just a static handler to be used with elist_apply */
+static int   revm_print_block_handler(listent_t *e, void *null)
+{
+  revmexpr_t	*expr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  expr = (revmexpr_t *) e->data;
+  revm_expr_print(expr->label);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/**
+ * @brief Print the content of a basic block
+ * @param list The expression list for that block
+ * @return Nothing
+ */
+static void	revm_print_block(int fd, list_t *list)
+{
+  int		savedfd;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  savedfd = revm_output_get(&world.curjob->ws);
+  revm_setoutput(&world.curjob->ws, fd);
+  elist_apply(list, NULL, revm_print_block_handler);
+  revm_setoutput(&world.curjob->ws, savedfd);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
@@ -79,7 +110,7 @@ void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
  * @param fd
  * @param blk
  */
-void		revm_disasm_block(int fd, mjrblock_t *blk)
+static void	revm_disasm_block(int fd, mjrblock_t *blk)
 {
   char		*buffer;
   char		*name;
@@ -91,6 +122,7 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
   u_int		reloff;
   char		tmpbuf[20];
   u_int		len;
+  list_t	*instrlist;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_quiet = world.state.revm_quiet;
@@ -98,6 +130,18 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
   revm_colors = nocolor;
   reloff = nocolor = 0;
   cur = 1;
+
+  /* Check if we have a list of expressions for this block already */
+  /* WIP
+  snprintf(tmpbuf, sizeof(tmpbuf), AFMT, blk->vaddr);
+  instrlist = hash_get(&instrlists_hash, tmpbuf);
+  if (instrlist)
+    {
+      fprintf(stderr, "FOUND TRANSFORM LIST FOR THIS BLOCK ! \n");
+      revm_print_block(fd, instrlist);
+      PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+    }
+  */
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
   foffset = elfsh_get_foffset_from_vaddr(world.curjob->curfile, blk->vaddr);
@@ -122,7 +166,7 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
 	}
     }
  end:
-  XFREE(__FILE__, __FUNCTION__, __LINE__,buffer);
+    XFREE(__FILE__, __FUNCTION__, __LINE__,buffer);
   world.state.revm_quiet = revm_quiet;
   nocolor = revm_colors;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -386,7 +430,7 @@ int		revm_graph_get_function_type(mjrfunc_t *fnc)
 
 
 /* Write the header dot description for a node */
-char		*revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr)
+char		*revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr, u_int size)
 {
   char		buf[BUFSIZ];
   char		*name;
@@ -396,12 +440,12 @@ char		*revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr)
   name = elfsh_reverse_metasym(obj, addr, &offset);
   if (name && !offset)
     snprintf(buf, sizeof(buf),
-	     "\"%s\" [shape=\"box\" color=%s label=\"<%s>:\\l",
-	     name, "\"grey\"", name);
+	     "\"%s\" [shape=\"box\" color=%s label=\"<%s@%u>:\\l",
+	     name, "\"grey\"", name, size);
   else
     snprintf(buf, sizeof(buf),
-	     "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT ">:\\l",
-	     addr, "\"grey\"", addr);
+	     "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT "@%u>:\\l",
+	     addr, "\"grey\"", addr, size);
   write(fd, buf, strlen(buf));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (!offset ? name : NULL));
 }
@@ -454,7 +498,7 @@ int		revm_graph_blocks(container_t   *cntnr,
 
   linklist = cntnr->outlinks;
 
-  name = revm_write_dotnode(fd, world.mjr_session.cur->obj, blk->vaddr);
+  name = revm_write_dotnode(fd, world.mjr_session.cur->obj, blk->vaddr, blk->size);
   revm_disasm_block(fd, blk);
   revm_write_endnode(fd);
 

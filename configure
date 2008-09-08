@@ -1021,7 +1021,7 @@ echo "  etrace/*.c evarista/*.c libstderesi/*/*.c \\"		>> Makefile
 echo "  libstderesi/include/*.h \\"                             >> Makefile
 if [ "$KERNSH" = "1" ]; then
 echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
-echo "  libkernsh/*.c libkernsh/include/*.h \\"                 >> Makefile
+echo "  libkernsh/*/*.c libkernsh/include/*.h \\"               >> Makefile
 fi
 echo "  etrace/include/*.h evarista/include/*.h "		>> Makefile
 fi

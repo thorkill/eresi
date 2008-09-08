@@ -19,20 +19,31 @@ int			cmd_set()
   int			errvar;
   revmexpr_t		*last;
   u_int			oid;
+  revmobj_t		*obj;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Resolve all possible case between expressions and objects */
   error  = -1;
   errvar = 0;
-  e1 = revm_expr_get(world.curjob->curcmd->param[0]);
+
+  /* The destination of a set must be defined in the -current- scope */
+  if (hash_get(&world.curjob->recur[world.curjob->curscope].exprs, world.curjob->curcmd->param[0]))
+    e1 = revm_expr_get(world.curjob->curcmd->param[0]);
+  else
+    e1 = NULL;
   e2 = revm_expr_get(world.curjob->curcmd->param[1]);
 
   /* The $_ variable is updated as well */
   last = revm_expr_get(REVM_VAR_RESULT);
   if (last == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to get result variable", -2);
+    {
+      obj = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
+      last = revm_expr_create_from_object(obj, REVM_VAR_RESULT);
+      if (!last)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to create result variable", -1);
+    }
 
   /* Make sure we lookup an expression with container if given by ID */
   if (e2 && e2->value && e2->type->type == ASPECT_TYPE_OID)
@@ -70,7 +81,7 @@ int			cmd_set()
   /* Fix the source expression if unresolved */
   if (!e2)
     {
-      e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
+      e2 = revm_lookup_param(world.curjob->curcmd->param[1], 0);
       if (!e2)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to create source object", (-1));
@@ -79,7 +90,7 @@ int			cmd_set()
   /* Fix the destination expression */
   if (!e1)
     {
-      e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+      e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0);
       if (!e1)
 	{
 	  revm_expr_destroy(e2->label);
@@ -186,9 +197,9 @@ int			cmd_cmp()
     }
   
   if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
+    e2 = revm_lookup_param(world.curjob->curcmd->param[1], 0);
   if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+    e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0);
   if (!e1 || !e2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -232,12 +243,8 @@ int			cmd_test()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -292,12 +299,8 @@ int			cmd_add()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2 || !e1->value || !e2->value || !e1->type || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -365,12 +368,8 @@ int			cmd_sub()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2 || !e1->value || !e2->value || !e1->type || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -439,12 +438,8 @@ int			cmd_mul()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2 || !e1->value || !e2->value || !e1->type || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -478,12 +473,8 @@ int			cmd_div()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2 || !e1->value || !e2->value || !e1->type || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -517,12 +508,8 @@ int			cmd_mod()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Need 2 parameters", -1);
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
-  if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2 || !e1->value || !e2->value || !e1->type || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);

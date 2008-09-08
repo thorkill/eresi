@@ -31,7 +31,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
-			-I../../libetrace/include $(KERNSHINC) $(KERNSH)         \
+			-I../../libetrace/include $(KERNSHINCINC) $(KERNSH)      \
 			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT) $(EXTRACFLAGS) \
 			-DERESI64
 

@@ -82,7 +82,7 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
   newtype->off        = off;
   newtype->isptr      = isptr;
   newtype->dimnbr     = elemnbr;
-  newtype->fieldname  = fieldname;
+  newtype->fieldname  = strdup(fieldname);
   newtype->elemnbr    = dims;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);
 }

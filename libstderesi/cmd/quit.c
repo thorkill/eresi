@@ -77,7 +77,7 @@ int		cmd_quit()
 	       revm_modename_get(), REVM_VERSION);
       revm_quitmsg_set(logbuf);
     }
-  if (world.curjob->sourced == 0)
+  if (world.curjob->curscope == 0)
     revm_output(quit_msg);
   
   /* Now the ugly code depending on the compilation options */

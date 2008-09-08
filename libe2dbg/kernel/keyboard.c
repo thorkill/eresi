@@ -429,7 +429,7 @@ void		ke2dbg_keyb_enter()
       }
   */
 
-  world.curjob->curcmd = world.curjob->script[0];
+  world.curjob->curcmd = world.curjob->recur[0].script;
   switch (revm_execmd())
     {
     case REVM_SCRIPT_CONTINUE:

@@ -518,14 +518,22 @@ void			e2dbg_generic_breakpoint(int		signum,
 
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
       e2dbg_output("-------------- ON-BREAK REGISTERS ----------------------->\n");
-      cmd_dumpregs();
+      //cmd_dumpregs();
       e2dbg_output("<------------------------------------------------------\n");
       e2dbg_output("------------------------------------->\n");
       e2dbg_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
-      e2dbg_threads_print();
+      //e2dbg_threads_print();
 #endif
     }
   
+  /*
+  if (e2dbgworld.stoppedthread == NULL)
+    {
+      fprintf(stderr, "************** STOPPED THREAD == NULL !!!!!!!!! *********************** \n");
+      sleep(20);
+    }
+  */
+
   /* Get the current thread */
   stopped = (pthread_t) e2dbg_self();
   snprintf(key, sizeof(key), "%u", (unsigned int) stopped);

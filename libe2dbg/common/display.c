@@ -102,7 +102,7 @@ int		e2dbg_display(char **cmd, u_int nbr)
 	  
 	  /* Execute displayed command */
 	  cur = world.curjob->curcmd;
-	  world.curjob->curcmd = world.curjob->script[world.curjob->sourced]; 
+	  world.curjob->curcmd = world.curjob->recur[world.curjob->curscope].script; 
 	  if (revm_execmd() < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Display execution failed", -1);

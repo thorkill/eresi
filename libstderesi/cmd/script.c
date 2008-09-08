@@ -55,8 +55,9 @@ int			cmd_script()
 
 
 /**
- *  Set then scriptsdir directory and add cmd corresponding to scripts 
- * @param dir_name
+ * @brief Set then scriptsdir directory and add cmd corresponding to scripts 
+ * @param dir_name Directory path where scripts are located.
+ * @return Success (0) or Error (-1).
  */
 int		revm_add_script_cmd(char *dir_name)
 {

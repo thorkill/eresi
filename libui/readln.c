@@ -128,7 +128,8 @@ void		readln_completion_install(char mode, char side)
   //fprintf(stderr, "Installing completion now \n");
   
   comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
-  comp.cmds[1]  = hash_get_keys(&exprs_hash  , NULL);
+  //comp.cmds[1]  = hash_get_keys(&exprs_hash  , NULL);
+  comp.cmds[1] = NULL; // FIXME: completion on all hierarchy of expressions scope
   comp.cmds[2]  = hash_get_keys(&const_hash  , NULL);
   comp.cmds[3]  = hash_get_keys(&mod_hash    , NULL);
   comp.cmds[4]  = hash_get_keys(&L1_hash     , NULL);

@@ -145,8 +145,8 @@ int		mjr_function_copy(mjrcontext_t  *ctx,
  */
 void			*mjr_fingerprint_function(mjrcontext_t  *ctx, 
 						  eresi_Addr	addr, 
-						  int		type) {
-
+						  int		type) 
+{
   MD5_CTX		md5ctx;
   unsigned char		fbuf[MJR_MAX_FUNCTION_LEN] = {0x00};
   unsigned char		digest[16];

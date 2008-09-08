@@ -5,25 +5,45 @@ print ENTERED CALLGRAPH-WALK
 cmp $# 1
 jne end
 
+#tables blocks
+#tables blocks 200*
+#print NOW PRINTING FUNCTIONS
+#tables functions
+#tables functions 200*
+#exec sleep 60
+#set $test $hash[functions:0000000000100D04]
+#print $test
+#exec sleep 5
+#set $index 0x100D04
+#set $test $hash[functions:$index]
+#print $test
+#exec sleep 20
+
 set $func $hash[functions:$1]
-print $1
 set $hash[visitedfuncs:$1] 1
 print Entering FUNCTION: $func
 
-verb
+#verb
 #profile enable warn
 
 cfg-walk $func.vaddr
 
+graph bloc main
+#exec sleep 120
+
 foreach $link of $func.outlinks
 
   print $link
-  profile enable warn
+  #profile enable warn
+  verb
 
   # Dont analyse extern functions
   cmp $link.scope SCOPE_GLOBAL
   je next
 
+  tables functions 100*
+
+  profile enable warn
   set $nextfunc $link.id
   print NEXTFUNC: $nextfunc
 
@@ -36,9 +56,12 @@ foreach $link of $func.outlinks
   cfg-walk $addr  
   callgraph-walk $addr
 
+  profile enable warn
   print $nextfunc
 
 next: forend
+
+return 0
 
 end:
 print This function needs two parameters

@@ -372,7 +372,7 @@ int		elist_replace(list_t *h, char *key, list_t *newlist)
   /* Just find the latest entry */
   for (lastent = newlist->head; lastent && lastent->next; lastent = lastent->next);
 
-  /* Now find the original element to swap with the new list */
+  /* Now find the original element to replace by the new list */
   for (prev = NULL, cur = h->head; cur; prev = cur, cur = cur->next)
     if (!strcmp(cur->key, key))
       {
@@ -382,7 +382,7 @@ int		elist_replace(list_t *h, char *key, list_t *newlist)
 	  prev->next = newlist->head;
 	lastent->next = cur->next;	
 	h->elmnbr += newlist->elmnbr - 1;
-	XFREE(__FILE__, __FUNCTION__, __LINE__, cur->data);
+	//XFREE(__FILE__, __FUNCTION__, __LINE__, cur->data);
 	XFREE(__FILE__, __FUNCTION__, __LINE__, cur);
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       }

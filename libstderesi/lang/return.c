@@ -32,7 +32,7 @@ int		cmd_return()
       lastvar = revm_expr_get(REVM_VAR_RESULT);
       if (lastvar)
 	revm_expr_destroy(lastvar->label);
-      retval = revm_lookup_param(world.curjob->curcmd->param[0]);
+      retval = revm_lookup_param(world.curjob->curcmd->param[0], 1);
       if (!retval)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid return value", -1);
@@ -40,7 +40,7 @@ int		cmd_return()
     }
 
   /* Do not unload files if we were sourcing a script */
-  if (world.curjob->sourced == 0)
+  if (world.curjob->curscope == 0)
     {
       keys = hash_get_keys(&world.jobs, &keynbr);
       

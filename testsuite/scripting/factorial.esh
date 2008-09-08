@@ -2,12 +2,16 @@
 
 sdir .
 #quiet
-profile enable warn
+#profile enable warn
 
+vlist
 
 cmp $# 2
+
+vlist
 jne end
-print Fact with params :
+
+print Fact with params : 
 print $1 $2
 mul $2 $1
 set $2 $_

@@ -468,6 +468,8 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 {
   elfsh_Shdr *section;
   elfsh_Sym  *symbol;	
+  elfsh_Rel  *rel_entry;
+  uint32_t   rel_offset;
   char	     *symname;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -496,7 +498,19 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to find GOT for GOTPC", -1);
 	}
-      *dword = cur->r_offset - section->sh_addr;
+      
+      //*dword = cur->r_offset - section->sh_addr;
+      symname = elfsh_get_symname_from_reloc(mod->parent, cur);
+      if (symname == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to find symbol in host", -1);
+      rel_entry = elfsh_get_relent_by_name(new->parent, symname);
+      if (rel_entry == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to find relocation in host", -1);
+      *dword = elfsh_get_reloffset(rel_entry) - section->sh_addr;
+
+
       break;
     
     case R_386_PLT32:
@@ -569,11 +583,13 @@ int      elfsh_relocate_ia32(elfshsect_t	*new,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to find GOT for GOTPC", -1);
 	}
-      *dword = section->sh_addr - (new->shdr->sh_addr + cur->r_offset) + 2;
 
+      rel_offset = (elfsh_get_ostype(new->parent) == ELFSH_OS_BEOS ? 3 : 2);
+      *dword = section->sh_addr - (new->shdr->sh_addr + cur->r_offset) + rel_offset;
+      
 #if	__DEBUG_RELADD__        
       printf("[DEBUG_RELADD] R_386_GOTPC : *dword=%08X, non added *dword was %08X \n", 
-	     section->sh_addr - (new->shdr->sh_addr + cur->r_offset) + 2, *dword);
+	     section->sh_addr - (new->shdr->sh_addr + cur->r_offset) + rel_offset, *dword);
 #endif
 
       break;

@@ -21,7 +21,7 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-L../liballocproxy -L../libmjollnir/                      \
 			-L../libaspect/ -laspect32 -lallocproxy $(LDMJOLLNIR)     \
 			-L../libetrace/ -letrace32 -L../librevm -lrevm32          \
-			$(KERNSHLIB32)                                            \
+			$(KERNSHLIB32) $(STATOPT)                                 \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
 
@@ -31,7 +31,7 @@ LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-L../liballocproxy -L../libmjollnir/ $(LDUIOPT64)         \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \
 			-L../libetrace/ -letrace64 -L../librevm -lrevm64          \
-			$(KERNSHLIB64) -g3					  \
+			$(KERNSHLIB64) -g3 $(STATOPT)		                  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(DLOPT)
 
@@ -49,7 +49,7 @@ mod32			:
 
 $(NAME32).so		:
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
-			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
+			$(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
 			@$(RANLIB) ${NAME32}.a
 			$(LD) -r $(OBJ32) -o $(NAME32).o

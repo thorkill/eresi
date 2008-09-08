@@ -13,14 +13,8 @@
 */
 #include "revm.h"
 
-/* Labels hash */
-hash_t		labels_hash[REVM_MAXSRCNEST];
-
 /* ERESI script machine frames list */
-list_t		frames_list;
-
-/* Eresi expressions hash and expressions type hash */
-hash_t		exprs_hash;
+//list_t		frames_list;
 
 /* The ELF shell module hash tables: returns a revmmod_t */
 hash_t		mod_hash;
@@ -896,16 +890,14 @@ void		revm_tables_setup()
 
   hash_init(&file_hash        , "files"      , 251, ASPECT_TYPE_UNKNOW);
   hash_init(&mod_hash         , "modules"    , 51, ASPECT_TYPE_UNKNOW);
-  hash_init(&labels_hash[0]   , "labels"     , 51, ASPECT_TYPE_UNKNOW);
   hash_init(&fg_color_hash    , "fgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&bg_color_hash    , "bgcolors"   , 13, ASPECT_TYPE_UNKNOW);
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
-  hash_init(&exprs_hash       , "expressions", 51, ASPECT_TYPE_EXPR);
   hash_init(&instrlists_hash  , "instrlists" , 51, ASPECT_TYPE_LIST);
   hash_init(&parser_hash      , "parsers"    , 11, ASPECT_TYPE_CADDR);
-  elist_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
-
+  //elist_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
+  
   if (world.cmd_init)
     (*world.cmd_init)();
   else
@@ -924,4 +916,4 @@ void		revm_tables_setup()
 
 // XXX: frames list in source.c should not store element by 
 // function name -> will generate collisions for recursive functions
-// -> use "world.curjob->sourced" value
+// -> use "world.curjob->curscope" value

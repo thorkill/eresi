@@ -82,9 +82,7 @@ int		cmd_workspace()
       if (!job)
 	{
 	  /* create a new workspace */
-	  job = revm_clone_job(strdup(world.curjob->curcmd->param[0]),
- 
-			     world.curjob);
+	  job = revm_clone_job(strdup(world.curjob->curcmd->param[0]), world.curjob);	       
 	  hash_add(&world.jobs, world.curjob->curcmd->param[0], (void *) job);
 	  new = 1;
 	}

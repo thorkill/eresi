@@ -47,6 +47,8 @@ int			cmd_inspect()
   char			buflog[BUFSIZ];
   listent_t		*curent;
   mjrblock_t		*tmpblock;
+  revmannot_t		*annot;
+  revmexpr_t		*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -68,11 +70,18 @@ int			cmd_inspect()
   /* Try to lookup by variable name */
   if (!vaddr)
     {
-      if (!strncmp(world.curjob->curcmd->param[0], "$bloc", 5))
-	cntnr = hash_get(&exprs_hash, world.curjob->curcmd->param[0]);
-      if (!cntnr)
+      expr = revm_expr_get(world.curjob->curcmd->param[0]);
+      if (!expr || !expr->type || expr->type->type != ASPECT_TYPE_BLOC)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Unable to find block symbol or address", -1);
+		     "Unable to find block expression", -1);
+      annot = revm_annot_get(expr->label);
+      if (!annot)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to find block annotation", -1);
+      cntnr = (container_t *) annot->addr;
+      if (!cntnr || !cntnr->data)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to find valid container for block", -1);
       name = elfsh_reverse_metasym(world.curjob->curfile, *(eresi_Addr *) cntnr->data, &off);
     }
   else

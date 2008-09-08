@@ -11,10 +11,9 @@
 
 
 /** 
- * @brief Command interface for ERESI script sourcing
- *
- * @param params
- * @return
+ * @brief Command interface for ERESI script sourcing.
+ * @param params NULL terminated array of script parameters.
+ * @return Success (0) or Error (-1).
  */
 int		revm_source(char **params)
 {
@@ -28,17 +27,18 @@ int		revm_source(char **params)
   char		**av;
   int		ac;
   int           idx;
-  char          actual[26];
-  char		framename[26];
+  char          actual[40];
   int		argc;
   int		ret;
   revmobj_t	*new;
-  revmexpr_t	*prevargc;
   revmexpr_t	*expr;
-  revmexpr_t	*param;
-  list_t	*newframe;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Make sure we still can recurse */
+  if (world.curjob->curscope + 1 >= REVM_MAXSRCNEST)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			  "Cannot recurse anymore", (-1));
 
   /* build argc */
   for (argc = idx = 0; params[idx] != NULL; idx++)
@@ -66,37 +66,26 @@ int		revm_source(char **params)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid script file", -1);
 
-  /* Copy all procedure parameters as new objects arguments */
-  snprintf(framename, sizeof(framename), "%u", world.curjob->sourced);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, newframe, sizeof(list_t), -1);
-  elist_init(newframe, strdup(framename), ASPECT_TYPE_EXPR);
+  /* Prepare the interpreter for executing a new script */
+  XOPEN(fd, str, O_RDONLY, 0, -1);
+  world.curjob->curscope++;
+  snprintf(actual, sizeof(actual), "job%u_rec%u_labels", world.curjob->id, world.curjob->curscope);
+  hash_init(&world.curjob->recur[world.curjob->curscope].labels, strdup(actual), 23, ASPECT_TYPE_STR);
+  snprintf(actual, sizeof(actual), "job%u_rec%u_exprs", world.curjob->id, world.curjob->curscope);
+  hash_init(&world.curjob->recur[world.curjob->curscope].exprs, strdup(actual), 23, ASPECT_TYPE_EXPR);
+  world.curjob->recur[world.curjob->curscope].funcname = str;
 
-  /* Create new parameters and store the old ones in a frame */
+  /* Create new parameters and store them in new scope */
   for (ac = 1; params[ac]; ac++)
     {
 
       /* Get the parameter value. Can be a previous function parameter ($Num) itself 
 	 -> lookup has to be done before creating the new parameter */
-      expr = revm_lookup_param(params[ac]);
+      expr = revm_lookup_param(params[ac], 1);
 
       /* Then save the previous $1...N variables */
       argv[ac + 1] = params[ac]; 
       snprintf(actual, sizeof(actual), "$%u", ac);
-      param = revm_expr_get(actual);
-      if (param)
-	{
-	  elist_add(newframe, strdup(actual), (void *) param);
-	  hash_del(&exprs_hash, (char *) actual);
-
-#if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Parameter %s stacked with type = %s \n", 
-	  actual, (param->type ? param->type->name : "UNKNOWN TYPE"));
-#endif
-	}
-
-      /* Then install the new ones */
-      /* This will copy the parameter expression under the name "$N"
-	 and name it in the expression hash table */
 
 #if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Parameter %s added with type = %s \n", 
@@ -107,21 +96,12 @@ int		revm_source(char **params)
     }
   argv[ac + 1] = NULL;
 
-  /* Create new argc variable and add the new frame to the list */
-  prevargc = revm_expr_get(REVM_VAR_ARGC);
-  if (prevargc)
-    hash_del(&exprs_hash, (char *) REVM_VAR_ARGC);
   new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
   revm_expr_create_from_object(new, REVM_VAR_ARGC);
-  elist_add(&frames_list, strdup(framename), (void *) newframe);
 
-  /* Prepare the interpreter for executing a new script */
-  XOPEN(fd, str, O_RDONLY, 0, -1);
-  world.curjob->sourced++;
-  snprintf(actual, sizeof(actual), "job%u_labels", world.curjob->sourced);
-  hash_init(&labels_hash[world.curjob->sourced], strdup(actual), 251, ASPECT_TYPE_STR);
+  /* Update current recursion variable */
   expr = revm_expr_get(REVM_VAR_ESHLEVEL);
-  expr->value->immed_val.ent = world.curjob->sourced;
+  expr->value->immed_val.ent = world.curjob->curscope;
 
   /* Save state for restoring on "continue" */
   savedfd    = world.curjob->ws.io.input_fd;
@@ -132,7 +112,7 @@ int		revm_source(char **params)
   /* Temporary takes input from the script file */
   revm_setinput(&world.curjob->ws, fd);
   world.curjob->ws.io.input_fd = fd;
-  world.state.revm_mode       = REVM_STATE_SCRIPT;
+  world.state.revm_mode        = REVM_STATE_SCRIPT;
   world.curjob->ws.io.input    = revm_stdinput;
 
   /* First we parse the script file */
@@ -154,7 +134,7 @@ int		revm_source(char **params)
   } while (1);
   
   /* We then execute the parsed script */
-  world.curjob->curcmd = world.curjob->script[world.curjob->sourced];
+  world.curjob->curcmd = world.curjob->recur[world.curjob->curscope].script;
 
   /* If we are executing a debugger script, do not clear everything yet */
   switch (revm_execscript())
@@ -174,9 +154,7 @@ int		revm_source(char **params)
       /* Restore the context immediately if no continue is met */
     default:
       ret = revm_context_restore(savedfd, savedmode, savedcmd, savedinput, argv, str);
-      if (prevargc)
-	hash_set(&exprs_hash, strdup((char *) REVM_VAR_ARGC), prevargc);
-      expr->value->immed_val.ent = world.curjob->sourced;
+      expr->value->immed_val.ent = world.curjob->curscope;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
     }
   
@@ -203,12 +181,11 @@ int	       revm_context_restore(int		savedfd,
 				    char	**argv,
 				    char	*savedname)
 {
-  list_t	*lastframe;
   char		buf[BUFSIZ];
   u_int		idx;
   char		**keys;
   int		keynbr;
-  revmexpr_t	*expr;
+  void		*data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -223,32 +200,44 @@ int	       revm_context_restore(int		savedfd,
       revm_output(buf);
     }
 
-  /* Link back all parameters and their types */
-  snprintf(buf, BUFSIZ, "%u", world.curjob->sourced - 1);
-  lastframe      = elist_get(&frames_list, buf);
-  if (!lastframe)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  keys = elist_get_keys(lastframe, &keynbr);
+  /* Destroy current frame */
+  keys = hash_get_keys(&world.curjob->recur[world.curjob->curscope].exprs, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     {
-      expr = elist_get(lastframe, keys[idx]);
-      hash_set(&exprs_hash    , keys[idx], expr);
 
 #if __DEBUG_EXPRS__
-      fprintf(stderr, " [D] Parameter %s restored with type = %s \n", 
-	      keys[idx], expr->type->name);
+      fprintf(stderr, " [D] Expression %s will be destroyed from ending scope \n", keys[idx]);
 #endif
 
+      revm_expr_destroy(keys[idx]);
+
     }
+  hash_free_keys(keys);
+
+  /* Destroy current labels */
+  /* ALREADY FREED SOMEWHERE ELSE */
+  /*
+  keys = hash_get_keys(&world.curjob->recur[world.curjob->curscope].labels, &keynbr);
+  for (idx = 0; idx < keynbr; idx++)
+    {
+      data = hash_get(&world.curjob->recur[world.curjob->curscope].labels, keys[idx]);
+      if (keys[idx] && data)
+	{
+#if 1 //__DEBUG_EXPRS__
+	  fprintf(stderr, " [D] Label key %s WILL be destroyed from ending scope \n", keys[idx]);
+#endif
+	  
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
+	}
+    }
+  hash_free_keys(keys);
+  */
 
   /* Destroy frame */
-  elist_destroy(lastframe);
-  elist_del(&frames_list, buf);
-  elist_free_keys(keys);
-
-  world.curjob->script[world.curjob->sourced] = NULL;
-  hash_destroy(&labels_hash[world.curjob->sourced]);
-  world.curjob->sourced--;
+  hash_destroy(&world.curjob->recur[world.curjob->curscope].labels);
+  hash_destroy(&world.curjob->recur[world.curjob->curscope].exprs);
+  world.curjob->recur[world.curjob->curscope].script = NULL;
+  world.curjob->curscope--;
   
   /* Return OK */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

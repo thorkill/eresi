@@ -25,7 +25,7 @@ int			cmd_define()
   if (world.curjob->curcmd->argc < 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
-  orig = revm_lookup_param(world.curjob->curcmd->param[1]);
+  orig = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!orig || !orig->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid input parameter", -1);
@@ -40,7 +40,7 @@ int			cmd_define()
   if (world.curjob->curcmd->argc != 2)
     for (index = 2; index < world.curjob->curcmd->argc; index++)
       {
-	obj = revm_lookup_param(world.curjob->curcmd->param[index]);
+	obj = revm_lookup_param(world.curjob->curcmd->param[index], 1);
 	if (!obj)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid input parameters", -1);

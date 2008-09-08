@@ -16,6 +16,7 @@ lists test2
 #profile enable warn
 #quiet
 
+
 foreach $element of test
 
   # Should print an error

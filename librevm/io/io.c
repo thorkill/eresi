@@ -125,6 +125,7 @@ int		revm_initio()
 {
   static int	done = 0;
   revmjob_t	*initial;
+  u_int		i;
 
   NOPROFILER_IN();
   if (done)
@@ -133,6 +134,9 @@ int		revm_initio()
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,initial, sizeof(revmjob_t), -1);
   memset(initial, 0, sizeof(revmjob_t));
+
+  hash_init(&initial->recur[0].exprs , "job0_rec0_exprs" , 23, ASPECT_TYPE_EXPR);
+  hash_init(&initial->recur[0].labels, "job0_rec0_labels", 23, ASPECT_TYPE_STR);
 
   revm_std_io(initial);
   initial->ws.active	   = 1;
@@ -149,6 +153,15 @@ int		revm_initio()
   hash_init(&initial->dbgloaded,
 	    "initial_dbgloaded_files",
 	    11, ASPECT_TYPE_UNKNOW);
+
+  for (i = 0; i < REVM_MAXSRCNEST; i++)
+    {
+      initial->recur[i].script = NULL;
+      initial->recur[i].lstcmd = NULL;
+      initial->iter[i].listidx = REVM_IDX_UNINIT;
+    }
+
+  initial->recur[0].funcname = "top-level";
 
   profiler_setcolor(revm_endline, revm_colorinstr, revm_colorstr, 
 		    revm_colorfieldstr, revm_colortypestr, revm_colorend, 

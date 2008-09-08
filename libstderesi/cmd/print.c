@@ -140,7 +140,7 @@ int			cmd_print()
 	  revm_output("\n\n");
 	  continue;
 	}
-      expr = revm_lookup_param(world.curjob->curcmd->param[idx]);
+      expr = revm_lookup_param(world.curjob->curcmd->param[idx], 1);
       if (expr && expr->value && !expr->value->perm)
 	{
 	  revm_object_print(expr->value);

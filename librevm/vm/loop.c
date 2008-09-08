@@ -98,7 +98,7 @@ int		revm_loop(int argc, char **argv)
     /* Just execute one command if we are not in script mode */
     if (world.state.revm_mode != REVM_STATE_SCRIPT)
       {
-	world.curjob->curcmd = world.curjob->script[0];
+	world.curjob->curcmd = world.curjob->recur[0].script;
 	switch (revm_execmd())
 	  {
 	  case REVM_SCRIPT_CONTINUE:
@@ -128,7 +128,7 @@ int		revm_loop(int argc, char **argv)
     {
       fprintf(stderr, "we are in script mode from revm_loop ! \n");
 
-      world.curjob->curcmd = world.curjob->script[0];
+      world.curjob->curcmd = world.curjob->recur[0].script;
       ret = revm_execscript();
       if (ret == REVM_SCRIPT_STOP)
 	{
@@ -175,7 +175,7 @@ int		revm_execscript()
 
     }
   else
-    cur = world.curjob->script[world.curjob->sourced];
+    cur = world.curjob->recur[world.curjob->curscope].script;
 
   /* Curcmd acts like a $PC register */
   for (; cur; cur = next)
@@ -255,7 +255,7 @@ int		revm_execscript()
   /* If we had a saved context, restore it */
   if (world.state.revm_sourcing)
     {
-      world.curjob->lstcmd[world.curjob->sourced] = NULL;
+      world.curjob->recur[world.curjob->curscope].lstcmd = NULL;
       revm_context_restore(world.context.savedfd,
 			   world.context.savedmode,
 			   world.context.savedcmd,
@@ -275,7 +275,7 @@ int		revm_execscript()
 
 
 /** 
- * Execute the current script command (only used in interactive mode) 
+ * Execute the current script command
  */
 int		revm_execmd()
 {
@@ -290,7 +290,7 @@ int		revm_execmd()
   curjob = world.curjob;
 
   /* Curcmd acts like a $PC register */
-  for (err = 0, curjob->curcmd = cur = curjob->script[curjob->sourced]; cur; 
+  for (err = 0, curjob->curcmd = cur = curjob->recur[curjob->curscope].script; cur; 
        curjob->curcmd = cur = cur->next)
     if (cur->cmd != NULL && cur->cmd->exec != NULL)
       {
@@ -327,15 +327,15 @@ int		revm_execmd()
   ** Free the chain. We can do that in interactive mode 
   ** because there is no loop support
   **
-  for (cur = world.curjob->script[world.curjob->sourced]; cur; cur = next)
+  for (cur = world.curjob->script[world.curjob->curscope]; cur; cur = next)
   {
   next = cur->next;
   XFREE(__FILE__, __FUNCTION__, __LINE__,cur); 
   }
   */
   
-  curjob->script[curjob->sourced] = curjob->curcmd = NULL;
-  curjob->lstcmd[curjob->sourced] = NULL;
+  curjob->recur[curjob->curscope].script = curjob->curcmd = NULL;
+  curjob->recur[curjob->curscope].lstcmd = NULL;
 
   if (err < 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
@@ -359,7 +359,7 @@ int		revm_move_pc(char *param)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* check if we match a label */
-  next = hash_get(&labels_hash[world.curjob->sourced], param);
+  next = hash_get(&world.curjob->recur[world.curjob->curscope].labels, param);
   if (next)
     {
       if (!next->cmd)
@@ -393,15 +393,3 @@ int		revm_move_pc(char *param)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
-
-
-
-
-
-

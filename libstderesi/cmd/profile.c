@@ -34,7 +34,6 @@ int		cmd_profile()
   char		operation;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (world.curjob->curcmd->argc == 0)
     {
       revm_output(" [*] Current status of the profiler : \n\n");

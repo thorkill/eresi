@@ -46,8 +46,8 @@ int                     revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
-  *o1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  *o2 = revm_lookup_param(world.curjob->curcmd->param[1]);
+  *o1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  *o2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!*o1 || !*o2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup a parameter", -1);
@@ -617,7 +617,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
   u_int			ival2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!e2 || !e2)
+  if (!e1 || !e2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid parameters", -1);
   o1 = e1->value;

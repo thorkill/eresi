@@ -14,8 +14,8 @@
 void		revm_cleanup()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  world.curjob->script[world.curjob->sourced] = NULL;
-  world.curjob->lstcmd[world.curjob->sourced] = NULL;
+  world.curjob->recur[world.curjob->curscope].script = NULL;
+  world.curjob->recur[world.curjob->curscope].lstcmd = NULL;
   revm_conditional_rlquit();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

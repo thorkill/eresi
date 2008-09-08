@@ -79,7 +79,7 @@ int		revm_output(char *str)
        world.state.revm_mode != REVM_STATE_DEBUGGER)
       || world.curjob->ws.io.type == REVM_IO_DUMP
       || !world.curjob->ws.io.outcache.lines
-      || world.curjob->sourced
+      || world.curjob->curscope
       || !(int)config_get_data(ERESI_VMCONFIG_USE_MORE))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 	 (world.curjob->ws.io.output(str)));
@@ -166,11 +166,20 @@ int		revm_stdoutput(char *str)
 
 
 /** 
- * @bief Change the Output file 
+ * @brief Change the Output file 
  * @ingroup io
  */
 void	revm_setoutput(revmworkspace_t *ws, int fd)
 {
   ws->io.output_fd = fd;
+}
+
+/** 
+ * @brief Retreive the output fd of a workspace
+ * @ingroup io
+ */
+int	revm_output_get(revmworkspace_t *ws)
+{
+  return (ws->io.output_fd);
 }
 

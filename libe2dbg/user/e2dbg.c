@@ -48,7 +48,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 {
   int		ac;
   char		**av;
-  int		ret;
+  elfshobj_t	*ret;
   static int	first = 1;
 
 #if __DEBUG_E2DBG__
@@ -63,7 +63,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 #if __DEBUG_E2DBG__
   fprintf(stderr, "[e2dbg_entry] CHECKPOINT 1\n");
 #endif
-
+  
   /* We have a debugger script pending, continue it */
   if (e2dbgworld.sourcing)
     {
@@ -148,7 +148,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 
   ret = revm_run(ac, av);
   SETSIG;
-  return (ret);
+  return (ret ? 0 : -1);
 }
 
 

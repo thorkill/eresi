@@ -300,7 +300,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  /* Lookup scalar value and assign it to the field */
 	  newexpr->value = revm_object_lookup_real(curtype, recpath, 
 						   childtype->fieldname, 0);	
-	  curdata  = revm_lookup_param(newexpr->strval);
+	  curdata  = revm_lookup_param(newexpr->strval, 1);
 	  if (!newexpr->value || !curdata)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
@@ -753,9 +753,9 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name)
   revmexpr_t	*dest;
   aspectype_t	*type;
   void		*data;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  dest = hash_get(&exprs_hash, name);
+  dest = revm_expr_get(name);
   if (dest)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 
@@ -784,7 +784,8 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name)
 		     "Unable to create expression from complex object", NULL);
     }
 
-  hash_add(&exprs_hash    , (char *) strdup(name), (void *) dest);
+  hash_add(&world.curjob->recur[world.curjob->curscope].exprs, 
+	   (char *) strdup(name), (void *) dest);
 
 #if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Create_Expr_From_Object %s added with type = %s \n", 
@@ -806,9 +807,12 @@ int		revm_expr_print(char *pathname)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!pathname || *pathname != REVM_VAR_PREFIX)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid name for expression", -1);    
-  expr = hash_get(&exprs_hash, pathname);
+    {
+      fprintf(stderr, "FAILED EXPR NAME %s:\n", pathname);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Invalid name for expression", -1);    
+    }
+  expr = revm_expr_get(pathname);
   if (!expr || !expr->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unknown expression name", -1);
@@ -840,23 +844,30 @@ int		revm_expr_print(char *pathname)
 }
 
 
-/* Get an expression from its name */
+/** Get an expression from its name */
 revmexpr_t	*revm_expr_get(char *pathname)
 {
+  int		index;
+  hash_t	*curhash;
   revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!pathname || *pathname != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid name for expression", NULL);    
-  expr = hash_get(&exprs_hash, pathname);
-  if (!expr)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid expression name", NULL);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
+
+  for (index = world.curjob->curscope; index >= 0; index--)
+    {
+      curhash = &world.curjob->recur[index].exprs;
+      expr = hash_get(curhash, pathname);      
+      if (expr)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
+    }
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid expression name", NULL);
 }
 
-/* Set an expression to the value of another (only if compatible) */
+/** Set an expression to the value of another (only if compatible) */
 int		revm_expr_set_by_name(char *dest, char *source)
 {
   revmexpr_t	*adst;
@@ -1147,7 +1158,8 @@ revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *val
   expr->strval = (value ? strdup(value) : NULL);
   expr->value  = obj;
   expr->label  = name;
-  hash_add(&exprs_hash    , (char *) strdup(name), (void *) expr);
+  hash_add(&world.curjob->recur[world.curjob->curscope].exprs, 
+	   (char *) strdup(name), (void *) expr);
 
 #if __DEBUG_EXPRS__
   fprintf(stderr, " [D] SimpleExpr %s added with type = %s \n", 
@@ -1183,42 +1195,53 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-
 /* Destroy an expression and remove it from the hash table */
-int		revm_expr_destroy(char *e)
+int		revm_expr_unlink(char *e, u_char needfree)
 {
   revmexpr_t	*expr;
+  revmexpr_t	*prevexpr;
   revmexpr_t	*child;
   revmexpr_t	*next;
   char		newname[BUFSIZ];
   hash_t	*thash;
+  int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
 
-#if __DEBUG_EXPRS__
-  printf("\n [D] DestroyExpr %s \n", e);
-#endif
-
-  expr = hash_get(&exprs_hash, e);
+  /* Find in which scope it was defined, and unregister it, possibly unshadowing previous variables */
+  for (index = world.curjob->curscope; index >= 0; index--)
+    {
+      expr = hash_get(&world.curjob->recur[index].exprs, e);
+      if (expr)
+	{
+	  hash_del(&world.curjob->recur[index].exprs, e);
+	  break;
+	}
+    }
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unknown expr parameter", -1);
-  hash_del(&exprs_hash, e);
+		 "Unknown expression name", -1);
 
+  /* Update the global type hashes too by recovering a previous expression of that name, if any */
   if (expr->type)
     {
       snprintf(newname, sizeof(newname), "type_%s", expr->type->name);
       thash = hash_find(newname);
       if (thash)
-	hash_del(thash, e);
+	{
+	  hash_del(thash, e);
+	  prevexpr = revm_expr_get(e);
+	  if (prevexpr)
+	    hash_add(thash, e, prevexpr);
+	}
     }
 
   // FIXME: fault when calling destroy_object
   // An object was not copied/reallocated correctly somewhere
-  if (expr->value)
+  if (expr->value && needfree)
     //revm_destroy_object(expr->value);
     XFREE(__FILE__, __FUNCTION__, __LINE__, expr->value);
 
@@ -1226,16 +1249,56 @@ int		revm_expr_destroy(char *e)
     {
       next = child->next;
       snprintf(newname, sizeof(newname), "%s.%s", e, child->label);
-      if (revm_expr_destroy(newname) < 0)
+      if (revm_expr_unlink(newname, needfree) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to destroy child expression", -1);
     }
 
-  XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
+  if (needfree)
+    {
+      
+#if __DEBUG_EXPRS__
+      fprintf(stderr, "\n [D] UNLINK Expr %s (needfree = %hhu) \n", e, needfree);
+#endif
+      
+      XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
+/** Destroy an expression and remove it from the hash table : front end function */
+int		revm_expr_destroy(char *ename)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!ename || *ename != REVM_VAR_PREFIX)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", -1);
+  ret = revm_expr_unlink(ename, 1);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to destroy expression", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/** Destroy an expression and remove it from the hash table : front end function */
+int		revm_expr_hide(char *ename)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!ename || *ename != REVM_VAR_PREFIX)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", -1);
+  ret = revm_expr_unlink(ename, 0);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to hide expression", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 
 /* This function lookup an expression from an object id */
@@ -1264,3 +1327,5 @@ revmexpr_t	*revm_expr_lookup(u_int oid)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
+
+

@@ -227,7 +227,7 @@ int		cmd_load()
     }
   
   /* Find which file we need to load */
-  expr = revm_lookup_param(world.curjob->curcmd->param[0]);
+  expr = revm_lookup_param(world.curjob->curcmd->param[0], 1);
   if (!expr || !expr->value)
     {
       if (was_dynamic)

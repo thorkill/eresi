@@ -9,6 +9,7 @@
 
 /* Debug flags for libstderesi */
 #define	__DEBUG_REWRITE__ 0
+#define	__DEBUG_FOREACH__ 0
 
 /* User defined configuration */
 #include "revm.h"

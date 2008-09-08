@@ -156,19 +156,6 @@ typedef int64_t		elfsh_SAddr;
 #define ELFSH_M_SIZE		ELF64_M_SIZE
 #define ELFSH_M_INFO		ELF64_M_INFO
 
-#if __WORDSIZE == 32
- #define	XFMT		"0x%016llX"
- #define	AFMT		"%016llX"
- #define	UFMT		"%016llu"
- #define        DFMT		"%016lld"
- #define        RDFMT		"%lld"
-#elif __WORDSIZE == 64
- #define	XFMT		"0x%016lX"
- #define	AFMT		"%016lX"
- #define	UFMT		"%016lu"
- #define        DFMT		"%016ld"
- #define        RDFMT		"%ld"
-#endif
 
 #if defined(__mips64)
  #define	swaplong(x)	swap32(x)
@@ -209,17 +196,9 @@ typedef int32_t		elfsh_SAddr;
 #define ELFSH_M_SIZE		ELF32_M_SIZE
 #define ELFSH_M_INFO		ELF32_M_INFO
 
-#define	XFMT		"0x%08X"
-#define	AFMT		"%08X"
-#define UFMT		"%08u"
-#define DFMT		"%08d"
-#define	RDFMT		"%d"
-
  #define swaplong(x)	swap32(x)
 
 #endif	/* BITS */
-
-
 
 /**
  * MIPS reginfo structure

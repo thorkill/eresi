@@ -214,6 +214,7 @@ int kernsh_syscall_linux(int num, int argc, unsigned int argv[])
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
+#if defined(ERESI32)
   if (argc > 5 || argc < 0)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -241,7 +242,11 @@ int kernsh_syscall_linux(int num, int argc, unsigned int argv[])
       SYSCALL5 (num, argv[0], argv[1], argv[2], argv[3], argv[4] );
       break;
     }
-  
+#else
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Unable to execute syscalls on 64bits machine", -1);
+#endif
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, __ret);
 }
 

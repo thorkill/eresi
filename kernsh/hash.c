@@ -188,7 +188,7 @@ int		cmd_kmem_chash()
 
   if (param != NULL)
     {
-      expr = revm_lookup_param(param);
+      expr = revm_lookup_param(param, 1);
       obj = expr->value;
 
       if (obj->otype->type == ASPECT_TYPE_STR)

@@ -257,6 +257,7 @@ int		revm_type_reflect(hash_t *hash, char *typename)
  int		nbr;
  void		*data;
  char		logbuf[BUFSIZ];
+ revmexpr_t	*result;
 
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  keys = hash_get_keys(hash, &nbr);
@@ -265,7 +266,14 @@ int		revm_type_reflect(hash_t *hash, char *typename)
      data = hash_get(hash, keys[index]);
      snprintf(logbuf, sizeof(logbuf), "%c%s_%s", 
 	      REVM_VAR_PREFIX, typename, keys[index]);
-     revm_inform_type_addr(typename, logbuf, (eresi_Addr) data, NULL, 0, 1);
+     result = revm_inform_type_addr(typename, logbuf, (eresi_Addr) data, NULL, 0, 1);
+     
+     if (!result)
+       {
+	 fprintf(stderr, "FAILED TO REFLECT %s OBJECT OF KEY %s \n", typename, keys[index]);
+	 sleep(10);
+       }
+
    }
  hash_free_keys(keys);
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.81"
-#define	REVM_RELEASE	"b4"
+#define	REVM_RELEASE	"b5"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -270,6 +270,7 @@ int		revm_stdoutput(char *str);
 int		revm_display_prompt();
 void		revm_setinput(revmworkspace_t *j, int fd);
 void		revm_setoutput(revmworkspace_t *j, int fd);
+int		revm_output_get(revmworkspace_t *ws);
 void		revm_log(char *str);
 int             revm_closelog();
 char		*revm_get_prompt();

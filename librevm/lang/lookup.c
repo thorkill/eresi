@@ -370,7 +370,7 @@ elfshobj_t		*revm_lookup_file(char *param)
 /** 
  * Parse the parameter and fill the revmobj_t 
  */
-revmexpr_t		*revm_lookup_param(char *param)
+revmexpr_t		*revm_lookup_param(char *param, u_char existing)
 {
   revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);
   char			**keys;
@@ -383,9 +383,15 @@ revmexpr_t		*revm_lookup_param(char *param)
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  expr = revm_expr_get(param);
-  if (expr)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+  /* If we are asked to lookup first, do so */
+  if (existing)
+    {
+      expr = revm_expr_get(param);
+      if (expr)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+    }
+  else
+    expr = NULL;
 
   /* Find the number of fields in param */
   for (sepnbr = 0, parm = param; *parm; parm++)

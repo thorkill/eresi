@@ -135,6 +135,7 @@ static void	revm_lists_display()
       cur = hash_get(hash_lists, keys[index]);
       revm_list_display(cur, keys[index]);
     }
+  hash_free_keys(keys);
   revm_output("\n Type 'help lists' for more table details.\n\n");
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -178,6 +179,8 @@ static int	revm_list_display_regx2(char *tableregx, char *elemregx)
 	      revm_list_display_element(cur, curent->key, 1);
 	    }
       }
+
+  hash_free_keys(keys);
   snprintf(logbuf, sizeof(logbuf), 
 	   "\n [*] Matched %u entries in all lists \n\n", match);
   revm_output(logbuf);
@@ -226,8 +229,9 @@ static int	revm_list_display_regx(char *regx)
 	       match, (match > 1 ? 's' : ' '));
       revm_output(buf);
     }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 
+  hash_free_keys(keys);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
 

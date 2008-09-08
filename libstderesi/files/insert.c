@@ -49,7 +49,7 @@ int		cmd_insert()
   /* Lookup 2nd parameter depending on first parameter */
   if (!strcmp(param0, "phdr") || !strcmp(param0, "rphdr"))
     {
-      expr = revm_lookup_param(param1);
+      expr = revm_lookup_param(param1, 1);
       if (!expr || !expr->value || !expr->value->otype ||
 	  (expr->value->otype->type != ASPECT_TYPE_LONG && 
 	   expr->value->otype->type != ASPECT_TYPE_INT))
@@ -61,7 +61,7 @@ int		cmd_insert()
     }
   else
     {
-      expr = revm_lookup_param(param1);
+      expr = revm_lookup_param(param1, 1);
       if (!expr || !expr->value || !expr->value->otype || expr->value->otype->type != ASPECT_TYPE_STR)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid object name", -1);
@@ -73,7 +73,7 @@ int		cmd_insert()
   /* Lookup object size (4rth optional parameter) */
   if (param3)
     {
-      expr = revm_lookup_param(param3);
+      expr = revm_lookup_param(param3, 1);
       if (!expr || !expr->value || !expr->value->otype || 
 	  (expr->value->otype->type != ASPECT_TYPE_INT && expr->value->otype->type != ASPECT_TYPE_LONG))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -112,7 +112,7 @@ int		cmd_insert()
   /* Third parameter indicate existing symbol name or value */
   else if (!strcmp(param0, "sym"))
     {
-      expr = revm_lookup_param(param2);
+      expr = revm_lookup_param(param2, 1);
       if (!expr || !expr->value || !expr->value->otype || 
 	  (expr->value->otype->type != ASPECT_TYPE_LONG && expr->value->otype->type != ASPECT_TYPE_INT))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -137,7 +137,7 @@ int		cmd_insert()
   else if (!strcmp(param0, "phdr") ||
 	   !strcmp(param0, "rphdr"))
     {
-      expr = revm_lookup_param(param2);
+      expr = revm_lookup_param(param2, 1);
       if (!expr || !expr->value || !expr->value->otype || 
 	  (expr->value->otype->type != ASPECT_TYPE_LONG && expr->value->otype->type != ASPECT_TYPE_INT))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

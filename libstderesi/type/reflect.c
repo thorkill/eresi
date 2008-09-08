@@ -18,9 +18,10 @@ int		cmd_reflect()
   container_t	*container;
   container_t	*instrcontainer;
   mjrblock_t	*curblock;
-  asm_instr	*cur;
+  asm_instr	cur;
   elfsh_Half	machine;
   char		logbuf[BUFSIZ];
+  char		logbuf2[BUFSIZ];
   eresi_Addr	addr;
   int		off;
   int		ret;
@@ -89,16 +90,15 @@ int		cmd_reflect()
 
   /* Create the new list of instructions in expression form */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, instrlist, sizeof(list_t), -1);
-  snprintf(logbuf, sizeof(logbuf), AFMT, curblock->vaddr);
-  elist_init(instrlist, strdup(logbuf), ASPECT_TYPE_EXPR);
+  snprintf(logbuf2, sizeof(logbuf2), AFMT, curblock->vaddr);
+  elist_init(instrlist, strdup(logbuf2), ASPECT_TYPE_EXPR);
 
   /* Reflection all instructions of the basic bloc in the list */
   for (insnbr = off = 0; off < curblock->size; off += ret, insnbr++)
     {
       
       /* Fetch the current instruction */
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, cur, sizeof(asm_instr), -1);
-      ret = asm_read_instr(cur, (u_char *) blocdata + off, 
+      ret = asm_read_instr(&cur, (u_char *) blocdata + off, 
 			   curblock->size - off + 10, world.curjob->proc);
       if (ret < 0)
 	{
@@ -108,17 +108,17 @@ int		cmd_reflect()
 	}
 
       /* Also add the instruction to the current reflected list for this block */
-      instrcontainer = container_create(curtype->type, cur, NULL, NULL);
+      instrcontainer = container_create(curtype->type, (void *) &cur, NULL, NULL);
       snprintf(logbuf, sizeof (logbuf), "$instr-"XFMT, curblock->vaddr + off); 
-      expr = revm_inform_type_addr(curtype->name, strdup(logbuf),
-				   (eresi_Addr) instrcontainer, NULL, 0, 1);
+      addr = (eresi_Addr) instrcontainer;
+      expr = revm_inform_type_addr(curtype->name, strdup(logbuf), addr, NULL, 0, 1);
       elist_add(instrlist, strdup(logbuf), expr);
     }
 
   /* Reverse instrlist and add it to the hash of lists */
   instrlist = elist_reverse(instrlist);
-  hash_add(&instrlists_hash, strdup(logbuf), instrlist);
-
+  hash_add(&instrlists_hash, strdup(logbuf2), instrlist);
+  
   /* Printing message if we are not in quiet mode */
   if (!world.state.revm_quiet)
     {

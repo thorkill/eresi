@@ -32,8 +32,8 @@ int			cmd_write()
       world.curjob->curcmd->param[1] == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Needs 2 parameters", -1);
-  e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
+  e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e1 || !e2 || !e1->value || !e2->value || !e1->type || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Parameters must be initialized scalar objects", -1);
@@ -146,7 +146,7 @@ int		cmd_append()
 		 "Cannot find requested section", -1);
   
   /* Object retreive */
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]);
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1);
   if (!e2 || !e2->value || !e2->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid destination object", (-1));

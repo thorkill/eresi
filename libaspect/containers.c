@@ -48,7 +48,8 @@ int		container_linklists_create(container_t *container,
   switch (linktype)
     {
     case CONTAINER_LINK_IN:
-      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "inputs");
+      snprintf(bufname, BUFSIZ, "%s_"AFMT"_%s", 
+	       prefix, *(eresi_Addr *) container->data, "inputs");
       newlist = elist_find(bufname);
       if (newlist)
 	container->inlinks = newlist;
@@ -60,7 +61,8 @@ int		container_linklists_create(container_t *container,
 
       break;
     case CONTAINER_LINK_OUT:
-      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "outputs");
+      snprintf(bufname, BUFSIZ, "%s_"AFMT"_%s", 
+	       prefix, *(eresi_Addr *) container->data, "outputs");
       newlist = elist_find(bufname);
       if (newlist)
 	container->outlinks = newlist;

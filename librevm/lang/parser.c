@@ -1,7 +1,8 @@
 /**
  * @file parse.c
  * @@ingroup librevm_lang
- * The top level parser of the language
+ *
+ * The top level parser for ERESI scripting
  *
  * Started on Wed Feb 28 19:19:04 2007 jfv
  *
@@ -37,7 +38,7 @@ char			*revm_label_get(char *prefix)
   idx = 0;
  retry:
   snprintf(buf, sizeof(buf), "%s_DEPTH:%u_INDEX:%u", prefix, curnest, idx);
-  if (hash_get(&labels_hash[world.curjob->sourced], buf))
+  if (hash_get(&world.curjob->recur[world.curjob->curscope].labels, buf))
     {
       idx++;
       goto retry;
@@ -64,7 +65,7 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Too many nested construct", -1);
       labl = revm_label_get("foreach");
-      hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
+      hash_add(&world.curjob->recur[world.curjob->curscope].labels, labl, newcmd);
       looplabels[curnest++] = labl;
     }
   
@@ -79,7 +80,7 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested loop-ending statement", -1);
       forend = newcmd;
-      forend->endlabel = looplabels[--curnest];
+      forend->endlabel = strdup(looplabels[--curnest]);
       nextlabel = 1;
     }
 
@@ -91,7 +92,7 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Too many nested construct", -1);
       labl = revm_label_get("match");
-      hash_add(&labels_hash[world.curjob->sourced], labl, newcmd);
+      hash_add(&world.curjob->recur[world.curjob->curscope].labels, labl, newcmd);
       looplabels[curnest++] = labl;
     }
 
@@ -124,8 +125,8 @@ int			revm_parse_construct(char *curtok)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Incorrectly nested match-ending statement", -1);      
       forend = newcmd;
-      forend->endlabel = looplabels[--curnest];
-      hash_add(&labels_hash[world.curjob->sourced], endlabl, newcmd);
+      forend->endlabel = strdup(looplabels[--curnest]);
+      hash_add(&world.curjob->recur[world.curjob->curscope].labels, endlabl, newcmd);
       
       /* Now setting the end label to all waiting case/default commands */
       if (condcmdlist && condcmdlist->head)
@@ -182,11 +183,10 @@ int			revm_parseopt(int argc, char **argv)
       bzero(label, sizeof(label));
       if (!pendinglabel)
 	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-		 newcmd, sizeof(revmargv_t), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, newcmd, sizeof(revmargv_t), -1);
 	  world.curjob->curcmd = newcmd;
-	  if (world.curjob->script[world.curjob->sourced] == NULL)
-	    world.curjob->script[world.curjob->sourced] = newcmd;
+	  if (world.curjob->recur[world.curjob->curscope].script == NULL)
+	    world.curjob->recur[world.curjob->curscope].script = newcmd;
 	}
       else
 	pendinglabel = 0;
@@ -204,15 +204,17 @@ int			revm_parseopt(int argc, char **argv)
 	  /* Annotate meta-command foreach, case, and default with  the "end label" */
 	  if (nextlabel)
 	    {
-	      hash_add(&labels_hash[world.curjob->sourced], endlabl, newcmd);
-	      loopstart = hash_get(&labels_hash[world.curjob->sourced], looplabels[curnest]);
+	      hash_add(&world.curjob->recur[world.curjob->curscope].labels, 
+		       strdup(endlabl), newcmd);
+	      loopstart = hash_get(&world.curjob->recur[world.curjob->curscope].labels, 
+				   looplabels[curnest]);
 
 	      /* If we are executing "default", we search for the loop start in the parent scope */
 	      /*
-	      if (world.curjob->sourced && isdefault)
-		for (ret = 0; world.curjob->sourced >= ret; ret++)
+	      if (world.curjob->curscope && isdefault)
+		for (ret = 0; world.curjob->curscope >= ret; ret++)
 		  {
-		    loopstart = hash_get(&labels_hash[world.curjob->sourced - ret], looplabels[curnest]);
+		    loopstart = hash_get(&labels_hash[world.curjob->curscope - ret], looplabels[curnest]);
 		    if (loopstart)
 		      break;
 		  }
@@ -221,6 +223,7 @@ int			revm_parseopt(int argc, char **argv)
 	      if (!loopstart)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			     "Invalid nesting of language construct", -1);
+
 	      loopstart->endlabel = strdup(endlabl);
 	      /* isdefault = */ nextlabel = 0;
 	    }
@@ -250,7 +253,7 @@ int			revm_parseopt(int argc, char **argv)
 	  ret = sscanf(name, "%15[^:]%c", label, &c);
 	  if (ret == 2 && c == ':')
 	    {
-	      hash_add(&labels_hash[world.curjob->sourced], 
+	      hash_add(&world.curjob->recur[world.curjob->curscope].labels, 
 		       strdup(label), newcmd); 
 	      pendinglabel = 1;
 	      continue;
@@ -270,13 +273,13 @@ int			revm_parseopt(int argc, char **argv)
       /* Put the newcmd command at the end of the list */
       newcmd->name = name;
       newcmd->cmd  = (revmcmd_t *) actual;      
-      if (!world.curjob->lstcmd[world.curjob->sourced])
-	world.curjob->lstcmd[world.curjob->sourced] = newcmd;
+      if (!world.curjob->recur[world.curjob->curscope].lstcmd)
+	world.curjob->recur[world.curjob->curscope].lstcmd = newcmd;
       else
 	{
-	  world.curjob->lstcmd[world.curjob->sourced]->next = newcmd;
-	  newcmd->prev = world.curjob->lstcmd[world.curjob->sourced];
-	  world.curjob->lstcmd[world.curjob->sourced] = newcmd;
+	  world.curjob->recur[world.curjob->curscope].lstcmd->next = newcmd;
+	  newcmd->prev = world.curjob->recur[world.curjob->curscope].lstcmd;
+	  world.curjob->recur[world.curjob->curscope].lstcmd = newcmd;
 	}
     }
 

@@ -570,7 +570,7 @@ int		cmd_kmem_write()
     }
   else
     {
-      e1 = revm_lookup_param(world.curjob->curcmd->param[0]);
+      e1 = revm_lookup_param(world.curjob->curcmd->param[0], 1);
       o1 = e1->value;
       switch (o1->otype->type)
 	{
@@ -586,7 +586,7 @@ int		cmd_kmem_write()
 	}
     }
 
-  e2 = revm_lookup_param(world.curjob->curcmd->param[1]); 
+  e2 = revm_lookup_param(world.curjob->curcmd->param[1], 1); 
 
   o2 = e2->value;
 

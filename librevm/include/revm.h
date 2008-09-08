@@ -294,9 +294,9 @@ typedef struct		s_args
   char			argc;			/* Number of args in param[] */
   revmcmd_t		*cmd;			/* Command descriptor */
   char			*name;			/* Command name */
+
   char		        *endlabel;		/* Co-Label for foreach/forend */
-#define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int		        listidx;		/* Iteration index for this foreach */
+
   struct s_args		*next;
   struct s_args		*prev;
 }			revmargv_t;
@@ -339,16 +339,16 @@ typedef struct		s_revmcontext
 /* We use a separate header for defnition of object structures */
 #include "revm-objects.h"
 
-
-
 /* This structure stores the current FOREACH iteration state for a job */
-typedef struct		s_revmiteration
+typedef struct		s_revmiter
 {
-#define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int			*curindex;	/* Current iteration index (most-nested foreach) */
-  char			*curkey;	/* Name (key) of matchme expression in list */
-  char			*curname;	/* Name (bound) of induction variable if any */
-  list_t		*list;		/* Current list being iterated */
+  char			*curkey;	/* Key of currently processed variable */
+#define			REVM_IDX_UNINIT ((unsigned int) (-1))
+  u_int		        listidx;	/* Index of currently processed variable */
+  revmexpr_t		*curind;	/* Induction variable if any */
+  void			*list;		/* Current list (or hash) being iterated */
+  u_int			reclevel;	/* Current recursion level on loop start */
+  char			*end;		/* END loop label */
 }			revmiter_t;  
 
 /* This structure stores the current REWRITE transformation state for a job */
@@ -359,30 +359,39 @@ typedef struct	      s_revmrewrite
   u_char	      replaced;		/* Indicate if we have already transformed */
 }		      revmrewrite_t;
 
+/* This structure stores the current function recursion state for a job */
+typedef struct		s_revmrecur
+{
+  char			*funcname;	/* Names of call-stack functions */
+  revmargv_t		*script;	/* Script commands at this depth */
+  revmargv_t		*lstcmd;	/* Last command at this depth */
+  hash_t		labels;		/* Defined labels */
+  hash_t		exprs;		/* Expressions */
+  revmrewrite_t		rwrt;		/* "rewrite" matching context */  
+}			revmrecur_t;
+
 /* REVM job structure, one per client */
 typedef struct        s_job
 {
-  revmworkspace_t     ws;		/* The job workspace */
+  u_int		      id;				/* Job identifier */
+  revmworkspace_t     ws;				/* The job workspace */
 
-  /* Scripting machine job context */
+  /* Job recursion and iteration contexts */
 #define		      REVM_MAXSRCNEST  50
-  revmargv_t	      *script[REVM_MAXSRCNEST]; /* List of script commands */
-  revmargv_t         *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
-  u_int               sourced;          /* script depth (if beeing sourced) */
+  revmrecur_t	      recur[REVM_MAXSRCNEST];		/* Recursion contexts */
+  u_int               curscope;				/* Current recursion depth */
+  revmiter_t	      iter[REVM_MAXSRCNEST];		/* "foreach" iteration context */
+  u_int		      curiter;				/* Current iteration depth */
 
-  /* File job context */
-  revmargv_t	      *curcmd;          /* Next command to be executed */
-  hash_t              loaded;           /* List of loaded ELF objects */
-  elfshobj_t          *curfile;         /* Current working ELF object */
-  asm_processor*      proc;		/* Processor structure */
+  /* Job files context */
+  revmargv_t	      *curcmd;				/* Next command to be executed */
+  hash_t              loaded;				/* List of loaded ELF objects */
+  elfshobj_t          *curfile;				/* Current working ELF object */
+  asm_processor*      proc;				/* Processor structure */
 
-  /* Debugger job context */
-  hash_t              dbgloaded;        /* List of objects loaded into e2dbg */
-  elfshobj_t          *dbgcurrent;      /* Current working e2dbg file */
-
-  /* Job iteration and rewritten expression name if any */
-  revmiter_t	      iter;		/* Iteration context */
-  revmrewrite_t	      rwrt;		/* Rewrite  context */
+  /* Job debugger context */
+  hash_t              dbgloaded;			/* List of objects loaded into e2dbg */
+  elfshobj_t          *dbgcurrent;			/* Current working e2dbg file */
 }                     revmjob_t;
 
 
@@ -419,8 +428,6 @@ extern hash_t		file_hash;	 /* elfshobj_t pointers */
 extern hash_t		const_hash;	 /* elf.h picked up constants values */
 extern hash_t		redir_hash;	 /* Function redirections hash table */
 extern hash_t		mod_hash;	 /* Modules name hash table */
-extern hash_t		exprs_hash;	 /* ERESI expressions types hash */ 
-extern hash_t		labels_hash[REVM_MAXSRCNEST]; /* Scripting labels hash table */
 
 /* The Level 1 object hash table : hash the object name and returns a L1handler_t* */
 extern hash_t		L1_hash;	/* For HDR, SHT, PHT, GOT, DTORS, CTORS, DYNAMIC, SECTIONS */
@@ -494,7 +501,7 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr, char *, u_int);
 char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, elfsh_SAddr *roff);
 
 /* General VM functions */
-revmexpr_t	*revm_lookup_param(char *param);
+revmexpr_t	*revm_lookup_param(char *param, u_char existing);
 revmobj_t	*revm_check_object(revmobj_t *pobj);
 void		revm_destroy_object(revmobj_t *pobj);
 revmobj_t	 *revm_copy_object(revmobj_t *pobj);
@@ -678,12 +685,17 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char transaddr);
 /* Generic handlers for data accesses */
 char		*revm_generic_getname(void *type, void *data);
 int		revm_generic_setname(void *type, void *data, void *newdata);
-eresi_Addr	revm_generic_getobj(void *data);
+int		revm_addr_setobj(void *data, eresi_Addr value);
+eresi_Addr	revm_addr_getobj(void *data);
 eresi_Addr	revm_hash_getobj(void *data);
+eresi_Addr	revm_byte_getobj(void *data);
 int		revm_byte_setobj(void *data, eresi_Addr value);
+eresi_Addr	revm_short_getobj(void *data);
 int		revm_short_setobj(void *data, eresi_Addr value);
+eresi_Addr	revm_int_getobj(void *data);
 int		revm_int_setobj(void *data, eresi_Addr value);
 int		revm_long_setobj(void *data, eresi_Addr value);
+eresi_Addr	revm_long_getobj(void *data);
 char		*revm_generic_getdata(void *data, int off, int sizelm);
 int		revm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
 
@@ -782,7 +794,9 @@ int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
 revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
-int		revm_expr_destroy(char *e);
+int		revm_expr_destroy(char *ename);
+int		revm_expr_hide(char *ename);
+int		revm_expr_unlink(char *ename, u_char needfree);
 revmexpr_t	*revm_expr_lookup(u_int oid);
 
 /* May not be defined */

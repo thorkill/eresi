@@ -154,12 +154,12 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong loop format", -1);
 
   p     = argv[index + 4];
-  last  = argv[index + 5];
   flag  = 0;
   
   /* Intermediate checks */
   if ((argc - index) == 6)
     {
+      last  = argv[index + 5];
       flag = (!strcmp("matching", p) ? 1 : !strcmp("until", p) ? 2 : 0);
       if (!flag)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong loop format", -1);
@@ -176,7 +176,8 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
       }
 
   /* Set the current and maximum indexes to uninitialized */
-  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
+  //world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		revm_getvarparams(index, argc, argv));
 }
@@ -240,7 +241,7 @@ int		revm_getmatchparams(u_int index, u_int argc, char **argv)
   if (strcmp(argv[index + 2], CMD_PARAM_INTO))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
 
-  world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
+  //world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		revm_getoption2(index, argc, argv));
 }

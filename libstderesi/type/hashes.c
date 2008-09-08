@@ -13,8 +13,10 @@
 
 /** 
  * Display an element of a hash table
- * @param h Hash table 
- * @param key Hash key of object to be printed
+ * @param h Hash table. 
+ * @param key Hash key of object to be printed.
+ * @param inside Print the content of the object in case it is a pointer.
+ * @return Success (0) or Error (-1).
  */
 int		revm_table_display_element(hash_t *h, char *key, u_char inside)
 {
@@ -28,18 +30,23 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
 
   if (h->type == ASPECT_TYPE_UNKNOW || !inside)
     {
+      fprintf(stderr, "H type = PTR\n");
+
       snprintf(logbuf, sizeof(logbuf), "  { %-40s = <"XFMT"> } \n", 
 	       key, (eresi_Addr) data);
       revm_output(logbuf);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
+
   if (*key == REVM_VAR_PREFIX)
     strncpy(logbuf, key, sizeof(logbuf));
   else
     snprintf (logbuf, sizeof(logbuf), "$%s", key);
   newexpr = revm_expr_get(logbuf);
+
   if (newexpr)
     {
+      fprintf(stderr, "H type = EXPR\n");
       revm_output("\t");
       revm_expr_print(logbuf);
       revm_output("\n");
@@ -49,11 +56,13 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
   revm_output("\t");
   if (h->type == ASPECT_TYPE_EXPR)
     {
+      fprintf(stderr, "H type = EXPR\n");
       newexpr = (revmexpr_t *) data;
       revm_expr_print(newexpr->label);
     }
   else
     {
+      fprintf(stderr, "H type != EXPR\n");
       type = aspect_type_get_by_id(h->type);
       newexpr = revm_inform_type_addr(type->name, strdup(logbuf), (eresi_Addr) data, NULL, 0, 1);
       if (!newexpr)
@@ -99,6 +108,9 @@ int		revm_table_display_content(char *name)
   snprintf(logbuf, sizeof(logbuf), 
 	   "\n [*] Displayed %u entries of table %s \n\n", keynbr, name);
   revm_output(logbuf);
+
+  hash_free_keys(keys);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -148,6 +160,7 @@ static void	revm_tables_display()
       cur = hash_get(hash_hash, keys[index]);
       revm_table_display(cur, keys[index]);
     }
+  hash_free_keys(keys);
   revm_output("\n Type 'help tables' for more table details.\n\n");
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -182,7 +195,11 @@ static int	revm_table_display_regx2(char *tableregx, char *elemregx)
   for (match = index = 0; index < keynbr; index++)
     if (!regexec(&rx, keys[index], 0, 0, 0))
       {
+
 	cur = hash_get(hash_hash, keys[index]);
+
+	fprintf(stderr, "MATCHED TABLE %s of %u elems \n", cur->name, cur->elmnbr);
+
 	keys2 = hash_get_keys(cur, &keynbr2);
 	for (index2 = 0; index2 < keynbr2; index2++)
 	  if (!regexec(&ex, keys2[index2], 0, 0, 0))
@@ -191,6 +208,8 @@ static int	revm_table_display_regx2(char *tableregx, char *elemregx)
 	      revm_table_display_element(cur, keys2[index2], 1);
 	    }
       }
+  hash_free_keys(keys);
+  hash_free_keys(keys2);
   snprintf(logbuf, sizeof(logbuf), 
 	   "\n [*] Matched %u entries in all tables\n\n", match);
   revm_output(logbuf);
@@ -226,6 +245,7 @@ static int	revm_table_display_regx(char *regx)
     {
       if (!regexec(&rx, keys[index], 0, 0, 0))
 	{
+
 	  cur = hash_get(hash_hash, keys[index]);
 	  revm_table_display(cur, keys[index]);
 	  match++;
@@ -242,6 +262,8 @@ static int	revm_table_display_regx(char *regx)
 	       match, (match > 1 ? 's' : ' '));
       revm_output(buf);
     }
+
+  hash_free_keys(keys);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 
 }

@@ -2,7 +2,9 @@
 
 # This create on-demand the block instruction list in the eresi runtime
 
-quiet
+#print Now SPARC2LIR at addr $curaddr
+
+#quiet
 set $curaddr $1
 set $begaddr $1
 reflect $curaddr
@@ -12,13 +14,17 @@ reflect $curaddr
 # Start the transformation
 foreach $instr of $hash[instrlists:$begaddr]
 
-#print TRANSFORMING instruction
+#print TRANSFORMING instruction $instr at addr $curaddr
 #D $curaddr%1
 #print $instr
+
+#type instr
 
 #profile enable warn
 #quiet
 #verb
+
+#vlist instr$
 
 rewrite $instr into
 
@@ -72,12 +78,12 @@ case instr(sem:p)
 into Prolog(addr:$curaddr)
 
 # restore 												
-case instr(sem:e) 
-into Epilog(addr:$curaddr) 
+case instr(sem:e)
+into Epilog(addr:$curaddr)
 
 # illtrap 							 			
-case instr(sem:s) 
-into Stop(addr:$curaddr)				 
+case instr(sem:s)
+into Stop(addr:$curaddr)
 
 # nop											 		
 case instr(sem:n)
@@ -153,9 +159,16 @@ into CmpRR(addr:$curaddr, fst(rid:$instr.op1.name), snd(rid:$instr.op2.name))
 # cmp (op2 immed) 										 		
 # XXX lacks flag translation
 case instr(sem:cmp-wf, nb_op:2, op1(sem:imm), op2(sem:reg))
+#pre profile enable warn
+#pre profile enable trace
+#pre verb
 into CmpRI(addr:$curaddr, snd(rid:$instr.op2.name), fst(val:$instr.op1.imm))
+#post profile disable warn
+#post profile disable trace
+#post quiet
+#post exec sleep 30
 
-# Defaultcase 													
+# Defaultcase 								  
 default print Unsupported instruction at address $curaddr $instr
 
 rwtend
@@ -167,6 +180,5 @@ add $curaddr 4
 
 forend
 
-quiet
-
 print
+#quiet

@@ -1186,8 +1186,6 @@ eresi_Addr      elfsh_get_got_val(eresi_Addr *got);
 u_int		elfsh_set_got_val(eresi_Addr *got, eresi_Addr val);
 eresi_Addr      elfsh_get_got_addr(eresi_Addr *got);
 u_int		elfsh_set_got_addr(eresi_Addr *got, eresi_Addr val);
-int     	elfsh_get_got_symbol_reloc(elfshobj_t *file, uint8 *name,
-                                     elfsh_Rel *rel_entry);
 int		elfsh_endianize_got(elfshsect_t *_new);
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file);
 int		elfsh_shift_got(elfshobj_t *file, u_int size, char *name);
