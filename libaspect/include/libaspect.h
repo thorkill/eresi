@@ -53,10 +53,16 @@
 #include <machine/endian.h>
  #define __LITTLE_ENDIAN _LITTLE_ENDIAN
  #define __BIG_ENDIAN    _BIG_ENDIAN
+
+#if defined(__FreeBSD__)
+ #include <elf.h>
+ #include <sys/elf_common.h>
+ #define __WORDSIZE      __ELF_WORD_SIZE
+#endif
  #if __FreeBSD__ < 5
-  #define __BYTE_ORDER	  __LITTLE_ENDIAN
+  #define __BYTE_ORDER   __LITTLE_ENDIAN
  #else
-  #define __BYTE_ORDER    BYTE_ORDER
+  #define __BYTE_ORDER   BYTE_ORDER
  #endif
 
 #elif defined(sun)
@@ -144,6 +150,8 @@
  #define UFMT		"%016lu"
  #define DFMT		"%016ld"
  #define RDFMT		"%ld"
+#else
+ #error "__WORDSIZE not defined"
 #endif
 
 #else
