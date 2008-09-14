@@ -674,6 +674,12 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
 
   /* First copy the data */
   type = source->type;
+
+#if __DEBUG_EXPRS__
+  fprintf(stderr, " [D] Allocating copied expression data of size %u type %s to name %s (%s)\n", 
+	  type->size, type->name, dstname, (isfield ? "field" : "struct"));
+#endif
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, copydata, type->size, NULL);
 
   /* Constants are not annotated, we might not want to do anything here */
@@ -748,16 +754,19 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
 
 
 /* Create an expression from an object */
-revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name)
+revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char force)
 {
   revmexpr_t	*dest;
   aspectype_t	*type;
   void		*data;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  dest = revm_expr_get(name);
-  if (dest)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+  if (force)
+    {
+      dest = revm_expr_get(name);
+      if (dest)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
+    }
 
   /* Create a new temporary variable name if necessary */
   if (*name != REVM_VAR_PREFIX || 
@@ -1142,7 +1151,7 @@ revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *val
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, expr, sizeof(revmexpr_t), NULL);
   if (value)
-    obj = revm_lookup_immed(value);
+    obj = revm_lookup_immed(value, 1);
   else
     obj = revm_object_lookup_real(datatype, name, NULL, 0);
   if (!obj)
@@ -1230,20 +1239,26 @@ int		revm_expr_unlink(char *e, u_char needfree)
     {
       snprintf(newname, sizeof(newname), "type_%s", expr->type->name);
       thash = hash_find(newname);
-      if (thash)
+      if (!thash)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Cannot find hash table for this expression type", -1);
+      hash_del(thash, e);
+      prevexpr = revm_expr_get(e);
+      if (prevexpr)
 	{
-	  hash_del(thash, e);
-	  prevexpr = revm_expr_get(e);
-	  if (prevexpr)
-	    hash_add(thash, e, prevexpr);
+
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, "\n [D] RESTORED Expr %s (type %s) after UNSHADOWING UNLINK\n", 
+		  e, expr->type->name);
+#endif
+
+	  hash_set(thash, e, prevexpr->annot);
 	}
     }
 
-  // FIXME: fault when calling destroy_object
-  // An object was not copied/reallocated correctly somewhere
+  /* Free the object */
   if (expr->value && needfree)
-    //revm_destroy_object(expr->value);
-    XFREE(__FILE__, __FUNCTION__, __LINE__, expr->value);
+    revm_destroy_object(expr->value);
 
   for (child = expr->childs; child; child = next)
     {

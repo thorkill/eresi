@@ -132,16 +132,14 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   cur = 1;
 
   /* Check if we have a list of expressions for this block already */
-  /* WIP
   snprintf(tmpbuf, sizeof(tmpbuf), AFMT, blk->vaddr);
   instrlist = hash_get(&instrlists_hash, tmpbuf);
   if (instrlist)
     {
-      fprintf(stderr, "FOUND TRANSFORM LIST FOR THIS BLOCK ! \n");
-      revm_print_block(fd, instrlist);
+      //fprintf(stderr, "FOUND TRANSFORM LIST FOR THIS BLOCK ! \n");
+      //revm_print_block(fd, instrlist);
       PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
     }
-  */
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
   foffset = elfsh_get_foffset_from_vaddr(world.curjob->curfile, blk->vaddr);

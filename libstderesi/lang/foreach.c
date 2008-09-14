@@ -21,7 +21,7 @@ static revmexpr_t	*revm_induction_load(char *name)
   assert(world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT);
 
   var = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
-  induction = revm_expr_create_from_object(var, name);
+  induction = revm_expr_create_from_object(var, name, 1);
   world.curjob->iter[world.curjob->curiter].curind   = induction;
 
   world.curjob->iter[world.curjob->curiter].reclevel = world.curjob->curscope;

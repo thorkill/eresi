@@ -153,11 +153,11 @@ int		revm_openscript(char **av)
     {
       snprintf(actual, sizeof(actual), "$%u", idx);
       new = revm_create_IMMEDSTR(1, strdup(av[idx]));
-      expr = revm_expr_create_from_object(new, actual);
+      expr = revm_expr_create_from_object(new, actual, 0);
     }
 
   new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
-  expr = revm_expr_create_from_object(new, REVM_VAR_ARGC);
+  expr = revm_expr_create_from_object(new, REVM_VAR_ARGC, 0);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

@@ -56,7 +56,7 @@ foreach $link of $func.outlinks
   cfg-walk $addr  
   callgraph-walk $addr
 
-  profile enable warn
+  #profile enable warn
   print $nextfunc
 
 next: forend

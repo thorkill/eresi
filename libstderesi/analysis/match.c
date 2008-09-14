@@ -228,7 +228,10 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  revm_expr_destroy(matchme->label);
 	  matchme = revm_expr_copy(candid, rname, 0);
 	  world.curjob->iter[world.curjob->curiter].curind = matchme;
+
+	  //XXX: if we free it now, ->matchexpr and maybe other exprs will be dangling
 	  //revm_expr_destroy(candid->label);
+
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
 	  
 	  revm_expr_print(candid->label);
@@ -401,6 +404,7 @@ int		cmd_case()
       world.curjob->recur[world.curjob->curscope].rwrt.matched = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
+  
 
   /* Matched : transform and execute post side effects if any */
   world.curjob->recur[world.curjob->curscope].rwrt.matched = 1;

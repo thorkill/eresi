@@ -251,7 +251,8 @@ int		hash_del(hash_t *h, char *key)
   /* Looking for the good entry in the list for this hash value */
   while (actual->next      != NULL && 
 	 actual->next->key != NULL && 
-	 strcmp(actual->next->key, key))
+	 strcmp(actual->next->key, 
+		key))
     actual = actual->next;
   
   /* Not found */
@@ -281,7 +282,8 @@ void		*hash_get(hash_t *h, char *key)
   actual = hash_get_head(h, key);
   while (actual      != NULL && 
 	 actual->key != NULL && 
-	 strcmp(actual->key, key))
+	 strcmp(actual->key, 
+		key))
     actual = actual->next;
   return (actual != NULL ? actual->data : NULL);
 }

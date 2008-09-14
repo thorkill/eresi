@@ -34,12 +34,17 @@ int			cmd_script()
   if (!argc)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Invalid parameter", (-1));
+  
+  /* It can happens that the command bounce to cmd_source has already been set up */
+  if (!strcmp(world.curjob->curcmd->name, CMD_SOURCE))
+    goto end;
 
+  /* Setup the command bouncing */
   size = strlen(world.scriptsdir) + strlen(world.curjob->curcmd->name) + 6;
   path = alloca(size);
   snprintf(path, size, "%s/%s.esh", world.scriptsdir, world.curjob->curcmd->name);
   backup = world.curjob->curcmd->param[0];
-  world.curjob->curcmd->param[0] = path;
+  world.curjob->curcmd->param[0] = strdup(path);
   for (idx = 0; idx < REVM_MAXARGC - 1 && backup; idx++)
     {
       next = world.curjob->curcmd->param[idx + 1];
@@ -47,6 +52,8 @@ int			cmd_script()
       backup = next;
     }  
   world.curjob->curcmd->name  = CMD_SOURCE;
+
+ end:
   if (cmd_source() < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid ERESI source program", (-1));

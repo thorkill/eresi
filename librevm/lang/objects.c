@@ -358,7 +358,7 @@ revmobj_t		*revm_check_object(revmobj_t *pobj)
 void		revm_destroy_object(revmobj_t *pobj)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (pobj->otype->type == ASPECT_TYPE_STR && pobj->immed)
+  if (pobj->otype && pobj->otype->type == ASPECT_TYPE_STR && pobj->immed)
     XFREE(__FILE__, __FUNCTION__, __LINE__, pobj->immed_val.str);
   XFREE(__FILE__, __FUNCTION__, __LINE__, pobj);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

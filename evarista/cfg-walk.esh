@@ -1,6 +1,6 @@
 #!evarista/evarista32
 
-quiet
+#quiet
 
 print ENTERED CFG-WALK
 
@@ -23,15 +23,22 @@ bin2lir $1
 
 print Now walking CFG
 
+#profile enable warn
 foreach $link of $block.outlinks
+#profile disable warn
 
   set $nextblock $link.id
+
+  #verb
   set $addr $nextblock.vaddr
+  #quiet
+
   #print $nextblock
   #print $nextblock.vaddr
 
   # Dont analyse blocks outside current function
   cmp $link.scope SCOPE_GLOBAL
+
   jne ok
   print Block SCOPE GLOBAL passed at $addr
   jmp next
@@ -45,13 +52,16 @@ ok:
   jmp next
 
 ok2:
+
   cfg-walk $addr
 
-  #print $nextblock
+  print Coming back from bloc at addr $addr
+  print $nextblock
 
 next: 
-  vlist
-  print Now next block in list after $addr
+  #vlist
+  #print Now next block in list after $addr
+  #profile enable warn
 
 forend
 

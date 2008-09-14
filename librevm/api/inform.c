@@ -309,6 +309,8 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   
   /* Register the expression */
   annot->expr = expr;
+  if (expr)
+    expr->annot = annot;
   hash_set(&world.curjob->recur[world.curjob->curscope].exprs, 
 	   (char *) strdup(realname), (void *) expr);
 

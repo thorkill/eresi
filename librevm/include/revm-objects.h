@@ -60,6 +60,8 @@ typedef	struct		s_revm_object
 }                     revmobj_t;
 
 
+typedef struct s_revm_annotation revmannot_t;
+
 /**
  * @brief Structure for an expression in ERESI : A tree of revmobj_t 
  */
@@ -69,6 +71,7 @@ typedef struct		s_revm_expr
   char			*strval;	/*! ASCII form of current expression object */
   aspectype_t		*type;		/*! Expression type */
   revmobj_t		*value;		/*! Expression field value */
+  revmannot_t		*annot;		/*! Annotation on this expression */
   struct s_revm_expr	*parent;	/*! Parent expression */
   struct s_revm_expr	*childs;	/*! Child expressions list, if non-terminal */
   struct s_revm_expr	*next;		/*! Next expression if curexpr is in record */
@@ -78,7 +81,7 @@ typedef struct		s_revm_expr
 /**
  * @brief Generic structure for objects program annotations in ERESI 
  */
-typedef struct 		s_revm_annotation
+struct			s_revm_annotation
 {
 #define EDFMT_SCOPE_UNK    0
 #define EDFMT_SCOPE_GLOBAL 1
@@ -91,7 +94,7 @@ typedef struct 		s_revm_annotation
   int			nameoff;	/*! Name offset in string table */
 					/* XXX: should be a symbol instead */
   revmexpr_t		*expr;		/* Annotated expression, if already constructed */
-}			revmannot_t;
+};
 
 
 /**********************************************************************************/

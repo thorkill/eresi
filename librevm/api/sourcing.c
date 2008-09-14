@@ -97,7 +97,7 @@ int		revm_source(char **params)
   argv[ac + 1] = NULL;
 
   new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
-  revm_expr_create_from_object(new, REVM_VAR_ARGC);
+  revm_expr_create_from_object(new, REVM_VAR_ARGC, 0);
 
   /* Update current recursion variable */
   expr = revm_expr_get(REVM_VAR_ESHLEVEL);
@@ -209,6 +209,9 @@ int	       revm_context_restore(int		savedfd,
       fprintf(stderr, " [D] Expression %s will be destroyed from ending scope \n", keys[idx]);
 #endif
 
+      /* Only free top-level expressions, the rest will be freed recursively by the expr_destroy */
+      if (strstr(keys[idx], REVM_SEP))
+	continue;
       revm_expr_destroy(keys[idx]);
 
     }

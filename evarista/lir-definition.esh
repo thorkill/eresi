@@ -53,7 +53,7 @@ define mem	ASM_OPTYPE_MEM
 type Immed             = val:long
 type Reg::container    = rid:string
 type Mem::container    = base:Reg off:Immed name:string index:Reg scale:Immed
-type Ins               = uflags:Immed addr:Immed
+type Ins               = uflags:Immed addr:caddr
 
 # Types of LIR instructions
 

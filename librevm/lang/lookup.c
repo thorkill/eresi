@@ -115,7 +115,7 @@ eresi_Addr		revm_lookup_addr(char *param)
 /** 
  * @brief Get immediate value 
  */
-revmobj_t		*revm_lookup_immed(char *param)
+revmobj_t		*revm_lookup_immed(char *param, u_char existing)
 {
   elfsh_Sym		*sym;
   revmconst_t		*actual;
@@ -131,16 +131,24 @@ revmobj_t		*revm_lookup_immed(char *param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", (NULL));
 
+  if (strstr(param, "$addr"))
+    fprintf(stderr, "LOOKUP_IMMED PARAM %s \n", param);
+
   /* Lookup a known variable */
-  expr = revm_lookup_var(param);
-  if (expr && expr->value)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr->value);
+  if (existing)
+    {
+      expr = revm_lookup_var(param);
+      if (expr && expr->value)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr->value);
+    }
+  else
+    expr = NULL;
 
   /* Support for lazy creation of variables */
   if (*param == REVM_VAR_PREFIX)
     {
       ptr = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
-      expr = revm_expr_create_from_object(ptr, param);
+      expr = revm_expr_create_from_object(ptr, param, existing);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
     }
 
@@ -410,7 +418,7 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
       res = funcptr(param, keys[index], sepnbr);
       if (!res)
 	continue;
-      expr = revm_expr_create_from_object(res, param);
+      expr = revm_expr_create_from_object(res, param, existing);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
     }
 
@@ -418,12 +426,12 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
   res = revm_object_lookup(param);
   if (res)
     {
-      expr = revm_expr_create_from_object(res, param);
+      expr = revm_expr_create_from_object(res, param, existing);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
     }
 
   /* If no good syntax is available, print error if we are not in probe mode */
-  res = revm_lookup_immed(param);
+  res = revm_lookup_immed(param, existing);
   if (!res)
     {
       revm_badparam(param);
@@ -431,6 +439,6 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
 		   "Unable to resolve object", NULL);
     }
 
-  expr = revm_expr_create_from_object(res, param);
+  expr = revm_expr_create_from_object(res, param, existing);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }

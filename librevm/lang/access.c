@@ -255,10 +255,14 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   /* Lookup again in the file if we are dealing with a pointer */
   if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
     { 
-      // FIXME: VALGRIND : 'data' 0byte after end of allocated block..
-      data = (void *) *(eresi_Addr *) data; 
+      /* Pointer dereferencing is done differently for internal exprs and reflected exprs */
       if (translateaddr)
-	data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
+	{
+	  data = (void *) *(eresi_Addr *) data;
+	  data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
+	}
+      else
+	data = (void *) *(u_long *) data;
     }
   path->parent = (void *) data;
 
@@ -334,8 +338,8 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_EXPRS__
-  fprintf(stderr, "REVMOBJ_LOOKUP_REAL (%s of type %s and wanted field %s)\n", 
-	  objname, type->name, objpath);
+  fprintf(stderr, "REVMOBJ_LOOKUP_REAL (%s.%s of type %s)\n", 
+	  objname, objpath, type->name);
 #endif
 
   snprintf(hashname, sizeof(hashname), "type_%s", type->name);

@@ -39,7 +39,7 @@ int			cmd_set()
   if (last == NULL)
     {
       obj = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-      last = revm_expr_create_from_object(obj, REVM_VAR_RESULT);
+      last = revm_expr_create_from_object(obj, REVM_VAR_RESULT, 1);
       if (!last)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to create result variable", -1);

@@ -510,7 +510,7 @@ revmmod_t	*revm_getmod(u_int index);
 char		*revm_reverse(elfshobj_t *file, u_int vaddr);
 
 /* Lookup functions */
-revmobj_t	*revm_lookup_immed(char *param);
+revmobj_t	*revm_lookup_immed(char *param, u_char existing);
 revmexpr_t	*revm_lookup_var(char *param);
 
 elfshobj_t	*revm_lookup_file(char *param);
@@ -792,7 +792,7 @@ int		revm_expr_match_by_name(char *original, char *candidate);
 int		revm_expr_compare_by_name(char *original, char *candidate, eresi_Addr *val);
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
-revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
+revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char force);
 revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
 int		revm_expr_destroy(char *ename);
 int		revm_expr_hide(char *ename);

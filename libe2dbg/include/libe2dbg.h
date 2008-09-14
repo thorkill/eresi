@@ -207,7 +207,7 @@ do							\
   if (!e || !e->value)					\
     {							\
       r = revm_create_LONG(1, val);			\
-      e = revm_expr_create_from_object(r, name);        \
+      e = revm_expr_create_from_object(r, name, 1);	\
     }							\
   else							\
     e->value->immed_val.ent = val;			\
@@ -224,7 +224,7 @@ do							\
   if (!e || !e->value)					\
     {							\
       r = revm_create_LONG(1, val);			\
-      e = revm_expr_create_from_object(r, name);	\
+      e = revm_expr_create_from_object(r, name, 1);	\
     }							\
   else							\
    val = e->value->immed_val.ent;	                \

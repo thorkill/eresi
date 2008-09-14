@@ -773,22 +773,22 @@ static void	setup_varshash()
   char		*str;
 
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  expr = revm_expr_create_from_object(f, REVM_VAR_RESULT);
+  expr = revm_expr_create_from_object(f, REVM_VAR_RESULT, 1);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  expr = revm_expr_create_from_object(f, REVM_VAR_LOAD);
+  expr = revm_expr_create_from_object(f, REVM_VAR_LOAD, 1);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0xFFFFFFFF);
-  expr = revm_expr_create_from_object(f, REVM_VAR_ERROR);
+  expr = revm_expr_create_from_object(f, REVM_VAR_ERROR, 1);
   f = revm_create_IMMEDSTR(1, ERESI_EXTSHELL);
-  expr = revm_expr_create_from_object(f, REVM_VAR_SHELL);
+  expr = revm_expr_create_from_object(f, REVM_VAR_SHELL, 1);
   f = revm_create_IMMEDSTR(1, ERESI_EDITOR);
-  expr = revm_expr_create_from_object(f, REVM_VAR_EDITOR);
+  expr = revm_expr_create_from_object(f, REVM_VAR_EDITOR, 1);
   str = get_libpath();
   f = revm_create_IMMEDSTR(1, str);
-  expr = revm_expr_create_from_object(f, REVM_VAR_LIBPATH);
+  expr = revm_expr_create_from_object(f, REVM_VAR_LIBPATH, 1);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, ERESI_SLOG);
-  expr = revm_expr_create_from_object(f, REVM_VAR_STRIPLOG);
+  expr = revm_expr_create_from_object(f, REVM_VAR_STRIPLOG, 1);
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
-  expr = revm_expr_create_from_object(f, REVM_VAR_ESHLEVEL);
+  expr = revm_expr_create_from_object(f, REVM_VAR_ESHLEVEL, 1);
 }
 
 

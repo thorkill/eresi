@@ -49,7 +49,7 @@ int		revm_vectors_getdims(char *str, unsigned int *dims)
       str2      = strchr(++str, ':');
       if (str2)
 	*str2 = 0x00;
-      v = revm_lookup_immed(str);
+      v = revm_lookup_immed(str, 1);
       if (v->otype->type != ASPECT_TYPE_LONG && v->otype->type != ASPECT_TYPE_INT)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Invalid vector indexes", -1);
@@ -101,7 +101,7 @@ static int	revm_vector_modify()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Lookup value to write */
-  obj = revm_lookup_immed(world.curjob->curcmd->param[1]);
+  obj = revm_lookup_immed(world.curjob->curcmd->param[1], 1);
   if (!obj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid update value for vector", -1);

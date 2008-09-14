@@ -714,7 +714,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
     }
   revm_expr_destroy(REVM_VAR_RESULT);
   res = revm_create_IMMED(ASPECT_TYPE_INT, 1, *val);
-  last = revm_expr_create_from_object(res, REVM_VAR_RESULT);
+  last = revm_expr_create_from_object(res, REVM_VAR_RESULT, 1);
   if (!last)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to set result expression", (-1));
