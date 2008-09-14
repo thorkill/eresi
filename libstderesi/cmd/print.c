@@ -54,14 +54,14 @@ void		revm_object_print(revmobj_t *obj)
       case ASPECT_TYPE_CADDR:
       case ASPECT_TYPE_DADDR:
 	val = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
-	snprintf(logbuf, BUFSIZ - 1, "%s (%s) ", 
-		 revm_colornumber("%d", val), revm_colornumber("0x%X", val));
+	snprintf(logbuf, BUFSIZ - 1, "%s ", 
+		 revm_colornumber(XFMT, val));
 	break;
       case ASPECT_TYPE_INT:
       case ASPECT_TYPE_OID:
 	word = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
-	snprintf(logbuf, BUFSIZ - 1, "%s (%s) ", 
-		 revm_colornumber("%d", word), revm_colornumber("0x%X", word));
+	snprintf(logbuf, BUFSIZ - 1, "%s ", 
+		 revm_colornumber("%d", word));
 	break;
       case ASPECT_TYPE_STR:
 	str = (obj->immed ? obj->immed_val.str : 
@@ -136,7 +136,7 @@ int			cmd_print()
 	}
       else if (expr)
 	{
-	  revm_expr_print(world.curjob->curcmd->param[idx]);
+	  revm_expr_print_by_name(world.curjob->curcmd->param[idx], 0);
 	  revm_output("\n\n");
 	  continue;
 	}
@@ -154,7 +154,7 @@ int			cmd_print()
 	  continue;
 	}
       else
-	revm_expr_print(expr->label);
+	revm_expr_print_by_name(expr->label, 0);
     }
 
   revm_output("\n");

@@ -48,7 +48,7 @@ int		cmd_vlist()
 		revm_output(logbuf);
 		header++;
 	      }
-	    revm_expr_print(keys[index]);
+	    revm_expr_print_by_name(keys[index], 0);
 	    if (index + 1 < keynbr)
 	      revm_output("\n\n");
 	    else

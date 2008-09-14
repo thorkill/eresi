@@ -131,9 +131,6 @@ revmobj_t		*revm_lookup_immed(char *param, u_char existing)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", (NULL));
 
-  if (strstr(param, "$addr"))
-    fprintf(stderr, "LOOKUP_IMMED PARAM %s \n", param);
-
   /* Lookup a known variable */
   if (existing)
     {

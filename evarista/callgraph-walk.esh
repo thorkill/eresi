@@ -28,6 +28,7 @@ print Entering FUNCTION: $func
 
 cfg-walk $func.vaddr
 
+vlist TMP
 graph bloc main
 #exec sleep 120
 

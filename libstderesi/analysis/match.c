@@ -174,12 +174,13 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter[world.curjob->curiter].curkey, curidx); 
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
-      if (!candid)
+      if (!candid || !candid->annot)
 	{
 	  elist_destroy(exprlist);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid target type(s) for transformation", -1);
 	}
+      candid->annot->inhash = 1;
       elist_add(exprlist, rname, candid);
       if (!foundptr)
 	break;
@@ -210,9 +211,10 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  rname = revm_tmpvar_create();
 	  type   = revm_exprtype_get(destvalue);
 	  candid = revm_expr_create(type, rname, destvalue);
-	  if (!candid)
+	  if (!candid || !candid->annot)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Malformed destination type", -1);
+	  candid->annot->inhash = 1;
 
 	  /*
 	    XXX: Disabled -- do not remove -- to renable when SSA transform is ready to be done
@@ -234,7 +236,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
 	  
-	  revm_expr_print(candid->label);
+	  revm_expr_print_by_name(candid->label, 0);
 	  revm_output("\n");
 	  
 	  if (!matchme)

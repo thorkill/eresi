@@ -82,7 +82,7 @@ static int   revm_print_block_handler(listent_t *e, void *null)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   expr = (revmexpr_t *) e->data;
-  revm_expr_print(expr->label);
+  revm_expr_print(expr, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -136,8 +136,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   instrlist = hash_get(&instrlists_hash, tmpbuf);
   if (instrlist)
     {
-      //fprintf(stderr, "FOUND TRANSFORM LIST FOR THIS BLOCK ! \n");
-      //revm_print_block(fd, instrlist);
+      revm_print_block(fd, instrlist);
       PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
     }
 

@@ -456,7 +456,8 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 
 
 /* Get (and optionally print) the tree of an expression */
-static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_int iter)
+static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, 
+				   u_int typeoff, u_int iter, u_char quiet)
 {
   aspectype_t	*curtype;
   char		buf[BUFSIZ];
@@ -467,6 +468,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
   int		idx;
   int		sz;
   char		*pad, *pad2;
+  int		newtaboff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (; expr; expr = (iter ? expr->next : NULL))
@@ -479,13 +481,13 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
       /* Some printing header */
       revm_endline();
       len = snprintf(buf, sizeof(buf), "%s%*s %*s", 
-		     (curtype->isptr ? revm_colorwarn("    *") : ""),
-		     (iter ? 18 - (curtype->isptr * 4) : 0), 
-		     revm_colorfieldstr(typename), 
-		     (iter ? 18 : 0), 
-		     revm_colortypestr_fmt("%10s", expr->label));
+		     (curtype->isptr ? (quiet ? " *" : revm_colorwarn("    *")) : ""),
+		     (iter && !quiet ? 18 - (curtype->isptr * 4) : 0), 
+		     (quiet ? "" : revm_colorfieldstr(typename)), 
+		     (iter && !quiet ? 18 : 0), 
+		     (quiet ? expr->label : revm_colortypestr_fmt("%10s", expr->label)));
       
-      sz = (taboff < 21 ? 0 : len - revm_color_size(buf) - 20);
+      sz = (taboff < 21 ? 0 : (len - revm_color_size(buf) - 20));
       pad = alloca(taboff + sz + 1);
       memset(pad, ' ', taboff + sz);
       pad[taboff + sz] = 0x00;
@@ -494,15 +496,25 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
       if (expr->childs)
 	{
 	  revm_output(buf);
-	  revm_output(revm_colorwarn(" {"));
+	  if (!quiet)
+	    revm_output(revm_colorwarn(" {"));
+	  else
+	    revm_output("(");
 	  revm_endline();
-	  revm_expr_printrec(expr->childs, 
-			     taboff + len - revm_color_size(buf) - 7, 
-			     typeoff, iter);
-	  revm_output(revm_colorwarn("}"));
+	  
+	  newtaboff = taboff + len - revm_color_size(buf) - 7;
+	  revm_expr_printrec(expr->childs, (newtaboff < 0 ? 1 : newtaboff),
+			     typeoff, iter, quiet);
+	  if (!quiet)
+	    revm_output(revm_colorwarn("}"));
+	  else
+	    revm_output(")");
 	  if (expr->next)
 	    {
-	      revm_output(",\n");
+	      if (quiet)
+		revm_output(",\\l");
+	      else
+		revm_output(",\n");
 	      pad2 = alloca(taboff + 1);
 	      memset(pad2, ' ', taboff);
 	      pad2[taboff] = 0x00;
@@ -554,10 +566,15 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_i
       /* Next field ! Print offset .. */
       if (iter && expr->next)
 	{
-	  snprintf(offset, sizeof(offset), "@ off(%s)", revm_colornumber("%u", typeoff));
-	  revm_output(offset);
-	  revm_output(revm_colorwarn(",\n"));
-	  revm_output(pad);      
+	  if (!quiet)
+	    {
+	      snprintf(offset, sizeof(offset), "@ off(%s)", revm_colornumber("%u", typeoff));
+	      revm_output(offset);	      
+	      revm_output(revm_colorwarn(",\n"));
+	      revm_output(pad);      
+	    }
+	  else
+	    revm_output(", ");
 
 	  /* Do not add size if we are in a union */
 	  if (expr->next->type->off != curtype->off)
@@ -803,28 +820,20 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
-  
+
   
 /* Print an annotated expression */
-int		revm_expr_print(char *pathname)
+int		revm_expr_print(revmexpr_t *expr, u_char quiet)
 {
-  revmexpr_t	*expr;
   int		ret;
   char		buf[BUFSIZ];
   int		iter;
   aspectype_t	*type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!pathname || *pathname != REVM_VAR_PREFIX)
-    {
-      fprintf(stderr, "FAILED EXPR NAME %s:\n", pathname);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Invalid name for expression", -1);    
-    }
-  expr = revm_expr_get(pathname);
   if (!expr || !expr->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unknown expression name", -1);
+		 "Invalid NULL parameters", -1);
 
   /* Make sure we only print the subrecord if requested */
   type = expr->type;
@@ -839,19 +848,48 @@ int		revm_expr_print(char *pathname)
   /* If we are printing a simple type or a subtype expression, we need to print a top level */
   if (type->next || (type->childs && type->childs->next))
     {
-      snprintf(buf, BUFSIZ, " %s %s \t %s", 
-	       revm_colorfunction(type->name),
-	       revm_colorfunction(pathname), revm_colorwarn("= {"));
+      if (!quiet)
+	snprintf(buf, BUFSIZ, " %s %s \t %s", 
+		 revm_colorfunction(type->name),
+		 revm_colorfunction(expr->label), revm_colorwarn("= {"));
+      else
+	snprintf(buf, BUFSIZ, " %s(", 
+		 revm_colorfunction(type->name));
       revm_output(buf);
       revm_endline();
     }
-  revm_expr_printrec(expr, (!iter || !expr->next ? strlen(pathname) + 6 : 1), 0, iter);
-  if (type->next || (type->childs && type->childs->next))
+  revm_expr_printrec(expr, (!iter || !expr->next ? strlen(expr->label) + 6 : 1), 0, iter, quiet);
+  if (!quiet && (type->next || (type->childs && type->childs->next)))
     revm_output(revm_colorwarn("}"));
+  else
+    revm_output(")\\l");
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/* Print an annotated expression */  
+int		revm_expr_print_by_name(char *pathname, u_char quiet)
+{
+  revmexpr_t	*expr;
+  int		ret;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!pathname || *pathname != REVM_VAR_PREFIX)
+    {
+      fprintf(stderr, "FAILED EXPR NAME %s:\n", pathname);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Invalid name for expression", -1);    
+    }
+  expr = revm_expr_get(pathname);
+  if (!expr || !expr->type)
+    {
+      fprintf(stderr, "FAILED EXPR %p TYPE \n", expr);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Unknown expression name", -1);
+    }
+  ret = revm_expr_print(expr, quiet);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
 
 /** Get an expression from its name */
 revmexpr_t	*revm_expr_get(char *pathname)
@@ -1135,7 +1173,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   revm_inform_type_addr(datatype->name, realname, (eresi_Addr) data, expr, 0, 0);
 
 #if __DEBUG_EXPRS__
-  revm_expr_print(expr->label);
+  revm_expr_print_by_name(expr->label, 0);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
@@ -1246,14 +1284,21 @@ int		revm_expr_unlink(char *e, u_char needfree)
       prevexpr = revm_expr_get(e);
       if (prevexpr)
 	{
-
 #if __DEBUG_EXPRS__
-	  fprintf(stderr, "\n [D] RESTORED Expr %s (type %s) after UNSHADOWING UNLINK\n", 
+	  fprintf(stderr, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n", 
 		  e, expr->type->name);
 #endif
-
 	  hash_set(thash, e, prevexpr->annot);
 	}
+    }
+
+  /* If the expression in present in some hash table, we dont free it */
+  if (expr->annot && expr->annot->inhash)
+    {
+#if __DEBUG_EXPRS__
+      fprintf(stderr, " [D] NOT FREED EXPR %s because still in hash table \n", expr->label);
+#endif
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Free the object */
@@ -1273,7 +1318,7 @@ int		revm_expr_unlink(char *e, u_char needfree)
     {
       
 #if __DEBUG_EXPRS__
-      fprintf(stderr, "\n [D] UNLINK Expr %s (needfree = %hhu) \n", e, needfree);
+      fprintf(stderr, "\n [D] UNLINK EXPR %s (needfree = %hhu) \n", e, needfree);
 #endif
       
       XFREE(__FILE__, __FUNCTION__, __LINE__, expr);

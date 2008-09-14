@@ -159,8 +159,7 @@ int		revm_outerr(char *str)
 int		revm_stdoutput(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  printf("%s", str);
-  fflush(stdout);
+  write(world.curjob->ws.io.output_fd, str, strlen(str));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,0);
 }
 

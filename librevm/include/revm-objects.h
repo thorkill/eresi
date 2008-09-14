@@ -83,6 +83,7 @@ typedef struct		s_revm_expr
  */
 struct			s_revm_annotation
 {
+  u_char		inhash;		/*! Is this expression somewhere in hash or list ? */
 #define EDFMT_SCOPE_UNK    0
 #define EDFMT_SCOPE_GLOBAL 1
 #define EDFMT_SCOPE_FUNC   2

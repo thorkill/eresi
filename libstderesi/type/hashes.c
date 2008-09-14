@@ -48,7 +48,7 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
     {
       fprintf(stderr, "H type = EXPR\n");
       revm_output("\t");
-      revm_expr_print(logbuf);
+      revm_expr_print_by_name(logbuf, 0);
       revm_output("\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
@@ -58,7 +58,7 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
     {
       fprintf(stderr, "H type = EXPR\n");
       newexpr = (revmexpr_t *) data;
-      revm_expr_print(newexpr->label);
+      revm_expr_print_by_name(newexpr->label, 0);
     }
   else
     {
@@ -68,7 +68,7 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
       if (!newexpr)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to reflect hash element to expression", -1);
-      revm_expr_print(logbuf);
+      revm_expr_print_by_name(logbuf, 0);
     }
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
