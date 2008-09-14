@@ -1,0 +1,48 @@
+#!evarista32
+
+vlist
+cmp  $# 1
+jne end
+sdir .
+
+quiet
+eva-typedecl 42
+
+print 
+print ******************** The Evarista static analyzer .::. Welcome *********************
+print
+#verb
+#vlist
+
+load $1
+analyse
+
+#graph
+#graph bloc main
+
+sym main
+set $mainaddr main
+print Main-Function found at addr $mainaddr
+
+set $mainfunc $hash[functions:$mainaddr]
+
+#tables expressions
+#print $hash[functions:$mainaddr]
+#print $mainfunc
+#print $mainfunc.vaddr
+
+callgraph-walk $mainfunc.vaddr
+
+graph bloc main
+
+quiet
+print 
+print ******************** The Evarista static analyzer .::. Good bye *********************
+print
+quit
+
+end:
+print Syntax: evarista <ELF_binary_file_path>
+print
+quit
+ 
