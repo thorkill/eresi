@@ -98,6 +98,31 @@ endif
 CFLAGS += -DLIBASM_ENABLE_MIPS
 endif
 
+#
+# ARM Support
+#
+
+ifeq ($(LIBASM_ENABLE_ARM), 1)
+PACKED_ARCH += packed_arm
+SRCS_libasm += 	src/arch/arm/init_arm.c	\
+		src/arch/arm/register_arm.c	#\
+		#src/arch/sparc/tables_sparc.c	\
+		#src/arch/sparc/output_sparc.c	\
+		#src/arch/sparc/sparc_convert.c
+ifeq ($(LIBASM_PACKED_HANDLERS),1)
+$(info ARM Packed)
+PACKED_ARCH += packed_arm
+SRCS_libasm += src/arch/arm/packed_handlers.c
+else
+$(info ARM Unpacked)
+SRCS_libasm    += $(foreach dir,src/arch/arm/handlers/,\
+	$(wildcard $(dir)/*.c))
+#SRCS_libasm    += $(foreach dir,src/arch/arm/operand_handlers/,\
+#	$(wildcard $(dir)/*.c))
+endif
+CFLAGS += -DLIBASM_ENABLE_ARM
+endif
+
 OBJS32_libasm 	=	${SRCS_libasm:.c=.32.o} 
 OBJS32_libasm	+=	${SRCS_hdl:.c=.32.o}		
 OBJS64_libasm 	=	${SRCS_libasm:.c=.64.o} 
@@ -209,7 +234,9 @@ packed_sparc:
 	cat src/arch/sparc/handlers/*.c src/arch/sparc/operand_handlers/*.c > src/arch/sparc/packed_handlers.c
 packed_mips:
 	cat src/arch/mips/handlers/*.c src/arch/mips/operand_handlers/*.c > src/arch/mips/packed_handlers.c
-
+packed_arm:
+	cat src/arch/arm/handlers/*.c > src/arch/arm/packed_handlers.c
+#src/arch/arm/operand_handlers/*.c
 %.32.o 		: %.c
 		$(CC) $(CFLAGS32) -c -o $@ $<
 

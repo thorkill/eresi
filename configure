@@ -160,6 +160,13 @@ echo "CFLAGS_libasm += -DLIBASM_ENABLE_MIPS=1" >> $CONFIGFILE
 LIBASM_ENABLE_CHOOSEN=1
 ;;
 
+--libasm-arm)
+echo " [*] Libasm ARM engine"
+echo "LIBASM_ENABLE_ARM = 1" >> $CONFIGFILE
+echo "CFLAGS_libasm += -DLIBASM_ENABLE_ARM=1" >> $CONFIGFILE
+LIBASM_ENABLE_CHOOSEN=1
+;;
+
 --libasm-packed)
 LIBASM_PACKED_HANDLERS=1
 ;;
@@ -360,9 +367,11 @@ then
 echo " [*] Libasm IA32 engine"
 echo " [*] Libasm SPARC engine"
 echo " [*] Libasm MIPS engine"
+echo " [*] Libasm ARM engine"
 echo "LIBASM_ENABLE_IA32 = 1" >> $CONFIGFILE
 echo "LIBASM_ENABLE_SPARC = 1" >> $CONFIGFILE
 echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
+echo "LIBASM_ENABLE_ARM = 1" >> $CONFIGFILE
 fi
 
 echo $LIBASM_PACKED_HANDLERS

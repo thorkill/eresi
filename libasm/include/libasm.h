@@ -53,13 +53,15 @@
 #define LIBASM_SUPPORT_IA32		1
 #define LIBASM_SUPPORT_MIPS		0	/*<! XXX: Work in progress	*/
 #define LIBASM_SUPPORT_POWERPC		0	/*<! XXX: Wanted		*/
-#define LIBASM_SUPPORT_ARM		0	/*<! XXX: Wanted		*/
+#define LIBASM_SUPPORT_ARM		0	/*<! XXX: Work in progress	*/
 #define	LIBASM_VECTOR_OPCODE_IA32	"opcode-ia32"
 #define	LIBASM_VECTOR_OPCODE_SPARC	"opcode-sparc"
 #define	LIBASM_VECTOR_OPCODE_MIPS	"opcode-mips"
+#define	LIBASM_VECTOR_OPCODE_ARM	"opcode-arm"
 #define	LIBASM_VECTOR_OPERAND_IA32	"operand-ia32"
 #define	LIBASM_VECTOR_OPERAND_SPARC	"operand-sparc"
 #define	LIBASM_VECTOR_OPERAND_MIPS	"operand-mips"
+#define	LIBASM_VECTOR_OPERAND_ARM	"operand-arm"
 
 
 /**
@@ -175,6 +177,7 @@ enum e_vector_arch
   LIBASM_VECTOR_IA32,
   LIBASM_VECTOR_SPARC,
   LIBASM_VECTOR_MIPS,
+  LIBASM_VECTOR_ARM,
   LIBASM_VECTOR_ARCHNUM
 };
 
@@ -186,7 +189,8 @@ enum e_proc_type
 {
   ASM_PROC_IA32,	//!< Architecture IA32
   ASM_PROC_SPARC,	//!< Architecture SPARC
-  ASM_PROC_MIPS		//!< Architecture MIPS
+  ASM_PROC_MIPS,        //!< Architecture MIPS
+  ASM_PROC_ARM          //!< Architecture ARM
 };
 
 
@@ -202,6 +206,7 @@ int	asm_init_ia32(asm_processor *proc);
 int	asm_init_i386(asm_processor *proc); /*!< XXX:Obsolete */
 int	asm_init_sparc(asm_processor *proc);
 int	asm_init_mips(asm_processor *proc);
+int	asm_init_arm(asm_processor *proc);
 
 /**
  * Intialize an asm_processor structure.
@@ -452,6 +457,7 @@ enum e_libasm_errorcode
 #include <libasm-i386.h>
 #include <libasm-sparc.h>
 #include <libasm-mips.h>
+#include <libasm-arm.h>
 
 #endif
 
