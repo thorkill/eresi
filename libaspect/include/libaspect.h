@@ -133,6 +133,7 @@
 #define UFMT		"%08u"
 #define DFMT		"%08d"
 #define	RDFMT		"%d"
+#define RXFMT		"0x%X"
 
 #elif defined(ERESI64)
  typedef uint64_t	eresi_Addr;
@@ -144,12 +145,14 @@
  #define UFMT		"%016llu"
  #define DFMT		"%016lld"
  #define RDFMT		"%lld"
+ #define RXFMT		"0x%llX"
 #elif __WORDSIZE == 64
  #define XFMT		"0x%016lX"
  #define AFMT		"%016lX"
  #define UFMT		"%016lu"
  #define DFMT		"%016ld"
  #define RDFMT		"%ld"
+ #define RXFMT		"0x%lX"
 #else
  #error "__WORDSIZE not defined"
 #endif

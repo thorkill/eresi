@@ -512,7 +512,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	  if (expr->next)
 	    {
 	      if (quiet)
-		revm_output(",\\l");
+		revm_output(",");
 	      else
 		revm_output(",\n");
 	      pad2 = alloca(taboff + 1);

@@ -1,20 +1,13 @@
 /**
- * @defgroup librevm_vm librevm VM
- */
-/*
+** @defgroup librevm_vm librevm VM
 ** @file tables.c
 ** @ingroup librevm_vm
 ** @brief This file contains all command and objects definitions for scripting.
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
-**
 ** $Id: tables.c,v 1.54 2008-02-16 12:32:27 thor Exp $
-**
 */
 #include "revm.h"
-
-/* ERESI script machine frames list */
-//list_t		frames_list;
 
 /* The ELF shell module hash tables: returns a revmmod_t */
 hash_t		mod_hash;
@@ -54,6 +47,10 @@ char	       elfsh_libpath[BUFSIZ];
 
 /* Hash of instruction lists */
 hash_t		instrlists_hash;
+
+/* Hashes for dataflow IN and OUT */
+hash_t		inputdf;
+hash_t		outputdf;
 
 
 /**
@@ -895,6 +892,8 @@ void		revm_tables_setup()
   hash_init(&t_color_hash     , "tcolors"    , 11, ASPECT_TYPE_UNKNOW);
   hash_init(&world.shared_hash, "sharedfiles", 11, ASPECT_TYPE_UNKNOW);
   hash_init(&instrlists_hash  , "instrlists" , 51, ASPECT_TYPE_LIST);
+  hash_init(&inputdf          , "idflists"   , 51, ASPECT_TYPE_LIST);
+  hash_init(&outputdf         , "odflists"   , 51, ASPECT_TYPE_LIST);
   hash_init(&parser_hash      , "parsers"    , 11, ASPECT_TYPE_CADDR);
   //elist_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
   

@@ -40,14 +40,14 @@ void		revm_object_print(revmobj_t *obj)
       case ASPECT_TYPE_BYTE:
 	byte = (obj->immed ? obj->immed_val.byte : obj->get_obj(obj->parent));
 	word = (uint32_t) byte;
-	snprintf(logbuf, BUFSIZ - 1, "'%s' (%s) ", 
+	snprintf(logbuf, BUFSIZ - 1, "'%s'(%s) ", 
 		 ((word > 31 && word < 127) ? revm_colornumber("%c", word) : 
 		  revm_colorfieldstr("?")), revm_colornumber("%hhd", word));
 	break;
       case ASPECT_TYPE_SHORT:
 	half = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
 	word = (uint32_t) half;
-	snprintf(logbuf, BUFSIZ - 1, "%s (%s) ", 
+	snprintf(logbuf, BUFSIZ - 1, "%s(%s) ", 
 		 revm_colornumber("%hd", word), revm_colornumber("0x%hX", word));
 	break;
       case ASPECT_TYPE_LONG:
@@ -55,7 +55,7 @@ void		revm_object_print(revmobj_t *obj)
       case ASPECT_TYPE_DADDR:
 	val = (obj->immed ? obj->immed_val.ent : obj->get_obj(obj->parent));
 	snprintf(logbuf, BUFSIZ - 1, "%s ", 
-		 revm_colornumber(XFMT, val));
+		 revm_colornumber(RXFMT, val));
 	break;
       case ASPECT_TYPE_INT:
       case ASPECT_TYPE_OID:
@@ -104,7 +104,7 @@ void		revm_object_print(revmobj_t *obj)
       case ASPECT_TYPE_RAW:
       default:
 	val = (obj->immed || !obj->parent ? obj->immed_val.ent : obj->get_obj(obj->parent));
-	snprintf(logbuf, BUFSIZ - 1, "%s ", revm_colornumber("0x%X", val));
+	snprintf(logbuf, BUFSIZ - 1, "%s ", revm_colornumber(RXFMT, val));
 	break;
     }
   revm_output(logbuf);
