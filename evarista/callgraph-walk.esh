@@ -35,10 +35,11 @@ graph bloc main
 foreach $link of $func.outlinks
 
   print $link
-  #profile enable warn
+  profile enable warn
   verb
 
   # Dont analyse extern functions
+  print SCOPE_GLOBAL
   cmp $link.scope SCOPE_GLOBAL
   je next
 

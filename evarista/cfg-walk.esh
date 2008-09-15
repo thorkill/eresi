@@ -56,7 +56,7 @@ ok2:
   cfg-walk $addr
 
   print Coming back from bloc at addr $addr
-  print $nextblock
+  #print $nextblock
 
 next: 
   #vlist

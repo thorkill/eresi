@@ -233,12 +233,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
 	  //XXX: if we free it now, ->matchexpr and maybe other exprs will be dangling
 	  //revm_expr_destroy(candid->label);
-
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
-	  
-	  revm_expr_print_by_name(candid->label, 0);
-	  revm_output("\n");
-	  
 	  if (!matchme)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to write back list element", -1);

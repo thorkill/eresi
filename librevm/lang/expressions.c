@@ -861,7 +861,7 @@ int		revm_expr_print(revmexpr_t *expr, u_char quiet)
   revm_expr_printrec(expr, (!iter || !expr->next ? strlen(expr->label) + 6 : 1), 0, iter, quiet);
   if (!quiet && (type->next || (type->childs && type->childs->next)))
     revm_output(revm_colorwarn("}"));
-  else
+  else if (quiet)
     revm_output(")\\l");
   revm_endline();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -1049,8 +1049,11 @@ int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
     }
 
   /* Return result */
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to compare expressions", ret);
   *val = ret;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
