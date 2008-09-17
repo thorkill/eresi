@@ -61,7 +61,7 @@ int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
 
 /* Add a command */
 int		revm_command_add(char *cmd, void *exec, void *reg, u_int needfile, 
-			  char *help)
+				 char *help)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash_add(&cmd_hash, cmd , (void *) revm_create_CMDENT(exec, reg, needfile, help));

@@ -157,6 +157,7 @@ typedef struct	s_io
 #define		REVM_IO_DUMP    3
 #define		REVM_IO_GDB	4
 #define		REVM_IO_NUM     5
+
   char		type;                   /*! IO type           */
   int		input_fd;               /*! Input file        */
   int		output_fd;              /*! Output file       */

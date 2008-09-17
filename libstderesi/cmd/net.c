@@ -9,6 +9,19 @@
 */
 #include "libstderesi.h"
 
+
+/**
+ *  Network & memory initialization for the gdb wrapper.
+ */
+
+int             cmd_network_gdbsupport(void)
+{
+  fprintf (stderr, "Inclusion successful :) \n");
+  fflush(stderr);
+}
+
+
+
 /** 
  * Run network initialisation 
  */
@@ -39,16 +52,16 @@ int		cmd_network()
       if (world.state.revm_mode == REVM_STATE_CMDLINE)
 	{
           // We had interactive mode commands which aren't load in CMDLINE mode
-          revm_command_add(CMD_LOAD    , (void *) cmd_load     , (void *) revm_getoption, 0, HLP_LOAD);
-          revm_command_add(CMD_UNLOAD  , (void *) cmd_unload   , (void *) revm_getoption, 0, HLP_UNLOAD);
-          revm_command_add(CMD_SAVE    , (void *) cmd_save     , (void *) revm_getoption, 1, HLP_SAVE);
-          revm_command_add(CMD_SWITCH  , (void *) cmd_doswitch , (void *) revm_getoption, 1, HLP_SWITCH);
-          revm_command_add(CMD_METACMD , (void *) cmd_meta     , (void *) NULL,           0, HLP_METACMD);
-          revm_command_add(CMD_QUIT    , (void *) cmd_quit     , (void *) NULL,           0, HLP_QUIT);
-          revm_command_add(CMD_QUIT2   , (void *) cmd_quit     , (void *) NULL,           0, HLP_QUIT);
-          revm_command_add(CMD_LIST    , (void *) cmd_dolist   , (void *) NULL,           0, HLP_LIST);
-          revm_command_add(CMD_LIST2   , (void *) cmd_dolist   , (void *) NULL,           0, HLP_LIST);
-          revm_command_add(CMD_STOP    , (void *) cmd_stop     , (void *) NULL,           0, HLP_STOP);
+          revm_command_add(CMD_LOAD, cmd_load, revm_getoption, 0, HLP_LOAD);
+          revm_command_add(CMD_UNLOAD, cmd_unload, revm_getoption, 0, HLP_UNLOAD);
+          revm_command_add(CMD_SAVE, cmd_save, revm_getoption, 1, HLP_SAVE);
+          revm_command_add(CMD_SWITCH, cmd_doswitch, revm_getoption, 1, HLP_SWITCH);
+          revm_command_add(CMD_METACMD, cmd_meta, NULL, 0, HLP_METACMD);
+          revm_command_add(CMD_QUIT, cmd_quit, NULL, 0, HLP_QUIT);
+          revm_command_add(CMD_QUIT2, cmd_quit, NULL, 0, HLP_QUIT);
+          revm_command_add(CMD_LIST, cmd_dolist, NULL, 0, HLP_LIST);
+          revm_command_add(CMD_LIST2, cmd_dolist, NULL, 0, HLP_LIST);
+          revm_command_add(CMD_STOP, cmd_stop, NULL, 0, HLP_STOP);
 	}
       revm_output(" [*] Started ERESI network stack\n\n");
     }
@@ -107,7 +120,7 @@ int		cmd_netkill()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tokill = revm_GetCurJobParameter(0);
+  tokill = revm_get_cur_job_parameter(0);
 
   tokill = revm_lookup_string(tokill);
 
@@ -184,7 +197,7 @@ int		cmd_connect()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  toconnect = revm_GetCurJobParameter(0);
+  toconnect = revm_get_cur_job_parameter(0);
   toconnect = revm_lookup_string(toconnect);
 
   if (world.state.revm_net != 1)
@@ -232,7 +245,7 @@ int		cmd_discon()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  todisconnect = revm_GetCurJobParameter(0);
+  todisconnect = revm_get_cur_job_parameter(0);
 
   todisconnect = revm_lookup_string(todisconnect);
 
@@ -264,7 +277,8 @@ int		cmd_discon()
 }
 
 /** 
- * send a command to a remote elfsh node 
+ * send a command to a remote elfsh node.
+ * Woh, this must take in param the command at least... 
  */
 int			cmd_rcmd()
 {
@@ -284,6 +298,15 @@ int			cmd_rcmd()
   if (world.state.revm_net != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Not in 'net' mode", (-1));
 
+  fprintf(stderr,  "Entered mode: X - %d ", world.curjob->ws.io.type);
+  fflush(stderr);
+
+  
+
+  /* We return prematurely for now. */
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  
+
 
   /* 1 char for the REVM_DUMP_CMD */
   data[0] = ' ';
@@ -291,14 +314,14 @@ int			cmd_rcmd()
 
   sz -= 2;
 
-  for (idx = 1; revm_GetCurJobParameter(idx) != NULL; idx++)
+  for (idx = 1; revm_get_cur_job_parameter(idx) != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
       sz -= 1;
       if (sz < 2)
 	break;
-      strncat(data, revm_GetCurJobParameter(idx), sz - 1);
-      sz -= strlen(revm_GetCurJobParameter(idx));
+      strncat(data, revm_get_cur_job_parameter(idx), sz - 1);
+      sz -= strlen(revm_get_cur_job_parameter(idx));
       if (sz < 2)
 	break;
     }
@@ -306,7 +329,7 @@ int			cmd_rcmd()
   if (idx < 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid number of parameters", (-1));
 
-  to = revm_GetCurJobParameter(idx);
+  to = revm_get_cur_job_parameter(idx);
 
   to = revm_lookup_string(to);
 

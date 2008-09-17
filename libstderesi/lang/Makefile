@@ -21,6 +21,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)                  \
 			 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)    \
 			 -I../../libmjollnir/include/ -I../../libaspect/include/   \
 			 -I../../libedfmt/include/  $(STATOPT2) 	   \
+			-I../../libgdbwrap/include/	\
 			 -I../../libetrace/include -I../../librevm/include/	   \
 			$(ASMOPT) -DERESI32 -I../../e2dbg/include/ $(NCURSESLNOPT) \
 			$(READLNOPT) $(BITS)
@@ -31,7 +32,8 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	          \
 			 -I/usr/pkg/include/  -I../../libaspect/include/          \
 			 -I../../libui/include/ -I../../libmjollnir/include/      \
 			 -I../../libedfmt/include/  $(STATOPT2) 	  \
-			 -I../../libetrace/include -I../../librevm/include/       \
+			-I../../libgdbwrap/include/ 				     \
+			-I../../libetrace/include -I../../librevm/include/       \
 			$(ASMOPT) -DERESI64 $(BUILDOP) -I../../e2dbg/include/ 	  \
 			$(NCURSESLNOPT) $(READLNOPT) $(BITS)
 

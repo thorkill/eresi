@@ -137,6 +137,7 @@
 
 /* Network commands */
 #define	HLP_NETWORK		"Activate networking capabilities"
+#define HLP_NETWORKGDB          "Activate gdb remote support"
 #define	HLP_NETLIST		"List connected network clients"
 #define	HLP_NETKILL		"Kill a network client by IP"
 #define	HLP_SHARED		"Shared prefix : allow opened file to be shared between users"

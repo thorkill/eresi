@@ -16,6 +16,7 @@ NAM	= tracer
 RM	= rm -f 
 OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ 	\
 	$(BITS) -DERESI32 -I../../libstderesi/include/ -I../../libdump/include/ \
+	-I../../libgdbwrap/include/ 					\
 	-I../../libasm/include/ -I../../libaspect/include/ -I../../libmjollnir/include/ \
 	-I../../libedfmt/include/ $(BITS) -DERESI32 -I../../libetrace/include/ 
 CFLAGS	= $(OPT)

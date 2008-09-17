@@ -58,6 +58,7 @@
 
 #if defined(ERESI_NET)
  #include <libdump.h>
+ #include <gdbwrapper.h>
 #endif
 
 #if defined(USE_READLN)
@@ -404,6 +405,9 @@ typedef struct        s_world
   int		      fifo_s2c;	      /* Fd for the debugger IO FIFO */
   int		      fifo_c2s;	      /* Fd for the debugger IO FIFO */
   void		      (*cmd_init)();  /* Command constructor from libstderesi */
+#if defined(ERESI_NET)
+  gdbwrap_t           *gdbwrap;       /* General object for the GDB wrapper. */
+#endif
 }		      revmworld_t;
 
 
@@ -459,9 +463,7 @@ extern int		(*hooks_output[REVM_IO_NUM])(char *buf);
 extern int 		elfsh_load_core_info(elfshobj_t *);
 
 /* Network related variables */
-//extern hash_t      elfsh_net_client_list;  /* The client socket's list */
 extern int         elfsh_net_client_count; /* Number of clients connected */
-//extern revmsock_t    elfsh_net_serv_sock;    /* The main socket structur */
 
 /* Lib path */
 extern char	   elfsh_libpath[BUFSIZ];
@@ -618,6 +620,8 @@ int		revm_source(char **params);
 int		revm_help(char *command);
 void		revm_print_actual(revmargv_t *cur);
 int		revm_printscript(revmargv_t *start);
+char            *revm_get_cur_job_parameter(uint8_t p);
+char            *revm_get_cur_job_parameter_with_job(revmjob_t *job, uint8_t p);
 
 /* Vector related functions */
 int		revm_vectors_getdims(char *str, unsigned int *dims);
@@ -751,7 +755,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr);
 int              revm_screen_switch();
 int              revm_screen_clear(int i, char c);
 int              revm_screen_update(u_short isnew, u_short prompt_display);
-int		revm_workspace_next();
+int      	 revm_workspace_next();
 
 /* libedfmt related functions */
 int		revm_edfmt_parse(elfshobj_t *file);

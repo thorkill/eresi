@@ -22,6 +22,7 @@ CFLAGS32	+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
 		 -I../../libmjollnir/include/ -I../../libaspect/include/  \
 		 $(KERNSHINCINC) $(KERNSH)			          \
 		 -I../../libedfmt/include/				  \
+		 -I../../libgdbwrap/include/				  \
 		 $(STATOPT2) $(ASMOPT) -DERESI32 $(EXTRACFLAGS)		  \
 		-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
@@ -32,6 +33,7 @@ CFLAGS64	+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	  \
 		 -I../../libui/include/ -I../../libmjollnir/include/      \
 		 $(KERNSHINCINC) $(KERNSH) $(EXTRACFLAGS)		  \
 		 -I../../libedfmt/include/				  \
+		 -I../../libgdbwrap/include/				  \
 		 $(STATOPT2) $(ASMOPT) -DERESI64 $(BUILDOP)		  \
 		-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 

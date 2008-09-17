@@ -36,10 +36,10 @@ extern char **environ;
 #define __USE_GNU
 #include <sys/ucontext.h>
 
-#define		__DEBUG_E2DBG__	        0
-#define		__DEBUG_BP__		0
+#define		__DEBUG_E2DBG__	        1
+#define		__DEBUG_BP__		1
 #define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	0
+#define		__DEBUG_LINKMAP__	1
 #define		__DEBUG_THREADS__	0
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)

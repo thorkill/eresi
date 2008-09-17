@@ -22,6 +22,7 @@ CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			-I../libdump/include/ -I../libasm/include/ \
 			-I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libaspect/include/ -I../librevm/include/ \
+			-I../../libgdbwrap/include/ 			\
 			-I../libui/include/ -I../libmjollnir/include/ \
 			-I../libedfmt/include/  $(STATOPT2) \
 			$(ASMOPT) -DERESI32 $(NCURSESLNOPT) $(READLNOPT)

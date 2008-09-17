@@ -22,6 +22,7 @@ RNAM64	= modremap64.so
 CFLAGS	= -I../librevm/include/ -I../libhash/include/ -I../libui/include/		\
 	  -I../libdump/include/ -I../libelfsh/include/  -I../libaspect/include		\
 	  -I../libasm/include/ -I../e2dbg/include/ -I../libc/include/			\
+	  -I../libgdbwrap/include/	\
 	  -I../libmjollnir/include/ -I../libedfmt/include/ -I../libstderesi/include/	\
 	  -I../libetrace/include/ -Wall -g3 -O2 -fPIC  $(DYNOPT)	\
 	  $(BITS) $(NCURSESLNOPT) $(READLNOPT) $(BUILDOP)

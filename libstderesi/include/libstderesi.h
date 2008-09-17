@@ -127,6 +127,7 @@
 
 /* Network commands */
 #define	CMD_NETWORK		"net"
+#define CMD_NETWORK_GDBSUPPORT  "netgdb"
 #define	CMD_NETWORK2		"network"
 #define	CMD_NETLIST		"netlist"
 #define	CMD_NETKILL		"netkill"
@@ -207,7 +208,7 @@ typedef struct		s_revmtraces
 extern char	quit_msg[512];
 extern void	(*prompt_token_setup)(char *name, u_int size);
 extern char	prompt_token[512];
-extern u_char  quit_msg_setup;
+extern u_char   quit_msg_setup;
 
 /* Used to store ascii description for different structures types in data.c */
 #define	ELFSH_INSTRTYPE_MAX	24
@@ -347,6 +348,7 @@ int		cmd_cat();
 int             cmd_color();
 int             cmd_nocolor();
 int		cmd_phtend();
+int             cmd_network_gdbsupport();
 int		cmd_network();
 int		cmd_netlist();
 int		cmd_netkill();

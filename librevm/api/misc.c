@@ -399,7 +399,13 @@ char	*revm_string_get(char **params)
 /**
  *  Get and Set fields of structures
  */
-char     *revm_GetCurJobParameter(uint8 p)
+char     *revm_get_cur_job_parameter(uint8_t p)
 {
   return world.curjob->curcmd->param[p];
+}
+
+
+char     *revm_get_cur_job_parameter_with_job(revmjob_t *job, uint8_t p)
+{
+  return job->curcmd->param[p];
 }

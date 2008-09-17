@@ -70,8 +70,6 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
-
 /** 
  * @brief Return the number of buffer in a revmsock_t recvd 
  * @ingroup io
