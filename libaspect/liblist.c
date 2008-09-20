@@ -29,7 +29,7 @@ int elist_init(list_t *h, char *name, u_int type)
   exist = elist_find(name);
   if (exist)
     {
-#if __LIST_DEBUG__
+#if 1 //__LIST_DEBUG__
       fprintf(stderr, "DEBUG: List %s (%p) already exists in hash with addr %p : NOT CREATING \n", 
 	      name, h, exist);
 #endif

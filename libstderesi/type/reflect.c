@@ -91,6 +91,7 @@ int		cmd_reflect()
   /* Create the new list of instructions in expression form */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, instrlist, sizeof(list_t), -1);
   snprintf(logbuf2, sizeof(logbuf2), AFMT, curblock->vaddr);
+
   elist_init(instrlist, strdup(logbuf2), ASPECT_TYPE_EXPR);
 
   /* Reflection all instructions of the basic bloc in the list */

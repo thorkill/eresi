@@ -29,23 +29,22 @@ print Entering FUNCTION: $func
 cfg-walk $func.vaddr
 
 vlist TMP
-graph bloc main
-#exec sleep 120
+
+#graph bloc main
 
 foreach $link of $func.outlinks
 
   print $link
-  profile enable warn
-  verb
 
   # Dont analyse extern functions
-  print SCOPE_GLOBAL
   cmp $link.scope SCOPE_GLOBAL
   je next
 
-  tables functions 100*
+  verb
+  #tables functions 100*
+  #print $func
 
-  profile enable warn
+  #profile enable warn
   set $nextfunc $link.id
   print NEXTFUNC: $nextfunc
 

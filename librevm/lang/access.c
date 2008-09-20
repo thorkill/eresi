@@ -108,14 +108,17 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 	  for (liter = 0; liter != iter; liter++)
 	    dimoff[liter] *= dims[iter];
 	}
+      else if (iter == 0)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       else
-	break;
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Missing array indexes", -1);
     }
   
   /* Make sure we havent gone further the limit of dimensions */
   if (iter != dimnbr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid array dimensions", -1);
+		 "Too many array dimensions", -1);
 
   /* Compute the final offset of element inside the array by
      adding offsets of all dimensions */

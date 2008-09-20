@@ -77,8 +77,17 @@ static revmexpr_t	*revm_induction_get(char *name)
       induction = revm_induction_load(name);
     }
   else
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Inconsistent foreach induction variable", NULL);	   
+    {
+      revm_expr_print(world.curjob->iter[world.curjob->curiter].curind, 0);
+      fprintf(stderr, "name = %s curind->label = %s reclevel = %u curscope = %u "
+	      "end = %s endlabel = %s \n",
+	      name, world.curjob->iter[world.curjob->curiter].curind->label,
+	      world.curjob->iter[world.curjob->curiter].reclevel,
+	      world.curjob->curscope, world.curjob->iter[world.curjob->curiter].end,
+	      world.curjob->curcmd->endlabel);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Inconsistent foreach induction variable", NULL);	   
+    }
 
 #if __DEBUG_FOREACH__
   fprintf(stderr, "INDUCTION_GET: Induction variable name = %s listidx = %u \n", name,

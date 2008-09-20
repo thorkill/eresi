@@ -701,14 +701,8 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
   
   /* Set the last result variable */
   last = revm_expr_get(REVM_VAR_RESULT);
-  if (!last)
-    {
-      if (!o2->perm && o2->immed && o2->otype->type == ASPECT_TYPE_STR && str != NULL)
-	XFREE(__FILE__, __FUNCTION__, __LINE__,str);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unable to get last result variable", -1);
-    }
-  revm_expr_destroy(REVM_VAR_RESULT);
+  if (last)
+    revm_expr_destroy(REVM_VAR_RESULT);
   res = revm_create_IMMED(ASPECT_TYPE_INT, 1, *val);
   last = revm_expr_create_from_object(res, REVM_VAR_RESULT, 1);
   if (!last)

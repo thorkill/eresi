@@ -77,7 +77,7 @@ into Return(addr:$curaddr, dst(val:$instr.op1.imm))
 
 # save 												
 case instr(sem:p)
-into Prolog(addr:$curaddr)
+into Prolog(addr:$curaddr, framesz:$instr.op2.imm)
 
 # restore 												
 case instr(sem:e)
