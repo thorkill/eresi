@@ -483,17 +483,16 @@ int		cmd_default()
   if (world.curjob->recur[world.curjob->curscope].rwrt.matched)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  /* Execute parameter command */
+  /* Create new context */
   world.curjob->curscope++;
-
   snprintf(actual, sizeof(actual), "job%u_rec%u_labels", 
 	   world.curjob->id, world.curjob->curscope);
   hash_init(&world.curjob->recur[world.curjob->curscope].labels, strdup(actual), 3, ASPECT_TYPE_UNKNOW);
-
   snprintf(actual, sizeof(actual), "job%u_rec%u_exprs", 
 	   world.curjob->id, world.curjob->curscope);
   hash_init(&world.curjob->recur[world.curjob->curscope].exprs, strdup(actual), 7, ASPECT_TYPE_UNKNOW);
 
+  /* Execute parameter commands */
   str = revm_string_get(world.curjob->curcmd->param);
   cur = world.curjob->curcmd;
   if (revm_exec_str(str) < 0)
@@ -511,7 +510,7 @@ int		cmd_default()
   hash_destroy(&world.curjob->recur[world.curjob->curscope].exprs);
   world.curjob->curscope--;
 
-  /* Jump to end of the match construct */
+  /* Jump to end of rewrite construct */
   revm_move_pc(world.curjob->curcmd->endlabel);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

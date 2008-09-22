@@ -174,10 +174,6 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
 	  world.curjob->curcmd->use_regx[0] = 1;
 	}
       }
-
-  /* Set the current and maximum indexes to uninitialized */
-  //world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		revm_getvarparams(index, argc, argv));
 }
@@ -240,8 +236,6 @@ int		revm_getmatchparams(u_int index, u_int argc, char **argv)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
   if (strcmp(argv[index + 2], CMD_PARAM_INTO))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong match format", -1);
-
-  //world.curjob->curcmd->listidx = REVM_IDX_UNINIT;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		revm_getoption2(index, argc, argv));
 }

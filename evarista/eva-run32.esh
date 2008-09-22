@@ -3,6 +3,7 @@
 vlist
 cmp  $# 1
 jne end
+
 sdir .
 
 quiet

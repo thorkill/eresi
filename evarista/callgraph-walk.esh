@@ -1,4 +1,4 @@
-#!evarista/evarista32
+#!evarista
 
 print ENTERED CALLGRAPH-WALK
 
@@ -19,6 +19,8 @@ jne end
 #print $test
 #exec sleep 20
 
+#profile enable warn
+
 set $func $hash[functions:$1]
 set $hash[visitedfuncs:$1] 1
 print Entering FUNCTION: $func
@@ -30,7 +32,7 @@ cfg-walk $func.vaddr
 
 vlist TMP
 
-#graph bloc main
+graph bloc main
 
 foreach $link of $func.outlinks
 

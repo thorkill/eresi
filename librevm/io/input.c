@@ -104,7 +104,7 @@ char		*revm_read_input()
 	      tmpbuf[len] = 0x00;
 	    goto end;
 	  }
-	else if (len > 2 && tmpbuf[len - 1] == ':' && tmpbuf[len] == ':')
+	else if ((len > 2 && tmpbuf[len - 1] == ':' && tmpbuf[len] == ':') || tmpbuf[len] == ',')
 	  wantmore = 1;
 	else
 	  wantmore = 0;

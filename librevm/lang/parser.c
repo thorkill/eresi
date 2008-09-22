@@ -21,10 +21,7 @@ static revmargv_t	*forend      = NULL;
 /* Pending label information : support labels */
 static u_int		pendinglabel = 0;
 static revmargv_t	*newcmd      = NULL;
-
-/* Global variables for rewrite/case/endwrt parsing */
 static list_t		*condcmdlist = NULL;
-static u_char		isdefault    = 0;
 
 /**
  * Create a fresh label name 
@@ -140,11 +137,6 @@ int			revm_parse_construct(char *curtok)
 	  condcmdlist = NULL;
 	}
     }
-  
-  /* This flag says if the command opens a new scope just for its arguments */
-  isdefault = ((!strcmp(curtok, CMD_DEFAULT) || 
-		!strcmp(curtok, CMD_PRE) || 
-		!strcmp(curtok, CMD_POST)) ? 1 : 0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -201,34 +193,16 @@ int			revm_parseopt(int argc, char **argv)
 
 	  /* If there is a forend/matchend label waiting, insert it here */
 	  /* The forend label must point on the -following- command */
-	  /* Annotate meta-command foreach, case, and default with  the "end label" */
 	  if (nextlabel)
 	    {
-	      hash_add(&world.curjob->recur[world.curjob->curscope].labels, 
-		       strdup(endlabl), newcmd);
+	      hash_add(&world.curjob->recur[world.curjob->curscope].labels, strdup(endlabl), newcmd);
 	      loopstart = hash_get(&world.curjob->recur[world.curjob->curscope].labels, 
 				   looplabels[curnest]);
-
-	      /* If we are executing "default", we search for the loop start in the parent scope */
-	      /*
-	      if (world.curjob->curscope && isdefault)
-		for (ret = 0; world.curjob->curscope >= ret; ret++)
-		  {
-		    loopstart = hash_get(&labels_hash[world.curjob->curscope - ret], looplabels[curnest]);
-		    if (loopstart)
-		      break;
-		  }
-	      */
-
-	      if (!loopstart)
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			     "Invalid nesting of language construct", -1);
-
 	      loopstart->endlabel = strdup(endlabl);
-	      /* isdefault = */ nextlabel = 0;
+	      nextlabel = 0;
 	    }
 
-	  /* Dont call registration handler if there is not (0 param commands) */
+	  /* Dont call registration handler if there is none (0 param commands) */
 	  if (actual->reg != NULL)
 	    {
 	      ret = actual->reg(index, argc, argv);
@@ -243,6 +217,7 @@ int			revm_parseopt(int argc, char **argv)
 	  if (revm_parse_construct(argv[index]) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Invalid eresi program nesting construct", -1);
+
 	  index += ret;
 	}
 

@@ -272,16 +272,18 @@ int		revm_type_reflect(hash_t *hash, char *typename)
 
      result = revm_inform_type_addr(typename, logbuf, (eresi_Addr) data, NULL, 0, 1);
      
+     /*
      if (!result)
        {
 	 fprintf(stderr, "FAILED TO REFLECT %s OBJECT OF KEY %s \n", typename, keys[index]);
-	 //sleep(10);
+	 sleep(10);
        }
      else
        {
 	 fprintf(stderr, "SUCCESS TO REFLECT %s OBJECT OF KEY %s \n", typename, keys[index]);
 	 revm_expr_print(result, 0);
        }
+     */
 
    }
  hash_free_keys(keys);
