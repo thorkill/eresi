@@ -17,8 +17,8 @@ RM			= rm -f
 NAME32			= ../std-cmd.32.o
 NAME64			= ../std-cmd.64.o
 
-CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)                  \
-			 -I../../libelfsh/include/ \
+CFLAGS32		+= -fPIC -g3 -Wpointer-arith -Wextra -Wall -I../include $(DYNOPT)          \
+			 -I../../libelfsh/include/ 				   \
 			 -I../../libdump/include/ -I../../libasm/include/          \
 			 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)    \
 			 -I../../libmjollnir/include/ -I../../libaspect/include/   \

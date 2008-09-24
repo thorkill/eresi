@@ -426,6 +426,62 @@ int	dump_del_myid(int s)
 /* connection mgt */
 /******************/
 
+int             dump_simpleconnect(char *host, unsigned port)
+{
+  int           rval;
+  int           sd;
+  struct        sockaddr_in   socketaddr;
+  struct        hostent       *hostaddr;
+  struct        protoent      *protocol;
+  extern        int           errno;
+  
+  hostaddr = gethostbyname(host);
+  protocol = getprotobyname( "tcp" );
+
+  if (!hostaddr)
+    {
+      fprintf(stderr, "gethostbyname(): %s\n", hstrerror(h_errno));
+      return (h_errno);
+    }
+  
+  if (!port)
+    {
+      printf( "client: invalid port number\n" );
+      return EINVAL;
+    }
+  
+  if (!protocol)
+    {
+      perror( "getprotobyname()" );
+      return (errno);
+    }
+  
+  sd = socket(PF_INET, SOCK_STREAM, protocol->p_proto);
+
+  if (sd == -1)
+    {
+      perror("socket()");
+      return (errno);
+    }
+  
+  memset(&socketaddr, 0, sizeof(socketaddr));
+  socketaddr.sin_family = AF_INET;
+  socketaddr.sin_port = htons(port);
+
+  memcpy(&socketaddr.sin_addr, hostaddr->h_addr, hostaddr->h_length);
+  rval = connect(sd, (struct sockaddr *)&socketaddr, sizeof(socketaddr));
+
+  if (rval == -1)
+    {
+      perror("connect()");
+      return (errno);
+    }
+
+  return sd;
+}
+
+
+
 /* disconnect from given peer */
 int		dump_disconnect(int s)
 {
@@ -513,7 +569,7 @@ int			dump_connect_to(char *host, u_int port)
 #if !defined(ERESI_INTERNAL)
       printf("[EE] Already connected to %s\n", host);
 #endif
-      return (-1);
+      return -1;
     }
 
   if (dump_is_myid(serv_addr.sin_addr) == 1 )
@@ -521,7 +577,7 @@ int			dump_connect_to(char *host, u_int port)
 #if !defined(ERESI_INTERNAL)
       printf("[EE] Attempt to connect to local node\n");
 #endif
-      return (-1);
+      return -1;
     }
 
   /* create socket */
@@ -531,7 +587,7 @@ int			dump_connect_to(char *host, u_int port)
 #if !defined(ERESI_INTERNAL)
       perror("cannot open socket ");
 #endif
-      return (-1);
+      return -1;
     }
 
   /* bind */
@@ -546,7 +602,7 @@ int			dump_connect_to(char *host, u_int port)
       printf("[EE] Cannot bind port TCP %u\n", port);
       perror("error ");
 #endif
-      return (-1);
+      return -1;
     }
 
   /* connect to server */
@@ -555,7 +611,7 @@ int			dump_connect_to(char *host, u_int port)
     {
 #if !defined(ERESI_INTERNAL)
       perror("[EE] Cannot connect ");
-      return (-1);
+      return -1;
 #endif
     }
 

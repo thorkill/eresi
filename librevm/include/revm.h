@@ -368,7 +368,7 @@ typedef struct        s_job
   /* Scripting machine job context */
 #define		      REVM_MAXSRCNEST  50
   revmargv_t	      *script[REVM_MAXSRCNEST]; /* List of script commands */
-  revmargv_t         *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
+  revmargv_t          *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
   u_int               sourced;          /* script depth (if beeing sourced) */
 
   /* File job context */
@@ -622,6 +622,8 @@ void		revm_print_actual(revmargv_t *cur);
 int		revm_printscript(revmargv_t *start);
 char            *revm_get_cur_job_parameter(uint8_t p);
 char            *revm_get_cur_job_parameter_with_job(revmjob_t *job, uint8_t p);
+uint8_t         revm_get_argc(void);
+int             revm_create_new_workspace(char *ws_name);
 
 /* Vector related functions */
 int		revm_vectors_getdims(char *str, unsigned int *dims);

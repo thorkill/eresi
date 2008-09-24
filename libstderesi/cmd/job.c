@@ -8,23 +8,68 @@
 */
 #include "libstderesi.h"
 
+
+int      revm_create_new_workspace(char *ws_name)
+{
+  revmjob_t	*job;
+  char		logbuf[BUFSIZ];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (!revm_valid_workspace(ws_name))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Incorrect workspace name", -1);
+
+  job = hash_get(&world.jobs, ws_name);
+
+  if (job == NULL)
+    {
+      /* create a new workspace */
+      job = revm_clone_job(strdup(ws_name), world.curjob);
+      hash_add(&world.jobs, ws_name, job);
+
+      if (revm_own_job(job))
+	{
+	  /* switch */
+	  snprintf(logbuf, BUFSIZ - 1, "\n [+] Workspace : %s \n\n", ws_name);
+	  revm_output(logbuf);
+	  revm_prompt_log();
+	  /* Switch to the new job */
+	  revm_switch_job(job);
+	  /* Update the screen */
+	  revm_screen_update(TRUE, 0);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	}
+    }
+  else
+    if (job->ws.active)
+      {
+	snprintf(logbuf, BUFSIZ - 1, "\n [+] Already in workspace : %s\n\n",
+		 ws_name);
+	revm_output(logbuf);
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      }
+  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect workspace name", -1);
+}
+
+
 /**
  * Need doxygen comment
  */
 int		cmd_workspace()
 {
   revmjob_t	*job;
-  u_int		idx;
-  u_int		index;
-  u_short	new = 0;
+  unsigned	idx;
+  unsigned	index;
   char		logbuf[BUFSIZ];
   char		*nl;
   char		*time;
   elfshobj_t	*obj;
   char		**keys;
-  int		keynbr;
+  unsigned      keynbr;
   char		**loadedkeys;
-  int		loadedkeynbr;
+  unsigned	loadedkeynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 
@@ -36,7 +81,7 @@ int		cmd_workspace()
       /* $ workspace */
     case 0: 
       revm_output(" .::. Workspaces .::. \n");
-      keys = hash_get_keys(&world.jobs, &keynbr);
+      keys = hash_get_keys(&world.jobs, (void *)&keynbr);
       for (index = 0; index < keynbr; index++)
 	{
 	  job = (revmjob_t *) hash_get(&world.jobs, keys[index]);
@@ -52,7 +97,7 @@ int		cmd_workspace()
 	      
 	      if (hash_size(&job->loaded))
 		{
-		  loadedkeys = hash_get_keys(&job->loaded, &loadedkeynbr);
+		  loadedkeys = hash_get_keys(&job->loaded, (void *)&loadedkeynbr);
 		  for (idx = 0; idx < loadedkeynbr; idx++)
 		    {
 		      obj = hash_get(&job->loaded, loadedkeys[idx]);
@@ -74,51 +119,7 @@ int		cmd_workspace()
       
       /* $ workspace name */      
     case 1:
-      if (!revm_valid_workspace(world.curjob->curcmd->param[0]))
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Incorrect workspace name", -1);
-
-      job = hash_get(&world.jobs, world.curjob->curcmd->param[0]);
-      if (!job)
-	{
-	  /* create a new workspace */
-	  job = revm_clone_job(strdup(world.curjob->curcmd->param[0]),
- 
-			     world.curjob);
-	  hash_add(&world.jobs, world.curjob->curcmd->param[0], (void *) job);
-	  new = 1;
-	}
-      else
-	{
-	  if (job->ws.active)
-	    {
-	      snprintf(logbuf, BUFSIZ - 1,
-		       "\n [+] Already in workspace : %s\n\n", world.curjob->curcmd->param[0]);
-	      revm_output(logbuf);
-
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	    }
-	}
-
-      if (revm_own_job(job))
-	{
-	  /* switch */
-	  snprintf(logbuf, BUFSIZ - 1, 
-		   "\n [+] Workspace : %s \n\n", world.curjob->curcmd->param[0]);
-	  revm_output(logbuf);
-	  revm_prompt_log();
-
-	  /* Switch to the new job */
-	  revm_switch_job(job);
-
-	  /* Update the screen */
-	  revm_screen_update(new, 0);
-
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	}
-
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Incorrect workspace name", -1);
+      return revm_create_new_workspace(revm_get_cur_job_parameter(0));
 
       /* Unknown command format */
     default:

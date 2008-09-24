@@ -132,6 +132,7 @@ int		dump_del_myid(int s);
 int		dump_disconnect(int s);
 int		dump_disconnect_host(char *host);
 int		dump_connect_to(char *host, u_int port);
+int             dump_simpleconnect(char *host, unsigned port);
 /* recv.c */
 void		*dump_receive_cb(int s);
 /* send.c */

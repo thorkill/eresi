@@ -61,6 +61,8 @@ void		revm_switch_job(revmjob_t      *job)
 }
 
 /* Is this workspace valid for switching ? */
+
+/* huh, can we simplify this ? - c0 */
 int		revm_valid_workspace(char *name)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

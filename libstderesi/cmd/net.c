@@ -11,13 +11,21 @@
 
 
 /**
- *  Network & memory initialization for the gdb wrapper.
+ * Network & memory initialization for the gdb wrapper.
  */
 
 int             cmd_network_gdbsupport(void)
 {
-  fprintf (stderr, "Inclusion successful :) \n");
-  fflush(stderr);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  revm_create_new_workspace("netgdb_ws");
+  
+  if (revm_get_argc() != 2)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Bad number of parameters.\n"
+		 "Format: netgdb <server> <port>", NULL);
+  fprintf(stderr, "yoooooooooeaaaaaahhhh");
+  return 0;
 }
 
 
@@ -25,7 +33,7 @@ int             cmd_network_gdbsupport(void)
 /** 
  * Run network initialisation 
  */
-int		cmd_network()
+int		cmd_network(void)
 {
   revmjob_t	*job;
 
@@ -221,9 +229,8 @@ int		cmd_connect()
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
-  snprintf(buf, BUFSIZ - 1, " [*] connection to %s established.\n", toconnect);
+  snprintf(buf, BUFSIZ - 1, " [*] connection to %s established.\n\n", toconnect);
   revm_output(buf);
-  revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 #else
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -240,7 +247,7 @@ int		cmd_discon()
 {
 #if defined(ERESI_NET)
 
-  char          *todisconnect;
+  char         *todisconnect;
   char          buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
