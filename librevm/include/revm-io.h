@@ -161,8 +161,8 @@ typedef struct	s_io
   char		type;                   /*! IO type           */
   int		input_fd;               /*! Input file        */
   int		output_fd;              /*! Output file       */
-  char		*(*input)();            /*! Read Input data   */
-  char		*(*old_input)();        /*! Old Input handler */
+  char		*(*input)(void);        /*! Read Input data   */
+  char		*(*old_input)(void);    /*! Old Input handler */
   int		(*output)(char *buf);   /*! Write output data */
   revmoutbuf_t	outcache;
 
@@ -280,7 +280,7 @@ void		revm_set_prompt(void (*func) (char *name, u_int size));
 int		revm_net_init();
 int		revm_check_net_select(fd_set *sel_sockets, int sock);
 int		revm_select();
-char*		revm_net_input();
+char		*revm_net_input();
 int		revm_net_output(char *buf);
 int		revm_net_recvd();
 int		revm_net_accept();
@@ -288,9 +288,12 @@ int		revm_dump_accept();
 int		revm_socket_del(char *inet_addr);
 int		revm_socket_get_nb_recvd(char *inet);
 int		revm_update_recvd(revmsock_t *socket);
-char*		revm_socket_merge_recvd(revmsock_t *socket);
+char		*revm_socket_merge_recvd(revmsock_t *socket);
 int             revm_getmaxfd();
 int             revm_clean_jobs();
+
+char            *revm_netgdb_input(void);
+int             revm_netgdb_output(void);
 
 /* Readline interface */
 int             revm_init_history(int mode);

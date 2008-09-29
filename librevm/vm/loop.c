@@ -59,7 +59,7 @@ int		revm_loop(int argc, char **argv)
 	  }
 
 	/* CTRL-D -> !argv */
-	if (!argv)
+	if (argv == NULL)
 	  {
 	    revm_output("\n");
 

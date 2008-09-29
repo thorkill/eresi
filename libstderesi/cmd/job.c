@@ -13,6 +13,7 @@ int      revm_create_new_workspace(char *ws_name)
 {
   revmjob_t	*job;
   char		logbuf[BUFSIZ];
+  Bool          new = FALSE;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -27,19 +28,7 @@ int      revm_create_new_workspace(char *ws_name)
       /* create a new workspace */
       job = revm_clone_job(strdup(ws_name), world.curjob);
       hash_add(&world.jobs, ws_name, job);
-
-      if (revm_own_job(job))
-	{
-	  /* switch */
-	  snprintf(logbuf, BUFSIZ - 1, "\n [+] Workspace : %s \n\n", ws_name);
-	  revm_output(logbuf);
-	  revm_prompt_log();
-	  /* Switch to the new job */
-	  revm_switch_job(job);
-	  /* Update the screen */
-	  revm_screen_update(TRUE, 0);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	}
+      new = 1;
     }
   else
     if (job->ws.active)
@@ -49,6 +38,18 @@ int      revm_create_new_workspace(char *ws_name)
 	revm_output(logbuf);
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
       }
+  if (revm_own_job(job))
+    {
+      /* switch */
+      snprintf(logbuf, BUFSIZ - 1, "\n [+] Workspace : %s \n\n", ws_name);
+      revm_output(logbuf);
+      revm_prompt_log();
+      /* Switch to the new job */
+      revm_switch_job(job);
+      /* Update the screen */
+      revm_screen_update(new, 0);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
   
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect workspace name", -1);
 }

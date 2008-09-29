@@ -308,6 +308,7 @@ do {						\
     printf("     Current FUNCTION %s@%s:%d\n",	\
 	   f, file, l);				\
     profiler_depth = profileme;			\
+    fflush(stdout);				\
   }						\
   profiler_out(file, (char*) f, l); }           \
   return ret;	          			\

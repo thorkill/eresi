@@ -16,16 +16,47 @@
 
 int             cmd_network_gdbsupport(void)
 {
+  unsigned      i = 0;
+  revmjob_t     *job;
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  for (i = 0; revm_get_cur_job_parameter(i) != NULL; i++)
+    fprintf(stderr, "Value of current: %s - %d\n", revm_get_cur_job_parameter(i),
+	    atoi(revm_get_cur_job_parameter(i)));
+  fprintf(stderr, "FINISHED\n");
+  fflush(stderr);
   
-  revm_create_new_workspace("netgdb_ws");
   
   if (revm_get_argc() != 2)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Bad number of parameters.\n"
-		 "Format: netgdb <server> <port>", NULL);
-  fprintf(stderr, "yoooooooooeaaaaaahhhh");
-  return 0;
+    {
+      revm_output("Usage: netgdb <server> <port>\n");
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Bad number of parameters.\n"
+		   "Format: netgdb <server> <port>", -1);
+    } else
+    {
+      int       ret;
+
+      ret = dump_simpleconnect(revm_get_cur_job_parameter(0),
+			       atoi(revm_get_cur_job_parameter(1)));
+      fprintf(stderr, "The value returned is: %d\n", ret);
+      if (ret == -1)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Error found. Exit", -1);
+    }
+
+  revm_create_new_workspace("netgdb_ws");
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,job, sizeof (revmjob_t), -1);
+  job->ws.io.type   = REVM_IO_GDB;
+  job->ws.io.input  = &revm_netgdb_input;
+  job->ws.io.output = &revm_netgdb_output;
+  job->ws.createtime = time(&job->ws.createtime);
+
+  hash_add(&world.jobs, "netgdb", job);
+  world.curjob = job;				// to comment again ?
+
+  revm_output("Bite couille chatte");
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -60,16 +91,16 @@ int		cmd_network(void)
       if (world.state.revm_mode == REVM_STATE_CMDLINE)
 	{
           // We had interactive mode commands which aren't load in CMDLINE mode
-          revm_command_add(CMD_LOAD, cmd_load, revm_getoption, 0, HLP_LOAD);
-          revm_command_add(CMD_UNLOAD, cmd_unload, revm_getoption, 0, HLP_UNLOAD);
-          revm_command_add(CMD_SAVE, cmd_save, revm_getoption, 1, HLP_SAVE);
-          revm_command_add(CMD_SWITCH, cmd_doswitch, revm_getoption, 1, HLP_SWITCH);
-          revm_command_add(CMD_METACMD, cmd_meta, NULL, 0, HLP_METACMD);
-          revm_command_add(CMD_QUIT, cmd_quit, NULL, 0, HLP_QUIT);
-          revm_command_add(CMD_QUIT2, cmd_quit, NULL, 0, HLP_QUIT);
-          revm_command_add(CMD_LIST, cmd_dolist, NULL, 0, HLP_LIST);
-          revm_command_add(CMD_LIST2, cmd_dolist, NULL, 0, HLP_LIST);
-          revm_command_add(CMD_STOP, cmd_stop, NULL, 0, HLP_STOP);
+          revm_command_add(CMD_LOAD, (void *)cmd_load, revm_getoption, 0, HLP_LOAD);
+          revm_command_add(CMD_UNLOAD, (void *)cmd_unload, revm_getoption, 0, HLP_UNLOAD);
+          revm_command_add(CMD_SAVE, (void *)cmd_save, revm_getoption, 1, HLP_SAVE);
+          revm_command_add(CMD_SWITCH, (void *)cmd_doswitch, revm_getoption, 1, HLP_SWITCH);
+          revm_command_add(CMD_METACMD, (void *)cmd_meta, NULL, 0, HLP_METACMD);
+          revm_command_add(CMD_QUIT, (void *)cmd_quit, NULL, 0, HLP_QUIT);
+          revm_command_add(CMD_QUIT2, (void *)cmd_quit, NULL, 0, HLP_QUIT);
+          revm_command_add(CMD_LIST, (void *)cmd_dolist, NULL, 0, HLP_LIST);
+          revm_command_add(CMD_LIST2, (void *)cmd_dolist, NULL, 0, HLP_LIST);
+          revm_command_add(CMD_STOP, (void *)cmd_stop, NULL, 0, HLP_STOP);
 	}
       revm_output(" [*] Started ERESI network stack\n\n");
     }

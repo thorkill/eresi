@@ -883,6 +883,19 @@ char	*revm_socket_merge_recvd(revmsock_t *socket)
 }
 
 
+int                     revm_netgdb_output(void)
+{
+  fprintf(stderr, "Yeah, it has been called :) - output \n");
+  return 0;
+}
+
+
+char                    *revm_netgdb_input(void)
+{
+  fprintf(stderr, "Yeah, it has been called :) - input \n");
+  return NULL;
+}
+
 
 /**
  * @brief  Return the first buffers 

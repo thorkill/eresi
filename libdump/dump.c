@@ -433,36 +433,27 @@ int             dump_simpleconnect(char *host, unsigned port)
   struct        sockaddr_in   socketaddr;
   struct        hostent       *hostaddr;
   struct        protoent      *protocol;
-  extern        int           errno;
-  
+  extern        int           h_errno;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   hostaddr = gethostbyname(host);
   protocol = getprotobyname( "tcp" );
 
-  if (!hostaddr)
-    {
-      fprintf(stderr, "gethostbyname(): %s\n", hstrerror(h_errno));
-      return (h_errno);
-    }
-  
+  if (!hostaddr || h_errno == HOST_NOT_FOUND)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid gethostbyname", -1);
+
   if (!port)
-    {
-      printf( "client: invalid port number\n" );
-      return EINVAL;
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid port", -1);
   
   if (!protocol)
-    {
-      perror( "getprotobyname()" );
-      return (errno);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid getprotobyname()",
+		 -1);
   
   sd = socket(PF_INET, SOCK_STREAM, protocol->p_proto);
-
+  
   if (sd == -1)
-    {
-      perror("socket()");
-      return (errno);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid socket", -1);
   
   memset(&socketaddr, 0, sizeof(socketaddr));
   socketaddr.sin_family = AF_INET;
@@ -472,12 +463,10 @@ int             dump_simpleconnect(char *host, unsigned port)
   rval = connect(sd, (struct sockaddr *)&socketaddr, sizeof(socketaddr));
 
   if (rval == -1)
-    {
-      perror("connect()");
-      return (errno);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Problem when connecting",
+		 -1);
 
-  return sd;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sd);
 }
 
 

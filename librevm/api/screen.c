@@ -36,7 +36,7 @@ int		revm_screen_clear(int i, char c)
  * @param prompt_display
  * @return
  */
-int		revm_screen_update(u_short isnew, u_short prompt_display)
+int		revm_screen_update(Bool isnew, u_short prompt_display)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

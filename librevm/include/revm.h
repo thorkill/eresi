@@ -292,7 +292,7 @@ typedef struct		s_args
   char			use_regx[2];		/* 1 if the option use a regx */
   regex_t		regx[2];		/* Regx */
   revmlist_t		disasm[2];		/* D/X parameters */
-  char			argc;			/* Number of args in param[] */
+  uint8_t		argc;			/* Number of args in param[] */
   revmcmd_t		*cmd;			/* Command descriptor */
   char			*name;			/* Command name */
   char		        *endlabel;		/* Co-Label for foreach/forend */
@@ -525,8 +525,10 @@ int		revm_convert2caddr(revmobj_t *obj);
 
 /* Command API */
 int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur);
-int		revm_command_add(char *cmd, void *exec, void *reg, 
-			  u_int needfile, char *help);
+int		revm_command_add(char *cmd, int (*exec)(void),
+				 int (*reg)(unsigned index, unsigned argc, char **argv),
+				 unsigned needfile, 
+				 char *help);
 int		revm_command_del(char *cmd);
 
 /* Default grammar handlers */
@@ -756,7 +758,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr);
 
 int              revm_screen_switch();
 int              revm_screen_clear(int i, char c);
-int              revm_screen_update(u_short isnew, u_short prompt_display);
+int              revm_screen_update(Bool isnew, u_short prompt_display);
 int      	 revm_workspace_next();
 
 /* libedfmt related functions */

@@ -14,9 +14,9 @@
 
 /* Create the cmdhandler passed to hash_add() */
 revmcmd_t	*revm_create_CMDENT(int  (*exec)(void *file, void *av),
-				  int  (*reg)(u_int index, u_int argc, char **argv),
-				  int  flags,
-				  char *help)
+				    int  (*reg)(u_int index, u_int argc, char **argv),
+				    int  flags,
+				    char *help)
 {
   revmcmd_t	*new;
 
@@ -60,11 +60,13 @@ int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
 }
 
 /* Add a command */
-int		revm_command_add(char *cmd, void *exec, void *reg, u_int needfile, 
+int		revm_command_add(char *cmd, int (*exec)(void),
+				 int (*reg)(unsigned index, unsigned argc, char **argv),
+				 unsigned needfile, 
 				 char *help)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  hash_add(&cmd_hash, cmd , (void *) revm_create_CMDENT(exec, reg, needfile, help));
+  hash_add(&cmd_hash, cmd , revm_create_CMDENT(exec, reg, needfile, help));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
