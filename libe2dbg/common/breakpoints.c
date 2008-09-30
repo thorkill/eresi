@@ -32,28 +32,29 @@ int		elfsh_bp_add(hash_t	*bps,
 
   if (file == NULL || addr == 0 || bps == 0) 
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL parameter", -1);
+		 "Invalid NULL parameter", -1);
 
   /* Breakpoints handlers must be initialized */
   elfsh_setup_hooks();
   XALLOC(__FILE__, __FUNCTION__, __LINE__,bp , sizeof(elfshbp_t), (-1));
+
   bp->obj     = file;
   bp->type    = INSTR;
   bp->addr    = addr;
   bp->symname = strdup(resolv);
- 
   bp->flags   = flags;
+
   snprintf(tmp, 32, XFMT, addr);   
   if (hash_get(bps, tmp))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Breakpoint already exist", -1);
+		 "Breakpoint already exist", -1);
 
   /* Call the architecture dependent hook for breakpoints */
   ret = e2dbg_setbreak(file, bp);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Breakpoint insertion failed", (-1));
-
+		 "Breakpoint insertion failed", (-1));
+  
   /* Add new breakpoint to hash table */
   bp->id = lastbpid++;
   hash_add(bps, strdup(tmp), bp); 
@@ -329,7 +330,8 @@ int		cmd_bp()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* build argc */
-  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
+  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
+    ;
   str = revm_lookup_string(world.curjob->curcmd->param[0]);
 
   fprintf(stderr, "Putting breakpoint on %s \n", str);

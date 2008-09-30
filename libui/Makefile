@@ -15,7 +15,7 @@ NAME32	 	= libui32
 NAME64	 	= libui64
 
 CFLAGS32	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
-		-I../libelfsh/include/ -I../libdump/include/                    \
+		-I ../libgdbwrap/include/ -I../libelfsh/include/ -I../libdump/include/  \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../elfsh/include/ -I../libmjollnir/include/  			\
 		-I../libetrace/include/ -I../libedfmt/include/  	\
@@ -24,6 +24,7 @@ CFLAGS32	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 
 CFLAGS64	+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	\
 		-I../libelfsh/include/ -I../libdump/include/                    \
+		-I ../libgdbwrap/include/  \
 		-I../libasm/include/  -I../e2dbg/include/ -I /usr/pkg/include/  \
 		-I../elfsh/include/ -I../libmjollnir/include/			\
 		-I../libetrace/include/ -I../libedfmt/include/  	\

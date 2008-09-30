@@ -1,4 +1,4 @@
-/**
+ /**
  * @file network.c
  * @ingroup io
  * @brief The high-level network interface.
@@ -15,6 +15,23 @@
 /* Number of clients connected */
 int  	       elfsh_net_client_count = 0;
 
+
+
+
+int                     revm_netgdb_output(void)
+{
+  fprintf(stderr, "Yeah, it has been called :) - output.\n"
+	  "Info: job->ws.io.type: %d", world.curjob->ws.io.type);
+  
+  return 0;
+}
+
+
+char                    *revm_netgdb_input(void)
+{
+  fprintf(stderr, "Yeah, it has been called :) - input \n");
+  return "XTC \n";
+}
 
 
 /* Is net support enable ? */
@@ -882,19 +899,6 @@ char	*revm_socket_merge_recvd(revmsock_t *socket)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-int                     revm_netgdb_output(void)
-{
-  fprintf(stderr, "Yeah, it has been called :) - output \n");
-  return 0;
-}
-
-
-char                    *revm_netgdb_input(void)
-{
-  fprintf(stderr, "Yeah, it has been called :) - input \n");
-  return NULL;
-}
 
 
 /**

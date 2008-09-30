@@ -56,9 +56,11 @@
 #include "libedfmt.h"
 #include "libaspect.h"
 
+#include <gdbwrapper.h>
+/* We might change that in the future. */
+#include <libdump.h>
 #if defined(ERESI_NET)
  #include <libdump.h>
- #include <gdbwrapper.h>
 #endif
 
 #if defined(USE_READLN)
@@ -712,7 +714,7 @@ revmL2_t	*revm_create_L2ENT(void	*get_obj,
 				 void	*set_name,
 				 void	*get_data,
 				 void	*set_data);
-revmcmd_t	*revm_create_CMDENT(int	(*exec)(void *file, void *av),
+revmcmd_t	*revm_create_CMDENT(int	(*exec)(void),
 				  int	(*reg)(u_int i, u_int ac, char **av),
 				  int	flags, char *help);
 elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 

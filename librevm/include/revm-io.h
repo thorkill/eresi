@@ -19,6 +19,8 @@
 
 #include "librevm-color.h"
 
+/* This is bad -- C0 */
+#include <libdump.h>
 #if defined(ERESI_NET)
  #include <libdump.h>
 #endif

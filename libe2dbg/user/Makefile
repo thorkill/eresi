@@ -15,6 +15,7 @@ CC			?= gcc
 RM			= rm -f
 
 CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
+			-I ../../libgdbwrap/include/ 				 \
 			-I../../libelfsh/include/ -I../../libdump/include/     	 \
 			-I../../libasm/include/ -I../../libstderesi/include/	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \
@@ -25,6 +26,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-DERESI32	 
 
 CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
+			-I ../../libgdbwrap/include/ 				 \
 			-I../../libelfsh/include/ -I../../libdump/include/       \
 			-I../../libasm/include/ -I../../libstderesi/include/	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \

@@ -312,8 +312,6 @@ void		eresi_commands_init()
 #if defined(ERESI_NET)
   /* DUMP network commands */
   revm_command_add(CMD_NETWORK   , cmd_network  , NULL            , 0, HLP_NETWORK);
-  revm_command_add(CMD_NETWORK_GDBSUPPORT, cmd_network_gdbsupport, revm_getvarparams,
-		   0, HLP_NETWORKGDB);
   revm_command_add(CMD_NETWORK2  , cmd_network  , NULL            , 0, HLP_NETWORK);
   revm_command_add(CMD_NETLIST   , cmd_netlist  , NULL            , 0, HLP_NETLIST);
   revm_command_add(CMD_NETKILL   , cmd_netkill  , revm_getoption    , 0, HLP_NETKILL);
@@ -322,7 +320,8 @@ void		eresi_commands_init()
   revm_command_add(CMD_DISCON    , cmd_discon   , revm_getoption    , 0, HLP_DISCON);
   revm_command_add(CMD_RCMD	  , cmd_rcmd     , revm_getvarparams , 0, HLP_RCMD);
 #endif
-
+  revm_command_add(CMD_NETWORK_GDBSUPPORT, cmd_network_gdbsupport, revm_getvarparams,
+		   0, HLP_NETWORKGDB);
   /* Flow analysis commands */
   revm_command_add(CMD_ANALYSE	  , cmd_analyse       , NULL,            1, HLP_ANALYSE);
   revm_command_add(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);

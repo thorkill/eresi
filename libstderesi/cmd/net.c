@@ -1,3 +1,4 @@
+
 /**
 ** @file net.c
 ** @ingroup libstderesi
@@ -18,6 +19,8 @@ int             cmd_network_gdbsupport(void)
 {
   unsigned      i = 0;
   revmjob_t     *job;
+  int           fd;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (i = 0; revm_get_cur_job_parameter(i) != NULL; i++)
@@ -35,27 +38,26 @@ int             cmd_network_gdbsupport(void)
 		   "Format: netgdb <server> <port>", -1);
     } else
     {
-      int       ret;
-
-      ret = dump_simpleconnect(revm_get_cur_job_parameter(0),
-			       atoi(revm_get_cur_job_parameter(1)));
-      fprintf(stderr, "The value returned is: %d\n", ret);
-      if (ret == -1)
+      fd = dump_simpleconnect(revm_get_cur_job_parameter(0),
+			      atoi(revm_get_cur_job_parameter(1)));
+      fprintf(stderr, "The value returned is: %d\n", fd);
+      if (fd == -1)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Error found. Exit", -1);
     }
 
   revm_create_new_workspace("netgdb_ws");
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,job, sizeof (revmjob_t), -1);
-  job->ws.io.type   = REVM_IO_GDB;
-  job->ws.io.input  = &revm_netgdb_input;
-  job->ws.io.output = &revm_netgdb_output;
-  job->ws.createtime = time(&job->ws.createtime);
+  job->ws.io.type     = REVM_IO_GDB;
+  job->ws.io.input    = &revm_netgdb_input;
+  job->ws.io.output   = &revm_netgdb_output;
+  job->ws.createtime  = time(&job->ws.createtime);
+  job->ws.io.input_fd = fd;
 
   hash_add(&world.jobs, "netgdb", job);
-  world.curjob = job;				// to comment again ?
+  world.curjob = job;
 
-  revm_output("Bite couille chatte");
+/*   revm_output("Bite couille chatte"); */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -75,9 +77,9 @@ int		cmd_network(void)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,job, sizeof (revmjob_t), -1);
 
   /* network job setup */
-  job->ws.io.type   = REVM_IO_NET;
-  job->ws.io.input  = revm_net_input;
-  job->ws.io.output = revm_net_output;
+  job->ws.io.type    = REVM_IO_NET;
+  job->ws.io.input   = revm_net_input;
+  job->ws.io.output  = revm_net_output;
   job->ws.createtime = time(&job->ws.createtime);
 
   hash_add(&world.jobs, "net_init", job);

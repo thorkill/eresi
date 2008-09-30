@@ -18,6 +18,7 @@ NAME64			= ../std-types.64.o
 
 CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)                  \
 			 -I../../libelfsh/include/ \
+			 -I../../libgdbwrap/include/ \
 			 -I../../libdump/include/ -I../../libasm/include/          \
 			 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)    \
 			 -I../../libmjollnir/include/ -I../../libaspect/include/   \
@@ -28,6 +29,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)                  \
 
 CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	          \
 			 -I../../libelfsh/include/ -I../../elibc/include/	  \
+			 -I../../libgdbwrap/include/ \
 			 -I../../libdump/include/ -I../../libasm/include/         \
 			 -I/usr/pkg/include/  -I../../libaspect/include/          \
 			 -I../../libui/include/ -I../../libmjollnir/include/      \

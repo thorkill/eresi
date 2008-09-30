@@ -13,7 +13,7 @@
 
 
 /* Create the cmdhandler passed to hash_add() */
-revmcmd_t	*revm_create_CMDENT(int  (*exec)(void *file, void *av),
+revmcmd_t	*revm_create_CMDENT(int  (*exec)(void),
 				    int  (*reg)(u_int index, u_int argc, char **argv),
 				    int  flags,
 				    char *help)

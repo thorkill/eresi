@@ -1041,7 +1041,7 @@ int		  e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp)
       hosttype == E2DBG_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "SETBREAK handler unexistant for this ARCH/OS", -1);
+		 "SETBREAK handler unexistant for this ARCH/OS", -1);
   
   dim[0] = archtype;
   dim[1] = hosttype;
