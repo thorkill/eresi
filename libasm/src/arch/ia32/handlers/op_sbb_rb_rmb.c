@@ -11,7 +11,7 @@
   <instruction func="op_sbb_rb_rmb" opcode="0x1a"/>
 */
 
-int op_sbb_rb_rmb(asm_instr *new, u_char *opcode, u_int len, 
+int op_sbb_rb_rmb(asm_instr *new, unsigned char *opcode, unsigned int len, 
                   asm_processor *proc)
 {
   new->len += 1;

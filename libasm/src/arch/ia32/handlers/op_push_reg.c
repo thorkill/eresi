@@ -16,7 +16,7 @@
   <instruction func="op_push_reg" opcode="0x57"/>
 */
 
-int op_push_reg(asm_instr *new, u_char *opcode, u_int len, 
+int op_push_reg(asm_instr *new, unsigned char *opcode, unsigned int len, 
                 asm_processor *proc)
 {
   struct s_modrm        *modrm;

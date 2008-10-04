@@ -12,7 +12,7 @@
 int kernsh_decompkernel()
 {
   int ret;
-  u_int dim[1];
+  unsigned int dim[1];
   vector_t *decomp;
   int (*fct)();
 

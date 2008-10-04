@@ -13,13 +13,13 @@
 #include "libaspect.h"
 
 
-static u_char aspect_initialized = 0;
+static unsigned char aspect_initialized = 0;
 
 
 /***************** ERESI Constructors help functions **********************/
 
-static u_char called_ctors = 0;
-static u_char dbgpresent   = 0;
+static unsigned char called_ctors = 0;
+static unsigned char dbgpresent   = 0;
 
 /**
  * @brief Count the number of constructors already called in the framework (update internal variable)
@@ -68,7 +68,7 @@ void		e2dbg_presence_reset()
 }
 
 /* Get the Debugger presence information */
-u_char		e2dbg_presence_get()          
+unsigned char		e2dbg_presence_get()          
 { 
 #if 1 //__DEBUG_E2DBG__
   //write(2, " [*] Probbing debugger presence\n", 32);
@@ -79,13 +79,13 @@ u_char		e2dbg_presence_get()
 
 
 /** Are we in kernel mode */
-u_char		e2dbg_kpresence_get()
+unsigned char		e2dbg_kpresence_get()
 {
   return (aspectworld.kernel_mode);
 }
 
 /** Enable or disable kernel mode */
-void		e2dbg_kpresence_set(u_char pres)
+void		e2dbg_kpresence_set(unsigned char pres)
 {
   aspectworld.kernel_mode = pres;
 }

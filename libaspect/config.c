@@ -44,8 +44,8 @@ static void __config_update_item(configitem_t *item, void *data)
  * @param data Configuration item value
  */
 void	config_add_item(char *name,
-			u_int type,	/* int, string ... */
-			u_int mode,	/* RW, RO */
+			unsigned int type,	/* int, string ... */
+			unsigned int mode,	/* RW, RO */
 			void *data)
 {
   configitem_t *tmp;
@@ -253,7 +253,7 @@ int	profiler_enabled()
  * @param mask Bitmask of bits to be tested
  * @return A Bitmask of enabled profiling flags
  */
-int	profiler_is_enabled(u_char mask)
+int	profiler_is_enabled(unsigned char mask)
 {
   return (aspectworld.proflevel & mask);
 }
@@ -309,8 +309,8 @@ void	profiler_setcolor(void (*endline)(),
  * @brief Change advanced color functions 
  * @param coloradv Function pointer of type char *fct(char*, char*, char*) formatting end lines
  * @param colorinstr_fmt Function pointer of type char *fct(char *, char *) formatting instructions
- * @param coloraddress Function pointer of type char *fct(char *, u_long) formatting addresses
- * @param colornumber Function pointer of type char *fct(char *, u_int) formatting decimal numbers
+ * @param coloraddress Function pointer of type char *fct(char *, unsigned long) formatting addresses
+ * @param colornumber Function pointer of type char *fct(char *, unsigned int) formatting decimal numbers
  * @param colorstr_fmt Function pointer of type char *fct(char *, char *) formatting strings
  * @param colorfieldstr_fmt Function pointer of type char *fct(char *, char *) formatting field strings
  * @param colortypestr_fmt Function pointer of type char *fct(char *, char *) formatting type names

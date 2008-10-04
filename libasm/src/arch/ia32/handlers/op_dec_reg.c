@@ -16,7 +16,7 @@
   <instruction func="op_dec_reg" opcode="0x4f"/>
 */
 
-int op_dec_reg(asm_instr *new, u_char *opcode, u_int len,
+int op_dec_reg(asm_instr *new, unsigned char *opcode, unsigned int len,
                asm_processor *proc)
 {
   struct s_modrm        *modrm;

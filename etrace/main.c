@@ -25,7 +25,7 @@ void		etrace_setup_quit_msg()
  * @param buf
  * @param size
  */
-void		etrace_create_prompt(char *buf, u_int size)
+void		etrace_create_prompt(char *buf, unsigned int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
@@ -88,13 +88,13 @@ int		etrace_main(int ac, char **av)
   char		logbuf[BUFSIZ];
   int		ret;
   char		**argv;
-  u_int		argc;
+  unsigned int		argc;
   char		*str;
-  u_int		state;
-  u_char	trace_all = 0;
+  unsigned int		state;
+  unsigned char	trace_all = 0;
   char		**exav = NULL;
   int		exac;
-  u_int		index;
+  unsigned int		index;
   char		*bugfunc;
 
   /* Interface tweak */

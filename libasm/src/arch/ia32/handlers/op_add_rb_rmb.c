@@ -12,7 +12,7 @@
  * Source is a byte encoded
  */
 
-int op_add_rb_rmb(asm_instr *new, u_char *opcode, u_int len,
+int op_add_rb_rmb(asm_instr *new, unsigned char *opcode, unsigned int len,
                   asm_processor *proc)
 {
   new->instr = ASM_ADD;

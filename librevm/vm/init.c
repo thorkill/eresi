@@ -56,8 +56,6 @@ int		revm_init()
 }
 
 
-
-
 /** 
  * Setup ELFsh/e2dbg hash tables and structures 
  */
@@ -140,7 +138,7 @@ int		revm_setup(int ac, char **av,
 		  (void *) 0);
 
   memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), "%s/%s", getenv("HOME"),  ERESI_DEFAULT_HISTORY);
+  snprintf(buff, sizeof(buff), "%s/%s", getenv("HOME"), ERESI_DEFAULT_HISTORY);
 
   config_add_item(ERESI_VMCONFIG_HISTORY,
 		  CONFIG_TYPE_STR,

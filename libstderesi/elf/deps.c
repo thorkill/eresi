@@ -134,8 +134,8 @@ static int	revm_update_depinfo(elfshobj_t	*child,
 static int	revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash, hash_t *dephash)
 {
   elfsh_Dyn	*dyn_entrie;
-  u_int		dyn_num;
-  u_int		index;
+  unsigned int		dyn_num;
+  unsigned int		index;
   char		nbasename[BUFSIZ];
   char		*path;
   elfshobj_t	*child;

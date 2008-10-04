@@ -17,7 +17,7 @@
  * @return Length of instruction.
  */
 
-int op_xchg_rmv_rv(asm_instr *instr, u_char *opcode, u_int len,
+int op_xchg_rmv_rv(asm_instr *instr, unsigned char *opcode, unsigned int len,
                    asm_processor *proc)
 {
   instr->len += 1;

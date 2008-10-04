@@ -17,8 +17,8 @@
  * @param buf Pointer to store string
  * @param len Length of string
  */
-void	asm_resolve_immediate(asm_processor *proc, u_int val, 
-			      char *buf, u_int len) 
+void	asm_resolve_immediate(asm_processor *proc, unsigned int val, 
+			      char *buf, unsigned int len) 
 {
   LIBASM_PROFILE_FIN();
   proc->resolve_immediate(proc->resolve_data, val, buf, len);  

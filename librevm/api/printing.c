@@ -19,7 +19,7 @@
 int		revm_printscript(revmargv_t *start)
 {
   revmargv_t	*list;
-  u_int		index;
+  unsigned int		index;
   char		logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

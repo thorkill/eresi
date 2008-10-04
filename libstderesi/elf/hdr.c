@@ -40,7 +40,7 @@ static void	*revm_hdrfixup(elfsh_Ehdr *header)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "ELF header remained unfixed", (NULL));
     }
-  elfsh_set_magic(header, *(u_int *) ELFMAG);
+  elfsh_set_magic(header, *(unsigned int *) ELFMAG);
   h[EI_CLASS] = ELFCLASS32;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (h));
 }
@@ -82,9 +82,9 @@ static char	*revm_printostype(elfshobj_t *file)
 int		cmd_elf()
 {
   elfsh_Ehdr	*header;
-  u_int		archnum;
-  u_int		typenum;
-  u_int		enconum;
+  unsigned int		archnum;
+  unsigned int		typenum;
+  unsigned int		enconum;
   char		*type;
   char		*arch;
   char		*enco;
@@ -93,7 +93,7 @@ int		cmd_elf()
   char		enco_unk[ERESI_MEANING + 1];
   char		type_unk[ERESI_MEANING + 1];
   char		arch_unk[ERESI_MEANING + 1];
-  u_int		magic;
+  unsigned int		magic;
   char		buf[BUFSIZ];
   char		logbuf[BUFSIZ];
 
@@ -105,7 +105,7 @@ int		cmd_elf()
     RET(-1);
   
   /* Fixup the header and print it again if requested */
-  if (elfsh_get_magic(header) != *(u_int *) ELFMAG ||
+  if (elfsh_get_magic(header) != *(unsigned int *) ELFMAG ||
       (elfsh_get_class(header) != ELFCLASS32 &&
        elfsh_get_class(header) != ELFCLASS64))
     {
@@ -122,7 +122,7 @@ int		cmd_elf()
   if (name != NULL)
     {
       if (offset != 0)
-	snprintf(buf, sizeof(buf), "%s + %u", name, (u_int) offset);
+	snprintf(buf, sizeof(buf), "%s + %u", name, (unsigned int) offset);
       else
 	snprintf(buf, sizeof(buf), "%s", name);
     }
@@ -163,7 +163,7 @@ int		cmd_elf()
 	   revm_colorfieldstr_fmt("%-20s", "Architecture"),
 	   revm_colorstr_fmt("%18s", arch), 
 	   revm_colorfieldstr_fmt("%-20s", "ELF Version"),
-	   revm_colornumber("%14u", (u_int) header->e_version),
+	   revm_colornumber("%14u", (unsigned int) header->e_version),
 	   revm_colorfieldstr_fmt("%-20s", "Object type"),
 	   revm_colorstr_fmt("%18s", type), 
 	   revm_colorfieldstr_fmt("%-20s", "SHT strtab index"),

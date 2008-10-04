@@ -17,9 +17,9 @@
  * @param buf buffer which contains the data
  * @return an offset where the data has been saved
  */
-static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
+static int	mjr_flow_store_links(container_t *c, unsigned int type, mjrbuf_t *buf)
 {
-  u_int		nbr;
+  unsigned int		nbr;
   listent_t	*cur;
   mjrlink_t	*curlink;
 
@@ -86,16 +86,16 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
  */
 static int	mjr_flow_load_links(mjrcontext_t	*ctxt, 
 				    container_t		*container, 
-				    u_int		linktype,
+				    unsigned int		linktype,
 				    char		*sectdata,
-				    u_int		*curoff)
+				    unsigned int		*curoff)
 {
-  u_int		off;
-  u_int		tmpid;
-  u_char	tmptype;
-  u_char	tmpscope;
-  u_int		tmpnbr;
-  u_int		findex;
+  unsigned int		off;
+  unsigned int		tmpid;
+  unsigned char	tmptype;
+  unsigned char	tmpscope;
+  unsigned int		tmpnbr;
+  unsigned int		findex;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -103,12 +103,12 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
   switch (linktype)
     {
     case CONTAINER_LINK_IN:
-      off    = (u_int) container->inlinks;
+      off    = (unsigned int) container->inlinks;
       tmpnbr = container->nbrinlinks;
       container_linklists_create(container, CONTAINER_LINK_IN);
       break;
     case CONTAINER_LINK_OUT:
-      off   = (u_int) container->outlinks;
+      off   = (unsigned int) container->outlinks;
       tmpnbr = container->nbroutlinks;
       container_linklists_create(container, CONTAINER_LINK_OUT);
       break;
@@ -148,13 +148,13 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
 /**
  * @brief Create the data dump to be saved in file 
  */
-static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
+static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, unsigned int typeid)
 {
   void			*curunit;
   container_t		*container;
-  u_int			unitsize;
+  unsigned int			unitsize;
   eresi_Addr		addr;
-  u_int			size;
+  unsigned int			size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -177,7 +177,7 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 
   /* This is why addr and size fields should always be in first in mjrblock/mjrfunc */
   addr    = *(eresi_Addr *) curunit;
-  size    = *(u_int      *) ((char *) curunit + sizeof(eresi_Addr));
+  size    = *(unsigned int      *) ((char *) curunit + sizeof(eresi_Addr));
   
 #if __DEBUG_ONDISK__
   fprintf(D_DESC," [*] Saving data unit %s\n", buf);
@@ -223,7 +223,7 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
  *
  * @return Returns the number of saved data units (0 probably means something is wrong)
  */
-int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
+int			mjr_flow_load(mjrcontext_t *ctxt, unsigned int typeid)
 {
   int                   index, cnt, done;
   elfshsect_t           *sect, *flowsect;
@@ -231,9 +231,9 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
   char			**keys;
   container_t		*container;
   container_t		*tmpcntnr;
-  u_int			flowdone;
-  u_int			unitsize;
-  u_int			unitnbr;
+  unsigned int			flowdone;
+  unsigned int			unitsize;
+  unsigned int			unitnbr;
   hash_t		*table;
   void			*curunit;
   void			*tmpunit;
@@ -336,7 +336,7 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
  * This loops on all block/func, and call mjr_unit_save() on each element
  *
  */
-int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid) 
+int			mjr_flow_store(mjrcontext_t *ctxt, unsigned int typeid) 
 {
   elfsh_Shdr		shdr;
   elfshsect_t		*sect;

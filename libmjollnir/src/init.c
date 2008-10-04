@@ -113,7 +113,7 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  */
 int		mjr_setup_processor(mjrsession_t *sess) 
 {
- u_int         arch;
+ unsigned int         arch;
 
  arch =  elfsh_get_arch(sess->cur->obj->hdr);
  switch(arch)

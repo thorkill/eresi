@@ -25,11 +25,11 @@ void	init_instr_table(asm_processor *);
  * @return Length of instruction or -1 on error.
  */
 
-int	fetch_i386(asm_instr *instr, u_char *buf, u_int len, 
+int	fetch_i386(asm_instr *instr, unsigned char *buf, unsigned int len, 
 			      asm_processor *proc)
 {
-  u_char	opcode;
-  int		(*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
+  unsigned char	opcode;
+  int		(*fetch)(asm_instr *, unsigned char *, unsigned int, asm_processor *);
   int		to_ret;
   
   opcode = *buf;

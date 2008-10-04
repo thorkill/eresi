@@ -24,7 +24,7 @@
  */
 
 void	btree_insert(btree_t **proot,		/*!< ptr to btree root	*/
-		     u_int id,			/*!< element id		*/
+		     unsigned int id,			/*!< element id		*/
 		     void *elem)		/*!< ptr to element	*/
 {
   btree_t	*root;
@@ -74,7 +74,7 @@ void	btree_insert_sort(btree_t **proot,		/*!< ptr to root  */
   root = *proot;
   
   if (!root)
-    btree_insert(proot, (u_int) elem, elem);
+    btree_insert(proot, (unsigned int) elem, elem);
   else
     {
       if ((ret = apply(root->elem, elem)))
@@ -95,7 +95,7 @@ void	btree_insert_sort(btree_t **proot,		/*!< ptr to root  */
  */
 
 void	*btree_get_elem(btree_t *root,	/* !< ptr to root		*/
-			u_int id)	/* !< element id to fetch	*/
+			unsigned int id)	/* !< element id to fetch	*/
 {
   if (!root)
     return (NULL);

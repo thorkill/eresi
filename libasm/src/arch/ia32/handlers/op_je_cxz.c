@@ -9,7 +9,7 @@
   <instruction func="op_je_cxz" opcode="0xe3"/>
  */
 
-int op_je_cxz(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_je_cxz(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

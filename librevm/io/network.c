@@ -315,7 +315,7 @@ int	revm_net_output(char *buf)
 */
 int	revm_create_server(int			*serv_sock, 
 			 struct sockaddr_in	*addr,
-			 u_int			port)
+			 unsigned int			port)
 {
   int	reuseaddr = 1;
 
@@ -556,7 +556,7 @@ char	*revm_dump_input()
 int			revm_dump_accept()
 {
   struct sockaddr_in    cli_addr;
-  u_int                 cli_len;
+  unsigned int                 cli_len;
   int			new_sd;
 
   struct sockaddr       loc;

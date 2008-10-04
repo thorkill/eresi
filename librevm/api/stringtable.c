@@ -12,8 +12,8 @@
 
 /* Table pointers */
 char *strtable = NULL;
-u_int strtable_current = 0;
-u_int strtable_max = 0;
+unsigned int strtable_current = 0;
+unsigned int strtable_max = 0;
 
 /**
  * Add a new element to the string table 
@@ -23,7 +23,7 @@ u_int strtable_max = 0;
  */
 int			revm_strtable_add(char *string)
 {
-  u_int			string_len;
+  unsigned int			string_len;
   int			off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

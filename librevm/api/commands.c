@@ -14,7 +14,7 @@
 
 /* Create the cmdhandler passed to hash_add() */
 revmcmd_t	*revm_create_CMDENT(int  (*exec)(void),
-				    int  (*reg)(u_int index, u_int argc, char **argv),
+				    int  (*reg)(unsigned int index, unsigned int argc, char **argv),
 				    int  flags,
 				    char *help)
 {
@@ -32,7 +32,7 @@ revmcmd_t	*revm_create_CMDENT(int  (*exec)(void),
 
 
 /* Change the handler for an ELFsh command */
-int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
+int		revm_command_set(char *cmd, void *exec, void *reg, unsigned int needcur)
 {
   listent_t	*ent;
   revmcmd_t	*act;
@@ -54,7 +54,7 @@ int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
     act->reg = reg;
   if (exec != ERESI_ORIG)
     act->exec = exec;
-  if (needcur != (u_int) ERESI_ORIG)
+  if (needcur != (unsigned int) ERESI_ORIG)
     act->wflags = needcur;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

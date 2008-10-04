@@ -35,7 +35,7 @@ int		cmd_delete()
   
   /* Delete the breakpoint */
   prot = elfsh_munprotect(bp->obj, addr,  1);
-  *(u_char *) addr = bp->savedinstr[0];
+  *(unsigned char *) addr = bp->savedinstr[0];
   elfsh_mprotect(addr, 1, prot);
 
   name = revm_resolve(bp->obj, addr, &off);

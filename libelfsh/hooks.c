@@ -18,7 +18,7 @@
 hash_t	interp_hash;
 
 
-u_char	elfsh_ostype[5] = {
+unsigned char	elfsh_ostype[5] = {
   ELFOSABI_LINUX,		
   ELFOSABI_FREEBSD,	
   ELFOSABI_NETBSD,		
@@ -172,13 +172,13 @@ int	elfsh_default_argchandler(eresi_Addr addr)
  * @param fct
  * @return
  */
-int	elfsh_register_altplthook(u_char archtype, 
-				  u_char objtype, 
-				  u_char ostype, 
+int	elfsh_register_altplthook(unsigned char archtype, 
+				  unsigned char objtype, 
+				  unsigned char ostype, 
 				  void	 *fct)
 {
   vector_t	*altplt;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
@@ -193,7 +193,7 @@ int	elfsh_register_altplthook(u_char archtype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -211,13 +211,13 @@ int	elfsh_register_altplthook(u_char archtype,
  * @param fct
  * @return
  */
-int		elfsh_register_extplthook(u_char archtype, 
-					  u_char objtype, 
-					  u_char ostype, 
+int		elfsh_register_extplthook(unsigned char archtype, 
+					  unsigned char objtype, 
+					  unsigned char ostype, 
 					  void	 *fct)
 {
   vector_t	*extplt;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -232,7 +232,7 @@ int		elfsh_register_extplthook(u_char archtype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -250,11 +250,11 @@ int		elfsh_register_extplthook(u_char archtype,
  * @param fct
  * @return
  */
-int		elfsh_register_plthook(u_char archtype, u_char objtype, 
-				       u_char ostype, void *fct)
+int		elfsh_register_plthook(unsigned char archtype, unsigned char objtype, 
+				       unsigned char ostype, void *fct)
 {
   vector_t	*plt;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -269,7 +269,7 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -285,11 +285,11 @@ int		elfsh_register_plthook(u_char archtype, u_char objtype,
  * @param fct
  * @return
  */
-int	elfsh_register_encodeplthook(u_char archtype, u_char objtype, 
-				     u_char ostype, void *fct)
+int	elfsh_register_encodeplthook(unsigned char archtype, unsigned char objtype, 
+				     unsigned char ostype, void *fct)
 {
   vector_t	*encodeplt;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -305,7 +305,7 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -321,11 +321,11 @@ int	elfsh_register_encodeplthook(u_char archtype, u_char objtype,
  * @param fct
  * @return
  */
-int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype, 
-				      u_char ostype, void *fct)
+int	elfsh_register_encodeplt1hook(unsigned char archtype, unsigned char objtype, 
+				      unsigned char ostype, void *fct)
 {
   vector_t	*encodeplt1;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -340,7 +340,7 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
   if (ostype >= ELFSH_OSNUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -358,11 +358,11 @@ int	elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
  * @param fct
  * @return
  */
-int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
+int	elfsh_register_relhook(unsigned char archtype, unsigned char objtype, unsigned char ostype,
 			       void *fct)
 {
   vector_t	*rel;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   rel = aspect_vector_get(ELFSH_HOOK_REL);
@@ -377,7 +377,7 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -394,11 +394,11 @@ int	elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
  * @param fct
  * @return
  */
-int	elfsh_register_cflowhook(u_char archtype, u_char objtype, 
-				 u_char ostype, void *fct)
+int	elfsh_register_cflowhook(unsigned char archtype, unsigned char objtype, 
+				 unsigned char ostype, void *fct)
 {
   vector_t	*cflow;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
@@ -413,7 +413,7 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -430,11 +430,11 @@ int	elfsh_register_cflowhook(u_char archtype, u_char objtype,
  * @param fct
  * @return
  */
-int	elfsh_register_argchook(u_char archtype, u_char objtype, 
-				u_char ostype, void *fct)
+int	elfsh_register_argchook(unsigned char archtype, unsigned char objtype, 
+				unsigned char ostype, void *fct)
 {
   vector_t	*argcp;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   argcp = aspect_vector_get(ELFSH_HOOK_ARGC);
@@ -449,7 +449,7 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = objtype;
   dim[2] = ostype;
@@ -466,14 +466,14 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
  */
 int		elfsh_init_vectors()
 {
-  u_int		*dims;
+  unsigned int		*dims;
   char		**strdims;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
   aspect_init();
 
   /* All hooks have the same dimensions here */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
   dims[0]    = ELFSH_ARCHNUM;
   dims[1]    = ELFSH_TYPENUM;
@@ -516,7 +516,7 @@ int		elfsh_init_vectors()
  */
 void	elfsh_setup_hooks()
 {
-  //u_int	i, j, k;
+  //unsigned int	i, j, k;
   static int done = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1008,14 +1008,14 @@ void	elfsh_setup_hooks()
 int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r, 
 			    eresi_Addr *l, eresi_Addr a, elfshsect_t *m)
 {
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int		ret;
   vector_t	*rel;
 
   //eresi_Addr	***hook;
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   int		(*fct)(elfshsect_t *n,
 		       elfsh_Rel  *n2,
@@ -1061,12 +1061,12 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
 			    eresi_Addr new)
 {
   vector_t	*cflow;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *n, char *n2, elfsh_Sym *n3, eresi_Addr n4);
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
@@ -1103,12 +1103,12 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 {
   vector_t	*plt;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *f, elfsh_Sym *s, eresi_Addr a);
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   plt = aspect_vector_get(ELFSH_HOOK_PLT);
@@ -1146,15 +1146,15 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
  * @return
  */
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
-				eresi_Addr diff, u_int off)
+				eresi_Addr diff, unsigned int off)
 {
   vector_t	*encodeplt;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *f, elfshsect_t *s, eresi_Addr a, u_int off);
-  u_int		dim[3];
+  int		(*fct)(elfshobj_t *f, elfshsect_t *s, eresi_Addr a, unsigned int off);
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   encodeplt = aspect_vector_get(ELFSH_HOOK_ENCODEPLT);
@@ -1196,13 +1196,13 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 				 elfshsect_t *extplt, eresi_Addr diff)
 {
   vector_t	*encodeplt1;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfshsect_t *s2,
 		       eresi_Addr a);
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   encodeplt1 = aspect_vector_get(ELFSH_HOOK_ENCODEPLT1);
@@ -1241,12 +1241,12 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 {
   vector_t	*altplt;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int           ret;
   int		(*fct)(elfshobj_t *file, elfsh_Sym *s, eresi_Addr a);
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
@@ -1286,13 +1286,13 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
 			     elfshsect_t *dynsym, elfshsect_t *relplt)
 {
   vector_t	*vextplt;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
   int           ret;
   int		(*fct)(elfshsect_t *extplt, elfshsect_t *altgot,
 		       elfshsect_t *dynsym, elfshsect_t *relplt);
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   vextplt = aspect_vector_get(ELFSH_HOOK_EXTPLT);
@@ -1326,14 +1326,14 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
  * @param vaddr
  * @return
  */
-int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
+int		  *elfsh_args_count(elfshobj_t *file, unsigned int off, eresi_Addr vaddr)
 {
   vector_t	*argch;
-  u_char        archtype;
-  u_char        elftype;
-  u_char        ostype;
-  int		*(*fct)(elfshobj_t *file, u_int off, eresi_Addr vaddr);
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        elftype;
+  unsigned char        ostype;
+  int		*(*fct)(elfshobj_t *file, unsigned int off, eresi_Addr vaddr);
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   argch = aspect_vector_get(ELFSH_HOOK_ARGC);
@@ -1364,7 +1364,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
  * @param file
  * @return
  */
-u_char		elfsh_get_archtype(elfshobj_t *file)
+unsigned char		elfsh_get_archtype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1414,7 +1414,7 @@ u_char		elfsh_get_archtype(elfshobj_t *file)
  * @param file
  * @return
  */
-u_char		elfsh_get_elftype(elfshobj_t *file)
+unsigned char		elfsh_get_elftype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1435,7 +1435,7 @@ u_char		elfsh_get_elftype(elfshobj_t *file)
  * @param file
  * @return
  */
-u_char  elfsh_get_real_ostype(elfshobj_t *file)
+unsigned char  elfsh_get_real_ostype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1466,7 +1466,7 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
  * @param file
  * @return
  */
-u_char		elfsh_get_hosttype(elfshobj_t *file)
+unsigned char		elfsh_get_hosttype(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (E2DBG_HOST_PROC));
@@ -1479,9 +1479,9 @@ u_char		elfsh_get_hosttype(elfshobj_t *file)
  * @param file
  * @return
  */
-u_char		elfsh_get_ostype(elfshobj_t *file)
+unsigned char		elfsh_get_ostype(elfshobj_t *file)
 {
-  u_char	*res;
+  unsigned char	*res;
   char		*interp;
   char		*end;
   char		r;
@@ -1595,7 +1595,7 @@ int       elfsh_get_pagesize(elfshobj_t *file)
  * @param file
  * @return
  */
-u_int       elfsh_get_breaksize(elfshobj_t *file)
+unsigned int       elfsh_get_breaksize(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   

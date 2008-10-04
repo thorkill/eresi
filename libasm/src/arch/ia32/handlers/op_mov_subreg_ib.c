@@ -19,7 +19,7 @@
 
 */
 
-int op_mov_subreg_ib(asm_instr *new, u_char *opcode, u_int len,
+int op_mov_subreg_ib(asm_instr *new, unsigned char *opcode, unsigned int len,
                      asm_processor *proc)
 {
   struct s_modrm        *modrm;

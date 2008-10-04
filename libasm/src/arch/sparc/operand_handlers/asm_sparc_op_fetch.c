@@ -10,13 +10,13 @@
  * @param proc Pointer to processor structure.
  * @return Operand length or -1 on error (should currently never occur)
  */
-int asm_sparc_op_fetch(asm_operand *op, u_char *opcode, int otype, 
+int asm_sparc_op_fetch(asm_operand *op, unsigned char *opcode, int otype, 
 		       asm_instr *ins)
 { 
   vector_t      *vec;
-  u_int         dim[1];
+  unsigned int         dim[1];
   int           to_ret;
-  int           (*fetch)(asm_operand *, u_char *, int, asm_instr *);
+  int           (*fetch)(asm_operand *, unsigned char *, int, asm_instr *);
   
   vec = aspect_vector_get("operand-sparc");
   dim[0] = otype;

@@ -16,7 +16,7 @@
  <i386 func="i386_bswap" opcode="0xcf"/>
 */
 
-int i386_bswap(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int i386_bswap(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
 
   struct s_modrm        *modrm;

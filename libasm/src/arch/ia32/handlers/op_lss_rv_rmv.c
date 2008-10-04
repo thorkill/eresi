@@ -9,7 +9,7 @@
   <i386 func="op_lss_rv_rmv" opcode="0xb2"/>
 */
 
-int     op_lss_rv_rmv(asm_instr *new, u_char *opcode, u_int len,
+int     op_lss_rv_rmv(asm_instr *new, unsigned char *opcode, unsigned int len,
 		      asm_processor *proc)
 {
   new->len += 1;

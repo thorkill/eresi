@@ -9,7 +9,7 @@
   <instruction func="op_movsd" opcode="0xa5"/>
 */
 
-int op_movsd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_movsd(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

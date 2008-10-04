@@ -95,7 +95,7 @@
 typedef struct	s_trace_used
 {
   char		*name;
-  u_char	exist;
+  unsigned char	exist;
 }		trace_used;
 
 /**
@@ -118,22 +118,22 @@ typedef struct 	s_traces
 #define ETRACE_FUNC_SIZE 256
   char	       	funcname[ETRACE_FUNC_SIZE];
   elfshobj_t	*file;
-  u_char	enable;
-  u_int		offset;
+  unsigned char	enable;
+  unsigned int		offset;
 
 #define ELFSH_ARG_INTERN 0
 #define ELFSH_ARG_EXTERN 1
-  u_char	scope;
+  unsigned char	scope;
 
 #define	ELFSH_ARG_SIZE_BASED 0
 #define ELFSH_ARG_TYPE_BASED 1
-  u_char	type;
+  unsigned char	type;
 
   eresi_Addr	vaddr;
 
 #define ETRACE_MAX_ARGS 20
   traceargs_t arguments[ETRACE_MAX_ARGS];
-  u_int		argc;
+  unsigned int		argc;
 }		trace_t;
 
 
@@ -180,14 +180,14 @@ hash_t		*etrace_get(char *trace);
 char		*etrace_start_tracing(elfshobj_t *file);
 trace_t		*trace_param_create(elfshobj_t *file, char *name,
 				    edfmtfunc_t *func, eresi_Addr vaddr,
-				    u_char external);
-edfmtfunc_t 	*trace_func_debug_get(elfshobj_t *file, char *func_name, u_char external);
+				    unsigned char external);
+edfmtfunc_t 	*trace_func_debug_get(elfshobj_t *file, char *func_name, unsigned char external);
 
 
 /* check.c */
-int		etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr, eresi_Addr *vaddr, u_char *dynsym);
+int		etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr, eresi_Addr *vaddr, unsigned char *dynsym);
 int 		etrace_tracable(elfshobj_t *file, char *name,
-				      eresi_Addr *vaddr, u_char *dynsym);
+				      eresi_Addr *vaddr, unsigned char *dynsym);
 /* check_untracable.c */
 int		etrace_untracable(elfshobj_t *file, char *name);
 
@@ -216,7 +216,7 @@ int		etrace_funcsetstatus(hash_t *table, int status);
 
 /* func_match.c */
 int		trace_match_funcname(elfshobj_t *file, char *funcname, char ***func_list);
-int		trace_match_addrtable(elfshobj_t *file, char ***func_list, u_int *count);
+int		trace_match_addrtable(elfshobj_t *file, char ***func_list, unsigned int *count);
 
 /* func_search.c */
 edfmtfunc_t    	*trace_search_uni(elfshobj_t *file, char *name);

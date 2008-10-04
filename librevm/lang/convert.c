@@ -31,9 +31,9 @@
  */
 int		revm_convert2str(revmobj_t *obj)
 {
-  u_char	val8;
+  unsigned char	val8;
   u_short	val16;
-  u_int		val32;
+  unsigned int		val32;
   eresi_Addr	val64;
   char		tmp[30];
 
@@ -104,16 +104,16 @@ int		revm_convert2str(revmobj_t *obj)
 int		revm_convert2int(revmobj_t *obj)
 {
   eresi_Addr	val64;
-  u_int		val32;
+  unsigned int		val32;
   u_short	val16;
-  u_char	val8;
+  unsigned char	val8;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
-      val8 = (u_char) (obj->immed ? obj->immed_val.byte : 
+      val8 = (unsigned char) (obj->immed ? obj->immed_val.byte : 
 		       obj->get_obj(obj->parent));
       obj->immed_val.byte = 0;
       obj->immed_val.word = val8;
@@ -168,7 +168,7 @@ int		revm_convert2int(revmobj_t *obj)
 /** 
  * Convert to a long object 
  */
-int		revm_convert2addr(revmobj_t *obj, u_int type)
+int		revm_convert2addr(revmobj_t *obj, unsigned int type)
 {
   eresi_Addr	val64;
 
@@ -258,9 +258,9 @@ int		revm_convert2long(revmobj_t *obj)
  */
 int		revm_convert2raw(revmobj_t *obj)
 {
-  u_char	val8;
+  unsigned char	val8;
   u_short	val16;
-  u_int		val32;
+  unsigned int		val32;
   eresi_Addr	val64;
   char		*str;
 
@@ -328,7 +328,7 @@ int		revm_convert2raw(revmobj_t *obj)
  */
 int		revm_convert2byte(revmobj_t *obj)
 {
-  u_char	val8;
+  unsigned char	val8;
   u_short	val16;
   int		val32;
   eresi_Addr	val64;
@@ -341,7 +341,7 @@ int		revm_convert2byte(revmobj_t *obj)
       val16 = (u_short) (obj->immed ? obj->immed_val.half : 
 			 obj->get_obj(obj->parent));
       obj->immed_val.half = 0;
-      obj->immed_val.byte = (u_char) val16;
+      obj->immed_val.byte = (unsigned char) val16;
       obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
@@ -360,10 +360,10 @@ int		revm_convert2byte(revmobj_t *obj)
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_INT:
-      val32 = (u_int) (obj->immed ? obj->immed_val.word : 
+      val32 = (unsigned int) (obj->immed ? obj->immed_val.word : 
 		       obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
-      obj->immed_val.byte = (u_char) val32;
+      obj->immed_val.byte = (unsigned char) val32;
       obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
@@ -375,7 +375,7 @@ int		revm_convert2byte(revmobj_t *obj)
       val64 = (eresi_Addr) (obj->immed ? obj->immed_val.ent : 
 			    obj->get_obj(obj->parent));
       obj->immed_val.ent = 0;
-      obj->immed_val.byte = (u_char) val64;
+      obj->immed_val.byte = (unsigned char) val64;
       obj->otype = aspect_type_get_by_id(ASPECT_TYPE_BYTE);
       obj->immed = 1;
       obj->size = 1;
@@ -393,7 +393,7 @@ int		revm_convert2byte(revmobj_t *obj)
 */
 int		revm_convert2short(revmobj_t *obj)
 {
-  u_char	val8;
+  unsigned char	val8;
   u_short	val16;
   int		val32;
   eresi_Addr	val64;
@@ -403,7 +403,7 @@ int		revm_convert2short(revmobj_t *obj)
   switch (obj->otype->type)
     {
     case ASPECT_TYPE_BYTE:
-      val8 = (u_char) (obj->immed ? obj->immed_val.byte : 
+      val8 = (unsigned char) (obj->immed ? obj->immed_val.byte : 
 		       obj->get_obj(obj->parent));;
       obj->immed_val.byte = 0;
       obj->immed_val.half = (u_short) val8;
@@ -426,7 +426,7 @@ int		revm_convert2short(revmobj_t *obj)
       obj->sizelem = 0;
       break;
     case ASPECT_TYPE_INT:
-      val32 = (u_int) (obj->immed ? obj->immed_val.word : 
+      val32 = (unsigned int) (obj->immed ? obj->immed_val.word : 
 		       obj->get_obj(obj->parent));
       obj->immed_val.word = 0;
       obj->immed_val.half = (u_short) val32;

@@ -17,6 +17,7 @@ NAME32			= evarista32
 NAME64			= evarista64
 
 CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
+			-I../libgdbwrap/include/ 	\
 			-I../libelfsh/include/ -I../libstderesi/include/ \
 			-I../libetrace/include/ 			\
 			-I../libdump/include/ -I../libasm/include/ \
@@ -29,7 +30,8 @@ CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 
 CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			-I../libelfsh/include/ -I../libstderesi/include/ \
-			-I../libetrace/include/			\
+			-I../libetrace/include/ \
+			-I../libgdbwrap/include/ 	\
 			-I../libdump/include/ -I../libasm/include/ \
 			-I../e2dbg/include/ -I/usr/pkg/include/  \
 			-I../libaspect/include/ -I../librevm/include/ \

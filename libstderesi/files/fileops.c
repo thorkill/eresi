@@ -122,7 +122,7 @@ int		cmd_append()
   revmobj_t	*o2;
   revmexpr_t	*e2;
   elfshsect_t	*cur;
-  u_int		size;
+  unsigned int		size;
   char		*dat;
   int		index = -1;
   char		logbuf[BUFSIZ];
@@ -195,7 +195,7 @@ int		cmd_append()
 int		cmd_extend()
 {
   elfshsect_t	*sect;
-  u_int		size;
+  unsigned int		size;
   char		*new_data;
   int		index = -1;
   char		logbuf[BUFSIZ];

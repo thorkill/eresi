@@ -181,7 +181,7 @@ elfsh_Word 	*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
   void		*data;
   elfsh_Word	*chain;
   elfsh_Word	nchain;
-  u_int		index;
+  unsigned int		index;
   elfsh_Word   	symid;
   char		*name;
 
@@ -221,7 +221,7 @@ elfsh_Word 	*elfsh_get_hashchain_by_name(elfshobj_t *file, char *sname)
  * @param index chain index
  * @return chain entry
  */
-elfsh_Word     	*elfsh_get_hashchain_by_index(void *ps, u_int index)
+elfsh_Word     	*elfsh_get_hashchain_by_index(void *ps, unsigned int index)
 {
   elfsh_Word  	*chain;
   elfsh_Word	nchain;
@@ -291,7 +291,7 @@ elfsh_Word 		*elfsh_get_hashbucket_by_name(elfshobj_t *file, char *sname)
  * @parma index bucket index
  * @return pointer on the bucket
  */
-elfsh_Word     	*elfsh_get_hashbucket_by_index(void *ps, u_int index)
+elfsh_Word     	*elfsh_get_hashbucket_by_index(void *ps, unsigned int index)
 {
   elfsh_Word   	*bucket;
   elfsh_Word   	nbucket;
@@ -507,7 +507,7 @@ int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
     {
 
 #if __DEBUG__
-      printf("[LIBELFSH] Hash LOOP on bucket [%u] \n", (u_int) index);
+      printf("[LIBELFSH] Hash LOOP on bucket [%u] \n", (unsigned int) index);
 #endif
 
       if (chain[index] == STN_UNDEF)
@@ -536,7 +536,7 @@ elfsh_Verdef  	*elfsh_hash_getdef(elfshobj_t *file, char *name, void *defdata, i
 {
   elfsh_Verdef	*table;
   elfsh_Half	*sym;
-  u_int		offset;
+  unsigned int		offset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -612,7 +612,7 @@ static elfshobj_t	*elfsh_hash_getfile_def_direct(elfshobj_t *file, char *name)
 elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
 {
   char		**keys;
-  u_int		index;
+  unsigned int		index;
   int		keynbr;
   elfshobj_t	*getfile;
 #if defined(sun)

@@ -30,7 +30,7 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   container_t	*curblock;
   mjrblock_t	*block;
   int		newoff;
-  u_int		delayslotsize;
+  unsigned int		delayslotsize;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -38,7 +38,7 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
   if (curdepth == maxdepth)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  //limit = (u_int) config_get_data(CONFIG_CFGDEPTH);
+  //limit = (unsigned int) config_get_data(CONFIG_CFGDEPTH);
   // Please use this config variable when doing CFG recursive analysis
 
   dstaddr = retaddr = MJR_BLOCK_INVALID;

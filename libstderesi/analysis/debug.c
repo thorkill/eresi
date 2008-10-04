@@ -25,7 +25,7 @@ int matched;
  * @param type
  * @return
  */
-static char 	*revm_debug_typename(u_int type)
+static char 	*revm_debug_typename(unsigned int type)
 {
   char 			*str;
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -122,12 +122,12 @@ static int		revm_debug_print_var(edfmtvar_t *vars, regex_t *rx)
  * @return
  */
 
-static int		revm_debug_print_type(edfmttype_t *types, u_int tab, regex_t *rx)
+static int		revm_debug_print_type(edfmttype_t *types, unsigned int tab, regex_t *rx)
 {
   edfmttype_t		*type;
-  u_int			index;
-  u_int			added = 0;
-  u_int			bufsiz = 0;
+  unsigned int			index;
+  unsigned int			added = 0;
+  unsigned int			bufsiz = 0;
   int			len;
   int			save_matched;
 

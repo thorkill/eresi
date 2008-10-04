@@ -206,9 +206,9 @@ typedef struct		s_revmtraces
 
 /* Extern variables */
 extern char	quit_msg[512];
-extern void	(*prompt_token_setup)(char *name, u_int size);
+extern void	(*prompt_token_setup)(char *name, unsigned int size);
 extern char	prompt_token[512];
-extern u_char   quit_msg_setup;
+extern unsigned char   quit_msg_setup;
 
 /* Used to store ascii description for different structures types in data.c */
 #define	ELFSH_INSTRTYPE_MAX	24

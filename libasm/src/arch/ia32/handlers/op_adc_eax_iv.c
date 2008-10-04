@@ -9,7 +9,7 @@
   <instruction func="op_adc_eax_iv" opcode="0x15"/>
 */
 
-int op_adc_eax_iv(asm_instr *new, u_char *opcode, u_int len,
+int op_adc_eax_iv(asm_instr *new, unsigned char *opcode, unsigned int len,
 		  asm_processor *proc)
 {
   new->instr = ASM_ADC;

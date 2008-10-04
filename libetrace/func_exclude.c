@@ -81,7 +81,7 @@ int			etrace_funcrmexclude(char *regstr)
  */
 int		traces_exclude(elfshobj_t *file, char *freg, char **oreg)
 {
-  u_int		index;
+  unsigned int		index;
   char		buf[BUFSIZ];
   const char	pattern[] = "\n\t[*] Exclude function %s successfully\n\n";
 
@@ -121,7 +121,7 @@ int		traces_exclude(elfshobj_t *file, char *freg, char **oreg)
  */
 int		traces_rmexclude(elfshobj_t *file, char *freg, char **oreg)
 {
-  u_int		index;
+  unsigned int		index;
   const char	pattern[] = "\n\t[*] Delete excluded function %s successfully\n\n";
   char		buf[BUFSIZ];
 

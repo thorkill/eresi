@@ -9,7 +9,7 @@
   <instruction func="op_imul_gv_ev_ib" opcode="0x6b"/>
 */
 
-int     op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len,
+int     op_imul_gv_ev_ib(asm_instr *new, unsigned char *opcode, unsigned int len,
 			 asm_processor *proc)
 {
   int	olen;

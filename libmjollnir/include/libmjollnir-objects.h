@@ -25,9 +25,9 @@
 typedef struct	s_iblock 
 {
   eresi_Addr	vaddr;		/* !< @brief block starting virtual address    */
-  u_int		size;		/* !< @brief block code size                   */
-  u_int		symoff;		/* !< @brief block name offset in string table */
-  u_char	seen;		/* !< @brief block live status (0 or 1)        */
+  unsigned int		size;		/* !< @brief block code size                   */
+  unsigned int		symoff;		/* !< @brief block name offset in string table */
+  unsigned char	seen;		/* !< @brief block live status (0 or 1)        */
 }		mjrblock_t;
 
 /** 
@@ -36,7 +36,7 @@ typedef struct	s_iblock
 typedef struct	s_function 
 {
   eresi_Addr	vaddr;		/* !< @brief Function virtual address */
-  u_int		size;		/* !< @brief Function size */
+  unsigned int		size;		/* !< @brief Function size */
   char		name[64];	/* !< @brief Function name */
   mjrblock_t	*first;		/* !< @brief First function block */
   char		md5[34];	/* !< @brief MD5 Checksum */
@@ -66,11 +66,11 @@ typedef	struct	s_link
 #define MJR_LINK_BLOCK_COND_ALWAYS	5 /* !< @brief uncoditional branch */
 #define MJR_LINK_TYPE_DELAY		6 /* !< @brief generally ignored but useful */
 #define	MJR_LINK_UNKNOWN		7 /* !< @brief unknown type */
-  u_char	type;
+  unsigned char	type;
 #define MJR_LINK_SCOPE_UNKNOWN		0 /* !< @brief Link type is unknown */
 #define MJR_LINK_SCOPE_LOCAL	        1 /* !< @brief Link within the current parent object */
 #define MJR_LINK_SCOPE_GLOBAL		2 /* !< @brief Link outside the current parent object */
-  u_char	scope;
+  unsigned char	scope;
 }		mjrlink_t;
 
 
@@ -99,8 +99,8 @@ typedef struct		_mjrContext
 
   container_t		**reg_containers;	/* !< @brief Registered containers */
   btree_t		*block_btree;		/* !< @brief Blocks Binary tree (speedup parent search) */
-  u_int			cntnrs_size;		/* !< @brief Size of current containers */
-  u_int			next_id;		/* !< @brief Next free container id */
+  unsigned int			cntnrs_size;		/* !< @brief Size of current containers */
+  unsigned int			next_id;		/* !< @brief Next free container id */
 
 #define			MJR_HISTORY_LEN		5
 #define			MJR_HISTORY_PPPREV	(MJR_HISTORY_LEN - 4)
@@ -114,8 +114,8 @@ typedef struct		_mjrContext
   hash_t		linkhash;		/* !< @brief links hash table */
 
   unsigned char		analysed;		/* !< @brief do we analysed it */
-  u_int			calls_seen;		/* !< @brief how many CALL we have seen */
-  u_int			calls_found;		/* !< @brief how many dest has beed resolved */
+  unsigned int			calls_seen;		/* !< @brief how many CALL we have seen */
+  unsigned int			calls_found;		/* !< @brief how many dest has beed resolved */
 }			mjrcontext_t;
 
 
@@ -135,7 +135,7 @@ typedef struct	s_session
 typedef struct	s_disopt
 {
   elfshobj_t	*file;
-  u_int		counter;
+  unsigned int		counter;
   int		level;
 }		mjropt_t;
 
@@ -143,9 +143,9 @@ typedef struct	s_disopt
 typedef struct	s_buf
 {
   char		*data;
-  u_int		maxlen;
-  u_int		allocated;
-  u_int		counter;
+  unsigned int		maxlen;
+  unsigned int		allocated;
+  unsigned int		counter;
   elfshobj_t	*obj;
 }		mjrbuf_t;
 

@@ -17,9 +17,9 @@
  * @param str pointer on the string to parse
  * @param c_delim delimitation string
  */
-char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
+char		*edfmt_stabs_readstr(char *buf, unsigned int size, char **str, char c_delim)
 {
-  u_int		csize;
+  unsigned int		csize;
   char		*delim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -141,7 +141,7 @@ int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str)
  * @param size size of the buffer
  * @param tnum input type number
  */
-int		edfmt_stabs_ctypenum(char *buf, u_int size, edfmtstabstypenum_t *tnum)
+int		edfmt_stabs_ctypenum(char *buf, unsigned int size, edfmtstabstypenum_t *tnum)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

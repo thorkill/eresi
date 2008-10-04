@@ -12,7 +12,7 @@
  * Source: is a vector register.
  */
 
-int op_add_rmv_rv(asm_instr *new, u_char *opcode, u_int len,
+int op_add_rmv_rv(asm_instr *new, unsigned char *opcode, unsigned int len,
                   asm_processor *proc)
 {
   new->len++;

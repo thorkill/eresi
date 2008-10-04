@@ -24,8 +24,8 @@ typedef struct          s_hash
   listent_t             *ent;
   int                   size;
   int			elmnbr;
-  u_int			type;
-  u_char		linearity;
+  unsigned int			type;
+  unsigned char		linearity;
   char			*name;
 }                       hash_t;
 
@@ -40,7 +40,7 @@ extern hash_t		*hash_hash;
 extern hash_t		*hash_lists;
 
 /* hash.c */
-int		hash_init(hash_t*, char*, int, u_int);  /* Allocate the table */
+int		hash_init(hash_t*, char*, int, unsigned int);  /* Allocate the table */
 hash_t		*hash_find(char *name);			/* Find a hash table */
 int		hash_register(hash_t *h, char *name);	/* Register a hash table */
 hash_t		*hash_empty(char *name);		/* Empty the hash table */
@@ -62,7 +62,7 @@ int		hash_size(hash_t *hash);		/* Return the elm nbr */
 void*		hash_get_one(hash_t *hash);		/* Get any object */
 void*		hash_get_single(hash_t *hash);		/* Get _the_ only object */
 int		hash_set(hash_t *h, char *key, void *data); /* Change meta data for a key */
-u_char		hash_linearity_get(hash_t *h);		/* Get hash table linearity */
-void		hash_linearity_set(hash_t *h, u_char v); /* Set hash table linearity */
+unsigned char		hash_linearity_get(hash_t *h);		/* Get hash table linearity */
+void		hash_linearity_set(hash_t *h, unsigned char v); /* Set hash table linearity */
 
 #endif /* _LIBHASH_H_ */

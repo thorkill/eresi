@@ -36,14 +36,14 @@ void	elfsh_help()
 void	elfsh_init()
 {
   puts(" [*] ELFsh modtest init -OK- \n");
-  revm_command_set(CMD_PRINT, mod_print, ERESI_ORIG, (u_int) ERESI_ORIG);
+  revm_command_set(CMD_PRINT, mod_print, ERESI_ORIG, (unsigned int) ERESI_ORIG);
   revm_command_add(CMD_MYTEST, mod_newcmd, NULL, 0, "Simple example command");
 }
 
 void	elfsh_fini()
 {
   puts(" [*] ELFsh modtest fini -OK- \n");
-  revm_command_set(CMD_PRINT, cmd_print, ERESI_ORIG, (u_int) ERESI_ORIG);
+  revm_command_set(CMD_PRINT, cmd_print, ERESI_ORIG, (unsigned int) ERESI_ORIG);
   revm_command_del(CMD_MYTEST);
 }
 

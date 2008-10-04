@@ -20,7 +20,7 @@
  */
 static int		etrace_setup_proc(elfshobj_t *file, asm_processor *proc)
 {
-  u_int         	arch;
+  unsigned int         	arch;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -68,13 +68,13 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr)
   char			*base;
   asm_processor		proc;
   eresi_Addr		base_vaddr, caddr;
-  u_char		found = 0;
+  unsigned char		found = 0;
   elfshsect_t		*text;
   eresi_Addr		*vaddr;
   const int		astep = 20;
-  u_int			apos = 0;
+  unsigned int			apos = 0;
   btree_t		*broot = NULL;
-  u_int			diff;
+  unsigned int			diff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -115,7 +115,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr)
   for (index = 0; index < len; index += ret)
     {
       /* Read an instruction */
-      if ((ret = asm_read_instr(&instr, (u_char *) (base + index), len -  index, &proc)))
+      if ((ret = asm_read_instr(&instr, (unsigned char *) (base + index), len -  index, &proc)))
 	{
 	  /* Global assembler filter */
 	  if ((instr.type & ASM_TYPE_CALLPROC)
@@ -128,7 +128,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr)
 		{
 		  found = 1;
 
-		  diff = (u_int) caddr;
+		  diff = (unsigned int) caddr;
 
 		  /* Avoid double entrie */
 		  if (btree_get_elem(broot, diff) != NULL)
@@ -189,7 +189,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr)
   char			*base;
   asm_processor		proc;
   eresi_Addr		base_vaddr;
-  u_char		found = 0;
+  unsigned char		found = 0;
   elfshsect_t		*text;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -234,7 +234,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr)
   for (index = 0; index < len; index += ret)
     {
       /* Read an instruction */
-      if ((ret = asm_read_instr(&instr, (u_char *) (base + index), len -  index, &proc)))
+      if ((ret = asm_read_instr(&instr, (unsigned char *) (base + index), len -  index, &proc)))
 	{
 	  /* Global assembler filter */
 	  if ((instr.type & ASM_TYPE_CALLPROC)

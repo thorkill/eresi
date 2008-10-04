@@ -16,7 +16,7 @@
  */
 edfmtinfo_t *uniinfo = NULL;
 
-u_char file_active = 0;
+unsigned char file_active = 0;
 elfshobj_t *cu_obj = NULL;
 
 #define API_HTYPE_NAME 	"edfmt_api_htype"
@@ -876,7 +876,7 @@ edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret,
  * @return result function argument
  */
 edfmtfuncarg_t		*edfmt_add_arg(edfmtfunc_t *func, char *name,
-				       u_int reg, int pos, edfmttype_t *type)
+				       unsigned int reg, int pos, edfmttype_t *type)
 {
   edfmtfuncarg_t	*larg, *find;
 

@@ -65,8 +65,8 @@ int		revm_arrayindex_get(char *strindex)
 /** 
  * @brief Return the requested projections in case of an array 
  */
-int		revm_arrayoff_get(char *field, u_int elmsize, 
-				  u_int dimnbr, u_int *dims)
+int		revm_arrayoff_get(char *field, unsigned int elmsize, 
+				  unsigned int dimnbr, unsigned int *dims)
 {
   char		*strindex;
   char		*endindex;
@@ -74,7 +74,7 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
   int		index;
   int		iter;
   int		liter;
-  u_int		*dimoff;
+  unsigned int		*dimoff;
   char		*lfield;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -131,7 +131,7 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 /** 
  * @brief Return offset given field name 
  */
-aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
+aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, unsigned int *off)
 {
   aspectype_t	*child;
   int		index;
@@ -212,7 +212,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
   /* Dereference pointer (struct.ptr->to.other.field) */
   if (child->isptr && *data)
     {
-      *data = (void *) *(u_long *) *data;
+      *data = (void *) *(unsigned long *) *data;
       if (translateaddr)
 	*data = elfsh_get_raw_by_addr(world.curjob->curfile, *data);
     }
@@ -245,7 +245,7 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   path->root     = (void *) type;
 
   /* Lookup again in the file if we are dealing with a pointer */
-  if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
+  if (type->type == ASPECT_TYPE_STR || (type->isptr && *(unsigned long *) data))
     {
       data = (void *) *(eresi_Addr *) data;
       if (translateaddr)

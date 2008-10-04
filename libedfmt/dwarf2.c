@@ -50,8 +50,8 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
 {
   edfmtdw2sect_t 	*pointers[9];
   char			*names[9];
-  u_int			hash[9];
-  u_int			i;
+  unsigned int			hash[9];
+  unsigned int			i;
   edfmtdw2sectlist_t	dw2_sections;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -167,7 +167,7 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       current_cu->start_pos = dwarf2_pos(info);
 
       /* Read DWARF2 .dwarf2_info header */
-      dwarf2_ipos(current_cu->length, info, u_int);
+      dwarf2_ipos(current_cu->length, info, unsigned int);
       current_cu->end_pos = dwarf2_pos(info) + current_cu->length;
 
       /* A compil unit bigger than the section ? */
@@ -182,14 +182,14 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "DWARF2 version check failed", -1);
 
-      dwarf2_ipos(current_cu->offset, info, u_int);
+      dwarf2_ipos(current_cu->offset, info, unsigned int);
 
       /* Valid offset ? */
       if (current_cu->offset >= dwarf2_size(abbrev))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "DWARF2 compil unit abbrev offset incorrect", -1);
 
-      dwarf2_ipos(current_cu->addr_size, info, u_char);
+      dwarf2_ipos(current_cu->addr_size, info, unsigned char);
 
       current_cu->info_pos = dwarf2_pos(info);
       
@@ -215,7 +215,7 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
  * @param pos position to read
  */
 int 			edfmt_dwarf2_getent(edfmtdw2cu_t *cu, edfmtdw2abbent_t *abbent, 
-					    u_int pos)
+					    unsigned int pos)
 {
   edfmtdw2info_t	*pinfo;
   edfmtdw2cu_t		*pcu;
@@ -250,7 +250,7 @@ int 			edfmt_dwarf2_getent(edfmtdw2cu_t *cu, edfmtdw2abbent_t *abbent,
  * Manage parsing loops. On the new layout thif function just fill abbrev hash table
  * @param endpos represent the end position to read on the current compile unit (deprecate)
  */
-int			edfmt_dwarf2_block_loop(u_int endpos)
+int			edfmt_dwarf2_block_loop(unsigned int endpos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);   
 

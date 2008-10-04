@@ -11,7 +11,7 @@
   <instruction func="op_esc4" opcode="0xdc"/>
 */
 
-int op_esc4(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_esc4(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   struct s_modrm        *modrm;
 

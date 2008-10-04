@@ -9,7 +9,7 @@
   <i386 func="i386_imul_rv_rmv" opcode="0xaf"/>
 */
 
-int i386_imul_rv_rmv(asm_instr *new, u_char *opcode, u_int len,
+int i386_imul_rv_rmv(asm_instr *new, unsigned char *opcode, unsigned int len,
 		     asm_processor *proc)
 {
     new->instr = ASM_IMUL;

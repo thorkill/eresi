@@ -9,7 +9,7 @@
   <i386 func="op_cmp_xchg" opcode="0xb1"/>
 */
 
-int     op_cmp_xchg(asm_instr *new, u_char *opcode, u_int len,
+int     op_cmp_xchg(asm_instr *new, unsigned char *opcode, unsigned int len,
 		    asm_processor *proc)
 {
   new->len += 1;

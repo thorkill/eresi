@@ -16,13 +16,13 @@
  */
 void		revm_object_print(revmobj_t *obj)
 {
-  u_char	byte;
+  unsigned char	byte;
   uint16_t	half;
   uint32_t	word;
   eresi_Addr   	val;
   char		*str;
   char		logbuf[BUFSIZ];
-  u_int		idx;
+  unsigned int		idx;
   aspectype_t	*type;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -75,7 +75,7 @@ void		revm_object_print(revmobj_t *obj)
 			obj->get_name ? obj->get_name(obj->root, obj->parent) : "");
 	for (idx = 0; idx < 10 && str[idx]; idx++)
 	  snprintf(logbuf, BUFSIZ, "%02X%s", 
-		   (u_char) str[idx], (idx < 9 && str[idx + 1] ? " " : ""));
+		   (unsigned char) str[idx], (idx < 9 && str[idx + 1] ? " " : ""));
 	break;
 	
 	/* When the object type is unknown */
@@ -120,7 +120,7 @@ void		revm_object_print(revmobj_t *obj)
 int			cmd_print()
 {
   revmexpr_t		*expr;
-  volatile u_int	idx;
+  volatile unsigned int	idx;
   char			logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

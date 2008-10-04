@@ -24,7 +24,7 @@
 
 #include <libasm.h>
 
-void sparc_convert_pbranch(struct s_decode_pbranch	*opcode, u_char *buf)
+void sparc_convert_pbranch(struct s_decode_pbranch	*opcode, unsigned char *buf)
 {
   #if __BYTE_ORDER == __LITTLE_ENDIAN
     int converted;
@@ -50,7 +50,7 @@ void sparc_convert_pbranch(struct s_decode_pbranch	*opcode, u_char *buf)
    	opcode->imm = opcode->immediate;
 }
 
-void sparc_convert_rbranch(struct s_decode_rbranch *opcode,	u_char *buf)
+void sparc_convert_rbranch(struct s_decode_rbranch *opcode,	unsigned char *buf)
 {
   int d16;
   
@@ -78,7 +78,7 @@ void sparc_convert_rbranch(struct s_decode_rbranch *opcode,	u_char *buf)
   	opcode->d16 = d16;
 }
 
-void sparc_convert_branch(struct s_decode_branch *opcode, u_char *buf)
+void sparc_convert_branch(struct s_decode_branch *opcode, unsigned char *buf)
 {
   #if __BYTE_ORDER == __LITTLE_ENDIAN
     int converted;
@@ -101,7 +101,7 @@ void sparc_convert_branch(struct s_decode_branch *opcode, u_char *buf)
    	opcode->imm = opcode->immediate;
 }
 
-void sparc_convert_call(struct s_decode_call *opcode,	u_char *buf)
+void sparc_convert_call(struct s_decode_call *opcode,	unsigned char *buf)
 {
   #if __BYTE_ORDER == __LITTLE_ENDIAN
     int converted;
@@ -119,7 +119,7 @@ void sparc_convert_call(struct s_decode_call *opcode,	u_char *buf)
   	opcode->displacement = opcode->disp30;
 }
 
-void sparc_convert_format3(struct s_decode_format3 *opcode,	u_char *buf)
+void sparc_convert_format3(struct s_decode_format3 *opcode,	unsigned char *buf)
 {
   int shcnt, immediate10; 
   int immediate;
@@ -169,7 +169,7 @@ void sparc_convert_format3(struct s_decode_format3 *opcode,	u_char *buf)
   opcode->cond = opcode->rs1 & 0xf;
 }
 
-void sparc_convert_format4(struct s_decode_format4 *opcode, u_char *buf)
+void sparc_convert_format4(struct s_decode_format4 *opcode, unsigned char *buf)
 {
   int immediate;
   

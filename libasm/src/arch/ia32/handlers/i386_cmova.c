@@ -9,7 +9,7 @@
   <i386 func="i386_cmova" opcode="0x47"/>
  */
 
-int     i386_cmova(asm_instr *new, u_char *opcode, u_int len,
+int     i386_cmova(asm_instr *new, unsigned char *opcode, unsigned int len,
 		   asm_processor *proc)
 {
   new->len += 1;

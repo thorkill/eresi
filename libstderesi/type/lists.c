@@ -14,7 +14,7 @@
  * @param h Linked list
  * @param key Key of list object to be printed
  */
-int		revm_list_display_element(list_t *l, char *key, u_char inside)
+int		revm_list_display_element(list_t *l, char *key, unsigned char inside)
 {
   void		*data;
   char		logbuf[BUFSIZ];
@@ -154,7 +154,7 @@ static int	revm_list_display_regx2(char *tableregx, char *elemregx)
   int		index;
   list_t	*cur;
   listent_t	*curent;
-  u_int		match;
+  unsigned int		match;
   char		logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

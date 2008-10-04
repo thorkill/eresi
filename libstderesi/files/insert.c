@@ -25,12 +25,12 @@ int		cmd_insert()
   revmobj_t	*obj;
   elfsh_Sym	sym;
   elfsh_Phdr	phdr;
-  u_int		size;
+  unsigned int		size;
   char		*name;
   char		type;
   elfsh_Word	ptype;
   eresi_Addr	val;
-  u_int		modulo;
+  unsigned int		modulo;
   char		*param0, *param1, *param2, *param3, *param4;
   char		logbuf[BUFSIZ];
 

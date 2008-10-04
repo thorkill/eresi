@@ -346,9 +346,9 @@ typedef struct s_autotask
  */
 typedef struct s_libkernshworld
 {
-	u_int arch;	/* Arch type */
-	u_int os;	/* Os type */
-	u_int device;	/* Device type */
+	unsigned int arch;	/* Arch type */
+	unsigned int os;	/* Os type */
+	unsigned int device;	/* Device type */
 	
 	int present;	/* Flag to test kernsh's present */
 	int open;	/* 0 => memory close, 1 => memory open */
@@ -424,8 +424,8 @@ void kernsh_present_set();
 int kernsh_is_present();
 
 /* Raw mode */
-int kernsh_raw_write(elfshobj_t *, u_int, void *, int);
-int kernsh_raw_read(elfshobj_t *,  u_int, void *, int);
+int kernsh_raw_write(elfshobj_t *, unsigned int, void *, int);
+int kernsh_raw_read(elfshobj_t *,  unsigned int, void *, int);
 
 /* Default vectors */
 
@@ -461,34 +461,34 @@ int kernsh_kdump_vma_default();
 /* Init vectors */
 int	kernsh_init_vectors();
 int	kernsh_register_vectors();
-int	kernsh_register_openmem(u_int, u_int, u_int, void *);
-int	kernsh_register_closemem(u_int, u_int, u_int, void *);
-int	kernsh_register_readmem(u_int, u_int, u_int, void *);
-int	kernsh_register_writemem(u_int, u_int, u_int, void *);
-int	kernsh_register_sct(u_int, u_int, void *);
-int	kernsh_register_callsc(u_int, void *);
-int	kernsh_register_idt(u_int, u_int, void *);
-int	kernsh_register_gdt(u_int, u_int, void *);
-int	kernsh_register_info(u_int, u_int, void *);
-int	kernsh_register_decompkernel(u_int, void *);
-int	kernsh_register_symbs_abn(u_int, u_int, void *);
-int	kernsh_register_symbs_nba(u_int, u_int, void *);
-int	kernsh_register_alloc_contiguous(u_int, void *);
-int	kernsh_register_alloc_noncontiguous(u_int, void *);
-int	kernsh_register_free_contiguous(u_int, void *);
-int	kernsh_register_free_noncontiguous(u_int, void *);
-int	kernsh_register_autotypes(u_int, u_int, void *);
-int	kernsh_register_relink(u_int, void *);
-int	kernsh_register_infect(u_int, void *);
-int	kernsh_register_kload(u_int, void *);
-int	kernsh_register_kunload(u_int, void *);
-int	kernsh_register_kvirtm_read_virtm(u_int, u_int, void *);
-int	kernsh_register_kvirtm_read_mem(u_int, u_int, void *);
-int	kernsh_register_kvirtm_write_virtm(u_int, u_int, void *);
-int	kernsh_register_kvirtm_write_mem(u_int, u_int, void *);
-int	kernsh_register_kvirtm_task_pid(u_int, u_int, void *);
-int	kernsh_register_kdump_get_vma(u_int, u_int, void *);
-int	kernsh_register_kdump_vma(u_int, u_int, void *);
+int	kernsh_register_openmem(unsigned int, unsigned int, unsigned int, void *);
+int	kernsh_register_closemem(unsigned int, unsigned int, unsigned int, void *);
+int	kernsh_register_readmem(unsigned int, unsigned int, unsigned int, void *);
+int	kernsh_register_writemem(unsigned int, unsigned int, unsigned int, void *);
+int	kernsh_register_sct(unsigned int, unsigned int, void *);
+int	kernsh_register_callsc(unsigned int, void *);
+int	kernsh_register_idt(unsigned int, unsigned int, void *);
+int	kernsh_register_gdt(unsigned int, unsigned int, void *);
+int	kernsh_register_info(unsigned int, unsigned int, void *);
+int	kernsh_register_decompkernel(unsigned int, void *);
+int	kernsh_register_symbs_abn(unsigned int, unsigned int, void *);
+int	kernsh_register_symbs_nba(unsigned int, unsigned int, void *);
+int	kernsh_register_alloc_contiguous(unsigned int, void *);
+int	kernsh_register_alloc_noncontiguous(unsigned int, void *);
+int	kernsh_register_free_contiguous(unsigned int, void *);
+int	kernsh_register_free_noncontiguous(unsigned int, void *);
+int	kernsh_register_autotypes(unsigned int, unsigned int, void *);
+int	kernsh_register_relink(unsigned int, void *);
+int	kernsh_register_infect(unsigned int, void *);
+int	kernsh_register_kload(unsigned int, void *);
+int	kernsh_register_kunload(unsigned int, void *);
+int	kernsh_register_kvirtm_read_virtm(unsigned int, unsigned int, void *);
+int	kernsh_register_kvirtm_read_mem(unsigned int, unsigned int, void *);
+int	kernsh_register_kvirtm_write_virtm(unsigned int, unsigned int, void *);
+int	kernsh_register_kvirtm_write_mem(unsigned int, unsigned int, void *);
+int	kernsh_register_kvirtm_task_pid(unsigned int, unsigned int, void *);
+int	kernsh_register_kdump_get_vma(unsigned int, unsigned int, void *);
+int	kernsh_register_kdump_vma(unsigned int, unsigned int, void *);
 
 /* Memory */
 int	kernsh_openmem();

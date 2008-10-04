@@ -67,15 +67,15 @@ int		kernsh_hexdump(unsigned char * data,
 }
 
 
-u_int		kernsh_instr_display(u_int index, eresi_Addr vaddr, 
-				     u_int foffset, u_int size, char *name, 
-				     u_int nindex, char *buff)
+unsigned int		kernsh_instr_display(unsigned int index, eresi_Addr vaddr, 
+				     unsigned int foffset, unsigned int size, char *name, 
+				     unsigned int nindex, char *buff)
 			      
 {
   char		*s;
   char		buf[256];
-  u_int		idx_bytes;
-  u_int		ret;
+  unsigned int		idx_bytes;
+  unsigned int		ret;
   asm_instr	ptr;
   char		base[16] = "0123456789ABCDEF";
   char		logbuf[BUFSIZ];
@@ -89,7 +89,7 @@ u_int		kernsh_instr_display(u_int index, eresi_Addr vaddr,
 		      "Invalid argument", (-1));    
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index, 
+  ret = asm_read_instr(&ptr, (unsigned char *)buff + index, size - index, 
 		       &libkernshworld.proc);
   if (ret == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "asm_read_instruction faild (-1)", (ret));

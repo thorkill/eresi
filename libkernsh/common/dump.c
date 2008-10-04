@@ -17,7 +17,7 @@
 int kernsh_dump_kvirtm_elf(pid_t pid, char *filename)
 {
   int		ret, get;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
@@ -53,7 +53,7 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
 {
   int ret, get;
   char *key;
-  u_int         dim[3];
+  unsigned int         dim[3];
   list_t	*l;
   vector_t      *kgv;
   int          (*fct)();
@@ -207,7 +207,7 @@ int kernsh_kdump_vma(pid_t pid)
   char *sav_val;
   char buff[BUFSIZ];
   char meta[BUFSIZ];
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *kv;
   int          (*fct)();
   unsigned long meta_start, meta_end, meta_size;

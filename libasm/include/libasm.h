@@ -159,7 +159,7 @@ enum e_op_types
     ASM_OPTYPE_MEM  = 0x4  //!< Memory access operand type
   };
 
-#define LIBASM_HANDLER_FETCH(fcn)	int	(*fcn)(asm_instr *, u_char *, u_int, asm_processor *)
+#define LIBASM_HANDLER_FETCH(fcn)	int	(*fcn)(asm_instr *, unsigned char *, unsigned int, asm_processor *)
 #define LIBASM_HANDLER_DISPLAY(fcn)	char	*(*fcn)(asm_instr *, int)
 
 /*
@@ -232,7 +232,7 @@ char	*asm_get_build(void);
 /**
  * Disassemble instruction 
  */
-int	asm_read_instr(asm_instr *instr, u_char *buffer, u_int len, asm_processor *proc);
+int	asm_read_instr(asm_instr *instr, unsigned char *buffer, unsigned int len, asm_processor *proc);
 
 /**
  * Return instruction length.
@@ -378,7 +378,7 @@ int		asm_instruction_is_prefixed(asm_instr *ins, int prefix);
  * Set resolve handler used by asm_display_instr() to resolve immediate value.
  */
 void		asm_set_resolve_handler(asm_processor *,
-					void (*)(void *, u_int, char *, u_int), 
+					void (*)(void *, unsigned int, char *, unsigned int), 
 					void *);
 
 /**
@@ -418,7 +418,7 @@ int	asm_register_operand(const char *, int, unsigned long fcn);
  * Default handlers.
  *
  */
-int	asm_fetch_default(asm_instr *, u_char *opcode, u_int len, asm_processor *proc);
+int	asm_fetch_default(asm_instr *, unsigned char *opcode, unsigned int len, asm_processor *proc);
 
 
 

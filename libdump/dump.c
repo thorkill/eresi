@@ -478,11 +478,14 @@ int			dump_disconnect_host(char *host)
   return dump_disconnect(dump_lookup_neighbor(serv_addr.sin_addr));  
 }
 
+
+
+
 /* connect to given host 
    returns socket's fd in case of success,
    0 otherwise.
 */
-int			dump_connect_to(char *host, u_int port)
+int			dump_connect_to(char *host, unsigned int port)
 {
   int                   sd, rc;
   struct hostent        *h;

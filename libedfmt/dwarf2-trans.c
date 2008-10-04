@@ -68,7 +68,7 @@ static edfmttype_t	*edfmt_dwarf2_searchtype(edfmtdw2abbent_t *abbrev)
  * @param pos retrive the type from this position
  * @return return founded type
  */
-static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
+static edfmttype_t	*edfmt_dwarf2_trans_gettype(unsigned int pos)
 {
   edfmtdw2abbent_t   	ref;
   edfmttype_t 		*type;
@@ -99,11 +99,11 @@ static edfmttype_t	*edfmt_dwarf2_trans_gettype(u_int pos)
  * @param attr attribute id
  * @return return the abbrev attribute structure from attr id
  */
-edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
+edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, unsigned int attr)
 {
   edfmtdw2info_t	*pinfo;
-  u_int			i;
-  u_char		*bufptr;
+  unsigned int			i;
+  unsigned char		*bufptr;
   u_short		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -130,7 +130,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 		  switch(abbent->attr[i].form)
 		    {
 		    case DW_FORM_block1:
-		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), (u_char *) abbent->attr[i].u.vbuf, 
+		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), (unsigned char *) abbent->attr[i].u.vbuf, 
 				       abbent->attr[i].asize);
 		      break;
 		      /* We have to use .debug_loc */
@@ -142,7 +142,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 
 		      /* Set position */
 		      dwarf2_pos(loc) = abbent->attr[i].u.udata;
-		      bufptr = (u_char *) dwarf2_a_pos(loc);
+		      bufptr = (unsigned char *) dwarf2_a_pos(loc);
 
 		      /* Read length, we don't care about start & end */
 		      len = *(u_short *) (bufptr + (current_cu->addr_size * 2));
@@ -156,7 +156,7 @@ edfmtdw2abbattr_t 	*edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbent, u_int attr)
 	      
 		      /* Read the location */
 		      edfmt_dwarf2_loc(&(abbent->attr[i].loc), 
-				       (u_char *) dwarf2_a_pos(loc), len);		
+				       (unsigned char *) dwarf2_a_pos(loc), len);		
 		      break;
 		    }
 		  break;
@@ -207,7 +207,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
   char			*str = NULL, *comp_dir, *vbuf, *vbufs, *pstr;
   long			size = 0;
   edfmttype_t		*type = NULL, *etype;
-  u_long		iref, itref;
+  unsigned long		iref, itref;
   edfmtdw2abbent_t	ref, tref;
   edfmtdw2abbattr_t	*attr;
   eresi_Addr		low = 0, high = 0;
@@ -551,7 +551,7 @@ int 			abbrev_level = 0;
  * Loop for a given compile unit depending of its position 
  * @param pos starting position
  */
-int	     		edfmt_dwarf2_transform_abbrev(u_int pos)
+int	     		edfmt_dwarf2_transform_abbrev(unsigned int pos)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

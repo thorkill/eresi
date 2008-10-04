@@ -106,7 +106,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 	  if (FILE_IS_MIPS(file))
 	    {
 	      if (hooked)
-		*hooked = * (u_long *) elfsh_get_got_entry_by_name(file, name);
+		*hooked = * (unsigned long *) elfsh_get_got_entry_by_name(file, name);
 	      ret = elfsh_set_got_entry_by_name(file, name, addr);
 	      if (ret < 0) 
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -143,7 +143,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
       /* GOT entry hijacking */
     case ELFSH_HIJACK_TYPE_GOT:
       if (hooked)
-	*hooked = *(u_long *) elfsh_get_got_entry_by_name(file, name);
+	*hooked = *(unsigned long *) elfsh_get_got_entry_by_name(file, name);
       ret = elfsh_set_got_entry_by_name(file, name, addr);
       if (ret < 0) 
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

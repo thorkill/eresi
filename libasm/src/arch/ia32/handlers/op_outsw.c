@@ -10,7 +10,7 @@
   <instruction func="op_outsd" opcode="0x6f"/>
 */
 
-int op_outsw(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_outsw(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) 
 {
   new->ptr_instr = opcode;
   new->len += 1;

@@ -56,9 +56,9 @@ typedef struct s_btree
 #define BTREE_FREE_ELEM	1
 #define BTREE_FREE_TREE	0
 
-void	btree_insert(btree_t **, u_int, void *);
+void	btree_insert(btree_t **, unsigned int, void *);
 void	btree_insert_sort(btree_t **, int (*)(void *, void *), void *);
-void	*btree_get_elem(btree_t *, u_int);
+void	*btree_get_elem(btree_t *, unsigned int);
 void	*btree_find_elem(btree_t *, int (*)(void *, void *), void *);
 void	btree_browse_prefix(btree_t *, int (*)(void *, void *), void *);
 void	btree_browse_infix(btree_t *, int (*)(void *, void *), void *);

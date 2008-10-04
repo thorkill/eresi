@@ -35,11 +35,11 @@ elfsh_Vernaux		*elfsh_check_defneed_eq(elfshobj_t *file, elfshobj_t *deffile,
   elfsh_Verdaux		*defaux;
   void			*data;
   void			*defdata;
-  u_int			offset;
-  u_int			defoffset;
+  unsigned int			offset;
+  unsigned int			defoffset;
   char			*needname;
   char			*defname;
-  u_int			index, defndx;
+  unsigned int			index, defndx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -449,7 +449,7 @@ elfsh_Verneed		*elfsh_get_verneed_by_name(elfshobj_t *file, char *name)
 {
   elfsh_Verneed		*table;
   char			*filename;
-  u_int			offset = 0;
+  unsigned int			offset = 0;
   int			versize;
   void			*ps;
 
@@ -495,7 +495,7 @@ elfsh_Vernaux        	*elfsh_get_verneed_entry_by_index(void *ps,
 {
   elfsh_Verneed		*table;
   elfsh_Vernaux		*tableaux;
-  u_int			i, offset = 0, auxset = 0;
+  unsigned int			i, offset = 0, auxset = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -890,7 +890,7 @@ void	           	*elfsh_get_verdef_entry_by_index(void *ps,
 {
   elfsh_Verdef		*table;
   elfsh_Verdaux		*tableaux;
-  u_int			i = 0, offset = 0, auxset = 0;
+  unsigned int			i = 0, offset = 0, auxset = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -940,7 +940,7 @@ void	           	*elfsh_get_verdef_entry_by_index(void *ps,
  * @return versym entry
  */
 elfsh_Half    		*elfsh_get_versym_entry_by_index(elfsh_Half *s, 
-						      u_int index)
+						      unsigned int index)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s + index));
@@ -1041,13 +1041,13 @@ int 			elfsh_get_verdauxnamelist(elfshobj_t *file,
 {
   elfsh_Verdaux		*table;
   void			*ps;
-  u_int			dindex;
-  u_int			offset;
+  unsigned int			dindex;
+  unsigned int			offset;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ps = hdef->ps;
-  offset = (u_int) hdef->aux;
+  offset = (unsigned int) hdef->aux;
   for (dindex = 0; dindex < numnames; dindex++)
     names[dindex] = NULL;
 
@@ -1073,15 +1073,15 @@ int 			elfsh_get_verdauxnamelist(elfshobj_t *file,
  * @param size verneed table size
  */
 int			elfsh_load_needtable(hash_t *t, void *ps, 
-					     u_int size)
+					     unsigned int size)
 {
   elfsh_Verneed		*table;
   elfsh_Vernaux		*tableaux;
   hashneed_t		*pneed;
-  u_int			offset;
-  u_int			auxset;
-  u_int			index;
-  u_int			aux;
+  unsigned int			offset;
+  unsigned int			auxset;
+  unsigned int			index;
+  unsigned int			aux;
   char			s_temp[8];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1122,12 +1122,12 @@ int			elfsh_load_needtable(hash_t *t, void *ps,
  * @param ps verdef table pointer
  * @param size verdef table size
  */
-int			elfsh_load_deftable(hash_t *t, void *ps, u_int size)
+int			elfsh_load_deftable(hash_t *t, void *ps, unsigned int size)
 {
   elfsh_Verdef		*table;
   hashdef_t		*pdef;
-  u_int			offset;
-  u_int			index;
+  unsigned int			offset;
+  unsigned int			index;
   char			s_temp[8];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1447,7 +1447,7 @@ elfshsect_t	       	*elfsh_get_verdeftab_by_idx(elfshobj_t *file, eresi_Addr ran
   void			*ps;
   elfshsect_t		*sect;
   int			strindex, nbr;
-  u_int			offset = 0;
+  unsigned int			offset = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
 

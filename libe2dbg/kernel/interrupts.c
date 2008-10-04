@@ -655,7 +655,7 @@ void ke2dbg_step (void)
   if (fired)
     {
       adresse = (unsigned char*) ke2dbg_virt2lin_convert(reg_stack->reg_CS, reg_stack->reg_EIP);
-      ret = asm_read_instr(&my_ins, (u_char *) adresse, 32, world.curjob->proc);
+      ret = asm_read_instr(&my_ins, (unsigned char *) adresse, 32, world.curjob->proc);
       
       debug_[0] = '0' + ret;	
       debug_[1] = 'Ä';

@@ -9,7 +9,7 @@
   <instruction func="op_prefix_es" opcode="0x26"/>
 */
 
-int     op_prefix_es(asm_instr *new, u_char *opcode, u_int len,
+int     op_prefix_es(asm_instr *new, unsigned char *opcode, unsigned int len,
 		     asm_processor *proc)
 {
   new->prefix |= ASM_PREFIX_ES;

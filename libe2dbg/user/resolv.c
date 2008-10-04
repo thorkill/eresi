@@ -31,16 +31,16 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   e2dbgobj_t		obj;
   elfsh_Phdr		*pht;
   elfsh_Dyn		*dyn;
-  u_int			nbr, nbr2;
+  unsigned int			nbr, nbr2;
   elfsh_Sym		cursym;
   char			*strtab;
   eresi_Addr		got;
-  u_int			curoff;
+  unsigned int			curoff;
   eresi_Addr		found_ref = 0;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
-  u_int		len;
+  unsigned int		len;
 #endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -192,17 +192,17 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
 {
   e2dbgobj_t		obj;
   elfsh_Dyn		*dyn;
-  u_int			nbr2;
+  unsigned int			nbr2;
   elfsh_Sym		cursym;
   char			*strtab;
-  u_int			curoff;
+  unsigned int			curoff;
   eresi_Addr		found_sym = 0;
   elfshlinkmap_t	*curobj;
   elfsh_Ehdr		hdr;
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
-  u_int		len;
+  unsigned int		len;
 #endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -339,7 +339,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 
 #if __DEBUG_E2DBG__
   char      buf[BUFSIZ];
-  u_int     len;
+  unsigned int     len;
 #endif	
 
 #if __DEBUG_E2DBG__
@@ -407,7 +407,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 int		e2dbg_dlsym_init()
 {
   static int	done = 0;
-  u_char	dbgmode;
+  unsigned char	dbgmode;
 
 #if !defined(__FreeBSD__)
   void		*handle;
@@ -415,7 +415,7 @@ int		e2dbg_dlsym_init()
 
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
-  u_int		len;
+  unsigned int		len;
 #endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

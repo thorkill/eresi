@@ -20,7 +20,7 @@
 int		elfsh_endianize_dynamic(elfshsect_t *newent)
 {	  
   elfsh_Dyn	*dyn;
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -54,7 +54,7 @@ int		elfsh_endianize_dynamic(elfshsect_t *newent)
  * @param num
  * @return
  */
-elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
+elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, unsigned int *num)
 {
   elfshsect_t	*newent = NULL; /* to shut gcc up with -Wall */
   int		nbr;
@@ -198,8 +198,8 @@ char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file, 
 						 elfsh_Word type)
 {
-  u_int		index;
-  u_int		size;
+  unsigned int		index;
+  unsigned int		size;
   elfsh_Dyn	*table;
   elfsh_Sword	res;
 
@@ -270,11 +270,11 @@ int		elfsh_shiftable_dynent(elfsh_Dyn *ent)
  * @param size
  * @return
  */
-int		elfsh_shift_dynamic(elfshobj_t *file, u_int size)
+int		elfsh_shift_dynamic(elfshobj_t *file, unsigned int size)
 {
   elfsh_Dyn	*dyn;
-  u_int		nbr;
-  u_int		idx;
+  unsigned int		nbr;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dyn = elfsh_get_dynamic(file, &nbr);

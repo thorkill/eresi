@@ -30,15 +30,15 @@ typedef struct 	       	s_etype
 #define EDFMT_TYPE_ATTR	  6	/* Structure attribute */
 #define EDFMT_TYPE_VOID	  7	/* Void pointer */
 #define EDFMT_TYPE_LINK	  8	/* Link type using parent */
-  u_char		type;
+  unsigned char		type;
 
   int			start;
   int			tmp_ssize;	/* Temporary structure size */
   int			size;
 
   /* Flags */
-  u_char		valid;
-  u_char       		parsed;
+  unsigned char		valid;
+  unsigned char       		parsed;
 
   struct s_etype       	*parent;   	/* Used in structure attribute, array and pointer */
   struct s_etype       	*child;   	/* Used in structure and attribute */
@@ -54,10 +54,10 @@ typedef struct		s_evar
 #define EDFMT_SCOPE_UNK	    0
 #define EDFMT_SCOPE_GLOBAL  1
 #define EDFMT_SCOPE_FUNC    2
-  u_char		scope;
+  unsigned char		scope;
 
   eresi_Addr 		addr;		/* Global address */
-  u_int 		reg;		/* Func reg base */
+  unsigned int 		reg;		/* Func reg base */
   int 			stackpos;	/* Func stack position */
   
   edfmttype_t		*type;
@@ -69,7 +69,7 @@ typedef struct		s_efunc_arg
 {
   char			name[EDFMT_NAME_SIZE];
 
-  u_int			reg;		/* Reg base */
+  unsigned int			reg;		/* Reg base */
   int			pos;		/* Reg or stack position */
 
   edfmttype_t		*type;		/* Argument type */

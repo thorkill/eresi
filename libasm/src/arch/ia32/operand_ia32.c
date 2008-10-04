@@ -23,7 +23,7 @@
  *
  */
 
-int	operand_rmb_ib(asm_instr *ins, u_char *opcode, int len, 
+int	operand_rmb_ib(asm_instr *ins, unsigned char *opcode, int len, 
 		       asm_processor *proc) {
   struct s_modrm	*modrm;
   
@@ -54,7 +54,7 @@ int	operand_rmb_ib(asm_instr *ins, u_char *opcode, int len,
 */ 
 
 
-int operand_rmb(asm_operand *op, u_char *opcode, u_int len, 
+int operand_rmb(asm_operand *op, unsigned char *opcode, unsigned int len, 
 				     asm_processor *proc) {
   struct s_modrm	*modrm;
   struct s_sidbyte	*sidbyte;
@@ -232,7 +232,7 @@ int operand_rmb(asm_operand *op, u_char *opcode, u_int len,
  *
  */
 
-int        operand_rmv(asm_operand *op, u_char *opcode, u_int len, 
+int        operand_rmv(asm_operand *op, unsigned char *opcode, unsigned int len, 
 		       asm_processor *proc) {
   struct s_modrm	*modrm;
   struct s_sidbyte	*sidbyte;

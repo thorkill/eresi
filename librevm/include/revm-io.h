@@ -19,8 +19,6 @@
 
 #include "librevm-color.h"
 
-/* This is bad -- C0 */
-#include <libdump.h>
 #if defined(ERESI_NET)
  #include <libdump.h>
 #endif
@@ -206,14 +204,14 @@ typedef struct        s_screen
 typedef struct		s_workspace
 {
   char			*name;		  /*! Name of the job */
-  u_char		active;		  /*! Is the workspace active ? */
+  unsigned char		active;		  /*! Is the workspace active ? */
   time_t		createtime;       /*! Workspace creation time */
   int			logfd;            /*! Log file descriptor */
   revmscreen_t		screen;           /*! Last printed screen */
   char			*oldline;	  /*! Previous command line */
 
 #define			REVM_JOB_LOGGED (1 << 0)
-  u_char                state;            /*! Job state flags */
+  unsigned char                state;            /*! Job state flags */
 
 #define			REVM_INPUT     0
 #define			REVM_OUTPUT    1
@@ -252,7 +250,7 @@ typedef struct        s_state
   char                revm_stopped;     /*! We are in a signal handler */
   char                revm_shared;      /*! Next opened object must be shared */
   char                revm_net;         /*! We are a node connected to the ERESI network */
-  u_int               lastid;           /*! Last Object ID */
+  unsigned int               lastid;           /*! Last Object ID */
 }		       revmstate_t;
 
 /* Extern variables */
@@ -276,7 +274,7 @@ void		revm_setoutput(revmworkspace_t *j, int fd);
 void		revm_log(char *str);
 int             revm_closelog();
 char		*revm_get_prompt();
-void		revm_set_prompt(void (*func) (char *name, u_int size));
+void		revm_set_prompt(void (*func) (char *name, unsigned int size));
 
 /* Network related functions */
 int		revm_net_init();

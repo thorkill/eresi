@@ -73,7 +73,7 @@ void		e2dbg_display_print()
 
 
 /* Execute all displayed commands for a breakpoint or a step */
-int		e2dbg_display(char **cmd, u_int nbr)
+int		e2dbg_display(char **cmd, unsigned int nbr)
 {
   int		idx;
   revmargv_t	*cur;

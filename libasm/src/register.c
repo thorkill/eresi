@@ -94,10 +94,10 @@ int	asm_arch_register(asm_processor *proc, int machine)
  */
 int	asm_register_operand_create(const char *vector_name, int size)
 {
-  u_int		*dims;
+  unsigned int		*dims;
   char		**dimstr;
   
-  dims = malloc(1 * sizeof (u_int));
+  dims = malloc(1 * sizeof (unsigned int));
   if (!dims)
     {
       return 0;
@@ -127,7 +127,7 @@ int asm_register_operand(const char *vector_name, int operand_type,
                           unsigned long fcn)
 {
   vector_t	*vec;
-  u_int		dim[1];
+  unsigned int		dim[1];
 
   LIBASM_PROFILE_FIN();
   vec = aspect_vector_get((char *)vector_name);
@@ -145,10 +145,10 @@ int asm_register_operand(const char *vector_name, int operand_type,
 
 int	asm_register_opcode_create(const char *vector_name, int size)
 {
-  u_int		*dims;
+  unsigned int		*dims;
   char		**dimstr;
   
-  dims = malloc(1 * sizeof (u_int));
+  dims = malloc(1 * sizeof (unsigned int));
   if (!dims)
     {
       return 0;
@@ -177,7 +177,7 @@ int	asm_register_opcode(const char *vector_name, int opcode,
 			    unsigned long fcn)
 {
   vector_t	*vec;
-  u_int		dim[1];
+  unsigned int		dim[1];
   int		to_ret;
   
   LIBASM_PROFILE_FIN();

@@ -179,18 +179,18 @@ static int	elfsh_find_relocsym(elfshsect_t *enew, elfshsect_t *reltab,
  */
 static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
 					     elfshsect_t	*reltab,
-					     u_char		stage)
+					     unsigned char		stage)
 {
   elfsh_Rel	*cur;
-  volatile u_int		index;
+  volatile unsigned int		index;
   elfsh_Sym	*sym;
-  volatile u_int		size;
+  volatile unsigned int		size;
   eresi_Addr	*dword;
   eresi_Addr   	addr;
   char		*name;
   char		tmpname[BUFSIZ];
   elfshsect_t	*sect;
-  u_int		entsz;
+  unsigned int		entsz;
   elfshsect_t   *plt;
   void		*data;
   elfsh_Half	symtype;
@@ -364,13 +364,13 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
  * @param stage
  * @return
  */
-int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
+int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, unsigned char stage)
 {
   elfshsect_t	*sect;
   elfshsect_t	*reltab;
   char		sctname[BUFSIZ];
-  u_int		index;
-  u_int		found;
+  unsigned int		index;
+  unsigned int		found;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -424,7 +424,7 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
  * @param mod
  * @return
  */
-static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int mod)
+static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, unsigned int mod)
 {
   elfsh_Shdr	hdr;
   elfshsect_t	*enew;
@@ -432,7 +432,7 @@ static int	elfsh_inject_etrel_section(elfshobj_t *file, elfshsect_t *sect, u_int
   char		writable;
   int		mode;
   char		*data;
-  u_int		modulo;
+  unsigned int		modulo;
   elfshsect_t	*plt;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -497,7 +497,7 @@ int		elfsh_fuse_etrel_symtab(elfshobj_t *file, elfshobj_t *rel)
   elfshsect_t	*sect;
   elfsh_Sym	newsym;
   elfsh_Half	type;
-  u_int		index;
+  unsigned int		index;
   char		sctname[BUFSIZ];
   elfsh_Sym	*sym;
   int		symnbr;
@@ -587,9 +587,9 @@ int		elfsh_fuse_bss(elfshobj_t *file, elfshobj_t *rel)
  */
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
 {
-  u_int		mod;
-  u_int		pgsize;
-  u_int		index;
+  unsigned int		mod;
+  unsigned int		pgsize;
+  unsigned int		index;
   elfshsect_t	*sect;
   elfshsect_t	*hooks;
   int		ret = 0;

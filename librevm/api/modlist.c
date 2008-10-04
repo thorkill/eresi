@@ -18,7 +18,7 @@
 int             revm_modlist()
 {
   revmmod_t     *actual;
-  u_int         index;
+  unsigned int         index;
   char          *time;
   char          *nl;
   char          logbuf[BUFSIZ];

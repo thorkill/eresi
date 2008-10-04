@@ -20,7 +20,7 @@
  * @return -1
  */
 #if 0 && WIP
-int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
+int	asm_fetch_default(asm_instr *ins, unsigned char *opcode, unsigned int len, 
 			  asm_processor *proc, int opt)
 {
   int	to_ret;
@@ -34,7 +34,7 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
   LIBASM_PROFILE_FOUT(to_ret);
 }
 #else
-int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
+int	asm_fetch_default(asm_instr *ins, unsigned char *opcode, unsigned int len, 
 			  asm_processor *proc)
 {
   int	to_ret;
@@ -60,14 +60,14 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
  *
  */
 #if WIP
-int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
+int	asm_operand_fetch_default(asm_operand *op, unsigned char *opcode, int otype,
 				  asm_instr *ins, int opt)
 {
   LIBASM_PROFILE_FIN();
   LIBASM_PROFILE_FOUT(-1);
 }
 #else
-int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
+int	asm_operand_fetch_default(asm_operand *op, unsigned char *opcode, int otype,
 				  asm_instr *ins)
 {
   LIBASM_PROFILE_FIN();
@@ -84,7 +84,7 @@ int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
 void	*asm_opcode_fetch(const char *vector_name, int opcode)
 {
   vector_t	*vec;
-  u_int		dim[1];
+  unsigned int		dim[1];
   void		*fcn_ptr;
 
   vec = aspect_vector_get((char *) vector_name);

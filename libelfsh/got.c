@@ -23,12 +23,12 @@
  * @return
  */
 int		elfsh_shift_got(elfshobj_t *file, 
-				u_int size,
+				unsigned int size,
 				char *name)
 {
   elfshsect_t	*got;
   int		nbr;
-  u_int		idx;
+  unsigned int		idx;
   eresi_Addr	*addr;
 
 
@@ -184,11 +184,11 @@ elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file)
  */
 elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, 
 				      eresi_Addr range, 
-				      u_int	 *nbr)
+				      unsigned int	 *nbr)
 {
   elfshsect_t	*got;
   elfshsect_t	*cursect;
-  u_int		idx;
+  unsigned int		idx;
   char		*name;
   eresi_Addr	rank = 0;
   
@@ -340,10 +340,10 @@ eresi_Addr     	*elfsh_get_got_entry_by_index(eresi_Addr *got,
 eresi_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
 {
   int		nbr;
-  u_int		index;
+  unsigned int		index;
   eresi_Addr	*got;
   elfsh_Sym	*sym;
-  u_int		sz;
+  unsigned int		sz;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -459,7 +459,7 @@ eresi_Addr		elfsh_get_got_addr(eresi_Addr *got)
  * @param val
  * @return
  */
-u_int			elfsh_set_got_val(eresi_Addr *got, eresi_Addr val)
+unsigned int			elfsh_set_got_val(eresi_Addr *got, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -479,7 +479,7 @@ u_int			elfsh_set_got_val(eresi_Addr *got, eresi_Addr val)
  * @param val
  * @return
  */
-u_int			elfsh_set_got_addr(eresi_Addr *got, eresi_Addr val)
+unsigned int			elfsh_set_got_addr(eresi_Addr *got, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -506,8 +506,8 @@ int   elfsh_get_got_symbol_reloc(elfshobj_t	*file,
                                  elfsh_Rel	*rel_entry)
 {
    elfshsect_t *got, *rel_got;
-   u_int       index, got_rel_index;
-   u_int       entsz;
+   unsigned int       index, got_rel_index;
+   unsigned int       entsz;
    int         got_index;
    eresi_Off   off;
    void		*data;

@@ -9,7 +9,7 @@
   <i386 func="i386_group14" opcode="0x73"/>
  */
 
-int     i386_group14(asm_instr *new, u_char *opcode, u_int len,
+int     i386_group14(asm_instr *new, unsigned char *opcode, unsigned int len,
 		     asm_processor *proc)
 {
   int	olen;

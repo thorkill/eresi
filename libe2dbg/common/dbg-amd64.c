@@ -315,7 +315,7 @@ int		e2dbg_break_amd64(elfshobj_t *f,
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:amd64] after munprotect\n");
 #endif
-  *(u_char *) bp->addr = 0xCC;
+  *(unsigned char *) bp->addr = 0xCC;
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:amd64] after write\n");
 #endif

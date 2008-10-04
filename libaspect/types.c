@@ -25,15 +25,15 @@ typeinfo_t	aspect_typeinfo_base[ASPECT_TYPE_BASENUM] =
   {
     {ASPECT_TYPENAME_UNKNOW  , 0	      	},
     {ASPECT_TYPENAME_RAW     , 0	  	},
-    {ASPECT_TYPENAME_BYTE    , sizeof(u_char)	},
-    {ASPECT_TYPENAME_STR     , sizeof(u_long) },
+    {ASPECT_TYPENAME_BYTE    , sizeof(unsigned char)	},
+    {ASPECT_TYPENAME_STR     , sizeof(unsigned long) },
     {ASPECT_TYPENAME_SHORT   , sizeof(u_short)	},
-    {ASPECT_TYPENAME_INT     , sizeof(u_int)	},
-    {ASPECT_TYPENAME_LONG    , sizeof(u_long) },
+    {ASPECT_TYPENAME_INT     , sizeof(unsigned int)	},
+    {ASPECT_TYPENAME_LONG    , sizeof(unsigned long) },
     {ASPECT_TYPENAME_DADDR   , sizeof(eresi_Addr) },
     {ASPECT_TYPENAME_CADDR   , sizeof(eresi_Addr) },
-    {ASPECT_TYPENAME_BIT     , sizeof(u_char)	},
-    {ASPECT_TYPENAME_OID     , sizeof(u_int)    },
+    {ASPECT_TYPENAME_BIT     , sizeof(unsigned char)	},
+    {ASPECT_TYPENAME_OID     , sizeof(unsigned int)    },
     {ASPECT_TYPENAME_VECT    , sizeof(vector_t)	},
     {ASPECT_TYPENAME_HASH    , sizeof(hash_t)  	},
     {ASPECT_TYPENAME_LIST    , sizeof(list_t)  	},
@@ -68,10 +68,10 @@ int			aspect_type_simple(int typeid)
  */
 aspectype_t		*aspect_type_copy(aspectype_t	*type, 
 					  unsigned int	off, 
-					  u_char	isptr, 
-					  u_int		elemnbr, 
+					  unsigned char	isptr, 
+					  unsigned int		elemnbr, 
 					  char		*fieldname,
-					  u_int		*dims)
+					  unsigned int		*dims)
 {
   aspectype_t		*newtype;
   
@@ -100,8 +100,8 @@ aspectype_t		*aspect_type_copy(aspectype_t	*type,
 aspectype_t		*aspect_type_copy_by_name(aspectype_t   *type, 
 						  char		*name, 
 						  hash_t	*fieldshash,
-						  u_int		curdepth,
-						  u_int		maxdepth)
+						  unsigned int		curdepth,
+						  unsigned int		maxdepth)
 {
   aspectype_t		*newtype;
   aspectype_t		*result;
@@ -213,15 +213,15 @@ int		aspect_type_addfield(aspectype_t *parent,
  * @param dimnbr Pointer on dimension number integer to be filled
  * @return NULL on error or dimension array on succesfull allocation
 */
-static u_int	*aspect_type_getdims(char *typename, int *dimnbr)
+static unsigned int	*aspect_type_getdims(char *typename, int *dimnbr)
 {
   char		*idxname;
   char		*idxend;
-  u_int		*dims;
+  unsigned int		*dims;
   char		*realtypename;
   int		idx;
   int		curidx;
-  u_int		sz;
+  unsigned int		sz;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -300,10 +300,10 @@ int			aspect_type_find_union_size(aspectype_t *utype)
  * @param fieldnbr Number of fields for type
  * @return Created type structure
  */
-aspectype_t		*aspect_type_create(u_char isunion,
+aspectype_t		*aspect_type_create(unsigned char isunion,
 					    char *label, 
 					    char **fields, 
-					    u_int fieldnbr)
+					    unsigned int fieldnbr)
 {
   aspectype_t		*newtype;      
   aspectype_t		*childtype;
@@ -313,14 +313,14 @@ aspectype_t		*aspect_type_create(u_char isunion,
   char			*fieldname;
   char			*typename;
   char			*fieldsz;
-  u_int			curoff, off;
+  unsigned int			curoff, off;
   char			isptr;
   int			dimnbr;
-  u_int			*dims;
-  u_int			idx;
-  u_int			size;
+  unsigned int			*dims;
+  unsigned int			idx;
+  unsigned int			size;
   hash_t		fields_hash;
-  u_char		updatetype;
+  unsigned char		updatetype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -446,7 +446,7 @@ aspectype_t		*aspect_type_create(u_char isunion,
 		{
 		  isptr = 1;
 		  childtype = newtype;
-		  off = sizeof(u_long);
+		  off = sizeof(unsigned long);
 		}
 	      
 	      /* If we point on a unknown type, mark is as unknown */
@@ -468,7 +468,7 @@ aspectype_t		*aspect_type_create(u_char isunion,
 		}
 	    }
 	  else
-	    off = (isptr ? sizeof(u_long) : childtype->size);
+	    off = (isptr ? sizeof(unsigned long) : childtype->size);
 	}
       
       /* Copy an existing base type for this child and change type offset */
@@ -539,10 +539,10 @@ int		aspect_type_register_real(char	      *label,
  * @param fieldnbr Number of fields for registered type
  * @return 0 on success and -1 on error
  */
-int		aspect_type_register(u_char isunion,
+int		aspect_type_register(unsigned char isunion,
 				     char *label, 
 				     char **fields, 
-				     u_int fieldnbr)
+				     unsigned int fieldnbr)
 {
   aspectype_t	*ret;
   int 		iret;
@@ -567,7 +567,7 @@ int		aspect_type_register(u_char isunion,
  * @param info Internal typeinfo structure related to newly created type
  * @return 0 on success and -1 on error
  */
-static int	aspect_basetype_create(u_int type, typeinfo_t *info)
+static int	aspect_basetype_create(unsigned int type, typeinfo_t *info)
 {
   aspectype_t	*newtype;
   char		hashname[BUFSIZ];
@@ -598,8 +598,8 @@ static int	aspect_basetype_create(u_int type, typeinfo_t *info)
 int		aspect_basetypes_create()
 {
   int		index;
-  u_int		basesize;
-  static u_int	done = 0;
+  unsigned int		basesize;
+  static unsigned int	done = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (done)
@@ -687,7 +687,7 @@ typeinfo_t	*aspect_basetype_get(unsigned int *nbr)
  * @param size Total size for new base type
  * @return -1 on error and 0 on success
  */
-int		aspect_basetype_register(char *name, u_int size)
+int		aspect_basetype_register(char *name, unsigned int size)
 {
   typeinfo_t	info;
   aspectype_t	*exist;
@@ -725,7 +725,7 @@ int		aspect_basetype_register(char *name, u_int size)
  * @param type Requested type identifier
  * @return Name associated to type identifier
  */
-char		*aspect_typename_get(u_int type)
+char		*aspect_typename_get(unsigned int type)
 {
   if (type >= aspect_type_nbr)
     return (NULL);
@@ -737,7 +737,7 @@ char		*aspect_typename_get(u_int type)
  * @param type Requested type identifier
  * @return Size of requested type
  */
-u_int		aspect_typesize_get(u_int type)
+unsigned int		aspect_typesize_get(unsigned int type)
 {
   if (type >= aspect_type_nbr)
     return (0);

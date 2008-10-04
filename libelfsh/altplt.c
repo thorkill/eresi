@@ -27,14 +27,14 @@
  * @return Success (0) or Error (-1).
  */
 int		elfsh_altplt_firstent(elfshsect_t	*enew, 
-				      u_int		*off,
+				      unsigned int		*off,
 				      elfshsect_t	*symtab, 
 				      elfshobj_t	*file, 
 				      elfshsect_t	*extplt,
 				      elfshsect_t	*plt,
 				      uint32_t		diff)
 {
-  u_int		entsz;
+  unsigned int		entsz;
   elfsh_Sym	newsym;
   elfsh_Sym	*sym;
   eresi_Addr	addr;
@@ -96,7 +96,7 @@ int		elfsh_altplt_firstent(elfshsect_t	*enew,
  * @param mod Always inject sections with size being a multiple of mod.
  * @return Success (0) or Error (-1).
  */
-int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
+int		elfsh_relink_plt(elfshobj_t *file, unsigned int mod)
 {
   elfshsect_t	*got;
   elfshsect_t   *plt;
@@ -110,16 +110,16 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   elfsh_Sym	*sym;
   elfsh_Sym	newsym;
   char		buf[BUFSIZ];
-  u_int		off;
-  u_int		entsz;
+  unsigned int		off;
+  unsigned int		entsz;
   int		mode;
   eresi_Addr	addr;
   char		*prologdata;
-  u_int		sz;
+  unsigned int		sz;
   char		*name;
-  u_char	ostype;
+  unsigned char	ostype;
   eresi_Addr	diff;
-  u_int		extplt_size;
+  unsigned int		extplt_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -540,7 +540,7 @@ int		elfsh_build_plt(elfshobj_t *file)
  * @param modulo Always inject sections with a size being a multiple of mod.
  * @return Success (0) or Error (-1).
  */
-int		elfsh_copy_plt(elfshobj_t *file, u_int modulo)
+int		elfsh_copy_plt(elfshobj_t *file, unsigned int modulo)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -16,7 +16,7 @@
 char		*revm_fetch_sht_typedesc(elfsh_Word typenum)
 {
   char		*ret = NULL;
-  u_int		index;
+  unsigned int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -40,14 +40,14 @@ char		*revm_fetch_sht_typedesc(elfsh_Word typenum)
  * @param rtflag
  * @return
  */
-int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
+int		revm_sht_print(elfsh_Shdr *shdr, unsigned int num, char rtflag)
 {
   elfshsect_t	*cur;
   regex_t	*tmp;
   char		*name;
   char		*type;
   char		buff[BUFSIZ];
-  u_int		index;
+  unsigned int		index;
   elfsh_Word   	typenum;
   char		type_unk[ERESI_MEANING + 1];
   eresi_Addr	addr;
@@ -66,7 +66,7 @@ int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
       type = revm_fetch_sht_typedesc(typenum);
 
       if (!type)
-	type = revm_build_unknown(type_unk, "type", (u_long) typenum);
+	type = revm_build_unknown(type_unk, "type", (unsigned long) typenum);
 
       if (!type)
 	type = ELFSH_NULL_STRING;

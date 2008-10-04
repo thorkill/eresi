@@ -18,8 +18,8 @@
 int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 {
 	elfshsect_t	*actual;
-	u_int		index;
-	u_char	*data;
+	unsigned int		index;
+	unsigned char	*data;
 	char		*sctname;
 
 	PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -33,23 +33,23 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 		if (sctname == NULL)
 			sctname = "UNK";
 		data = elfsh_get_raw(actual);
-		if (data == (u_char *)NULL)
-			data = (u_char *)"\xFF\xFF\xFF";
+		if (data == (unsigned char *)NULL)
+			data = (unsigned char *)"\xFF\xFF\xFF";
 		printf(" [%03u:%03u] %-15s HDRNAM: %-15s BYTES[%02X %02X %02X] P(%8p) "
 				"A(%8p) N(%8p) SCTIDX(%03u) HDRFOFF:%010u SZ:%010u VADDR:%08X \n",
 				index, actual->index, 
 				(actual->name != NULL ? actual->name : "UNK"),
 				sctname,
-				(u_int) data[0],
-				(u_int) data[1],
-				(u_int) data[2],
+				(unsigned int) data[0],
+				(unsigned int) data[1],
+				(unsigned int) data[2],
 				actual->prev,
 				actual,
 				actual->next,
 				actual->index,
-				(u_int) actual->shdr->sh_offset,
-				(u_int) actual->shdr->sh_size,
-				(u_int) actual->shdr->sh_addr);
+				(unsigned int) actual->shdr->sh_offset,
+				(unsigned int) actual->shdr->sh_size,
+				(unsigned int) actual->shdr->sh_addr);
 	}
 	puts(" [EOL]\n");
 	fflush(stdout);

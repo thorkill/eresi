@@ -17,7 +17,7 @@
  * @return Length of instruction.
  */
 
-int op_xchg_eax_reg(asm_instr *new, u_char *opcode, u_int len, 
+int op_xchg_eax_reg(asm_instr *new, unsigned char *opcode, unsigned int len, 
                     asm_processor *proc)
 {
   new->instr = ASM_XCHG;

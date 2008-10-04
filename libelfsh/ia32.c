@@ -15,10 +15,10 @@
 #define ELFSH_IA32_ARG_MAXSIZE 	512
 #define ELFSH_IA32_PROLOG_MSTEP 3
 static asm_processor	proc;
-static u_char		proc_init = 0;
+static unsigned char		proc_init = 0;
 static int      	args[ELFSH_TRACE_MAX_ARGS+1];
-static u_int		arg_count;
-static u_int		max_arg_offset;
+static unsigned int		arg_count;
+static unsigned int		max_arg_offset;
 
 #define ELFSH_IA32_PUSH_REGBASE(_i)			\
 (_i.instr == ASM_PUSH 					\
@@ -53,7 +53,7 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
   eresi_Addr	gotent;
   elfsh_Rel	r;
   char		*ent;
-  u_int		relentsz;
+  unsigned int		relentsz;
   elfshsect_t	*plt;
   elfshsect_t	*got;
   eresi_Addr	diff;
@@ -120,16 +120,16 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
 					     elfshsect_t  *plt, 
 					     uint32_t     diff, 
-					     u_int	     off)
+					     unsigned int	     off)
 {
   char		*pltent;
   uint32_t	*got;
   elfshsect_t	*relplt;
   elfshsect_t	*realplt;
-  u_int		resoff;
+  unsigned int		resoff;
   int		entsz;
-  u_int32_t	*align;
-  u_int		is_extplt;
+  uint32_t	*align;
+  unsigned int		is_extplt;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -266,7 +266,7 @@ int		elfsh_encodeplt1_ia32(elfshobj_t *file,
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
 				     elfshsect_t *plt, 
 				     eresi_Addr diff, 
-				     u_int      off)
+				     unsigned int      off)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (elfsh_reencode_pltentry_ia32(file, plt, diff, off) < 0)
@@ -293,8 +293,8 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   elfshsect_t		*hooks;
   elfshsect_t		*source;
   asm_instr		instrs[5];
-  u_char		buff[32];
-  u_int			ret, len;
+  unsigned char		buff[32];
+  unsigned int			ret, len;
   int			off;
   int			idx;
   char			*hookbuf;
@@ -623,9 +623,9 @@ static int    elfsh_ac_is_arg_esp(asm_operand *op, int sub)
  */
 static int    elfsh_ac_largs_add(int add)
 {
-  u_int                 index;
+  unsigned int                 index;
 #if __DEBUG_ARG_COUNT__
-  u_int			z;
+  unsigned int			z;
 #endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -712,7 +712,7 @@ Used with Forward analysis
 TODO: Keep it ?
 static eresi_Addr elfsh_ac_foundcallto(elfshobj_t *file, eresi_Addr vaddr, eresi_Addr *before)
 {
-  u_int 	index;
+  unsigned int 	index;
   asm_instr   	i;
   int		ret;
   elfsh_SAddr	foffset;
@@ -744,7 +744,7 @@ static eresi_Addr elfsh_ac_foundcallto(elfshobj_t *file, eresi_Addr vaddr, eresi
   for (index = 0; index < len; index += ret)
     {
     // Read an instruction 
-      if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
+      if ((ret = asm_read_instr(&i, (unsigned char *) (data + index), len -  index, &proc)))
 	{
 	// Search a call to our address (near call) 
 	  if (i.instr == ASM_CALL)
@@ -806,7 +806,7 @@ static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, eresi_Addr vaddr)
  * @param vaddr
  * @return
  */
-int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Addr vaddr)
+int           	*elfsh_args_count_ia32(elfshobj_t *file, unsigned int foffset, eresi_Addr vaddr)
 {
   int         	index;
   int         	ret;
@@ -819,8 +819,8 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
   asm_instr   	i;
   char      	*data;
   int		op;
-  u_char	prolog_setup = 0;
-  u_int		icount, regicount;
+  unsigned char	prolog_setup = 0;
+  unsigned int		icount, regicount;
   int		regbased = -1;
   int		next_regbased = -1;
 
@@ -856,7 +856,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
   for (icount = index = 0; index < asm_len && data; index += ret, icount++)
     {
       /* Read an instruction */
-      if ((ret = asm_read_instr(&i, (u_char *) (data + index), asm_len -  index, &proc)) > 0)
+      if ((ret = asm_read_instr(&i, (unsigned char *) (data + index), asm_len -  index, &proc)) > 0)
 	{
 	  /* After 10 instruction, 
 	     no prolog anlysis should be done */
@@ -1070,7 +1070,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
       for (index = 0; index < len && data ; index += ret)
 	{
 	  // Read an instruction 
-	  if ((ret = asm_read_instr(&i, (u_char *) (data + index), len -  index, &proc)))
+	  if ((ret = asm_read_instr(&i, (unsigned char *) (data + index), len -  index, &proc)))
 	    {
 	      // We don't want to read another function 
 	      if (i.instr == ASM_MOV && i.op[0].baser == ASM_REG_ESP)

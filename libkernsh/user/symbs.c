@@ -20,7 +20,7 @@
 int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *symbs;
   int          (*fct)();
 
@@ -53,7 +53,7 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
 int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *symbs;
   int          (*fct)();
 

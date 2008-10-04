@@ -10,7 +10,7 @@
 */
 
 
-int op_out_ref_ib_al(asm_instr *new, u_char *opcode, u_int len,
+int op_out_ref_ib_al(asm_instr *new, unsigned char *opcode, unsigned int len,
                      asm_processor *proc)
 {
   new->instr = ASM_OUT;

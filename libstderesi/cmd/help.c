@@ -14,7 +14,7 @@
 int		cmd_modhelp()
 {
   revmmod_t	*mod;
-  u_int		id;
+  unsigned int		id;
   char		buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

@@ -78,11 +78,11 @@ int		e2dbg_default_breakhandler(elfshobj_t   *null,
 
 
 /* Register a next frame-pointer handler */
-int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype, 
-					  u_char ostype, void *fct)
+int		e2dbg_register_nextfphook(unsigned char archtype, unsigned char hosttype, 
+					  unsigned char ostype, void *fct)
 {
   vector_t	*nextfp;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
@@ -98,7 +98,7 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
 		      "Invalid Operating System type", -1);
 
   //hook_nextfp[archtype][hosttype][ostype] = fct;
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -109,11 +109,11 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
 
 
 /* Register a next return-addr handler */
-int		e2dbg_register_getrethook(u_char archtype, u_char hosttype, 
-					  u_char ostype, void *fct)
+int		e2dbg_register_getrethook(unsigned char archtype, unsigned char hosttype, 
+					  unsigned char ostype, void *fct)
 {
   vector_t	*getret;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getret = aspect_vector_get(E2DBG_HOOK_GETRET);
@@ -128,7 +128,7 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -137,11 +137,11 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
 }
 
 /* Register an SETREGS injection handler */
-int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
+int	e2dbg_register_sregshook(unsigned char archtype, unsigned char hosttype, unsigned char ostype,
 				 void *fct)
 {
   vector_t	*setregs;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
@@ -156,7 +156,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -165,11 +165,11 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
 }
 
 /* Register an SETREGS injection handler */
-int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostype,
+int      e2dbg_register_gregshook(unsigned char archtype, unsigned char hosttype, unsigned char ostype,
 				 void *fct)
 {
   vector_t	*getregs;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
@@ -184,7 +184,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -193,11 +193,11 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
 }
 
 /* Register an GETPC injection handler */
-int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostype,
+int      e2dbg_register_getpchook(unsigned char archtype, unsigned char hosttype, unsigned char ostype,
 				  void *fct)
 {
   vector_t	*getpc;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
@@ -212,7 +212,7 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -221,11 +221,11 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
 }
 
 /* Register an GETPC injection handler */
-int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostype,
+int      e2dbg_register_getfphook(unsigned char archtype, unsigned char hosttype, unsigned char ostype,
 				  void *fct)
 {
   vector_t	*getfp;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
@@ -240,7 +240,7 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -249,11 +249,11 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
 }
 
 /* Register an SETSTEP injection handler */
-int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ostype,
+int      e2dbg_register_setstephook(unsigned char archtype, unsigned char hosttype, unsigned char ostype,
 				    void *fct)
 {
   vector_t	*setstep;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
@@ -268,7 +268,7 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -277,11 +277,11 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
 }
 
 /* Register an RESETSTEP injection handler */
-int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char ostype,
+int      e2dbg_register_resetstephook(unsigned char archtype, unsigned char hosttype, unsigned char ostype,
 				      void *fct)
 {
   vector_t	*resetstep;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
@@ -296,7 +296,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
-  dim    = alloca(sizeof(u_int) * 4);
+  dim    = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -308,11 +308,11 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
 /**
  * Register a breakpoint redirection handler 
  */
-int		e2dbg_register_breakhook(u_char archtype, u_char hosttype, 
-					 u_char ostype, void *fct)
+int		e2dbg_register_breakhook(unsigned char archtype, unsigned char hosttype, 
+					 unsigned char ostype, void *fct)
 {
   vector_t	*breakp;
-  u_int		*dim;
+  unsigned int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   breakp = aspect_vector_get(E2DBG_HOOK_BREAK);
@@ -327,7 +327,7 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  dim = alloca(sizeof(u_int) * 4);
+  dim = alloca(sizeof(unsigned int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
@@ -341,13 +341,13 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
 /* Initialize libe2dbg.hook vectors */
 static int	e2dbg_register_vectors()
 {
-  u_int		*dims;
+  unsigned int		*dims;
   char		**strdims;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* All hooks have the same dimensions here */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
   dims[0]    = ELFSH_ARCHNUM;
   dims[1]    = E2DBG_HOSTNUM;
@@ -741,10 +741,10 @@ void		e2dbg_setup_hooks()
 /* Call the getregs hook */
 int		  e2dbg_getregs()
 {
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
+  unsigned int		dim[3];
   vector_t	*getregs;
   void		(*fct)();
 
@@ -775,10 +775,10 @@ int		  e2dbg_getregs()
 /* Call the setregs hook */
 int		  e2dbg_setregs()
 {
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
+  unsigned int		dim[3];
   vector_t	*setregs;
   void		(*fct)();
 
@@ -809,10 +809,10 @@ int		  e2dbg_setregs()
 eresi_Addr*     e2dbg_getpc()
 {
   eresi_Addr	*pc;
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
+  unsigned int		dim[3];
   vector_t	*getpc;
   eresi_Addr	*(*fct)();
 
@@ -845,10 +845,10 @@ eresi_Addr*     e2dbg_getpc()
 eresi_Addr*     e2dbg_getfp()
 {
   eresi_Addr	*fp;
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
+  unsigned int		dim[3];
   vector_t	*getfp;
   eresi_Addr	*(*fct)();
 
@@ -880,10 +880,10 @@ eresi_Addr*     e2dbg_getfp()
 /* Call the getregs hook */
 int		  e2dbg_setstep()
 {
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
+  unsigned int		dim[3];
   vector_t	*setstep;
   void		(*fct)();
 
@@ -911,10 +911,10 @@ int		  e2dbg_setstep()
 /* Call the getregs hook */
 int		  e2dbg_resetstep()
 {
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
-  u_int		dim[3];
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
+  unsigned int		dim[3];
   vector_t	*resetstep;
   void		(*fct)();
 
@@ -944,11 +944,11 @@ int		  e2dbg_resetstep()
 /* Call the getregs hook */
 eresi_Addr	e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr)
 {
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
   int		ret;
-  u_int		dim[3];
+  unsigned int		dim[3];
   vector_t	*nextfp;
   int		(*fct)(eresi_Addr addr);
 
@@ -981,11 +981,11 @@ eresi_Addr	e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr)
 /* Call the getregs hook */
 eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
 {
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
   int		ret;
-  u_int		dim[3];
+  unsigned int		dim[3];
   vector_t	*getret;
   int		(*fct)(eresi_Addr addr);
 
@@ -1023,12 +1023,12 @@ eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
 int		  e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp)
 {
   vector_t	*breakh;
-  u_char        archtype;
-  u_char        hosttype;
-  u_char        ostype;
+  unsigned char        archtype;
+  unsigned char        hosttype;
+  unsigned char        ostype;
   int		ret;
   int		(*fct)(elfshobj_t *file, elfshbp_t *bp);
-  u_int		dim[3];
+  unsigned int		dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   breakh = aspect_vector_get(E2DBG_HOOK_BREAK);

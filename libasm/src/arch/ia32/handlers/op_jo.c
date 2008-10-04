@@ -12,7 +12,7 @@
  * <instruction func="op_jo" opcode="0x70"/>
  */
 
-int  op_jo(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int  op_jo(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

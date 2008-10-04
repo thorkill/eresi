@@ -27,7 +27,7 @@ int 		elfsh_extplt_expand_versym(elfshobj_t *file, elfshsect_t *versym, char *na
   elfshobj_t	*sym_file;
   char		*filename;
   size_t	len;
-  u_int		index;
+  unsigned int		index;
   elfsh_Half	*ent;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -104,7 +104,7 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
   elfsh_Word	index;
   elfsh_Word	symindex;
   void		*data;
-  u_char	set = 0;
+  unsigned char	set = 0;
   elfsh_Sym	*ret;
   int		size = 0;
   char		*actual;
@@ -404,7 +404,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
  */
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)	
 {
-  u_int		sz;
+  unsigned int		sz;
   elfshsect_t	*relplt;
   elfshsect_t	*extplt;
   elfshsect_t	*altgot;
@@ -412,9 +412,9 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
   elfshsect_t	*dynstr;
   elfshsect_t	*altversym = NULL;
   elfshsect_t	*althash;
-  u_int		relentsz;
+  unsigned int		relentsz;
   elfsh_Sym	sym;
-  u_int		len;
+  unsigned int		len;
   elfsh_Dyn	*dynent;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

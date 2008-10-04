@@ -15,7 +15,7 @@
  * @param proc Pointer to processor structure.
  * @return Length of disassembled instruction.
  */
-int op_aad(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_aad(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

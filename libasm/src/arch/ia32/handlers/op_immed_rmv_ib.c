@@ -9,7 +9,7 @@
   <instruction func="op_immed_rmv_ib" opcode="0x83"/>
 */
 
-int op_immed_rmv_ib(asm_instr *new, u_char *opcode, u_int len,
+int op_immed_rmv_ib(asm_instr *new, unsigned char *opcode, unsigned int len,
                     asm_processor *proc)
 {
   int                   olen;

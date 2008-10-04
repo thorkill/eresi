@@ -12,7 +12,7 @@
 #include <libasm.h>
 
 /**
- * @fn void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, u_char *buf)
+ * @fn void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, unsigned char *buf)
  * @brief Convert 'type r' instruction.
  *
  * Fill structure for 'type r' MIPS instruction.
@@ -21,9 +21,9 @@
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_r(struct s_mips_decode_reg	*opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
-  u_int32_t	converted;
+  uint32_t	converted;
   
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
@@ -43,7 +43,7 @@ void	mips_convert_format_r(struct s_mips_decode_reg	*opcode,
 }
 
 /**
- * @fn void    mips_convert_format_i(struct s_mips_decode_imm *opcode, u_char *buf)
+ * @fn void    mips_convert_format_i(struct s_mips_decode_imm *opcode, unsigned char *buf)
  * @brief Convert 'type i' instruction.
  *
  * Fill structure for 'type i' MIPS instruction.
@@ -52,9 +52,9 @@ void	mips_convert_format_r(struct s_mips_decode_reg	*opcode,
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
-  u_int32_t	converted;
+  uint32_t	converted;
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
@@ -72,7 +72,7 @@ void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
 }
 
 /**
- * @fn void    mips_convert_format_j(struct s_mips_decode_jump *opcode, u_char *buf)
+ * @fn void    mips_convert_format_j(struct s_mips_decode_jump *opcode, unsigned char *buf)
  * @brief Convert 'type j' instruction.
  *
  * Fill structure for 'type j' MIPS instruction.
@@ -81,10 +81,10 @@ void	mips_convert_format_i(struct s_mips_decode_imm *opcode,
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
 
-  u_int32_t	converted;
+  uint32_t	converted;
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
@@ -100,7 +100,7 @@ void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
 }
 
 /**
- * @fn void    mips_convert_format_t(struct s_mips_decode_trap *opcode, u_char *buf)
+ * @fn void    mips_convert_format_t(struct s_mips_decode_trap *opcode, unsigned char *buf)
  * @brief Convert 'trap' instruction.
  * 
  * Fill structure for 'trap' MIPS instruction.
@@ -109,9 +109,9 @@ void	mips_convert_format_j(struct s_mips_decode_jump *opcode,
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_t(struct s_mips_decode_trap *opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
-  u_int32_t	converted;
+  uint32_t	converted;
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
@@ -130,7 +130,7 @@ void	mips_convert_format_t(struct s_mips_decode_trap *opcode,
 }
 
 /**
- * @fn void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, u_char *buf)
+ * @fn void    mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode, unsigned char *buf)
  * @brief Convert instrction from second coprocesor
  *
  * Fill structure for 'second coprocesor' MIPS instruction.
@@ -139,9 +139,9 @@ void	mips_convert_format_t(struct s_mips_decode_trap *opcode,
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
-  u_int32_t	converted;
+  uint32_t	converted;
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
@@ -161,7 +161,7 @@ void	mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode,
 }
 
 /**
- * @fn void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, u_char *buf)
+ * @fn void    mips_convert_format_mov(struct s_mips_decode_mov *opcode, unsigned char *buf)
  * @brief Convert *mov* instruction.
  *
  * Fill structure for 'mov' MIPS instruction.
@@ -170,9 +170,9 @@ void	mips_convert_format_cop2(struct s_mips_decode_cop2 *opcode,
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_mov(struct s_mips_decode_mov *opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
-  u_int32_t	converted;
+  uint32_t	converted;
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);
@@ -194,7 +194,7 @@ void	mips_convert_format_mov(struct s_mips_decode_mov *opcode,
 }
 
 /**
- * @fn void    mips_convert_format_cop1x(struct s_mips_decode_mov *opcode, u_char *buf)
+ * @fn void    mips_convert_format_cop1x(struct s_mips_decode_mov *opcode, unsigned char *buf)
  * @brief Convert COP1X instruction.
  *
  * Fill structure for MIPS COP1X instruction.
@@ -203,9 +203,9 @@ void	mips_convert_format_mov(struct s_mips_decode_mov *opcode,
  * @param buf Pointer to data -> instruction.
  */
 void	mips_convert_format_cop1x(struct s_mips_decode_cop1x *opcode,
-			      u_char *buf)
+			      unsigned char *buf)
 {
-  u_int32_t	converted;
+  uint32_t	converted;
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy(opcode, buf, 4);

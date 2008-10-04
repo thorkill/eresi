@@ -25,10 +25,10 @@
  * @return Length of instruction or -1 error.
  */
 
-int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+int     op_386sp(asm_instr *ins, unsigned char *buf, unsigned int len, asm_processor *proc)
 {
   int        opcode;
-  int           (*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
+  int           (*fetch)(asm_instr *, unsigned char *, unsigned int, asm_processor *);
 
   // XXX: Use asm_set_error to set error code to LIBASM_ERROR_TOOSHORT
   if (len < 2)

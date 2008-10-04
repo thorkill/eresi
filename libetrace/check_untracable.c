@@ -14,7 +14,7 @@
 
 /* Hash table of untracable functions */
 hash_t		traces_untracable;
-u_char		untracable_ostype;
+unsigned char		untracable_ostype;
 
 
 /**
@@ -39,7 +39,7 @@ static int		etrace_add_untracable(char *name)
  */
 int		etrace_untracable(elfshobj_t *file, char *name)
 {
-  u_char		ostype;
+  unsigned char		ostype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

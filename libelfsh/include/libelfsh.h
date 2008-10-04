@@ -395,7 +395,7 @@ typedef struct	s_redir
 #define		ELFSH_REDIR_CFLOW	0
 #define		ELFSH_REDIR_ALTPLT	1
 #define		ELFSH_REDIR_ALTGOT	2
-  u_char	type;			       /* Redirection type                */
+  unsigned char	type;			       /* Redirection type                */
 
 #define		ERESI_ORIG_FUNC	        0
 #define		ELFSH_HOOK_FUNC		1
@@ -454,17 +454,17 @@ typedef struct        s_hashdef
  */
 typedef struct		s_rel
 {
-  u_int			idx_src;
-  u_int			off_src;
-  u_int			idx_dst;
-  u_int			off_dst;
+  unsigned int			idx_src;
+  unsigned int			off_src;
+  unsigned int			idx_dst;
+  unsigned int			off_dst;
 
 /* The dword is to be patched depending on section's base */
 #define	ELFSH_RELOC_SECTBASE		0           
 
 /* This entry is a false positive : do not relocate */
 #define	ELFSH_RELOC_FP			0xFFFFFFFF	
-  u_int			type;
+  unsigned int			type;
 }			elfshrel_t;
 
 
@@ -510,11 +510,11 @@ struct			s_sect
 
   /* Filled at 'unrelocation' : ELFsh private relocs fmt only used in experimental features */
   elfshrel_t		*rel;	   /*! ELFsh private relocation table for this section	    */
-  u_int			srcref;	   /*! Number of absolute reference FROM this section : sizeof(rel)  */
-  u_int			dstref;	   /*! Number of absolute reference TO this section	    */
+  unsigned int			srcref;	   /*! Number of absolute reference FROM this section : sizeof(rel)  */
+  unsigned int			dstref;	   /*! Number of absolute reference TO this section	    */
 
   /* Changed during extension */
-  u_int			curend;	   /*! Current real end of section : we save room when possible */
+  unsigned int			curend;	   /*! Current real end of section : we save room when possible */
 
 };
 
@@ -790,7 +790,7 @@ struct		 s_obj
   int		 type;			/* ELFSH_OBJECT_CORE, ELFSH_OBJECT_SHARED, ELFSH_OBJECT_RELOC or ELFSH_OBJECT_EXEC */
   int		 rights;		/* 0 = RO, 1 = WR */
   time_t	 loadtime;		/* Time of Loading */
-  u_int		 id;			/* Object ID */
+  unsigned int		 id;			/* Object ID */
 
   char		 running;		/* !< @brief Is the process running ? */
   char		 scanned;		/* !< @brief Has the object already been block scanned ? */
@@ -805,7 +805,7 @@ struct		 s_obj
 
 #define		 ELFSH_MAXREL	1000	/* !< @brief Maximum number of injected ET_REL, change it ! */
   struct s_obj	 *listrel[ELFSH_MAXREL];/* !< @brief Array of injected ET_REL in this object */
-  u_int		 nbrel;			/* !< @brief Number of injected ET_REL in this object */
+  unsigned int		 nbrel;			/* !< @brief Number of injected ET_REL in this object */
   
   char		 buff[ERESI_MEANING];	/* !< @brief Internal buffer, sometimes used to avoid a malloc */
   const char	 *error;		/* !< @brief Last error string */
@@ -858,8 +858,8 @@ typedef struct	s_libstate
 #define		LIBELFSH_MODE_UNKNOWN	0 
 #define		LIBELFSH_MODE_STATIC	1
 #define		LIBELFSH_MODE_E2DBG	2
-  u_char	mode;		 /* The current working mode (ondisk/memory) */
-  u_char	indebug;	 /* 1 when inside the debugger */
+  unsigned char	mode;		 /* The current working mode (ondisk/memory) */
+  unsigned char	indebug;	 /* 1 when inside the debugger */
 }		libworld_t;
 
 
@@ -873,9 +873,9 @@ typedef struct	s_bp
   /* XXX: To comment ! */
 #define		UNDEF	0
 #define		INSTR	1
-  u_char	type;
+  unsigned char	type;
 
-  u_char	savedinstr[16];	/* !< @brief Saved bytes at breakpoints addr */
+  unsigned char	savedinstr[16];	/* !< @brief Saved bytes at breakpoints addr */
   char		*cmd[10];	/* !< @brief Commands to be executed on hit */
   char		cmdnbr;		/* !< @brief Next available cmd slot */
   eresi_Addr	addr;		/* !< @brief Address of breakpoint */
@@ -886,7 +886,7 @@ typedef struct	s_bp
 
 #define	ELFSH_BP_BREAK	0	/* !< @brief Classical breakpoint */
 #define	ELFSH_BP_WATCH	1	/* !< @brief Do not get back to debugger */
-  u_char	flags;		/* !< @brief Breakpoint flags */
+  unsigned char	flags;		/* !< @brief Breakpoint flags */
 }		elfshbp_t;
 
 /* Extern data */
@@ -907,7 +907,7 @@ extern libworld_t	dbgworld;
  */
 
 /* dynamic.c */
-elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num);
+elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, unsigned int *num);
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_type(elfshobj_t *file, elfsh_Word type);
 elfsh_Sword	elfsh_get_dynentry_type(elfsh_Dyn *d);
 int		elfsh_set_dynentry_type(elfsh_Dyn *d, eresi_Addr tag);
@@ -916,7 +916,7 @@ int		elfsh_set_dynentry_val(elfsh_Dyn *d, eresi_Addr val);
 elfsh_Dyn	*elfsh_get_dynamic_entry_by_index(elfsh_Dyn *dynamic, eresi_Addr index);
 char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent);
 int		elfsh_endianize_dynamic(elfshsect_t *_new);
-int		elfsh_shift_dynamic(elfshobj_t *file, u_int size);
+int		elfsh_shift_dynamic(elfshobj_t *file, unsigned int size);
 int		elfsh_get_dynent_by_type(elfshobj_t *robj, elfsh_Dyn *data, elfsh_Word real_index);
 
 /* symbol.c */
@@ -965,14 +965,14 @@ elfsh_Word      elfsh_get_symbol_size(elfsh_Sym *s);
 int		elfsh_set_symbol_size(elfsh_Sym *s, eresi_Addr size);
 eresi_Addr      elfsh_get_symbol_value(elfsh_Sym *s);
 int		elfsh_set_symbol_value(elfsh_Sym *s, eresi_Addr value);
-u_char		elfsh_get_symbol_bind(elfsh_Sym *s);
-u_char		elfsh_set_symbol_bind(elfsh_Sym *s, eresi_Addr opt);
-u_char		elfsh_get_symbol_type(elfsh_Sym *s);
-u_char		elfsh_set_symbol_type(elfsh_Sym *s, eresi_Addr type);
-u_char		elfsh_get_symbol_visibility(elfsh_Sym *s);
-u_int		elfsh_set_symbol_visibility(elfsh_Sym *s, eresi_Addr vis);
-u_int		elfsh_get_symbol_link(elfsh_Sym *s);
-u_int		elfsh_set_symbol_link(elfsh_Sym *s, eresi_Addr val);
+unsigned char		elfsh_get_symbol_bind(elfsh_Sym *s);
+unsigned char		elfsh_set_symbol_bind(elfsh_Sym *s, eresi_Addr opt);
+unsigned char		elfsh_get_symbol_type(elfsh_Sym *s);
+unsigned char		elfsh_set_symbol_type(elfsh_Sym *s, eresi_Addr type);
+unsigned char		elfsh_get_symbol_visibility(elfsh_Sym *s);
+unsigned int		elfsh_set_symbol_visibility(elfsh_Sym *s, eresi_Addr vis);
+unsigned int		elfsh_get_symbol_link(elfsh_Sym *s);
+unsigned int		elfsh_set_symbol_link(elfsh_Sym *s, eresi_Addr val);
 elfsh_Sym	*elfsh_get_symbol_by_index(elfsh_Sym *symtab, eresi_Addr index);
 elfsh_Sym	*elfsh_get_metasym_by_name(elfshobj_t *file, char *name);
 elfsh_Sym       *elfsh_get_metasym_by_value(elfshobj_t *file, eresi_Addr vaddr, int *off, int mode);
@@ -1011,13 +1011,13 @@ int             elfsh_set_shtnbr(elfsh_Ehdr *e, eresi_Addr num);
 int             elfsh_set_phtoff(elfsh_Ehdr *e, eresi_Addr num);
 int		elfsh_set_phtnbr(elfsh_Ehdr *e, eresi_Addr num);
 int             elfsh_set_entrypoint(elfsh_Ehdr *e, eresi_Addr addr);
-u_int		elfsh_set_arch(elfsh_Ehdr *e, eresi_Addr val);
-u_int		elfsh_set_objtype(elfsh_Ehdr *e, eresi_Addr val);
-u_int		elfsh_set_shstrtab_index(elfsh_Ehdr *e, eresi_Addr val);
-u_int		elfsh_set_version(elfsh_Ehdr *e, eresi_Addr val);
-u_int		elfsh_set_ehsize(elfsh_Ehdr *e, eresi_Addr val);
-u_int		elfsh_set_phentsize(elfsh_Ehdr *e, eresi_Addr val);
-u_int		elfsh_set_shentsize(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_arch(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_objtype(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_shstrtab_index(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_version(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_ehsize(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_phentsize(elfsh_Ehdr *e, eresi_Addr val);
+unsigned int		elfsh_set_shentsize(elfsh_Ehdr *e, eresi_Addr val);
 int		elfsh_get_encoding(elfsh_Ehdr *hdr);
 int		elfsh_set_encoding(elfsh_Ehdr *hdr, eresi_Addr type);
 int		elfsh_set_flags(elfsh_Ehdr *hdr, eresi_Addr flags);
@@ -1056,7 +1056,7 @@ char            elfsh_get_pax_segmexec(elfsh_Ehdr *hdr);
 void		*elfsh_get_stab(elfshobj_t *file, int *num);
 eresi_Addr	elfsh_get_stab_offset(elfshstabent_t *s);
 char		*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s);
-u_int		elfsh_get_stab_type(elfshstabent_t *s);
+unsigned int		elfsh_get_stab_type(elfshstabent_t *s);
 
 
 /* sht.c */
@@ -1095,7 +1095,7 @@ char		elfsh_set_section_mergeableflag(elfsh_Shdr *s, eresi_Addr val);
 char		elfsh_set_section_strflag(elfsh_Shdr *s, eresi_Addr val);
 char		elfsh_set_section_linkflag(elfsh_Shdr *s, eresi_Addr val);
 char		elfsh_set_section_orderflag(elfsh_Shdr *s, eresi_Addr val);
-int		elfsh_insert_shdr(elfshobj_t *file, elfsh_Shdr hdr, u_int range, char *name, char shift);
+int		elfsh_insert_shdr(elfshobj_t *file, elfsh_Shdr hdr, unsigned int range, char *name, char shift);
 void		elfsh_remove_sht(elfshobj_t *file);
 int		elfsh_set_section_name(elfshobj_t *file, elfshsect_t *sect, char *name);
 char		*elfsh_get_section_name(elfshobj_t *file, elfshsect_t *s);
@@ -1103,7 +1103,7 @@ elfsh_Shdr	elfsh_create_shdr(elfsh_Word name, elfsh_Word type, elfsh_Word flags,
                               eresi_Addr addr, eresi_Off offset, elfsh_Word size,
                               elfsh_Word link, elfsh_Word info, elfsh_Word align,
                               elfsh_Word entsize);
-int		elfsh_insert_runtime_shdr(elfshobj_t *f, elfsh_Shdr hdr, u_int r, char *name, char sf);
+int		elfsh_insert_runtime_shdr(elfshobj_t *f, elfsh_Shdr hdr, unsigned int r, char *name, char sf);
 
 int		elfsh_sort_sht(elfshobj_t *file);
 void		elfsh_sync_sectnames(elfshobj_t *file);
@@ -1159,9 +1159,9 @@ int           elfsh_set_hashchain_value(elfsh_Word *c, elfsh_Word v);
 elfsh_Word    elfsh_get_hashbucket_value(elfsh_Word *b);
 int           elfsh_set_hashbucket_value(elfsh_Word *b, elfsh_Word v);
 elfsh_Word    *elfsh_get_hashchain_by_name(elfshobj_t *f, char *s);
-elfsh_Word    *elfsh_get_hashchain_by_index(void *p, u_int i);
+elfsh_Word    *elfsh_get_hashchain_by_index(void *p, unsigned int i);
 elfsh_Word    *elfsh_get_hashbucket_by_name(elfshobj_t *f, char *s);
-elfsh_Word    *elfsh_get_hashbucket_by_index(void *p, u_int i);
+elfsh_Word    *elfsh_get_hashbucket_by_index(void *p, unsigned int i);
 elfsh_Word    *elfsh_get_hashchain(const void *d);
 elfsh_Word    elfsh_get_hashnchain(const void *d);
 elfsh_Word    *elfsh_get_hashbucket(const void *d);
@@ -1175,7 +1175,7 @@ elfsh_Verdef  *elfsh_hash_getdef(elfshobj_t *file, char *name, void *defdata, in
 
 /* got.c */
 eresi_Addr     	*elfsh_get_got(elfshobj_t *file, int *num);
-elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, eresi_Addr range, u_int *nbr);
+elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file, eresi_Addr range, unsigned int *nbr);
 eresi_Addr     	*elfsh_get_got_entry_by_index(eresi_Addr *got, eresi_Addr index);
 eresi_Addr     	*elfsh_get_got_entry_by_name(elfshobj_t *file, char *name);
 int		elfsh_set_got_entry_by_index(elfshobj_t *file, int index, eresi_Addr a);
@@ -1183,14 +1183,14 @@ int		elfsh_set_got_entry_by_name(elfshobj_t *file, char *name, eresi_Addr a);
 int		elfsh_set_got_entry(eresi_Addr *got, eresi_Addr vaddr);
 eresi_Addr     	elfsh_get_got_entry(eresi_Addr *got);
 eresi_Addr      elfsh_get_got_val(eresi_Addr *got);
-u_int		elfsh_set_got_val(eresi_Addr *got, eresi_Addr val);
+unsigned int		elfsh_set_got_val(eresi_Addr *got, eresi_Addr val);
 eresi_Addr      elfsh_get_got_addr(eresi_Addr *got);
-u_int		elfsh_set_got_addr(eresi_Addr *got, eresi_Addr val);
+unsigned int		elfsh_set_got_addr(eresi_Addr *got, eresi_Addr val);
 int     	elfsh_get_got_symbol_reloc(elfshobj_t *file, uint8 *name,
                                      elfsh_Rel *rel_entry);
 int		elfsh_endianize_got(elfshsect_t *_new);
 elfshsect_t	*elfsh_get_gotsct(elfshobj_t *file);
-int		elfsh_shift_got(elfshobj_t *file, u_int size, char *name);
+int		elfsh_shift_got(elfshobj_t *file, unsigned int size, char *name);
 
 /* dtors.c */
 eresi_Addr     	*elfsh_get_dtors(elfshobj_t *file, int *num);
@@ -1200,7 +1200,7 @@ eresi_Addr     	elfsh_get_dtors_entry(eresi_Addr *dtors);
 int		elfsh_set_dtors_entry_by_index(elfshobj_t *file, int index, eresi_Addr a);
 int		elfsh_set_dtors_entry_by_name(elfshobj_t *file, char *name, eresi_Addr a);
 int		elfsh_set_dtors_entry(eresi_Addr *dtors, eresi_Addr vaddr);
-int		elfsh_shift_dtors(elfshobj_t *file, u_int size);
+int		elfsh_shift_dtors(elfshobj_t *file, unsigned int size);
 
 /* ctors.c */
 eresi_Addr     	*elfsh_get_ctors(elfshobj_t *file, int *num);
@@ -1210,30 +1210,30 @@ eresi_Addr     	elfsh_get_ctors_entry(eresi_Addr *ctors);
 int		elfsh_set_ctors_entry_by_name(elfshobj_t *file, char *name, eresi_Addr a);
 int		elfsh_set_ctors_entry_by_index(elfshobj_t *file, int index, eresi_Addr a);
 int		elfsh_set_ctors_entry(eresi_Addr *ctors, eresi_Addr vaddr);
-int		elfsh_shift_ctors(elfshobj_t *file, u_int size);
+int		elfsh_shift_ctors(elfshobj_t *file, unsigned int size);
 
 /* section.c */
-elfshsect_t	*elfsh_get_section_by_type(elfshobj_t *, u_int type, int range, int *, int *, int *);
+elfshsect_t	*elfsh_get_section_by_type(elfshobj_t *, unsigned int type, int range, int *, int *, int *);
 elfshsect_t	*elfsh_get_section_by_index(elfshobj_t *, eresi_Addr index, int *, int *);
 elfshsect_t	*elfsh_get_section_by_name(elfshobj_t *, char *name, int *, int *, int *);
 elfshsect_t	*elfsh_get_parent_section(elfshobj_t *file, eresi_Addr addr, elfsh_SAddr *offset);
-elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file, u_int foff, elfsh_SAddr *offset);
+elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file, unsigned int foff, elfsh_SAddr *offset);
 elfshsect_t	*elfsh_create_section(char *name);
 elfshsect_t	*elfsh_get_section_from_sym(elfshobj_t *file, elfsh_Sym *sym);
 void		*elfsh_load_section(elfshobj_t *file, elfsh_Shdr *shdr);
 void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect);
-int		elfsh_append_data_to_section(elfshsect_t *sect, void *input, u_int len);
-char		elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode);
-int		elfsh_fill_section(elfshsect_t *sect, char c, u_int size);
+int		elfsh_append_data_to_section(elfshsect_t *sect, void *input, unsigned int len);
+char		elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, unsigned char mode);
+int		elfsh_fill_section(elfshsect_t *sect, char c, unsigned int size);
 int		elfsh_remove_section(elfshobj_t *obj, char *name);
 elfshsect_t	*elfsh_get_section_list(elfshobj_t *file, int *num);
 elfshsect_t	*elfsh_get_tail_section(elfshobj_t *file);
 elfshsect_t	*elfsh_get_section_by_idx(elfshsect_t *list, eresi_Addr index);
-void		*elfsh_get_section_data(elfshsect_t *obj, u_int off, u_int sizelem);
-int		elfsh_add_section(elfshobj_t *file, elfshsect_t *sect, u_int index, void *data, int shift);
-int             elfsh_add_runtime_section(elfshobj_t *file, elfshsect_t *sct, u_int range, void *dat);
+void		*elfsh_get_section_data(elfshsect_t *obj, unsigned int off, unsigned int sizelem);
+int		elfsh_add_section(elfshobj_t *file, elfshsect_t *sect, unsigned int index, void *data, int shift);
+int             elfsh_add_runtime_section(elfshobj_t *file, elfshsect_t *sct, unsigned int range, void *dat);
 
-int		elfsh_write_section_data(elfshsect_t *sect, u_int off, char *data, u_int size, u_int sizelem);
+int		elfsh_write_section_data(elfshsect_t *sect, unsigned int off, char *data, unsigned int size, unsigned int sizelem);
 elfshsect_t	*elfsh_get_section_by_nam(elfshobj_t *file, char *name);
 int		elfsh_section_is_runtime(elfshsect_t *sect);
 elfshsect_t     *elfsh_get_rsection_by_index(elfshobj_t *file, eresi_Addr idx, int *stridx, int *num);
@@ -1241,15 +1241,15 @@ elfshsect_t     *elfsh_get_rsection_by_index(elfshobj_t *file, eresi_Addr idx, i
 
 
 /* inject.c */
-elfshsect_t	*elfsh_insert_section(elfshobj_t *file, char *name, char *data, char mode, u_int size, u_int mod);
+elfshsect_t	*elfsh_insert_section(elfshobj_t *file, char *name, char *data, char mode, unsigned int size, unsigned int mod);
 int		elfsh_insert_unmapped_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data);
-int		elfsh_insert_mapped_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, u_int modulo);
+int		elfsh_insert_mapped_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, unsigned int modulo);
 int		elfsh_insert_data_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data);
-int		elfsh_insert_code_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, u_int mod);
-int		elfsh_insert_code_section_up(elfshobj_t*, elfshsect_t*, elfsh_Shdr, void*, u_int);
-int		elfsh_insert_section_idx(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, u_int index);
-int		elfsh_insert_static_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, u_int mod);
-int		elfsh_insert_runtime_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, u_int mod);
+int		elfsh_insert_code_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, unsigned int mod);
+int		elfsh_insert_code_section_up(elfshobj_t*, elfshsect_t*, elfsh_Shdr, void*, unsigned int);
+int		elfsh_insert_section_idx(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, unsigned int index);
+int		elfsh_insert_static_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, unsigned int mod);
+int		elfsh_insert_runtime_section(elfshobj_t *file, elfshsect_t *sect, elfsh_Shdr hdr, void *data, int mode, unsigned int mod);
 
 
 /* version.c */
@@ -1287,13 +1287,13 @@ int           elfsh_set_verdef_cnt(elfsh_Verdef *d, elfsh_Half v);
 elfsh_Half    elfsh_get_verdef_ndx(elfsh_Verdef *d);
 int           elfsh_set_verdef_ndx(elfsh_Verdef *d, elfsh_Half v);
 void          *elfsh_get_verdef_entry_by_index(void *p, elfsh_Half i);
-elfsh_Half    *elfsh_get_versym_entry_by_index(elfsh_Half *s, u_int i);
+elfsh_Half    *elfsh_get_versym_entry_by_index(elfsh_Half *s, unsigned int i);
 elfsh_Half    elfsh_get_versym_val(elfsh_Half *s);
 int           elfsh_set_versym_val(elfsh_Half *s, elfsh_Half v);
 elfsh_Half    *elfsh_get_versym_by_name(elfshobj_t *f, char *n);
 int           elfsh_get_verdauxnamelist(elfshobj_t *f, hashdef_t *hdef, char **n, int nu);
-int           elfsh_load_needtable(hash_t *t, void *p, u_int s);
-int           elfsh_load_deftable(hash_t *t, void *p, u_int s);
+int           elfsh_load_needtable(hash_t *t, void *p, unsigned int s);
+int           elfsh_load_deftable(hash_t *t, void *p, unsigned int s);
 void          *elfsh_get_versymtab(elfshobj_t *f, int *n);
 elfshsect_t   *elfsh_get_versymtab_by_range(elfshobj_t *file, eresi_Addr range, int *num);
 void          *elfsh_get_verneedtab(elfshobj_t *f, int *n);
@@ -1305,13 +1305,13 @@ char          *elfsh_get_vernauxname(elfshobj_t *f, elfsh_Vernaux *a);
 char          *elfsh_get_verdauxname(elfshobj_t *f, elfsh_Verdaux *a);
 
 /* reloc.c */
-elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, eresi_Addr range, u_int *num);
+elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, eresi_Addr range, unsigned int *num);
 void		elfsh_free_reloc_list(elfshobj_t *file);
-u_int		elfsh_set_reltype(elfsh_Rel *r, eresi_Addr type);
-u_int		elfsh_set_relsym(elfsh_Rel *r, eresi_Addr sym);
+unsigned int		elfsh_set_reltype(elfsh_Rel *r, eresi_Addr type);
+unsigned int		elfsh_set_relsym(elfsh_Rel *r, eresi_Addr sym);
 int             elfsh_set_reloffset(elfsh_Rel *r, eresi_Addr off);
-u_int		elfsh_get_reltype(elfsh_Rel *r);
-u_int		elfsh_get_relsym(elfsh_Rel *r);
+unsigned int		elfsh_get_reltype(elfsh_Rel *r);
+unsigned int		elfsh_get_relsym(elfsh_Rel *r);
 eresi_Addr      elfsh_get_reloffset(elfsh_Rel *r);
 void		elfsh_setrel(char b);	/* scripting flag for dynamic 'Rel vs Rela' info */
 elfsh_Rel	*elfsh_get_relent_by_index(elfsh_Rel *table, eresi_Addr index);
@@ -1346,13 +1346,13 @@ int		elfsh_get_pltentsz(elfshobj_t *file);
 int		elfsh_get_first_pltentsz(elfshobj_t *file);
 
 /* altplt.c */
-int		elfsh_relink_plt(elfshobj_t *file, u_int modulo);
-int		elfsh_copy_plt(elfshobj_t *file, u_int modulo);
+int		elfsh_relink_plt(elfshobj_t *file, unsigned int modulo);
+int		elfsh_copy_plt(elfshobj_t *file, unsigned int modulo);
 int		elfsh_get_plt_symbol_offset(elfshobj_t *file, uint8 *name,
                                   eresi_Off *off);
 int		elfsh_build_plt(elfshobj_t *file);
 int		elfsh_altplt_firstent(elfshsect_t	*created, 
-                            u_int		*off,
+                            unsigned int		*off,
                             elfshsect_t	*symtab, 
                             elfshobj_t	*file, 
                             elfshsect_t	*plt,
@@ -1365,14 +1365,14 @@ int		elfsh_redirect_pltgot(elfshobj_t *file, elfshsect_t *altgot, elfshsect_t *g
 int		elfsh_shift_generic_relocs(elfshobj_t *file, eresi_Addr diff, 
                                  elfshsect_t *relplt);
 int		elfsh_shift_alpha_relocs(elfshobj_t *file, char *name, 
-                               elfshsect_t *altgot, u_int off);
+                               elfshsect_t *altgot, unsigned int off);
 int		elfsh_shift_ia32_relocs(elfshobj_t *file, eresi_Addr  diff,
                               elfshsect_t *relplt, eresi_Addr limit);
 void		elfsh_shift_mips_relocs(elfshobj_t *file, eresi_Addr diff);
 int		elfsh_shift_sparc_relocs(elfshobj_t *file, eresi_Addr diff, 
                                elfshsect_t *relplt);
 int		elfsh_reencode_pltentry(elfshobj_t *file, elfshsect_t *plt, 
-                              uint32_t diff, u_int off);
+                              uint32_t diff, unsigned int off);
 int		elfsh_reencode_first_pltentry(elfshobj_t *file, elfshsect_t *plt, 
                                     uint32_t diff);
 
@@ -1384,10 +1384,10 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name);
 
 
 /* raw.c */
-int		elfsh_raw_write(elfshobj_t *file, u_int dst, void *src, int len);
-int		elfsh_raw_read(elfshobj_t *file, u_int dst, void *src, int len);
+int		elfsh_raw_write(elfshobj_t *file, unsigned int dst, void *src, int len);
+int		elfsh_raw_read(elfshobj_t *file, unsigned int dst, void *src, int len);
 int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, eresi_Addr vaddr);
-int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset);
+int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, unsigned int foffset);
 void		*elfsh_get_raw_by_addr(elfshobj_t *current, void *addr);
 void		*elfsh_get_raw(elfshsect_t *sect);
 
@@ -1403,7 +1403,7 @@ int             elfsh_reloc_got(elfshsect_t *sect, eresi_Addr diff);
 int             elfsh_reloc_ctors(elfshsect_t *sect, eresi_Addr diff);
 int             elfsh_reloc_dtors(elfshsect_t *sect, eresi_Addr diff);
 int             elfsh_reloc_hash(elfshsect_t *sect, eresi_Addr diff);
-int             elfsh_reloc_array(elfshobj_t *file, eresi_Addr *array, u_int size, eresi_Addr diff);
+int             elfsh_reloc_array(elfshobj_t *file, eresi_Addr *array, unsigned int size, eresi_Addr diff);
 int             elfsh_relocate(elfshobj_t *file);
 
 /* map.c */
@@ -1431,7 +1431,7 @@ int             elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name);
 /* fixup.c */
 elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex);
 int		 elfsh_fixup_dynsymtab(elfshsect_t *dynsym);
-elfsh_Sym	 *elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, u_int off, 
+elfsh_Sym	 *elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, unsigned int off, 
                                  elfshsect_t *dynsym);
 
 
@@ -1454,7 +1454,7 @@ int		elfsh_merge_shtentry(elfshobj_t *file,
 
 /* comment.c */
 elfshsect_t	*elfsh_get_comments(elfshobj_t *file);
-char		*elfsh_get_comments_entry(elfshobj_t *file, u_int range);
+char		*elfsh_get_comments_entry(elfshobj_t *file, unsigned int range);
 
 /* hijack.c */
 int		elfsh_hijack_function_by_name(elfshobj_t	*file,
@@ -1478,7 +1478,7 @@ elfshsect_t	*elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel);
 
 /* relinject.c */
 int		elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel);
-int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage);
+int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, unsigned char stage);
 int		elfsh_inject_etrel_hash(elfshobj_t *host, elfshobj_t *rel, 
                               hash_t *first, hash_t *second);
 
@@ -1493,30 +1493,30 @@ int		elfsh_sync_sorted_symtab(elfshsect_t *sect);
 int		elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type);
 
 /* hooks.c */
-u_char		elfsh_get_ostype(elfshobj_t *file);
-u_char		elfsh_get_hosttype(elfshobj_t *file);
-u_char		elfsh_get_elftype(elfshobj_t *file);
-u_char		elfsh_get_archtype(elfshobj_t *file);
+unsigned char		elfsh_get_ostype(elfshobj_t *file);
+unsigned char		elfsh_get_hosttype(elfshobj_t *file);
+unsigned char		elfsh_get_elftype(elfshobj_t *file);
+unsigned char		elfsh_get_archtype(elfshobj_t *file);
 int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, eresi_Addr n3);
 int		elfsh_default_relhandler(elfshsect_t *n, elfsh_Rel *n2, eresi_Addr *n3, eresi_Addr n4, elfshsect_t *n5);
 int		elfsh_default_cflowhandler(elfshobj_t *n, char *n1, elfsh_Sym *n2, eresi_Addr n3);
 int		elfsh_default_argchandler(eresi_Addr addr);
 
-int		elfsh_register_altplthook(u_char arch, u_char obj, u_char os, void *fct);
-int		elfsh_register_plthook(u_char arch, u_char o, u_char os, void *fct);
-int		elfsh_register_relhook(u_char a, u_char o, u_char os, void *fct);
-int		elfsh_register_cflowhook(u_char a, u_char o, u_char os, void *fct);
-int		elfsh_register_extplthook(u_char a, u_char o, u_char os, void *f);
-int		elfsh_register_argchook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_altplthook(unsigned char arch, unsigned char obj, unsigned char os, void *fct);
+int		elfsh_register_plthook(unsigned char arch, unsigned char o, unsigned char os, void *fct);
+int		elfsh_register_relhook(unsigned char a, unsigned char o, unsigned char os, void *fct);
+int		elfsh_register_cflowhook(unsigned char a, unsigned char o, unsigned char os, void *fct);
+int		elfsh_register_extplthook(unsigned char a, unsigned char o, unsigned char os, void *f);
+int		elfsh_register_argchook(unsigned char a, unsigned char o, unsigned char os, void *fct);
 
 int             elfsh_register_vector(char      *name,
                                       void      *registerfunc,
                                       void      *defaultfunc,
-                                      u_int     *dimensions,
-                                      u_int     dimsz);
+                                      unsigned int     *dimensions,
+                                      unsigned int     dimsz);
 
 int		elfsh_get_pagesize(elfshobj_t *file);
-u_int		elfsh_get_breaksize(elfshobj_t *file);
+unsigned int		elfsh_get_breaksize(elfshobj_t *file);
 void		elfsh_setup_hooks();
 
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr created);
@@ -1526,12 +1526,12 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
 int             elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
                           eresi_Addr *l, eresi_Addr a, elfshsect_t *m);
 int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
-                                eresi_Addr diff, u_int off);
+                                eresi_Addr diff, unsigned int off);
 int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
                                  elfshsect_t *extplt, eresi_Addr diff);
 int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
                              elfshsect_t *dynsym, elfshsect_t *relplt);
-int		*elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr);
+int		*elfsh_args_count(elfshobj_t *file, unsigned int off, eresi_Addr vaddr);
 
 
 
@@ -1641,7 +1641,7 @@ int		elfsh_relocate_mips64(elfshsect_t  *_new,
 int		elfsh_reencode_pltentry_ia32(elfshobj_t   *file, 
 					     elfshsect_t  *plt, 
 					     uint32_t     diff, 
-					     u_int	     off);
+					     unsigned int	     off);
 int		elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file, 
 						   elfshsect_t *plt, 
 						   uint32_t	diff);
@@ -1652,7 +1652,7 @@ int		elfsh_encodeplt1_ia32(elfshobj_t *file,
 int		elfsh_encodeplt_ia32(elfshobj_t *file, 
 				     elfshsect_t *plt, 
 				     eresi_Addr diff,
-				     u_int	off);
+				     unsigned int	off);
 int		elfsh_extplt_ia32(elfshsect_t *extplt, elfshsect_t *altgot,
 				  elfshsect_t *dynsym, elfshsect_t *relplt);
 int		elfsh_cflow_ia32(elfshobj_t      *null,
@@ -1670,7 +1670,7 @@ int		elfsh_relocate_ia32(elfshsect_t	*_new,
 				    eresi_Addr	*dword,
 				    eresi_Addr	addr,
 				    elfshsect_t *mod);
-int           *elfsh_args_count_ia32(elfshobj_t *file, u_int off, eresi_Addr vaddr);
+int           *elfsh_args_count_ia32(elfshobj_t *file, unsigned int off, eresi_Addr vaddr);
 
 /* reginfo.c */
 elfsh_Sword	*elfsh_get_gpvalue_addr(elfshobj_t* file);
@@ -1681,19 +1681,19 @@ elfsh_Sword     elfsh_get_gpvalue(elfshobj_t* file);
 /* runtime.c */
 eresi_Addr	 elfsh_runtime_map(elfsh_Phdr *segment);
 int		elfsh_runtime_unmap(elfsh_Phdr *segment);
-int		elfsh_set_phdr_prot(u_int mode);
+int		elfsh_set_phdr_prot(unsigned int mode);
 int		elfsh_munprotect(elfshobj_t *obj, eresi_Addr addr, uint32_t sz);
 int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot);
 
 /* state.c */
-u_char		elfsh_is_static_mode(); 
+unsigned char		elfsh_is_static_mode(); 
 void		elfsh_set_static_mode();
-u_char		elfsh_is_debug_mode();
+unsigned char		elfsh_is_debug_mode();
 void		elfsh_set_debug_mode();
-void		elfsh_set_mode(u_char mode);
-u_char		elfsh_get_mode();
+void		elfsh_set_mode(unsigned char mode);
+unsigned char		elfsh_get_mode();
 void		elfsh_toggle_mode();
-u_char		elfsh_debugger_present();
+unsigned char		elfsh_debugger_present();
 void		elfsh_error();
 
 /* linkmap.c */
@@ -1719,7 +1719,7 @@ void		*elfsh_bt_get_frame(ucontext_t *);
 /* bp.c */
 int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
 			     char *resolv, eresi_Addr addr, 
-			     u_char flags);
+			     unsigned char flags);
 
 
 #endif /* __LIBELFSH_H_ */

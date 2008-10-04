@@ -9,7 +9,7 @@
   <instruction func="op_loopne" opcode="0xe0"/>
 */
 
-int op_loopne(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_loopne(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->instr = ASM_LOOPNE;
   new->type = ASM_TYPE_CONDBRANCH | ASM_TYPE_READFLAG;

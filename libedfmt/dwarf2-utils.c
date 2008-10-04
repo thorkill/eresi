@@ -17,19 +17,19 @@
  * @param bread store size readed
  * @return final value
  */
-u_long 			edfmt_read_uleb128(void *data, u_int *bread)
+unsigned long 			edfmt_read_uleb128(void *data, unsigned int *bread)
 {
-  u_long		sum = 0;
-  u_int			read = 0;
-  u_char 		c;
+  unsigned long		sum = 0;
+  unsigned int			read = 0;
+  unsigned char 		c;
   int			s = 0;
 
   NOPROFILER_IN();
 
   do {
-    c = *(u_char *) (data + read) & 0xFF; 
+    c = *(unsigned char *) (data + read) & 0xFF; 
     read++;
-    sum |= ((u_long)(c & 127) << s);
+    sum |= ((unsigned long)(c & 127) << s);
     
     s += 7;
   } while ((c & 128) != 0);
@@ -47,17 +47,17 @@ u_long 			edfmt_read_uleb128(void *data, u_int *bread)
  * @param bread store size readed
  * @return final value
  */
-long 			edfmt_read_leb128(void *data, u_int *bread)
+long 			edfmt_read_leb128(void *data, unsigned int *bread)
 {
   long			sum = 0;
-  u_int			read = 0;
-  u_char 		c;
+  unsigned int			read = 0;
+  unsigned char 		c;
   int			s = 0;
 
   NOPROFILER_IN();
 
   do {
-    c = *(u_char *) (data + read) & 0xFF; 
+    c = *(unsigned char *) (data + read) & 0xFF; 
     read++;
     sum |= ((long)(c & 127) << s);
     

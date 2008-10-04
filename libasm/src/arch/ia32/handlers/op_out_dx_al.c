@@ -9,7 +9,7 @@
   <instruction func="op_out_dx_al" opcode="0xee"/>
  */
 
-int     op_out_dx_al(asm_instr *new, u_char *opcode, u_int len,
+int     op_out_dx_al(asm_instr *new, unsigned char *opcode, unsigned int len,
                          asm_processor *proc)
 {
   new->len += 1;

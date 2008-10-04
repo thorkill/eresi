@@ -27,33 +27,33 @@ typedef	struct		s_revm_object
   int	              (*set_obj)(void *parent, eresi_Addr value);
   char                *(*get_name)(void*, void *obj);
   int                 (*set_name)(void*, void *, char *);
-  char                *(*get_data)(void*, u_int off, u_int);
-  int                 (*set_data)(void*, u_int, char *, u_int, u_int);
+  char                *(*get_data)(void*, unsigned int off, unsigned int);
+  int                 (*set_data)(void*, unsigned int, char *, unsigned int, unsigned int);
 
   /* Attributes */
   elfshobj_t          *root;          /* Root parent */
   void                *parent;        /* Direct parent */
-  u_int               off;            /* Optional byte offset */
-  u_int               size;           /* Size of the immediate string */
-  u_int               sizelem;        /* Size of element for OBJRAW */
-  u_char              immed;          /* Immediate binary flag */
-  u_char              perm;	      /* TRUE if obj is a script variable */
+  unsigned int               off;            /* Optional byte offset */
+  unsigned int               size;           /* Size of the immediate string */
+  unsigned int               sizelem;        /* Size of element for OBJRAW */
+  unsigned char              immed;          /* Immediate binary flag */
+  unsigned char              perm;	      /* TRUE if obj is a script variable */
   aspectype_t	      *otype;	     /* The object type identifier */
 
   /* Only when describing elements of hash tables or list */
 #define		      CONT_UNKNOW	0
 #define		      CONT_HASH		1
 #define		      CONT_LIST		2
-  u_char	      contype;		/* Container type */
+  unsigned char	      contype;		/* Container type */
   char		      *hname;		/* Name of parent container */
   char		      *kname;		/* Name of element in container */
 
   /* Immediate value if immed flag is set */
   union               immval
   {
-    u_char            byte;
+    unsigned char            byte;
     u_short           half;
-    u_int             word;
+    unsigned int             word;
     eresi_Addr        ent;
     char              *str;
   }                   immed_val;
@@ -83,10 +83,10 @@ typedef struct 		s_revm_annotation
 #define EDFMT_SCOPE_UNK    0
 #define EDFMT_SCOPE_GLOBAL 1
 #define EDFMT_SCOPE_FUNC   2
-  u_char 		scope;		/*! XXX: Unused for now ? */
+  unsigned char 		scope;		/*! XXX: Unused for now ? */
   eresi_Addr 		addr; 		/*! Global address */
-  u_int			typenum;	/*! Type id associated to this annotation */
-  u_int 		reg;   		/*! Function reg id base (stack) */
+  unsigned int			typenum;	/*! Type id associated to this annotation */
+  unsigned int 		reg;   		/*! Function reg id base (stack) */
   int 			relvalue;     	/*! Relative value based on reg */
   int			nameoff;	/*! Name offset in string table */
 					/* XXX: should be a symbol instead */
@@ -116,10 +116,10 @@ typedef struct	s_L2handler
   int	        (*set_name)(elfshobj_t *, void *, char *);      /*! Set name */
   
   /* For sections data */
-  char		*(*get_data)(elfshsect_t *, u_int, u_int);	/*! Read data */
-  int		(*set_data)(elfshsect_t*, u_int, char*, u_int, u_int); /* Write data */
+  char		*(*get_data)(elfshsect_t *, unsigned int, unsigned int);	/*! Read data */
+  int		(*set_data)(elfshsect_t*, unsigned int, char*, unsigned int, unsigned int); /* Write data */
   
-  u_char        type;                                           /*! Object type */
+  unsigned char        type;                                           /*! Object type */
 }               revmL2_t;
 
 
@@ -130,7 +130,7 @@ typedef struct	s_L2handler
 typedef struct	s_L1handler
 {
   hash_t	*l2list;					/*! A ptr on the child L2 hashtable */
-  u_int		elem_size;					/*! Size of one element of this object */
+  unsigned int		elem_size;					/*! Size of one element of this object */
   
   /* Handlers */
   void		*(*get_obj)(void *container, void *retarg);	/*! Read object and return size */

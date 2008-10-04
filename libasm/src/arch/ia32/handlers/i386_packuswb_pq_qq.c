@@ -9,7 +9,7 @@
   <i386 func="i386_packuswb_pq_qq" opcode="0x67"/>
  */
 
-int     i386_packuswb_pq_qq(asm_instr *new, u_char *opcode, u_int len,
+int     i386_packuswb_pq_qq(asm_instr *new, unsigned char *opcode, unsigned int len,
 			    asm_processor *proc)
 {
   new->ptr_instr = opcode;

@@ -9,7 +9,7 @@
   <instruction func="op_arpl_ew_rw" opcode="0x63"/>
 */
 
-int     op_arpl_ew_rw(asm_instr *new, u_char *opcode, u_int len,
+int     op_arpl_ew_rw(asm_instr *new, unsigned char *opcode, unsigned int len,
 		      asm_processor *proc)
 {
   new->ptr_instr = opcode;

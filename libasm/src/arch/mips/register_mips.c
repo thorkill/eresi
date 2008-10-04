@@ -27,7 +27,7 @@
 int asm_register_mips_opcode(int op1,int op2,int op3, unsigned long fcn)
 {
    vector_t *vec;
-   u_int dim[3];
+   unsigned int dim[3];
 
    LIBASM_PROFILE_FIN();
 
@@ -67,10 +67,10 @@ int asm_register_mips_opcodes()
  */
 int asm_register_mips()
 {
-  u_int	*dims;
+  unsigned int	*dims;
   char  **dimstr;
   
-  dims = malloc(3 * sizeof (u_int));
+  dims = malloc(3 * sizeof (unsigned int));
   if (!dims)
     {
       goto out;
@@ -97,7 +97,7 @@ int asm_register_mips()
   /* This section is just a stub for when the operand vector is actually
   * implemented. */
 
-  dims = malloc(1 * sizeof (u_int));
+  dims = malloc(1 * sizeof (unsigned int));
 
   if (!dims)
     {

@@ -10,7 +10,7 @@
 
 
 /* Simple shared flags for watch/breakpoints */
-static u_char	watchflag;
+static unsigned char	watchflag;
 
 
 
@@ -21,7 +21,7 @@ int		elfsh_bp_add(hash_t	*bps,
 			     elfshobj_t *file, 
 			     char	*resolv, 
 			     eresi_Addr addr, 
-			     u_char	flags)
+			     unsigned char	flags)
 {
   static int	lastbpid = 1;
   elfshbp_t	*bp;
@@ -65,7 +65,7 @@ int		elfsh_bp_add(hash_t	*bps,
 
 
 /* Add a breakpoint without using a script command */
-int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags)
+int		e2dbg_breakpoint_add(eresi_Addr addr, unsigned char flags)
 {
   int		err;
   char		buf[BUFSIZ];

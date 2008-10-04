@@ -23,8 +23,8 @@
  */
 int		elfsh_reloc_pht(elfshobj_t *file, eresi_Addr diff)
 {
-  u_int		i;
-  u_int		count;
+  unsigned int		i;
+  unsigned int		count;
   eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -59,8 +59,8 @@ int		elfsh_reloc_pht(elfshobj_t *file, eresi_Addr diff)
  */
 int		elfsh_reloc_sht(elfshobj_t *file, eresi_Addr diff)
 {
-  u_int		i;
-  u_int		count;
+  unsigned int		i;
+  unsigned int		count;
   eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -88,9 +88,9 @@ int		elfsh_reloc_sht(elfshobj_t *file, eresi_Addr diff)
 int		elfsh_reloc_symtab(elfshsect_t *s, eresi_Addr diff)
 {
   elfsh_Sym	*symtab;
-  u_int		i;
+  unsigned int		i;
   eresi_Addr   	vaddr;
-  u_int		count;
+  unsigned int		count;
   eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -128,7 +128,7 @@ int		elfsh_reloc_symtab(elfshsect_t *s, eresi_Addr diff)
  */
 int		elfsh_reloc_raw(elfshsect_t *cur, eresi_Addr diff)
 {
-  u_int		index;
+  unsigned int		index;
   eresi_Addr	addr;
   elfshsect_t	*target;
   char		*str;
@@ -179,10 +179,10 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, eresi_Addr diff)
 {
   elfshsect_t	*parent;
   elfsh_Dyn	*dyn;
-  u_int		index;
-  u_int		count;
+  unsigned int		index;
+  unsigned int		count;
   eresi_Addr	val;
-  u_int		nbr;
+  unsigned int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -219,9 +219,9 @@ int		elfsh_reloc_rel(elfshsect_t *sect, eresi_Addr diff)
 {
   elfshsect_t	*parent;
   elfsh_Rel	*rel;
-  u_int		index;
-  u_int		count;
-  u_int		nbr;
+  unsigned int		index;
+  unsigned int		count;
+  unsigned int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -258,12 +258,12 @@ int		elfsh_reloc_rel(elfshsect_t *sect, eresi_Addr diff)
  */
 int		elfsh_reloc_array(elfshobj_t *file, 
 				  eresi_Addr *array, 
-				  u_int      size, 
+				  unsigned int      size, 
 				  eresi_Addr diff)
 {
   elfshsect_t	*parent;
-  u_int		index;
-  u_int		count;
+  unsigned int		index;
+  unsigned int		count;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -434,7 +434,7 @@ int		elfsh_remap(elfshobj_t *file, eresi_Addr new_addr)
 {
   elfshsect_t	*sect;
   eresi_Addr	diff;
-  u_int		count;
+  unsigned int		count;
   int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

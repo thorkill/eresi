@@ -22,7 +22,7 @@
 int             elfsh_write_interp(elfshobj_t *file, char *interp)
 {
   char          *actual;
-  u_int         size1;
+  unsigned int         size1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -40,17 +40,17 @@ typedef	struct		s_allocentry
 #define			PROFILER_ALLOC_UNKNOW	0
 #define			PROFILER_ALLOC_LEGIT	1
 #define			PROFILER_ALLOC_PROXY	2
-  u_char		alloctype;	/*!< Inform about the allocator */
+  unsigned char		alloctype;	/*!< Inform about the allocator */
 
 #define			PROFILER_OP_UNKNOW	0
 #define			PROFILER_OP_ALLOC	1
 #define			PROFILER_OP_REALLOC	2
 #define			PROFILER_OP_FREE	3
-  u_char		optype;		/*!< Inform about alloc/free/etc */
+  unsigned char		optype;		/*!< Inform about alloc/free/etc */
   char			*filename;	/*!< Inform about file location */
   char			*funcname;	/*!< Inform about func location */
-  u_int			linenbr;	/*!< Inform about line number */
-  u_long		addr;		/*!< Address of allocation */
+  unsigned int			linenbr;	/*!< Inform about line number */
+  unsigned long		addr;		/*!< Address of allocation */
 }			profallocentry_t;
 
 /**
@@ -74,7 +74,7 @@ do							    \
 		      (char *)"Out of memory .", c);	    \
   }							    \
   if (profiler_started())				    \
-    profiler_alloc_update(f, (char *) fc, l, (u_long) a,    \
+    profiler_alloc_update(f, (char *) fc, l, (unsigned long) a,    \
 		          PROFILER_ALLOC_PROXY,		    \
 		          PROFILER_OP_ALLOC);		    \
 }							    \
@@ -94,7 +94,7 @@ do							    \
 		      "Out of memory .", d);		    \
   }							    \
   if (profiler_started())				    \
-    profiler_alloc_update(f, (char *) fc, l, (u_long) a,    \
+    profiler_alloc_update(f, (char *) fc, l, (unsigned long) a,    \
 			  PROFILER_ALLOC_PROXY,		    \
 		          PROFILER_OP_REALLOC);		    \
 }							    \
@@ -107,7 +107,7 @@ while (0)
 do							    \
 {							    \
   if (profiler_started())				    \
-    profiler_alloc_update(f, (char *) fc, l, (u_long) a,    \
+    profiler_alloc_update(f, (char *) fc, l, (unsigned long) a,    \
 		          PROFILER_ALLOC_PROXY,		    \
 		          PROFILER_OP_FREE);		    \
   free(a);						    \
@@ -122,7 +122,7 @@ while (0)
 do							    \
 {							    \
   if (profiler_started())				    \
-    profiler_alloc_update(f, (char *) fc, l, (u_long) a,    \
+    profiler_alloc_update(f, (char *) fc, l, (unsigned long) a,    \
 		          PROFILER_ALLOC_PROXY,		    \
 		          PROFILER_OP_ALLOC);		    \
   a = strdup(b);					    \

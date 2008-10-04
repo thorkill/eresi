@@ -55,7 +55,7 @@ int		cmd_dtors()
       if (offset)
 	snprintf(off, sizeof(off), " %s %s", 
 		 revm_colorstr((offset < 0 ? "-" : "+")), 
-		 revm_colornumber("%u", (u_int) (offset > 0 ? offset : -offset)));
+		 revm_colornumber("%u", (unsigned int) (offset > 0 ? offset : -offset)));
 
       snprintf(buff, sizeof(buff), " %s  %s \t <%s%s>\n", 
 	       revm_colornumber("[%02u]", index), 

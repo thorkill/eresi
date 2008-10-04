@@ -15,7 +15,7 @@
  * <instruction func="op_shift_rmb_cl" opcode="0xd2"/>
  */
 
-int op_shift_rmb_cl(asm_instr *instr, u_char *opcode, u_int len, 
+int op_shift_rmb_cl(asm_instr *instr, unsigned char *opcode, unsigned int len, 
                     asm_processor *proc)
 {
   struct s_modrm        *modrm;

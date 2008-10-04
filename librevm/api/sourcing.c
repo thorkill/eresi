@@ -205,7 +205,7 @@ int	       revm_context_restore(int		savedfd,
 {
   list_t	*lastframe;
   char		buf[BUFSIZ];
-  u_int		idx;
+  unsigned int		idx;
   char		**keys;
   int		keynbr;
   revmexpr_t	*expr;
@@ -269,7 +269,7 @@ int	revm_exec_str(char *str)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   nbr = revm_findblanks(str);
-  av = revm_doargv(nbr, (u_int *)&ac, str);
+  av = revm_doargv(nbr, (unsigned int *)&ac, str);
   if (revm_parseopt(ac, av) < 0)
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__,av);

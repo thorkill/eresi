@@ -17,7 +17,7 @@
 /**
  * @brief Create constant object : Perm == 1 if the object is writable 
  */
-revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
+revmobj_t	*revm_create_IMMED(char type, char perm, unsigned int val)
 {
   revmobj_t	*new;
 
@@ -125,7 +125,7 @@ revmobj_t	*revm_create_SHORT(char perm, u_short val)
 /** 
  * @brief Create constant object 
  */
-revmobj_t	*revm_create_BYTE(char perm, u_char val)
+revmobj_t	*revm_create_BYTE(char perm, unsigned char val)
 {
   revmobj_t	*new;
 
@@ -167,7 +167,7 @@ revmobj_t	*revm_create_IMMEDSTR(char perm, char *str)
 /** 
  * @brief Create a redirection abstract object 
  */
-elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 
+elfshredir_t	*revm_create_REDIR(unsigned char type, char *sname, char *dname, 
 				 eresi_Addr saddr, eresi_Addr daddr)
 {
   elfshredir_t	*redir;
@@ -195,7 +195,7 @@ revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_entptr,
 				 void	*get_entval,
 				 void	*set_entval,
-				 u_int	elem_size)
+				 unsigned int	elem_size)
 {
   revmL1_t	*new;
 
@@ -245,7 +245,7 @@ revmL2_t	*revm_create_L2ENT(void	*get_obj,
 /**
  * @brief The high level function for object conversion 
  */
-int		revm_convert_object(revmexpr_t *expr, u_int objtype)
+int		revm_convert_object(revmexpr_t *expr, unsigned int objtype)
 {
   aspectype_t	*type;
 

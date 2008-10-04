@@ -11,7 +11,7 @@
   <instruction func="op_mov_ref_iv_eax" opcode="0xa3"/>
 */
 
-int op_mov_ref_iv_eax(asm_instr *new, u_char *opcode, u_int len,
+int op_mov_ref_iv_eax(asm_instr *new, unsigned char *opcode, unsigned int len,
                       asm_processor *proc)
 {
   new->instr = ASM_MOV;

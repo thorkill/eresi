@@ -500,7 +500,7 @@ int		elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
 eresi_Addr	elfsh_get_object_baseaddr(elfshobj_t *file)
 {
   int					nbr;
-  u_int				index;
+  unsigned int				index;
   eresi_Addr  vaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -722,7 +722,7 @@ int		elfsh_remove_phdr(elfshobj_t *current, int index)
  * @param mode ELFSH_CODE_INJECTION or ELFSH_DATA_INJECTION.
  * @return The same rights in PF_* flags format.
  */
-int		elfsh_set_phdr_prot(u_int mode)
+int		elfsh_set_phdr_prot(unsigned int mode)
 {
   elfsh_Word	flags;
 

@@ -45,7 +45,7 @@ int		traces_run(elfshobj_t *file, char **argv, int argc)
   char		*home;
   char		*filename;
   size_t	len;
-  u_int		index;
+  unsigned int		index;
   char		*path;
   char		*av[argc+2];
   int		ret;

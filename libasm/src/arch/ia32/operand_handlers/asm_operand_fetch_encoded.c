@@ -19,10 +19,10 @@
  */
 
 #if WIP
-int     asm_operand_fetch_encoded(asm_operand *operand, u_char *opcode, int otype, 
+int     asm_operand_fetch_encoded(asm_operand *operand, unsigned char *opcode, int otype, 
 				asm_instr *ins, int opt)
 #else
-int     asm_operand_fetch_encoded(asm_operand *operand, u_char *opcode, 
+int     asm_operand_fetch_encoded(asm_operand *operand, unsigned char *opcode, 
 				  int otype, asm_instr *ins)
 #endif
 {

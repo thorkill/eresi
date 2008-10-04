@@ -83,15 +83,15 @@ int 		cmd_coreinfo()
 
 	snprintf(buff, sizeof(buff), 
 		 " EAX: %08x\n EBX: %08x\n ECX: %08x\n EDX: %08x\n",
-		 (u_int)regs.eax, (u_int)regs.ebx, (u_int)regs.ecx, 
-		 (u_int)regs.edx);
+		 (unsigned int)regs.eax, (unsigned int)regs.ebx, (unsigned int)regs.ecx, 
+		 (unsigned int)regs.edx);
 	revm_output(buff);
 
 	snprintf(buff, sizeof(buff), 
 		 " ESP: %08x\n ESI: %08x\n EDI: %08x\n EIP: %08x\n"
 		 " EFLAGS: %08x\n\n",
-		 (u_int)regs.esp, (u_int)regs.esi, (u_int)regs.edi, 
-		 (u_int)regs.eip, (u_int)regs.eflags);
+		 (unsigned int)regs.esp, (unsigned int)regs.esi, (unsigned int)regs.edi, 
+		 (unsigned int)regs.eip, (unsigned int)regs.eflags);
 
 	revm_output(buff);
       }

@@ -98,8 +98,8 @@ elfshsect_t	*elfsh_get_strtab(elfshobj_t *file, int index)
 int		elfsh_insert_in_strtab(elfshobj_t *file, char *name)
 {
   elfshsect_t	*sect;
-  u_int		len;
-  u_int		index;
+  unsigned int		len;
+  unsigned int		index;
   int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

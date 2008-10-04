@@ -11,7 +11,7 @@
   <instruction func="op_sbb_rv_rmv" opcode="0x1b"/>
 */
 
-int op_sbb_rv_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int op_sbb_rv_rmv(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) {
   new->len += 1;
   new->instr = ASM_SBB;
   new->ptr_instr = opcode;

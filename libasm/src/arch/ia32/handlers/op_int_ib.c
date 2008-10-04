@@ -9,7 +9,7 @@
   <instruction func="op_int_ib" opcode="0xcd"/>
 */
 
-int op_int_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_int_ib(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->instr = ASM_INT;

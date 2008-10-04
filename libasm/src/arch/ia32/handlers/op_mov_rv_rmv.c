@@ -9,7 +9,7 @@
   <instruction func="op_mov_rv_rmv" opcode="0x8b"/>
 */
 
-int op_mov_rv_rmv(asm_instr *new, u_char *opcode, u_int len,
+int op_mov_rv_rmv(asm_instr *new, unsigned char *opcode, unsigned int len,
                   asm_processor *proc)
 {
   new->ptr_instr = opcode;

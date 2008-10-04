@@ -188,7 +188,7 @@ static void	revm_vector_entry_display(eresi_Addr vaddr, eresi_Addr def)
  */
 static void	revm_vector_recdisplay(unsigned long *tab,  unsigned int *dims, 
 				     unsigned int *index, unsigned int depth, 
-				     unsigned int dimsz, char *name, u_long def)
+				     unsigned int dimsz, char *name, unsigned long def)
 {
   unsigned int	idx;
   unsigned int	idx2;  

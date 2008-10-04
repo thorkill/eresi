@@ -13,7 +13,7 @@
   <instruction func="op_lea_rv_m" opcode="0x8d"/>
  */
 
-int op_lea_rv_m(asm_instr *new, u_char *opcode, u_int len,
+int op_lea_rv_m(asm_instr *new, unsigned char *opcode, unsigned int len,
                 asm_processor *proc)
 {
   new->len += 1;

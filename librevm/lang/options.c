@@ -14,7 +14,7 @@
 /** 
  * Read the input file parameter 
  */
-int		revm_getoption(u_int index, u_int argc, char **argv)
+int		revm_getoption(unsigned int index, unsigned int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -29,7 +29,7 @@ int		revm_getoption(u_int index, u_int argc, char **argv)
 /** 
  * Read the input file parameter 
 */
-int		revm_getinput(u_int index, u_int argc, char **argv)
+int		revm_getinput(unsigned int index, unsigned int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -44,7 +44,7 @@ int		revm_getinput(u_int index, u_int argc, char **argv)
 /** 
  * Read the output file parameter 
 */
-int		revm_getoutput(u_int index, u_int argc, char **argv)
+int		revm_getoutput(unsigned int index, unsigned int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -59,7 +59,7 @@ int		revm_getoutput(u_int index, u_int argc, char **argv)
 /** 
  * Activate a 2-non-regx-mandatory-parameters option 
 */
-int		revm_getoption2(u_int index, u_int argc, char **argv)
+int		revm_getoption2(unsigned int index, unsigned int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -76,7 +76,7 @@ int		revm_getoption2(u_int index, u_int argc, char **argv)
 /** 
  * Activate a 2-non-regx-mandatory-parameters option 
 */
-int		revm_getoption3(u_int index, u_int argc, char **argv)
+int		revm_getoption3(unsigned int index, unsigned int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -94,7 +94,7 @@ int		revm_getoption3(u_int index, u_int argc, char **argv)
 /**
  * Activate a non-mandatory-regex-parameter option 
 */
-int		revm_getregxoption(u_int index, u_int argc, char **argv)
+int		revm_getregxoption(unsigned int index, unsigned int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -115,9 +115,9 @@ int		revm_getregxoption(u_int index, u_int argc, char **argv)
 /** 
  * Fetch parameters until we find NULL or something starting by '-' 
  */
-int		revm_getvarparams(u_int index, u_int argc, char **argv)
+int		revm_getvarparams(unsigned int index, unsigned int argc, char **argv)
 {
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (world.curjob->curcmd->argc = idx = 0; 
@@ -140,7 +140,7 @@ int		revm_getvarparams(u_int index, u_int argc, char **argv)
 /** 
  * Format the input of a loop 
 */
-int		revm_getforparams(u_int index, u_int argc, char **argv)
+int		revm_getforparams(unsigned int index, unsigned int argc, char **argv)
 {
   char		*p;
   char		flag;
@@ -185,9 +185,9 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
 /**
  * Format the input of a case command
  */
-int		revm_getcaseparams(u_int index, u_int argc, char **argv)
+int		revm_getcaseparams(unsigned int index, unsigned int argc, char **argv)
 {
-  u_int		idx;
+  unsigned int		idx;
   char		tokens[3][BUFSIZ];
   int		curtok;
   int		curidx;
@@ -232,7 +232,7 @@ int		revm_getcaseparams(u_int index, u_int argc, char **argv)
 /** 
  * Format the input of a match/rewrite command
  */
-int		revm_getmatchparams(u_int index, u_int argc, char **argv)
+int		revm_getmatchparams(unsigned int index, unsigned int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (argc - index != 3)
@@ -251,7 +251,7 @@ int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 /** 
  * Add an entry to the requested dump list 
 */
-static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
+static int      revm_add2list(char outtype, unsigned int index, int argc, char **argv)
 {
   char		*off;							
   int		idx = index;
@@ -303,7 +303,7 @@ static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
 /** 
  * Add an DISASM typed entry 
 */
-int		revm_getdisasm(u_int index, u_int argc, char **argv)
+int		revm_getdisasm(unsigned int index, unsigned int argc, char **argv)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
@@ -313,7 +313,7 @@ int		revm_getdisasm(u_int index, u_int argc, char **argv)
 /** 
  * Add an HEXA typed entry 
 */
-int		revm_gethexa(u_int index, u_int argc, char **argv)
+int		revm_gethexa(unsigned int index, unsigned int argc, char **argv)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

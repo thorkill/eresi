@@ -20,7 +20,7 @@ int		cmd_unload()
   time_t	uloadt;
   char		logbuf[BUFSIZ];
   int		ret;
-  u_int		id;
+  unsigned int		id;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

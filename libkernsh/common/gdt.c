@@ -14,7 +14,7 @@
 int kernsh_gdt(list_t *lgdt)
 {
   int ret;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *gdt;
   int          (*fct)();
 

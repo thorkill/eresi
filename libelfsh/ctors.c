@@ -66,11 +66,11 @@ eresi_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
  * @param size
  * @return
  */
-int		elfsh_shift_ctors(elfshobj_t *file, u_int size)
+int		elfsh_shift_ctors(elfshobj_t *file, unsigned int size)
 {
   elfshsect_t	*ctors;
   int		nbr;
-  u_int		idx;
+  unsigned int		idx;
   eresi_Addr	*addr;
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -176,7 +176,7 @@ eresi_Addr     	*elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
   elfsh_Sym	*sym;
   eresi_Addr	*ctors;
   int		nbr;
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -56,7 +56,7 @@ int			etrace_funcenable(char *trace, char *name)
  */
 int			etrace_funcenableall(char *trace)
 {
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   char			**keys;
   hash_t		*table;

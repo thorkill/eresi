@@ -22,7 +22,7 @@
  * 
  */
 
-void	asm_resolve_ia32(void *d, u_int val, char *buf, u_int len)
+void	asm_resolve_ia32(void *d, unsigned int val, char *buf, unsigned int len)
 {
   snprintf(buf, len, "0x%x",  val);
 }

@@ -8,9 +8,9 @@
 
 typedef struct s_modrm 
 {
-  u_char        m:3;
-  u_char        r:3;
-  u_char        mod:2;
+  unsigned char        m:3;
+  unsigned char        r:3;
+  unsigned char        mod:2;
 } asm_modrm;
 
 /**

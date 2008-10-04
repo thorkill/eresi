@@ -18,7 +18,7 @@
   <instruction func="op_xor_rmv_rv" opcode="0x31"/>
 */
 
-int op_xor_rmv_rv(asm_instr *instr, u_char *opcode, u_int len, 
+int op_xor_rmv_rv(asm_instr *instr, unsigned char *opcode, unsigned int len, 
                   asm_processor *proc)
 {
   instr->len += 1;

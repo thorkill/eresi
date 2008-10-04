@@ -21,7 +21,7 @@ hash_t		const_hash;
  */
 static void	eresi_constants_init()
 {
-  u_int		index;
+  unsigned int		index;
 
   hash_init(&const_hash, "constants", 51, ASPECT_TYPE_STR);
 
@@ -320,8 +320,8 @@ void		eresi_commands_init()
   revm_command_add(CMD_DISCON    , cmd_discon   , revm_getoption    , 0, HLP_DISCON);
   revm_command_add(CMD_RCMD	  , cmd_rcmd     , revm_getvarparams , 0, HLP_RCMD);
 #endif
-  revm_command_add(CMD_NETWORK_GDBSUPPORT, cmd_network_gdbsupport, revm_getvarparams,
-		   0, HLP_NETWORKGDB);
+/*   revm_command_add(CMD_NETWORK_GDBSUPPORT, cmd_network_gdbsupport, revm_getvarparams, */
+/* 		   0, HLP_NETWORKGDB); */
   /* Flow analysis commands */
   revm_command_add(CMD_ANALYSE	  , cmd_analyse       , NULL,            1, HLP_ANALYSE);
   revm_command_add(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);

@@ -16,7 +16,7 @@ libkernshworld_t libkernshworld;
  */
 int kernsh_init_vectors()
 {
-  u_int *dims;
+  unsigned int *dims;
   char  **strdims;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -28,7 +28,7 @@ int kernsh_init_vectors()
   printf("INIT MEMORY VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -62,7 +62,7 @@ int kernsh_init_vectors()
   printf("INIT SCT VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -81,7 +81,7 @@ int kernsh_init_vectors()
   printf("INIT CALL SYSCALL VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_OSNUM;
@@ -99,7 +99,7 @@ int kernsh_init_vectors()
   printf("INIT IDT VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -118,7 +118,7 @@ int kernsh_init_vectors()
   printf("INIT GDT VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -137,7 +137,7 @@ int kernsh_init_vectors()
   printf("INIT INFO VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -154,7 +154,7 @@ int kernsh_init_vectors()
   printf("INIT KERNEL DECOMP VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_OSNUM;
@@ -170,7 +170,7 @@ int kernsh_init_vectors()
   printf("INIT SYMBS VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -192,7 +192,7 @@ int kernsh_init_vectors()
   printf("INIT ALLOC CONTIGUOUS VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_OSNUM;
@@ -221,7 +221,7 @@ int kernsh_init_vectors()
   printf("INIT AUTOTYPES VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_ARCHNUM;
@@ -239,7 +239,7 @@ int kernsh_init_vectors()
   printf("INIT RELINK MODULE VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 2 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 2 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_OSNUM;
@@ -272,7 +272,7 @@ int kernsh_init_vectors()
   printf("KVIRTM READ * VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_OSNUM;
@@ -307,7 +307,7 @@ int kernsh_init_vectors()
   printf("KDUMP VMA VECTORS\n");
 #endif
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 3 * sizeof(unsigned int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 3 * sizeof(char *), -1);
 
   dims[0]    = LIBKERNSH_OSNUM;

@@ -11,7 +11,7 @@
   <instruction func="op_shift_rmb_1" opcode="0xd0"/>
  */
 
-int op_shift_rmb_1(asm_instr *new, u_char *opcode, u_int len, 
+int op_shift_rmb_1(asm_instr *new, unsigned char *opcode, unsigned int len, 
                    asm_processor *proc)
 {
   new->ptr_instr = opcode;

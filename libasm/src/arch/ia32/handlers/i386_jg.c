@@ -10,7 +10,7 @@
 */
 
 
-int i386_jg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int i386_jg(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->instr = ASM_BRANCH_S_GREATER;
     new->len += 1;

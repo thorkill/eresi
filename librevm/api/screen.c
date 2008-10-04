@@ -81,7 +81,7 @@ int		revm_screen_switch()
  */
 int		revm_workspace_next()
 {
-  u_int		index, entrie;
+  unsigned int		index, entrie;
   char	        **keys;
   int		keynbr;
   revmjob_t	*curjob;

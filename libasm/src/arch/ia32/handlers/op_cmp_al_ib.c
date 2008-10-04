@@ -9,7 +9,7 @@
   <instruction func="op_cmp_al_ib" opcode="0x3c"/>
 */
 
-int op_cmp_al_ib(asm_instr *new, u_char *opcode, u_int len,
+int op_cmp_al_ib(asm_instr *new, unsigned char *opcode, unsigned int len,
                  asm_processor *proc)
 {
   new->instr = ASM_CMP;

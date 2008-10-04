@@ -9,7 +9,7 @@
   <instruction func="op_prefix_fs" opcode="0x64"/>
  */
 
-int     op_prefix_fs(asm_instr *new, u_char *opcode, u_int len,
+int     op_prefix_fs(asm_instr *new, unsigned char *opcode, unsigned int len,
 		     asm_processor *proc)
 {
   new->prefix |= ASM_PREFIX_FS;

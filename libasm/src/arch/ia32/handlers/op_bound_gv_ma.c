@@ -9,7 +9,7 @@
   <instruction func="op_bound_gv_ma" opcode="0x62"/>
 */
 
-int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len,
+int     op_bound_gv_ma(asm_instr *new, unsigned char *opcode, unsigned int len,
 		       asm_processor *proc)
 {
 #if !LIBASM_USE_OPERAND_VECTOR

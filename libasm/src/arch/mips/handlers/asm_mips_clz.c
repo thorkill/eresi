@@ -5,7 +5,7 @@
 
 /* CLZ rd,rs */
 
-int asm_mips_clz(asm_instr *ins, u_char *buf, u_int len,
+int asm_mips_clz(asm_instr *ins, unsigned char *buf, unsigned int len,
                   asm_processor *proc)
 {
    struct s_mips_decode_reg temp;

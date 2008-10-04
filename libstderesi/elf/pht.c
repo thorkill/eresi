@@ -15,9 +15,9 @@
  * @brief Display description for extended PHT types 
  * @param type
  */
-char		*revm_display_pdesc(u_int type)
+char		*revm_display_pdesc(unsigned int type)
 {
-  u_int		idx;
+  unsigned int		idx;
   char		type_unk[ERESI_MEANING + 1];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -35,9 +35,9 @@ char		*revm_display_pdesc(u_int type)
  * @brief Display name for extended PHT types 
  * @param type
  */
-char		*revm_display_pname(u_int type)
+char		*revm_display_pname(unsigned int type)
 {
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -64,7 +64,7 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, eresi_Addr base)
   int		index;
   int		index2;
   char		*type;
-  u_int		typenum;
+  unsigned int		typenum;
   elfshsect_t	*list;
   regex_t	*tmp;
   char		buff[512];

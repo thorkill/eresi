@@ -16,7 +16,7 @@
  * @param h Hash table 
  * @param key Hash key of object to be printed
  */
-int		revm_table_display_element(hash_t *h, char *key, u_char inside)
+int		revm_table_display_element(hash_t *h, char *key, unsigned char inside)
 {
   void		*data;
   char		logbuf[BUFSIZ];
@@ -166,7 +166,7 @@ static int	revm_table_display_regx2(char *tableregx, char *elemregx)
   char		**keys, **keys2;
   int		index, index2;
   hash_t	*cur;
-  u_int		match;
+  unsigned int		match;
   char		logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

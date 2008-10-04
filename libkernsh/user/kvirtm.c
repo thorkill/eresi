@@ -19,7 +19,7 @@
 int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
@@ -173,7 +173,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *
 int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
@@ -356,7 +356,7 @@ int kernsh_kvirtm_closemem()
 int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
@@ -513,7 +513,7 @@ int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
 int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
@@ -669,7 +669,7 @@ int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
 int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
 {
   int		ret, get;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 

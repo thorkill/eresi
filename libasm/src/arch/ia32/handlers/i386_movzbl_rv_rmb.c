@@ -9,7 +9,7 @@
   <i386 func="i386_movzbl_rv_rmb" opcode="0xb6"/>
 */
 
-int i386_movzbl_rv_rmb(asm_instr *new, u_char *opcode, u_int len,
+int i386_movzbl_rv_rmb(asm_instr *new, unsigned char *opcode, unsigned int len,
 		       asm_processor *proc)
 {
   new->len += 1;

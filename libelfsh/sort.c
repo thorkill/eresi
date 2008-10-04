@@ -87,7 +87,7 @@ int			elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type)
  */
 int			elfsh_sync_sorted_symtab(elfshsect_t *sect)
 {
-  u_int			nbr;
+  unsigned int			nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

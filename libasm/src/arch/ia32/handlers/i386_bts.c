@@ -11,7 +11,7 @@
   <i386 func="i386_bts" opcode="0xab"/>
  */
 
-int i386_bts(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) {
+int i386_bts(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) {
   new->len += 1;
   new->instr = ASM_BTS;
 

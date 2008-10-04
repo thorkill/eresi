@@ -43,14 +43,14 @@
   `malloc.c'.
 */
 
-//#include "malloc-machine.h"
+/* #include "malloc-machine.h" */
 
 /* Forward declarations.  */
 
 struct  malloc_chunk;
 typedef struct malloc_chunk* mchunkptr;
 typedef struct malloc_state * mstate;
-//typedef unsigned short pid_t;
+/* typedef unsigned short pid_t; */
 
 
 #if defined(__STDC__) || defined (__cplusplus)

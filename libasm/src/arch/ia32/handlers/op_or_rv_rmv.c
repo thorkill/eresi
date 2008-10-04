@@ -10,7 +10,7 @@
   Instruction :         OR
 */
 
-int op_or_rv_rmv(asm_instr *new, u_char *opcode, u_int len,
+int op_or_rv_rmv(asm_instr *new, unsigned char *opcode, unsigned int len,
                  asm_processor *proc)
 {
   new->instr = ASM_OR;

@@ -215,8 +215,8 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
   elfsh_Sym	*sym;
   elfsh_Dyn	*dynent, *dynent2;
   uint32_t	gotno, gotsym;
-  u_int		varnbr, gotnbr, symnbr;
-  u_int		opcodendx, gotindex, index, varindex;
+  unsigned int		varnbr, gotnbr, symnbr;
+  unsigned int		opcodendx, gotindex, index, varindex;
   uint32_t      *opcode;
   uint16_t	diff;
   uint16_t	gotdiff;
@@ -350,7 +350,7 @@ int			elfsh_relocate_mips32(elfshsect_t       *new,
 					      elfshsect_t	*mod)
 {
   int			retval;
-  static u_int		HI16_todo = 0;
+  static unsigned int		HI16_todo = 0;
   static elfsh_Rel	*HI16_cur = NULL; 
   static eresi_Addr	*HI16_dword = NULL;
   static eresi_Addr	HI16_addr = NULL;

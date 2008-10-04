@@ -16,11 +16,11 @@ int asm_register_sparc_operands();
  */
 int	asm_register_sparc()
 {
-  u_int	*dims;
+  unsigned int	*dims;
   char **dimstr;
   int	to_ret;
   
-  dims = malloc(3 * sizeof (u_int));
+  dims = malloc(3 * sizeof (unsigned int));
   if (!dims)
     {
       to_ret = 0;
@@ -45,7 +45,7 @@ int	asm_register_sparc()
 			 dims, dimstr, 3, ASPECT_TYPE_CADDR);
 
   /* Initializing SPARC operand handler vector */
-  dims = malloc(1 * sizeof (u_int));
+  dims = malloc(1 * sizeof (unsigned int));
 
   if (!dims)
     {
@@ -85,7 +85,7 @@ int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
                                    			      unsigned long fcn)
 {
   vector_t	*vec;
-  u_int		dim[3];
+  unsigned int		dim[3];
   
   LIBASM_PROFILE_FIN();
   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_SPARC);

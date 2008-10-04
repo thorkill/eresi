@@ -9,7 +9,7 @@
   <instruction func="op_movsb" opcode="0xa4"/>
  */
 
-int op_movsb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_movsb(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->instr = ASM_MOVSB;
   new->len += 1;

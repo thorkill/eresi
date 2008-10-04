@@ -11,57 +11,6 @@
 #include "libstderesi.h"
 
 
-/**
- * Network & memory initialization for the gdb wrapper.
- */
-
-int             cmd_network_gdbsupport(void)
-{
-  unsigned      i = 0;
-  revmjob_t     *job;
-  int           fd;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  for (i = 0; revm_get_cur_job_parameter(i) != NULL; i++)
-    fprintf(stderr, "Value of current: %s - %d\n", revm_get_cur_job_parameter(i),
-	    atoi(revm_get_cur_job_parameter(i)));
-  fprintf(stderr, "FINISHED\n");
-  fflush(stderr);
-  
-  
-  if (revm_get_argc() != 2)
-    {
-      revm_output("Usage: netgdb <server> <port>\n");
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Bad number of parameters.\n"
-		   "Format: netgdb <server> <port>", -1);
-    } else
-    {
-      fd = dump_simpleconnect(revm_get_cur_job_parameter(0),
-			      atoi(revm_get_cur_job_parameter(1)));
-      fprintf(stderr, "The value returned is: %d\n", fd);
-      if (fd == -1)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Error found. Exit", -1);
-    }
-
-  revm_create_new_workspace("netgdb_ws");
-
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,job, sizeof (revmjob_t), -1);
-  job->ws.io.type     = REVM_IO_GDB;
-  job->ws.io.input    = &revm_netgdb_input;
-  job->ws.io.output   = &revm_netgdb_output;
-  job->ws.createtime  = time(&job->ws.createtime);
-  job->ws.io.input_fd = fd;
-
-  hash_add(&world.jobs, "netgdb", job);
-  world.curjob = job;
-
-/*   revm_output("Bite couille chatte"); */
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
 
 /** 
  * Run network initialisation 
@@ -330,7 +279,7 @@ int			cmd_rcmd()
   struct hostent        *h;
   struct sockaddr_in    serv_addr;
   char			data[BUFSIZ];
-  u_int			sz = BUFSIZ - 1;
+  unsigned int			sz = BUFSIZ - 1;
   int			ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

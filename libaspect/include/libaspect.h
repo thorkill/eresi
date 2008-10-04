@@ -21,6 +21,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdint.h>
+#include <assert.h>
 
 /* Debug flags */
 #define		__DEBUG_LIST__	1
@@ -88,6 +89,11 @@
 
 #endif
 
+#ifndef __RELEASE
+#define ASSERT(_x)      assert(_x)
+#define NOT_REACHED()   ASSERT(FALSE)
+#endif
+
 #ifndef swap32
 #define swap32(x)						\
 	((uint32_t)(						\
@@ -132,6 +138,17 @@
 typedef  uint8_t        Bool;
 #define  TRUE           1
 #define  FALSE          0
+
+/* Typedef the registers, linear addresses, virtual, etc for better
+   understanding. */
+typedef  uint32_t       ureg32;
+typedef  uint64_t       ureg64;
+
+typedef  uint32_t       la32;
+typedef  uint64_t       la64;
+
+typedef  uint32_t       va32;
+typedef  uint64_t       va64;
 
 /* Include this here since it contains an allocation too */
 #ifndef __KERNEL__
@@ -199,11 +216,30 @@ typedef  uint8_t        Bool;
 #define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	PRINTABLE(c)		(c >= 32 && c <= 126)
 
+#define LOWORD(_dw)     ((_dw) & 0xffff)
+#define HIWORD(_dw)     (((_dw) >> 16) & 0xffff)
+#define LOBYTE(_w)      ((_w) & 0xff)
+#define HIBYTE(_w)      (((_w) >> 8) & 0xff)
+
+#define HIDWORD(_qw)    ((uint32)((_qw) >> 32))
+#define LODWORD(_qw)    ((uint32)(_qw)) 
+#define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
+
+#define WORD_IN_BYTE    2        
+#define DWORD_IN_BYTE   4
+#define QWORD_IN_BYTE   8
+#define BYTE_IN_BIT     8
+#define WORD_IN_BIT     16        
+#define DWORD_IN_BIT    32
+#define QWORD_IN_BIT    64
+
+#define NEXT_CHAR(_x)   _x + 1
+
 /* A structure for the type information */
 typedef struct		s_info
 {
   char			*name;
-  u_int			size;
+  unsigned			size;
 }			typeinfo_t;
 
 
@@ -212,14 +248,14 @@ typedef struct		s_info
  */
 typedef struct		s_type
 {
-  u_int			type;		/*!< @brief Plain or pointed type */
+  unsigned			type;		/*!< @brief Plain or pointed type */
 
-  u_char		isptr;		/*!< @brief the type is a pointer */
-  u_int			size;		/*!< @brief Type full memsize     */
-  u_int			off;		/*!< @brief Offset inside parent  */
+  unsigned char		isptr;		/*!< @brief the type is a pointer */
+  unsigned			size;		/*!< @brief Type full memsize     */
+  unsigned			off;		/*!< @brief Offset inside parent  */
 
-  u_int			dimnbr;		/*!< @brief Nbr of array dimensions */
-  u_int			*elemnbr;	/*!< @brief Nbr of elements per dim */
+  unsigned			dimnbr;		/*!< @brief Nbr of array dimensions */
+  unsigned			*elemnbr;	/*!< @brief Nbr of elements per dim */
   char			*name;		/*!< @brief Type name             */
   char			*fieldname;	/*!< @brief Field name		 */
 
@@ -239,10 +275,10 @@ typedef struct	s_vector
   void		*hook;		   /*!< @brief The vector data */
   void		*register_func;	   /*!< @brief Registration function */
   void		*default_func;	   /*!< @brief Default registered function */
-  u_int		*arraydims;	   /*!< @brief Size of each dimension */
+  unsigned		*arraydims;	   /*!< @brief Size of each dimension */
   char		**strdims;	   /*!< @brief Label for each dimension */
-  u_int		arraysz;	   /*!< @brief Number of dimensions */
-  u_int   	type;		   /*!< @brief Elements type in this vector */
+  unsigned		arraysz;	   /*!< @brief Number of dimensions */
+  unsigned   	type;		   /*!< @brief Elements type in this vector */
 }		vector_t;
 
 
@@ -252,9 +288,9 @@ typedef struct	s_vector
 typedef struct	s_container	
 {
   unsigned int 	id;	  	  /* !< @brief unique id of this container */
-  u_int		type;		  /* !< @brief Contained object type */
-  u_int		nbrinlinks;	  /* !< @brief Number of -ondisk- input links */
-  u_int		nbroutlinks;	  /* !< @brief Number of -ondisk- output links */
+  unsigned		type;		  /* !< @brief Contained object type */
+  unsigned		nbrinlinks;	  /* !< @brief Number of -ondisk- input links */
+  unsigned		nbroutlinks;	  /* !< @brief Number of -ondisk- output links */
   list_t	*inlinks;	  /* !< @brief Input links for this container */
   list_t	*outlinks;	  /* !< @brief Output links for this container */
   void		*data;		  /* !< @brief Pointer to the contained object */
@@ -302,16 +338,16 @@ typedef struct	s_config_item
   char		*name;
 #define		CONFIG_TYPE_INT	0
 #define		CONFIG_TYPE_STR	1
-  u_int		type;			  /*!< int will use val, str *data */
+  unsigned		type;			  /*!< int will use val, str *data */
   
   /* RO/RW - it's relevant to higher api
    like revm_ allows direct updates to those values
    when RW is set and enforces usage of revm_api
    when RO is set (see profile) */
-  u_int		val;			  /*!< For int values 0-off/1-on ... */
+  unsigned		val;			  /*!< For int values 0-off/1-on ... */
 #define		CONFIG_MODE_RW	0
 #define		CONFIG_MODE_RO	1
-  u_int		mode;			  
+  unsigned		mode;			  
   void		*data;
 }		configitem_t;
 
@@ -324,15 +360,15 @@ typedef struct	s_config_item
 typedef struct	s_aspectworld
 {
   hash_t	config_hash;		/*!< Configuration */
-  u_char	kernel_mode;		/*!< Kernel residence */
+  unsigned char	kernel_mode;		/*!< Kernel residence */
 
 #define		PROFILE_NONE	0
 #define		PROFILE_WARN    (1 << 0)
 #define		PROFILE_FUNCS   (1 << 1)
 #define		PROFILE_ALLOC   (1 << 2)
 #define		PROFILE_DEBUG	(1 << 3)
-  u_char	proflevel;		/*!< Profiling switch */
-  u_char	profstarted;		/*!< Profiling started ? */
+  unsigned char	proflevel;		/*!< Profiling switch */
+  unsigned char	profstarted;		/*!< Profiling started ? */
   int           (*profile)(char *);	/*!< Profiling output func */
   int           (*profile_err)(char *);	/*!< Profiling error func */
   
@@ -368,9 +404,9 @@ void		aspect_called_ctors_inc();
 int		aspect_called_ctors_finished();
 void		e2dbg_presence_set();
 void		e2dbg_presence_reset();
-u_char		e2dbg_presence_get();
-u_char		e2dbg_kpresence_get();
-void		e2dbg_kpresence_set(u_char pres);
+unsigned char		e2dbg_presence_get();
+unsigned char		e2dbg_kpresence_get();
+void		e2dbg_kpresence_set(unsigned char pres);
 
 /* Retreive pointer on the vector hash table */
 hash_t*		aspect_vecthash_get();
@@ -398,55 +434,55 @@ int		aspect_register_vector(char *, void*,
 				       unsigned int);
 
 /* Container related functions */
-container_t	*container_create(u_int type, void *data, list_t *in, list_t *out);
+container_t	*container_create(unsigned type, void *data, list_t *in, list_t *out);
 int		container_linklists_create(container_t *container,
-					   u_int	linktype);
+					   unsigned	linktype);
 
 /* Type related functions */
 int		aspect_type_simple(int typeid);
-char		*aspect_type_get(u_int type);
-u_int		aspect_typesize_get(u_int type);
+char		*aspect_type_get(unsigned type);
+unsigned		aspect_typesize_get(unsigned type);
 int		aspect_basetypes_create();
 int		aspect_type_find_union_size(aspectype_t *type);
 int		aspect_type_register_real(char *label, 
 					  aspectype_t *ntype);
-aspectype_t	*aspect_type_create(u_char isunion,
+aspectype_t	*aspect_type_create(unsigned char isunion,
 				    char *label, 
 				    char **fields, 
-				    u_int fieldnbr);
-int		aspect_type_register(u_char isunion,
+				    unsigned fieldnbr);
+int		aspect_type_register(unsigned char isunion,
 				     char *label, 
 				     char **fields, 
-				     u_int fieldnbr);
+				     unsigned fieldnbr);
 aspectype_t	*aspect_type_copy(aspectype_t	*type, 
 				  unsigned int	off, 
-				  u_char	isptr, 
-				  u_int		elemnbr, 
+				  unsigned char	isptr, 
+				  unsigned		elemnbr, 
 				  char		*fieldname,
-				  u_int		*dims);
-aspectype_t	*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fields, u_int, u_int);
-int		aspect_basetype_register(char *name, u_int size);
+				  unsigned		*dims);
+aspectype_t	*aspect_type_copy_by_name(aspectype_t *type, char *name, hash_t *fields, unsigned, unsigned);
+int		aspect_basetype_register(char *name, unsigned size);
 typeinfo_t	*aspect_basetype_get(unsigned int *nbr);
 aspectype_t	*aspect_type_get_by_name(char *name);
 aspectype_t	*aspect_type_get_by_id(unsigned int id);
 aspectype_t	*aspect_type_get_child(aspectype_t *parent, char *name);
-char		*aspect_typename_get(u_int typeid);
+char		*aspect_typename_get(unsigned typeid);
 
 /* profile.c : Profiler related functions */
-void		profiler_reset(u_int sel);
+void		profiler_reset(unsigned sel);
 int		profiler_print(char *file, char *func, 
-			       u_int line, char *msg);
+			       unsigned line, char *msg);
 void		profiler_err(char *file, char *func, 
-			     u_int line, char *msg);
-void		profiler_out(char *file, char *func, u_int line);
+			     unsigned line, char *msg);
+void		profiler_out(char *file, char *func, unsigned line);
 
 void		profiler_error();
 void		profiler_incdepth();
 void		profiler_decdepth();
 void		profiler_updir();
 int		profiler_enabled();
-int		profiler_is_enabled(u_char mask);
-u_char		profiler_started();
+int		profiler_is_enabled(unsigned char mask);
+unsigned char		profiler_started();
 void		profiler_error_reset();
 int		profiler_enable_err();
 int		profiler_enable_out();
@@ -464,14 +500,14 @@ void		profiler_install(int (*profile)(char *),
 
 /* The allocation profiler */
 void			profiler_alloc_warnprint(char *s, int fat, int i);
-void			profiler_alloc_warning(u_char warntype);
+void			profiler_alloc_warning(unsigned char warntype);
 void			profile_alloc_shift();
 int			profiler_alloc_update(char *file, char *func, 
-					      u_int line, u_long addr, 
-					      u_char atype, u_char otype);
-profallocentry_t	*profiler_alloc_find(u_char direction,
-					     u_long addr, 
-					     u_char optype);
+					      unsigned line, unsigned long addr, 
+					      unsigned char atype, unsigned char otype);
+profallocentry_t	*profiler_alloc_find(unsigned char direction,
+					     unsigned long addr, 
+					     unsigned char optype);
 
 /* Color related handlers for the profiler */
 void		profiler_setcolor(void (*endline)(), 
@@ -503,8 +539,8 @@ void		profiler_setmorecolor(char *(*coloradv)(char *ty,
 
 /* config.c : Configuration related fonctions */
 void		config_init();
-void		config_add_item(char *name, u_int type, 
-				u_int mode, void *dat);
+void		config_add_item(char *name, unsigned type, 
+				unsigned mode, void *dat);
 void		config_update_key(char *name, void *data);
 void		*config_get_data(char *name);
 void 		config_safemode_set();

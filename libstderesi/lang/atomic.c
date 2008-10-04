@@ -18,7 +18,7 @@ int			cmd_set()
   int                   error;
   int			errvar;
   revmexpr_t		*last;
-  u_int			oid;
+  unsigned int			oid;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -227,7 +227,7 @@ int			cmd_test()
   revmexpr_t		*e1;
   revmexpr_t		*e2;
   char			logbuf[BUFSIZ];
-  u_int			res;
+  unsigned int			res;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

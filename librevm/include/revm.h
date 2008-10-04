@@ -57,8 +57,7 @@
 #include "libaspect.h"
 
 #include <gdbwrapper.h>
-/* We might change that in the future. */
-#include <libdump.h>
+
 #if defined(ERESI_NET)
  #include <libdump.h>
 #endif
@@ -213,7 +212,7 @@ extern asm_processor	proc;
 #define	ERESI_ORIG		((void *) -1)
 
 /* For lang/access.c */
-#define	REVM_INVALID_FIELD	((u_int) -1)
+#define	REVM_INVALID_FIELD	((unsigned int) -1)
 
 /* ELFsh actions, for parametrizing some function behaviors */
 #define	REVM_HASH_MERGE		(1 << 0)
@@ -259,8 +258,8 @@ typedef struct		s_list
 {
   regex_t		name;
   char			*rname;
-  u_int			off;
-  u_int			size;
+  unsigned int			off;
+  unsigned int			size;
   char			otype;
 }			revmlist_t;
 
@@ -277,7 +276,7 @@ typedef struct		s_const
 /* ELFsh command handlers */
 typedef struct		s_cmdhandler
 {
-  int			(*reg)(u_int i, u_int s, char **a);	/* Registration handler */
+  int			(*reg)(unsigned int i, unsigned int s, char **a);	/* Registration handler */
   int			(*exec)();				/* Execution handler */
   char			*arg1;					/* Option activation variable ptr */
   void			*arg2;					/* Option regex ptr */
@@ -299,7 +298,7 @@ typedef struct		s_args
   char			*name;			/* Command name */
   char		        *endlabel;		/* Co-Label for foreach/forend */
 #define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int		        listidx;		/* Iteration index for this foreach */
+  unsigned int		        listidx;		/* Iteration index for this foreach */
   struct s_args		*next;
   struct s_args		*prev;
 }			revmargv_t;
@@ -318,7 +317,7 @@ typedef struct	      s_module
   void                (*help)();      /* Help wrapper */
   void                (*init)();      /* Constructor pointer */
   void                (*fini)();      /* Destructor pointer */
-  u_int               id;             /* Object ID */
+  unsigned int               id;             /* Object ID */
   time_t              loadtime;       /* Load time stamp */
   struct s_module     *next;          /* Next module of the list */
 }                     revmmod_t;
@@ -348,7 +347,7 @@ typedef struct		s_revmcontext
 typedef struct		s_revmiteration
 {
 #define	REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int			*curindex;	/* Current iteration index (most-nested foreach) */
+  unsigned int			*curindex;	/* Current iteration index (most-nested foreach) */
   char			*curkey;	/* Name (key) of matchme expression in list */
   char			*curname;	/* Name (bound) of induction variable if any */
   list_t		*list;		/* Current list being iterated */
@@ -358,8 +357,8 @@ typedef struct		s_revmiteration
 typedef struct	      s_revmrewrite
 {
   revmexpr_t	      *matchexpr;	/* Expression to rewrite */
-  u_char	      matched;		/* Matched flag : just 0 or 1 depending on last try */
-  u_char	      replaced;		/* Indicate if we have already transformed */
+  unsigned char	      matched;		/* Matched flag : just 0 or 1 depending on last try */
+  unsigned char	      replaced;		/* Indicate if we have already transformed */
 }		      revmrewrite_t;
 
 /* REVM job structure, one per client */
@@ -371,7 +370,7 @@ typedef struct        s_job
 #define		      REVM_MAXSRCNEST  50
   revmargv_t	      *script[REVM_MAXSRCNEST]; /* List of script commands */
   revmargv_t          *lstcmd[REVM_MAXSRCNEST]; /* Last command for each depth */
-  u_int               sourced;          /* script depth (if beeing sourced) */
+  unsigned int               sourced;          /* script depth (if beeing sourced) */
 
   /* File job context */
   revmargv_t	      *curcmd;          /* Next command to be executed */
@@ -472,29 +471,29 @@ extern char	   elfsh_libpath[BUFSIZ];
 
 /* String table for .elfsh.strings */
 extern char	   *strtable;
-extern u_int	   strtable_current;
-extern u_int	   strtable_max;
+extern unsigned int	   strtable_current;
+extern unsigned int	   strtable_max;
 
 /* Prompt storage */
-extern void	(*prompt_token_setup)(char *name, u_int size);
+extern void	(*prompt_token_setup)(char *name, unsigned int size);
 extern char	prompt_token[512];
 
 /* Registration handlers for options from opt.c */
-int		revm_getoption(u_int index, u_int argc, char **argv);
-int		revm_getoption2(u_int index, u_int argc, char **argv);
-int		revm_getoption3(u_int index, u_int argc, char **argv);
-int		revm_getregxoption(u_int index, u_int argc, char **argv);
-int		revm_getinput(u_int index, u_int argc, char **argv);
-int		revm_getoutput(u_int index, u_int argc, char **argv);
-int		revm_getdisasm(u_int index, u_int argc, char **argv);
-int		revm_gethexa(u_int index, u_int argc, char **argv);
-int		revm_getvarparams(u_int index, u_int argc, char **argv);
-int		revm_getforparams(u_int index, u_int argc,  char **argv);
-int		revm_getmatchparams(u_int index, u_int argc, char **argv);
-int		revm_getcaseparams(u_int index, u_int argc, char **argv);
+int		revm_getoption(unsigned int index, unsigned int argc, char **argv);
+int		revm_getoption2(unsigned int index, unsigned int argc, char **argv);
+int		revm_getoption3(unsigned int index, unsigned int argc, char **argv);
+int		revm_getregxoption(unsigned int index, unsigned int argc, char **argv);
+int		revm_getinput(unsigned int index, unsigned int argc, char **argv);
+int		revm_getoutput(unsigned int index, unsigned int argc, char **argv);
+int		revm_getdisasm(unsigned int index, unsigned int argc, char **argv);
+int		revm_gethexa(unsigned int index, unsigned int argc, char **argv);
+int		revm_getvarparams(unsigned int index, unsigned int argc, char **argv);
+int		revm_getforparams(unsigned int index, unsigned int argc,  char **argv);
+int		revm_getmatchparams(unsigned int index, unsigned int argc, char **argv);
+int		revm_getcaseparams(unsigned int index, unsigned int argc, char **argv);
 
 /* Libasm resolve handlers */
-void		asm_do_resolve(void *data, eresi_Addr vaddr, char *, u_int);
+void		asm_do_resolve(void *data, eresi_Addr vaddr, char *, unsigned int);
 char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, elfsh_SAddr *roff);
 
 /* General VM functions */
@@ -502,16 +501,16 @@ revmexpr_t	*revm_lookup_param(char *param);
 revmobj_t	*revm_check_object(revmobj_t *pobj);
 void		revm_destroy_object(revmobj_t *pobj);
 revmobj_t	 *revm_copy_object(revmobj_t *pobj);
-elfshobj_t	*revm_getfile(u_int index);
-revmmod_t	*revm_getmod(u_int index);
-char		*revm_reverse(elfshobj_t *file, u_int vaddr);
+elfshobj_t	*revm_getfile(unsigned int index);
+revmmod_t	*revm_getmod(unsigned int index);
+char		*revm_reverse(elfshobj_t *file, unsigned int vaddr);
 
 /* Lookup functions */
 revmobj_t	*revm_lookup_immed(char *param);
 revmexpr_t	*revm_lookup_var(char *param);
 
 elfshobj_t	*revm_lookup_file(char *param);
-u_int		revm_lookup_index(char *param);
+unsigned int		revm_lookup_index(char *param);
 char		*revm_lookup_string(char *param);
 eresi_Addr	revm_lookup_addr(char *param);
 
@@ -526,7 +525,7 @@ int		revm_convert2daddr(revmobj_t *obj);
 int		revm_convert2caddr(revmobj_t *obj);
 
 /* Command API */
-int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur);
+int		revm_command_set(char *cmd, void *exec, void *reg, unsigned int needcur);
 int		revm_command_add(char *cmd, int (*exec)(void),
 				 int (*reg)(unsigned index, unsigned argc, char **argv),
 				 unsigned needfile, 
@@ -534,54 +533,54 @@ int		revm_command_add(char *cmd, int (*exec)(void),
 int		revm_command_del(char *cmd);
 
 /* Default grammar handlers */
-revmobj_t       *parse_lookup3_index(char *param, char *fmt, u_int sepnbr);
-revmobj_t       *parse_lookup3(char *param, char *fmt, u_int sepnbr);
-revmobj_t       *parse_lookup4(char *param, char *fmt, u_int sepnbr);
-revmobj_t       *parse_lookup5_index(char *param, char *fmt, u_int sepnbr);
+revmobj_t       *parse_lookup3_index(char *param, char *fmt, unsigned int sepnbr);
+revmobj_t       *parse_lookup3(char *param, char *fmt, unsigned int sepnbr);
+revmobj_t       *parse_lookup4(char *param, char *fmt, unsigned int sepnbr);
+revmobj_t       *parse_lookup5_index(char *param, char *fmt, unsigned int sepnbr);
 revmobj_t	*parse_vector(char *param, char *fmt);
 revmobj_t	*parse_hash(char *param, char *fmt);
 revmobj_t	*parse_hash_field(char *param, char *fmt);
 revmobj_t	*parse_list(char *param, char *fmt);
 
 /* Versions functions */
-int             revm_version_pdef(hashdef_t *p, u_int ai, u_int i, char *id, 
+int             revm_version_pdef(hashdef_t *p, unsigned int ai, unsigned int i, char *id, 
 				char *n, char *t, regex_t *r);
-int             revm_version_pneed(hashneed_t *p, u_int ai, u_int i, char *id, 
+int             revm_version_pneed(hashneed_t *p, unsigned int ai, unsigned int i, char *id, 
 				 char *n, char *t, regex_t *r);
-int             revm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
+int             revm_version_unk(unsigned int ai, unsigned int i, char *id, char *n, char *t);
 
 /* Disassembling and hexadecimal view functions */
 int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buf, eresi_Addr vaddr,
-				   char *name, u_int foffset);
-u_int		revm_instr_display(int, u_int, eresi_Addr, u_int, u_int,
-				 char *, u_int, char *);
+				   char *name, unsigned int foffset);
+unsigned int		revm_instr_display(int, unsigned int, eresi_Addr, unsigned int, unsigned int,
+				 char *, unsigned int, char *);
 int		revm_section_display(elfshsect_t *s, char *name, revmlist_t *re);
 int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual);
 int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
 				revmlist_t *actual, int flag);
 int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr, revmlist_t*);
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
-				  u_int off, u_int foffset, eresi_Addr vaddr, 
+				  unsigned int off, unsigned int foffset, eresi_Addr vaddr, 
 				  char *name, char otype);
-int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int index, 
-				  u_int size, u_int off, char *buff, u_int foffset);
+int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, unsigned int index, 
+				  unsigned int size, unsigned int off, char *buff, unsigned int foffset);
 
 /* Parsing / Scanning functions */
 char		*revm_filter_param(char *buf, char *ptr);
-char		*revm_build_unknown(char *buf, const char *str, u_long type);
+char		*revm_build_unknown(char *buf, const char *str, unsigned long type);
 void		revm_filter_zero(char *str);
 int		revm_parseopt(int argc, char **argv);
-void            revm_findhex(u_int argc, char **argv);
-int		revm_trans_speblank(const char *in, char ***av, u_int *ac);
-void		revm_replace_speblanks(u_int argc, char **argv);
-u_int           revm_findblanks(char *buf);
-char            **revm_doargv(u_int nbr, u_int *argc, char *buf);
+void            revm_findhex(unsigned int argc, char **argv);
+int		revm_trans_speblank(const char *in, char ***av, unsigned int *ac);
+void		revm_replace_speblanks(unsigned int argc, char **argv);
+unsigned int           revm_findblanks(char *buf);
+char            **revm_doargv(unsigned int nbr, unsigned int *argc, char *buf);
 
 /* String functions */
 int		revm_strtable_add(char *string);
 
 int		revm_traces_add_arguments(int argc, char **argv);
-edfmtfunc_t 	*revm_traces_tracable_with_type(elfshobj_t *file, char *func_name, u_char external);
+edfmtfunc_t 	*revm_traces_tracable_with_type(elfshobj_t *file, char *func_name, unsigned char external);
 
 /* Hash functions */
 int             revm_hashunk(int i);
@@ -607,7 +606,7 @@ int	        revm_workfiles_unload();
 int		dprintf(int fd, char *format, ...);
 void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, eresi_Addr base);
 char		*revm_fetch_sht_typedesc(elfsh_Word typenum);
-int             revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag);
+int             revm_sht_print(elfsh_Shdr *shdr, unsigned int num, char rtflag);
 int		revm_load_init_dephash(elfshobj_t *file, char *name);
 int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm);
 int		revm_is_loaded(char *name);
@@ -633,7 +632,7 @@ int             revm_create_new_workspace(char *ws_name);
 int		revm_vectors_getdims(char *str, unsigned int *dims);
 char		*revm_ascii_vtype(vector_t *cur);
 int		revm_vectors_getdimnbr(char *str);
-int		revm_vector_bad_dims(vector_t *v, unsigned int *dims, u_int dimnbr);
+int		revm_vector_bad_dims(vector_t *v, unsigned int *dims, unsigned int dimnbr);
 
 /* Dependences related information : deps.c */
 int		revm_load_enumdep(elfshobj_t *obj);
@@ -664,11 +663,11 @@ int	        revm_context_restore(int, char, revmargv_t*, void*, char**, char*);
 
 /* ERESI variables related functions */
 int             revm_setvar_str(char *varname, char *value);
-int             revm_setvar_raw(char *varname, char *value, u_int len);
-int             revm_setvar_byte(char *varname, u_char byte);
+int             revm_setvar_raw(char *varname, char *value, unsigned int len);
+int             revm_setvar_byte(char *varname, unsigned char byte);
 int             revm_setvar_short(char *varname, u_short val);
-int             revm_setvar_int(char *varname, u_int val);
-int             revm_setvar_long(char *varname, u_long val);
+int             revm_setvar_int(char *varname, unsigned int val);
+int             revm_setvar_long(char *varname, unsigned long val);
 char		*revm_tmpvar_create();
 int		revm_variable_istemp(revmexpr_t *e);
 
@@ -680,7 +679,7 @@ int		revm_type_hashcreate(char *name);
 int		revm_type_reflect(hash_t *hash, char *typename);
 
 /* Data access related functions */
-aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
+aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, unsigned int *off);
 revmobj_t	*revm_object_lookup_real(aspectype_t *type, char *objname, char *objpath, char trans);
 revmobj_t	*revm_object_lookup(char *str);
 revmobj_t	*revm_object_create(aspectype_t *type, void *data, char transaddr);
@@ -698,7 +697,7 @@ char		*revm_generic_getdata(void *data, int off, int sizelm);
 int		revm_generic_setdata(void *d, int off, void *ndat, int sz, int szlm);
 
 /* Object creation/verification functions */
-int		revm_convert_object(revmexpr_t *e, u_int objtype);
+int		revm_convert_object(revmexpr_t *e, unsigned int objtype);
 revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_obj_idx,
 				 void	*get_obj_nam,
@@ -706,7 +705,7 @@ revmL1_t	*revm_create_L1ENT(void	*get_obj,
 				 void	*get_entptr,
 				 void	*get_entval,
 				 void	*set_entval,
-				 u_int	elem_size);
+				 unsigned int	elem_size);
 revmL2_t	*revm_create_L2ENT(void	*get_obj,
 				 void	*set_obj,
 				 char	type,
@@ -715,11 +714,11 @@ revmL2_t	*revm_create_L2ENT(void	*get_obj,
 				 void	*get_data,
 				 void	*set_data);
 revmcmd_t	*revm_create_CMDENT(int	(*exec)(void),
-				  int	(*reg)(u_int i, u_int ac, char **av),
+				  int	(*reg)(unsigned int i, unsigned int ac, char **av),
 				  int	flags, char *help);
-elfshredir_t	*revm_create_REDIR(u_char type, char *sname, char *dname, 
+elfshredir_t	*revm_create_REDIR(unsigned char type, char *sname, char *dname, 
 				 eresi_Addr saddr, eresi_Addr daddr);
-revmobj_t	*revm_create_IMMED(char type, char perm, u_int val);
+revmobj_t	*revm_create_IMMED(char type, char perm, unsigned int val);
 revmobj_t	*revm_create_IMMEDSTR(char perm, char *str);
 revmobj_t	*revm_create_LONG(char perm, eresi_Addr val);
 revmobj_t	*revm_create_CADDR(char perm, eresi_Addr val);
@@ -727,20 +726,20 @@ revmobj_t	*revm_create_DADDR(char perm, eresi_Addr val);
 
 /* Interface related functions */
 int		revm_system(char *cmd);
-void		revm_dbgid_set(u_int pid);
-u_int		revm_dbgid_get();
+void		revm_dbgid_set(unsigned int pid);
+unsigned int		revm_dbgid_get();
 
 /* Atomic operations */
 int             revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2);
 int		revm_nextconds_atomics(revmexpr_t *o1, revmexpr_t *o2);
-int		revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op);
+int		revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, unsigned char op);
 int		revm_hash_add(hash_t *h, revmexpr_t *e);
 int		revm_hash_del(hash_t *h, revmexpr_t *e);
 int		revm_elist_add(list_t *h, revmexpr_t *e);
 int		revm_elist_del(list_t *h, revmexpr_t *e);
-int		revm_hash_set(char *tab, char *elm, void *obj, u_int type);
-int		revm_elist_set(char *tab, char *elm, void *obj, u_int type);
-int		revm_testbit(revmexpr_t *o1, revmexpr_t *o2, u_int *result);
+int		revm_hash_set(char *tab, char *elm, void *obj, unsigned int type);
+int		revm_elist_set(char *tab, char *elm, void *obj, unsigned int type);
+int		revm_testbit(revmexpr_t *o1, revmexpr_t *o2, unsigned int *result);
 int		revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val);
 int		revm_object_set(revmexpr_t *e1, revmexpr_t *e2);
 
@@ -768,11 +767,11 @@ int		revm_edfmt_parse(elfshobj_t *file);
 int		revm_edfmt_uni_print(elfshobj_t *file);
 
 /* Type/Inform related functions */
-revmexpr_t	*revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
-revmexpr_t	*revm_inform_type_addr(char *t, char *n, eresi_Addr a, revmexpr_t *, u_char p, u_char r);
+revmexpr_t	*revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, unsigned char p, unsigned char r);
+revmexpr_t	*revm_inform_type_addr(char *t, char *n, eresi_Addr a, revmexpr_t *, unsigned char p, unsigned char r);
 int		revm_check_addr(elfshobj_t *obj, eresi_Addr add);
 int             revm_informed_print(char *name);
-int             revm_uninform_type(char *type, char *varname, u_char print);
+int             revm_uninform_type(char *type, char *varname, unsigned char print);
 int		revm_type_copy(char *from, char *to);
 int		revm_type_hashcreate(char *name);
 int		revm_type_print(char *type, char mode);
@@ -791,9 +790,10 @@ int		revm_expr_compare_by_name(char *original, char *candidate, eresi_Addr *val)
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name);
-revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, unsigned char isfield);
 int		revm_expr_destroy(char *e);
-revmexpr_t	*revm_expr_lookup(u_int oid);
+revmexpr_t	*revm_expr_lookup(unsigned int oid);
+
 
 /* May not be defined */
 #ifndef __KERNEL__

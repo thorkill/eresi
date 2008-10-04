@@ -15,9 +15,9 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 {
   revmexpr_t	*expr;
   char		*datastr;
-  u_int		opening;
-  u_int		closing;
-  u_int		beginning;
+  unsigned int		opening;
+  unsigned int		closing;
+  unsigned int		beginning;
   char		*namend;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -119,15 +119,15 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
     					void		*srcdata,
 					char		*datavalue)
 {
-  static u_int	toplevel = 1;
-  static u_int	pathsize = 0;
+  static unsigned int	toplevel = 1;
+  static unsigned int	pathsize = 0;
   char		pathbuf[BUFSIZ + 1] = {0x00};
   char		*recpath;
   revmexpr_t	*newexpr, *rootexpr, *prevexpr, *expr;
   void		*childata;
   aspectype_t	*childtype;
   revmexpr_t	*curdata;
-  u_int		len;
+  unsigned int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!curexpr)
@@ -391,7 +391,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 /* OP = REVM_OP_SET or REVM_OP_MATCH */
 static int		revm_expr_handle(revmexpr_t	*dest, 
 					 revmexpr_t	*source, 
-					 u_char		op)
+					 unsigned char		op)
 {
   int			ret;
   eresi_Addr		cmpval;
@@ -456,7 +456,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 
 
 /* Get (and optionally print) the tree of an expression */
-static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, u_int typeoff, u_int iter)
+static int	revm_expr_printrec(revmexpr_t *expr, unsigned int taboff, unsigned int typeoff, unsigned int iter)
 {
   aspectype_t	*curtype;
   char		buf[BUFSIZ];
@@ -576,14 +576,14 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
 					  revmexpr_t	*dest, 
 					  revmexpr_t	*source,
 					  char		*newname,
-					  u_int		namelen,
-					  u_int		nameoff,
+					  unsigned int		namelen,
+					  unsigned int		nameoff,
 					  char		*data)
 {
   int			ret;
   aspectype_t		*type;
   char			*childata;
-  u_int			len;
+  unsigned int			len;
 
   /* Preliminary checks */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -659,7 +659,7 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
 
 
 /* Copy an expression (set $e1 $e2) */
-revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
+revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, unsigned char isfield)
 {
   revmexpr_t	*dest;
   aspectype_t	*type;
@@ -1163,7 +1163,7 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
 {
   aspectype_t	*type;
   char		*typename;
-  u_int		typenamelen;
+  unsigned int		typenamelen;
   char		*curexprvalue;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1239,7 +1239,7 @@ int		revm_expr_destroy(char *e)
 
 
 /* This function lookup an expression from an object id */
-revmexpr_t	*revm_expr_lookup(u_int oid)
+revmexpr_t	*revm_expr_lookup(unsigned int oid)
 {
   revmexpr_t	*expr;
   container_t	*cont;

@@ -9,7 +9,7 @@
   <i386 func="i386_cmovs" opcode="0x48"/>
  */
 
-int     i386_cmovs(asm_instr *new, u_char *opcode, u_int len,
+int     i386_cmovs(asm_instr *new, unsigned char *opcode, unsigned int len,
 		   asm_processor *proc)
 {
   new->len += 1;

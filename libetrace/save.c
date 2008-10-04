@@ -16,7 +16,7 @@
  */
 static int		etrace_check_exclude(char *name)
 {
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   char			**keys;
   regex_t		*preg;
@@ -54,7 +54,7 @@ static int		etrace_check_exclude(char *name)
  */
 static int		elfsh_check_trace_functions(elfshobj_t *file)
 {
-  u_int			index;
+  unsigned int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
@@ -91,7 +91,7 @@ int queue_step = 0;
  */
 static int		etrace_queue_add(trace_t *elm)
 {
-  u_int			index;
+  unsigned int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -147,13 +147,13 @@ static int		etrace_queue_clean()
 static int		etrace_save_tracing_table(FILE *fp, elfshobj_t *file, hash_t *table)
 {
   int			z = 0;
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   char			**keys;
   trace_t		*ret_trace;
   char			*start;
   int			ret;
-  u_char		typed;
+  unsigned char		typed;
   char			bufex[BUFSIZ];
 
 
@@ -281,7 +281,7 @@ static int		etrace_save_tracing_table(FILE *fp, elfshobj_t *file, hash_t *table)
  */
 int			etrace_save_tracing(elfshobj_t *file)
 {
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   char			**keys;
   hash_t		*table;
@@ -382,8 +382,8 @@ int			etrace_save_tracing(elfshobj_t *file)
 	   "char logbuf[LOGBUFSIZ];\n"
 	   "suseconds_t msec;\n"
 	   "time_t sec;\n"
-	   "u_char siginit = %d;\n"
-	   "u_char no_trace = 0;\n"
+	   "unsigned char siginit = %d;\n"
+	   "unsigned char no_trace = 0;\n"
 	   "#define INITSIGNAL() \\\ndo { if (siginit == 0) { initsignal(); siginit = 1; } } while(0)\n"
 	   "static void sigcrash(int signal, siginfo_t *si, void *context)\n{\n"
 	   "\tsnprintf(logbuf, LOGBUFSIZ - 1, \n"

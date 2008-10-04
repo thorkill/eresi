@@ -9,7 +9,7 @@
   <instruction func="op_jle" opcode="0x7e"/>
 */
 
-int  op_jle(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int  op_jle(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;

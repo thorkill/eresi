@@ -9,7 +9,7 @@
   <instruction func="op_mov_al_ref_iv" opcode="0xa0"/>
 */
 
-int op_mov_al_ref_iv(asm_instr *new, u_char *opcode, u_int len,
+int op_mov_al_ref_iv(asm_instr *new, unsigned char *opcode, unsigned int len,
                      asm_processor *proc)
 {
   new->len += 1;

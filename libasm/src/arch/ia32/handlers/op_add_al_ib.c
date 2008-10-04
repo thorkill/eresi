@@ -10,7 +10,7 @@
   Instruction :         ADD
 */
 
-int op_add_al_ib(asm_instr *new, u_char *opcode, u_int len,
+int op_add_al_ib(asm_instr *new, unsigned char *opcode, unsigned int len,
                       asm_processor *proc) {
   new->instr = ASM_ADD;
   new->ptr_instr = opcode;

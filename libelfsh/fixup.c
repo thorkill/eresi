@@ -32,7 +32,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   elfsh_Sym	newent;
   elfsh_Sym	*actual;
   eresi_Addr	startaddr;
-  u_int		index;
+  unsigned int		index;
   char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -151,10 +151,10 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
  * @return
  */
 elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, 
-				      u_int off, elfshsect_t *dynsym)
+				      unsigned int off, elfshsect_t *dynsym)
 				     
 {
-  u_int		entsz;
+  unsigned int		entsz;
   uint32_t	index;
   elfsh_Rel	*reldyn;
   elfsh_Sym	*sym;
@@ -258,8 +258,8 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 {
   elfshsect_t		*plt;
-  u_int			off;
-  u_int			entsz;
+  unsigned int			off;
+  unsigned int			entsz;
   elfsh_Sym		*sym;
   char			*name;
   int			mode;

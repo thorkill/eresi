@@ -9,7 +9,7 @@
   <instruction func="op_jmp_ap" opcode="0xea"/>
  */
 
-int     op_jmp_ap(asm_instr *new, u_char *opcode, u_int len,
+int     op_jmp_ap(asm_instr *new, unsigned char *opcode, unsigned int len,
                   asm_processor *proc)
 {
   new->ptr_instr = opcode;

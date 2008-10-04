@@ -15,7 +15,7 @@ hash_t  *hash_lists = NULL;
 /**
  * @brief Initialize the hash table 
  */
-int elist_init(list_t *h, char *name, u_int type)
+int elist_init(list_t *h, char *name, unsigned int type)
 {
   list_t	*exist;
 
@@ -509,7 +509,7 @@ int		elist_compare(list_t *first, list_t *two)
 }
 
 /* Linear typing of list API */
-u_char		elist_linearity_get(list_t *l)
+unsigned char		elist_linearity_get(list_t *l)
 {
   if (!l)
     return (0);
@@ -517,7 +517,7 @@ u_char		elist_linearity_get(list_t *l)
 }
 
 /* Linear typing of list API */
-void		elist_linearity_set(list_t *l, u_char val)
+void		elist_linearity_set(list_t *l, unsigned char val)
 {
   if (!l)
     return;

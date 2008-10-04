@@ -11,19 +11,19 @@
 #include "revm.h"
 
 /* Nested loop labels memory : support foreach/forend construct */
-static u_int		curnest = 0;
+static unsigned int		curnest = 0;
 static char		*looplabels[REVM_MAXNEST_LOOP];
 static char		*endlabl     = NULL;
-static u_int		nextlabel    = 0;
+static unsigned int		nextlabel    = 0;
 static revmargv_t	*forend      = NULL;
 
 /* Pending label information : support labels */
-static u_int		pendinglabel = 0;
+static unsigned int		pendinglabel = 0;
 static revmargv_t	*newcmd      = NULL;
 
 /* Global variables for rewrite/case/endwrt parsing */
 static list_t		*condcmdlist = NULL;
-static u_char		isdefault    = 0;
+static unsigned char		isdefault    = 0;
 
 /**
  * Create a fresh label name 
@@ -158,7 +158,7 @@ int			revm_parse_construct(char *curtok)
  */
 int			revm_parseopt(int argc, char **argv)
 {
-  u_int			index;
+  unsigned int			index;
   int			ret;
   volatile revmcmd_t	*actual;
   volatile revmargv_t   *loopstart;

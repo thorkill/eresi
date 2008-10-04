@@ -1,6 +1,7 @@
 /* File to include to use the wrapper. */
 
-#include    "gdbwrapper-stddef.h"
+#include <sys/socket.h>
+
 
 
 typedef struct  gdbwrap_gdbreg32
@@ -50,3 +51,5 @@ void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_vmwareinit(gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+
+int              gdbwrap_simpleconnect(char *host, int port);

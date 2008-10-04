@@ -18,7 +18,7 @@ typedef struct 	s_dw2sect
 {
   elfshsect_t	*sect;
   void		*data;
-  u_long 	pos;	// Position
+  unsigned long 	pos;	// Position
 }		edfmtdw2sect_t; 
 
 /* Every DWARF2 section is kept on this structure */
@@ -44,23 +44,23 @@ typedef struct s_dw2cu edfmtdw2cu_t;
 /* Descripbe a location */
 typedef struct	s_dw2loc
 {
-  u_int		op;
+  unsigned int		op;
   eresi_Addr	value;
 }		edfmtdw2loc_t;
 
 /* Describe an abbrev attribute */
 typedef struct 	s_dw2abbattr
 {
-  u_int		attr;
-  u_int		form;
-  u_long	asize;
-  u_long	infopos;
+  unsigned int		attr;
+  unsigned int		form;
+  unsigned long	asize;
+  unsigned long	infopos;
 
   /* Form value */
   union 
   {
     char 	*vbuf; 	/* DW_FORM_ref_addr, DW_FORM_addr, DW_FORM_block[1-4], DW_FORM_block */
-    u_long 	udata;	/* DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
+    unsigned long 	udata;	/* DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
 			   DW_FORM_ref[1-8], DW_FORM_ref_udata */
     long	sdata;	/* DW_FORM_sdata */
     char      	*str;	/* DW_FORM_string, DW_FORM_strp */
@@ -72,18 +72,18 @@ typedef struct 	s_dw2abbattr
 /* Describe an abbrev entitie */
 struct 		s_dw2abbent
 {
-  u_int		key;			/* Key that represent the element */
+  unsigned int		key;			/* Key that represent the element */
   char		ckey[EDFMT_CKEY_SIZE];	/* String representation for hash table */
-  u_int		tag; 			/* A type (sort of) of this element */
-  u_char 	children;		/* Do we have children ? */
-  u_int		level;			/* Children lvel */
+  unsigned int		tag; 			/* A type (sort of) of this element */
+  unsigned char 	children;		/* Do we have children ? */
+  unsigned int		level;			/* Children lvel */
 
 #define DW2_MAX_ATTR 50
   edfmtdw2abbattr_t attr[DW2_MAX_ATTR];	/* List of attributes */
-  u_int		attrsize;		/* Current attribute size */
+  unsigned int		attrsize;		/* Current attribute size */
 
-  u_int 	sib;			/* Next position */
-  u_int 	child;			/* Child position */
+  unsigned int 	sib;			/* Next position */
+  unsigned int 	child;			/* Child position */
 };
 
 /**
@@ -92,7 +92,7 @@ struct 		s_dw2abbent
  */
 typedef struct	s_dw2macro
 {
-  u_char	def;
+  unsigned char	def;
   int		fileno;
   int		line;
   char		name[DW2_MACRON_SIZE];
@@ -144,16 +144,16 @@ typedef struct 	s_dw2cfastate
  */
 typedef struct 	s_dw2cfahead 
 {
-  u_int		offset;
-  u_int		init_offset;
-  u_int		end_offset;
-  u_int		length;
-  u_int		cid;
-  u_int		version;
+  unsigned int		offset;
+  unsigned int		init_offset;
+  unsigned int		end_offset;
+  unsigned int		length;
+  unsigned int		cid;
+  unsigned int		version;
   char		*augmentation;
-  u_long	code_align_factor;
+  unsigned long	code_align_factor;
   long		data_align_factor;
-  u_int		return_addr_reg;
+  unsigned int		return_addr_reg;
 
   edfmtdw2cfastate_t init;
 }		edfmtdw2cfahead_t;
@@ -165,28 +165,28 @@ typedef struct 	s_dw2cfahead
 typedef struct	s_dw2linehead
 {
   /* Header informations */
-  u_int		total_length;
+  unsigned int		total_length;
   u_short	version;
-  u_int		prologue_length;
-  u_int		min_length_instr;
-  u_int       	default_stmt;
+  unsigned int		prologue_length;
+  unsigned int		min_length_instr;
+  unsigned int       	default_stmt;
   int		line_base;
-  u_int		line_range;
-  u_int		opcode_base;
+  unsigned int		line_range;
+  unsigned int		opcode_base;
   char       	*std_opcode_length;
 
   char		**dirs;
   char		**files_name;
-  u_int		*files_dindex;
-  u_int		*files_time;
-  u_int		*files_len;
+  unsigned int		*files_dindex;
+  unsigned int		*files_time;
+  unsigned int		*files_len;
 
-  u_int		dirs_number;
-  u_int		files_number;
+  unsigned int		dirs_number;
+  unsigned int		files_number;
 
   /* Deducted positions */
-  u_long	end_pos;
-  u_long	prologue_pos;
+  unsigned long	end_pos;
+  unsigned long	prologue_pos;
 }		edfmtdw2linehead_t;
 
 /**
@@ -197,12 +197,12 @@ typedef struct 	s_dw2line
 {
   /* Main informations */
   eresi_Addr	addr;
-  u_int		line;
-  u_int		column;
+  unsigned int		line;
+  unsigned int		column;
 
   /* References */
   edfmtdw2cu_t	*cu;
-  u_int		fileid;
+  unsigned int		fileid;
 
   struct s_dw2line *next;
 }		edfmtdw2line_t;
@@ -213,13 +213,13 @@ typedef struct 	s_dw2line
 struct		s_dw2cu
 {
   /* Header informations */
-  u_int		length;		/* Compile unit length without this entry */
-  u_int		version;	/* DWARF2 version */
-  u_int		offset;		/* Abbrev offset */
-  u_int		addr_size;	/* Address size on this compile unit */
-  u_int		start_pos;	/* Start position of the compile unit (before the header) */
-  u_int		end_pos;	/* End position of the compile unit */
-  u_int		info_pos;	/* Right after the header */
+  unsigned int		length;		/* Compile unit length without this entry */
+  unsigned int		version;	/* DWARF2 version */
+  unsigned int		offset;		/* Abbrev offset */
+  unsigned int		addr_size;	/* Address size on this compile unit */
+  unsigned int		start_pos;	/* Start position of the compile unit (before the header) */
+  unsigned int		end_pos;	/* End position of the compile unit */
+  unsigned int		info_pos;	/* Right after the header */
 
   /* Designed file */
   elfshobj_t	*fileobj;
@@ -230,10 +230,10 @@ struct		s_dw2cu
   /* Files informations */
   char		**dirs;
   char		**files_name;
-  u_int		*files_dindex;
-  u_int		*files_time;
-  u_int		*files_len;
-  u_long	files_number;
+  unsigned int		*files_dindex;
+  unsigned int		*files_time;
+  unsigned int		*files_len;
+  unsigned long	files_number;
   
   struct s_dw2cu *next;
 };
@@ -329,27 +329,27 @@ do { 							\
 
 #define dwarf2_iuleb128(val, name) 			\
 do {							\
-  u_int bsize;						\
+  unsigned int bsize;						\
   val = edfmt_read_uleb128(dwarf2_a_pos(name), &bsize);	\
   dwarf2_inc_pos(name, bsize);			       	\
 } while (0)
 
 #define dwarf2_ileb128(val, name) 		        \
 do {							\
-  u_int bsize;						\
+  unsigned int bsize;						\
   val = edfmt_read_leb128(dwarf2_a_pos(name), &bsize); 	\
   dwarf2_inc_pos(name, bsize);			       	\
 } while (0)
 
 #define dwarf2_uleb128(val, name) 			\
 do {							\
-  u_int bsize;						\
+  unsigned int bsize;						\
   val = edfmt_read_uleb128(dwarf2_a_pos(name), &bsize);	\
 } while (0)
 
 #define dwarf2_leb128(val, name) 		        \
 do {							\
-  u_int bsize;						\
+  unsigned int bsize;						\
   val = edfmt_read_leb128(dwarf2_a_pos(name), &bsize); 	\
 } while (0)
 

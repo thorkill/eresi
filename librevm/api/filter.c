@@ -15,7 +15,7 @@
 void			revm_filter_zero(char *buf)
 {
   char			*ptr;
-  u_int			size;
+  unsigned int			size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -26,7 +26,7 @@ void			revm_filter_zero(char *buf)
       if (ptr != NULL)
 	{
 	  *ptr = 0x00;
-	  memmove(ptr + 1, ptr + 4, (u_int) buf + size - (u_int) (ptr + 4));
+	  memmove(ptr + 1, ptr + 4, (unsigned int) buf + size - (unsigned int) (ptr + 4));
 	  buf = ptr + 1;
 	  size -= 3;
 	}
@@ -36,7 +36,7 @@ void			revm_filter_zero(char *buf)
 	  if (ptr == NULL)
 	    break;
 	  *ptr = 0x00;
-	  memmove(ptr + 1, ptr + 3, (u_int) buf + size - (u_int) (ptr + 3));
+	  memmove(ptr + 1, ptr + 3, (unsigned int) buf + size - (unsigned int) (ptr + 3));
 	  buf = ptr + 1;
 	  size -= 2;
 	}
@@ -51,7 +51,7 @@ void			revm_filter_zero(char *buf)
 /* Replace \xNUM taking care of the \x00 in a string */
 char		*revm_filter_param(char *buf, char *ptr)
 {
-  u_int		nbr;
+  unsigned int		nbr;
   char		c;
   char		d;
 

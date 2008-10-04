@@ -13,7 +13,7 @@
   <instruction func="op_prefix_ds" opcode="0x3e"/>
 */
 
-int op_prefix_ds(asm_instr *new, u_char *opcode, u_int len,
+int op_prefix_ds(asm_instr *new, unsigned char *opcode, unsigned int len,
 		 asm_processor *proc)
 {
   if (!new->ptr_prefix)

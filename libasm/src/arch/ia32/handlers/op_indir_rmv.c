@@ -9,7 +9,7 @@
   <instruction func="op_indir_rmv" opcode="0xff"/>
 */
 
-int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len,
+int op_indir_rmv(asm_instr *new, unsigned char *opcode, unsigned int len,
 		 asm_processor *proc)
 {
   struct s_modrm        *modrm;

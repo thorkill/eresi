@@ -234,7 +234,7 @@ while (0)
 
 
 /* A mutex is just an unsigned char */
-typedef u_char elfshmutex_t;
+typedef unsigned char elfshmutex_t;
 
 
 /* The internal object descriptor for e2dbg when resolving 
@@ -253,7 +253,7 @@ typedef	struct	s_eobj
 typedef struct		s_e2dbgparams
 {
   char			**av;
-  u_int			ac;
+  unsigned int			ac;
 }			e2dbgparams_t;
 
 
@@ -281,9 +281,9 @@ typedef struct		s_thread
   int			count;			/* State when breakpointing */
 
   eresi_Addr		past;			/* Previous opcode instead of break */
-  u_char		step;			/* Is this thread beeing stepped ? */
-  u_char		was_step;		/* Is this thread was just beeing stepped ? */
-  u_char		trace;			/* Is the thread beeing itraced ? */
+  unsigned char		step;			/* Is this thread beeing stepped ? */
+  unsigned char		was_step;		/* Is this thread was just beeing stepped ? */
+  unsigned char		trace;			/* Is the thread beeing itraced ? */
   void			*(*entry)(void *);	/* Entry point */
   pthread_attr_t	*attr;			/* Thread attributes */
   ucontext_t		*context;		/* Thread context on signal */
@@ -329,7 +329,7 @@ typedef struct		s_e2dbgworld
   char			preloaded;			/* Say if we were preloaded */
   hash_t		bp;				/* Breakpoints hash table */
   hash_t		threads;			/* Threads hash table */
-  u_char		sourcing;			/* We are executing a debugger script */
+  unsigned char		sourcing;			/* We are executing a debugger script */
   e2dbgsyms_t		syms;				/* Resolved symbol informations */
 
   /* Display commands memory */
@@ -341,9 +341,9 @@ typedef struct		s_e2dbgworld
   elfshbp_t		*curbp;				/* Current breakpoint if any */
   e2dbgthread_t		*curthread;			/* Currently working thread */
   e2dbgthread_t		*stoppedthread;			/* Latest stopped thread */
-  u_int			threadnbr;			/* Number of existing threads */
-  u_int			threadsyncnbr;			/* Number of threads with contexts */
-  u_int			threadgotnbr;			/* Number of threads with retreived contexts */
+  unsigned int			threadnbr;			/* Number of existing threads */
+  unsigned int			threadsyncnbr;			/* Number of threads with contexts */
+  unsigned int			threadgotnbr;			/* Number of threads with retreived contexts */
 
   /* Synchronization values */
 #define			E2DBG_MUTEX_UNLOCKED	0
@@ -441,15 +441,15 @@ void            *e2dbg_getret_sparc32(void *frame);
 int             e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp);
 
 /* e2dbg vector API for registration */
-int		e2dbg_register_sregshook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_setstephook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
+int		e2dbg_register_sregshook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_gregshook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_getpchook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_setstephook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_resetstephook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_nextfphook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_nextfphook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_getrethook(unsigned char at, unsigned char ht, unsigned char ost, void *f);
+int		e2dbg_register_breakhook(unsigned char a, unsigned char o, unsigned char os, void *fct);
 
 /* More e2dbg API */
 char            *e2dbg_get_string(char **params);
@@ -466,8 +466,8 @@ elfshlinkmap_t*	e2dbg_linkmap_getaddr();
 /* breakpoint API */
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);
 elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid);
-int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags);
-int		e2dbg_display(char **cmd, u_int nbr);
+int		e2dbg_breakpoint_add(eresi_Addr addr, unsigned char flags);
+int		e2dbg_display(char **cmd, unsigned int nbr);
 int		e2dbg_is_watchpoint(elfshbp_t *b);
 elfshbp_t	*e2dbg_breakpoint_lookup(char *name);
 eresi_Addr	e2dbg_breakpoint_find_addr(char *str);

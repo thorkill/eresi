@@ -80,9 +80,9 @@ void			elfsh_shift_mips_relocs(elfshobj_t *file, eresi_Addr diff)
 int			elfsh_shift_alpha_relocs(elfshobj_t	*file, 
 						 char		*name, 
 						 elfshsect_t	*altgot, 
-						 u_int		off)
+						 unsigned int		off)
 {
-  u_int			entsz;
+  unsigned int			entsz;
   elfsh_Rela		*rel;
   eresi_Addr		addr;
 

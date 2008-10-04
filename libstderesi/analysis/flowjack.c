@@ -27,7 +27,7 @@ int			cmd_flowjack(void)
   asm_instr		ins;
   elfsh_SAddr		off;
   unsigned long		new_addr;
-  u_int			value;
+  unsigned int			value;
   elfshobj_t		*file;
   char			*param;
   unsigned int		size;
@@ -95,7 +95,7 @@ int			cmd_flowjack(void)
 
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, buffer, size, -1);
       elfsh_raw_read(world.curjob->curfile, foff, buffer, size);
-      asm_read_instr(&ins, (u_char *) buffer, size, &world.proc);
+      asm_read_instr(&ins, (unsigned char *) buffer, size, &world.proc);
       
       puts(" [*] would patch -> ");
       name = elfsh_reverse_metasym(world.curjob->curfile, cal->vaddr, &off);

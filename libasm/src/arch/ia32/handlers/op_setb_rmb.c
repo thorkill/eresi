@@ -16,7 +16,7 @@
  * @return Length of instruction.
 */
 
-int op_setb_rmb(asm_instr *new, u_char *opcode, u_int len, 
+int op_setb_rmb(asm_instr *new, unsigned char *opcode, unsigned int len, 
 		asm_processor *proc)
 {
   new->instr = ASM_SET_U_LESS;

@@ -18,14 +18,14 @@
  */
 eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
 				 asm_processor	*proc,
-				 u_char		*buf,
-				 u_int		len,
+				 unsigned char		*buf,
+				 unsigned int		len,
 				 eresi_Addr	vaddr,
-				 u_int		*dis)
+				 unsigned int		*dis)
 {
   int		   stop;
   elfsh_Sym	   *sym;
-  u_int		   ilen,done;
+  unsigned int		   ilen,done;
   eresi_Addr	   init_addr;
   asm_instr	   ins;
   int		   arch_bin;
@@ -38,7 +38,7 @@ eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
 
   for (*dis = stop = 0; !stop; *dis += ilen) 
     {
-      ilen = asm_read_instr(&ins, (u_char *) buf + *dis, 
+      ilen = asm_read_instr(&ins, (unsigned char *) buf + *dis, 
 			    len - *dis, proc);
 
       if (!*dis)
@@ -161,14 +161,14 @@ eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
  * manner 
  */
 eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
-				u_char		*buf,
-				u_int		len,
+				unsigned char		*buf,
+				unsigned int		len,
 				eresi_Addr	vaddr)
 {
   eresi_Addr	main_addr;
   container_t   *main_container;
   container_t   *tmpcntnr;
-  u_int		dis;
+  unsigned int		dis;
   elfsh_Sym	*sym;
   elfsh_Sym	bsym;
   

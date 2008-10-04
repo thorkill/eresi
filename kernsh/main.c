@@ -18,7 +18,7 @@ void		kernsh_setup_quit_msg()
   revm_quitmsg_set(logbuf);
 }
 
-void		kernsh_create_prompt(char *buf, u_int size)
+void		kernsh_create_prompt(char *buf, unsigned int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",

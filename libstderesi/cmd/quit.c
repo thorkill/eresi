@@ -8,7 +8,7 @@
 */
 #include "libstderesi.h"
 
-u_char quit_msg_setup = 0;
+unsigned char quit_msg_setup = 0;
 char	quit_msg[512];
 
 /**

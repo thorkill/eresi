@@ -118,8 +118,8 @@ container_t *mjr_lookup_container(mjrcontext_t *ctx, unsigned int id)
 mjrlink_t	*mjr_container_add_link(mjrcontext_t	*ctx,
 					container_t	*cntnr,
 					unsigned int	id,
-					u_char		link_type,
-					u_char		link_scope,
+					unsigned char		link_type,
+					unsigned char		link_scope,
 					int		link_direction)
 {
   list_t	*linklist;
@@ -236,10 +236,10 @@ int		match_block(void *elem, void *match)
  * @brief Creates a block container
  */
 container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
-					    u_int		symoff,
+					    unsigned int		symoff,
 					    eresi_Addr		vaddr,
-					    u_int		size,
-					    u_char		seen)
+					    unsigned int		size,
+					    unsigned char		seen)
 {
   mjrblock_t 	*newblock;
   container_t	*newcntnr;
@@ -284,7 +284,7 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
  */
 container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
 					       eresi_Addr	vaddr,
-					       u_int		size,
+					       unsigned int		size,
 					       char		*name,
 					       mjrblock_t	*first,
 					       char		*md5)
@@ -337,7 +337,7 @@ container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
 container_t	*mjr_get_container_by_vaddr(mjrcontext_t *ctx, eresi_Addr vaddr, int type)
 {
   container_t	*cur;
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__,__FUNCTION__,__LINE__);
 
@@ -355,7 +355,7 @@ void		mjr_container_dump(mjrcontext_t *ctx, int what)
 {
   container_t	*cur;
   mjrfunc_t	*tf;
-  u_int		idx;
+  unsigned int		idx;
   
   for (idx = 1, cur = ctx->reg_containers[idx]; cur; cur = ctx->reg_containers[++idx])
     {

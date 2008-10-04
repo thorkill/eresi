@@ -21,7 +21,7 @@ int		main(int argc, char **argv)
   int		ret;
   elfsh_Sym	sym;
   char		name[256];
-  u_int		idx;
+  unsigned int		idx;
 
   file = elfsh_map_obj(INPUT_FILE);
   if (!file)

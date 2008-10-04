@@ -96,11 +96,11 @@ int		cmd_rel()
   char		*type;
   char		*typeshort;
   char		*name;
-  u_int		index;
-  u_int		index2;
-  u_int		typenum;
+  unsigned int		index;
+  unsigned int		index2;
+  unsigned int		typenum;
   char		buff[256];
-  u_int         size;
+  unsigned int         size;
   revmconst_t  *types;
   char		addstr[32];
   char		logbuf[BUFSIZ];

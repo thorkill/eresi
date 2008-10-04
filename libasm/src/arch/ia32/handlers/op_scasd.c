@@ -11,7 +11,7 @@
   <instruction func="op_scasd" opcode="0xaf"/>
 */
 
-int op_scasd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_scasd(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) 
 {
   new->len += 1;
   if (asm_proc_opsize(proc))

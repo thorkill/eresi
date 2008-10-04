@@ -11,7 +11,7 @@
 typedef struct s_asm_i386_processor	asm_i386_processor;
 typedef struct s_asm_i386_table		asm_i386_table;
 
-void	asm_resolve_ia32(void *d, u_int, char *, u_int);
+void	asm_resolve_ia32(void *d, unsigned int, char *, unsigned int);
 
 /**
  * ia32 related functions.
@@ -935,7 +935,7 @@ enum asm_instr {
 
 struct s_asm_i386_processor {
   /*	handler to resolving function		*/
-  void                  (*resolve_immediate)(void *, u_int, char *, u_int);
+  void                  (*resolve_immediate)(void *, unsigned int, char *, unsigned int);
   
   /*	handler data pointer	*/
   void                  *resolve_data;
@@ -946,7 +946,7 @@ struct s_asm_i386_processor {
   /*						*/
   char                  **instr_table;
   
-  int			(*fetch)(asm_instr *, u_char *, u_int, 
+  int			(*fetch)(asm_instr *, unsigned char *, unsigned int, 
 				 asm_processor *);
   /*    output handler. print instruction in a readable string		*/
   char			*(*display_handle)(asm_instr *instr, int addr);

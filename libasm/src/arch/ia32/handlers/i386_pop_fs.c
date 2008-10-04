@@ -10,7 +10,7 @@
   Instruction :         POP
 */
 
-int i386_pop_fs(asm_instr *new, u_char *opcode, u_int len,
+int i386_pop_fs(asm_instr *new, unsigned char *opcode, unsigned int len,
                 asm_processor *proc)
 {
     new->instr = ASM_POP;

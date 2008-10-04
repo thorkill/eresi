@@ -52,8 +52,8 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
 					 elfsh_Sym *s, char *name)
 {
   char		*str;
-  u_int		len;
-  u_int		new_len;
+  unsigned int		len;
+  unsigned int		new_len;
   void		*data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

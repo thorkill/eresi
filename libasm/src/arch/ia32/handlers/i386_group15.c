@@ -9,7 +9,7 @@
   <instruction func="i386_group15" opcode="0xae"/>
  */
 
-int i386_group15(asm_instr *new, u_char *opcode, u_int len,
+int i386_group15(asm_instr *new, unsigned char *opcode, unsigned int len,
 		 asm_processor *proc)
 {
   struct s_modrm        *modrm;

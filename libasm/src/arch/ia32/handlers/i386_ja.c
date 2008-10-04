@@ -18,7 +18,7 @@
 */
 
 
-int i386_ja(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int i386_ja(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->type = ASM_TYPE_CONDBRANCH;
   new->instr = ASM_BRANCH_U_GREATER;

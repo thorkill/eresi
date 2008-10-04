@@ -20,7 +20,8 @@ DBGNAME64		= e2dbg64
 CFLAGS32		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
 			-I../libetrace/include/ -I../libstderesi/include/	 \
-			-I../libasm/include/ \
+			-I../libasm/include/ 					 \
+			-I../libgdbwrap/include/				 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/	 \
@@ -31,6 +32,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libelfsh/include/ -I../libdump/include/      	 \
 			-I../libetrace/include/ -I../libstderesi/include/	 \
 			-I../libasm/include/ \
+			-I../libgdbwrap/include/				 \
 			-I../libui/include/ -I../libmjollnir/include/ 		 \
 			-I../libaspect/include -I../librevm/include/		 \
 			-I../libedfmt/include/ -I../liballocproxy/include/       \

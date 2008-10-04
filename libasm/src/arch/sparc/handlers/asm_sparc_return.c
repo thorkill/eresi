@@ -15,7 +15,7 @@
  */
 
 int
-asm_sparc_return(asm_instr * ins, u_char * buf, u_int len,
+asm_sparc_return(asm_instr * ins, unsigned char * buf, unsigned int len,
 		 asm_processor * proc)
 {
   struct s_decode_format3 opcode;

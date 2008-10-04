@@ -50,7 +50,7 @@ int		revm_system(char *cmd)
 
   /* If the user shell is unspecified we use system */
   nbr = revm_findblanks(cmd);
-  av = revm_doargv(nbr, (u_int *)&argc, cmd);
+  av = revm_doargv(nbr, (unsigned int *)&argc, cmd);
   av++;
   if (!fork())
     ret = execvp(av[0], av);
@@ -229,12 +229,12 @@ void		revm_banner_print()
 /** 
  * Print the Unknown buffer 
  */
-char		*revm_build_unknown(char *buf, const char *str, u_long type)
+char		*revm_build_unknown(char *buf, const char *str, unsigned long type)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  snprintf(buf, ERESI_MEANING, "%s %08X", str, (u_int) type);
+  snprintf(buf, ERESI_MEANING, "%s %08X", str, (unsigned int) type);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
 }
@@ -243,7 +243,7 @@ char		*revm_build_unknown(char *buf, const char *str, u_long type)
 /** 
  * Retreive a file object giving its unique ID 
  */
-elfshobj_t	*revm_getfile(u_int id)
+elfshobj_t	*revm_getfile(unsigned int id)
 {
   elfshobj_t	*cur;
   elfshobj_t	*subcur;
@@ -290,7 +290,7 @@ elfshobj_t	*revm_getfile(u_int id)
 /** 
  * Retreive a module object giving its unique ID 
  */
-revmmod_t	*revm_getmod(u_int index)
+revmmod_t	*revm_getmod(unsigned int index)
 {
   revmmod_t	*cur;
 

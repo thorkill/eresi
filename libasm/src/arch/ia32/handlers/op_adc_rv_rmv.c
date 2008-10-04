@@ -9,7 +9,7 @@
   <instruction func="op_adc_rv_rmv" opcode="0x13"/>
 */
 
-int op_adc_rv_rmv(asm_instr *new, u_char *opcode, u_int len,
+int op_adc_rv_rmv(asm_instr *new, unsigned char *opcode, unsigned int len,
 		  asm_processor *proc)
 {
   new->len += 1;

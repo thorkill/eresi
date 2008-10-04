@@ -38,7 +38,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 {
   int			ilen;
   container_t		*bloc;
-  u_int			addend;
+  unsigned int			addend;
 
   /* Initialize stuffs */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

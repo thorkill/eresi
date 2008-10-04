@@ -73,7 +73,7 @@ elfsh_Rela	elfsh_create_relaent(eresi_Addr type, eresi_Addr sym,
  * @param r
  * @return
  */
-u_int	elfsh_get_reltype(elfsh_Rel *r)
+unsigned int	elfsh_get_reltype(elfsh_Rel *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -89,7 +89,7 @@ u_int	elfsh_get_reltype(elfsh_Rel *r)
  * @param type
  * @return
  */
-u_int	elfsh_set_reltype(elfsh_Rel *r, eresi_Addr type)
+unsigned int	elfsh_set_reltype(elfsh_Rel *r, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -105,7 +105,7 @@ u_int	elfsh_set_reltype(elfsh_Rel *r, eresi_Addr type)
  * @param r
  * @return
  */
-u_int	elfsh_get_relsym(elfsh_Rel *r)
+unsigned int	elfsh_get_relsym(elfsh_Rel *r)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -121,7 +121,7 @@ u_int	elfsh_get_relsym(elfsh_Rel *r)
  * @param sym
  * @return
  */
-u_int	elfsh_set_relsym(elfsh_Rel *r, eresi_Addr sym)
+unsigned int	elfsh_set_relsym(elfsh_Rel *r, eresi_Addr sym)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -205,10 +205,10 @@ int     elfsh_set_reladdend(elfsh_Rela *r, eresi_Addr val)
  */
 int		elfsh_endianize_relocs(elfshsect_t *s)
 {
-  u_int		idx;
+  unsigned int		idx;
   elfsh_Rel	*rel;
   elfsh_Rela	*rela;
-  u_int		sz;
+  unsigned int		sz;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!s)
@@ -256,11 +256,11 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
  */
 elfshsect_t	*elfsh_get_reloc(elfshobj_t *file, 
 				 eresi_Addr range, 
-				 u_int *nbr)
+				 unsigned int *nbr)
 {
   elfshsect_t	*s;
-  u_int		type;
-  u_int		sz;
+  unsigned int		type;
+  unsigned int		sz;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -369,7 +369,7 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
 					     elfsh_Rel	*r)
 {
   elfsh_Sym	*sym;
-  u_int		tmp;
+  unsigned int		tmp;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -453,9 +453,9 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
 {
   elfshsect_t	*sect;
   elfsh_Rel	*cur;
-  u_int		range;
-  u_int		idx;
-  u_int		num;
+  unsigned int		range;
+  unsigned int		idx;
+  unsigned int		num;
   char		*curnam;
   void		*data;
 
@@ -502,7 +502,7 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
   int		*dword;
   char		*str;
   eresi_Addr   	vaddr;
-  u_int		index;
+  unsigned int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

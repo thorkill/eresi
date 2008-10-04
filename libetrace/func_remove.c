@@ -54,7 +54,7 @@ int			etrace_funcrm(char *trace, char *name)
 int			etrace_funcrmall(char *trace)
 {
   char			**keys;
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   trace_t		*ret_trace;
   hash_t		*table;

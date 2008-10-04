@@ -13,7 +13,7 @@
  * @param proc Pointer to processor structure.
 */
 
-int op_enter(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_enter(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->instr = ASM_ENTER;
   new->len += 1;

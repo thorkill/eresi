@@ -18,7 +18,7 @@
  * @param mode
  * @return
  */
-char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
+char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, unsigned char mode)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -66,7 +66,7 @@ char	elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
  */
 int		elfsh_add_section(elfshobj_t	*file,
 				  elfshsect_t	*sct,
-				  u_int		range,
+				  unsigned int		range,
 				  void		*dat,
 				  int		shiftmode)
 {
@@ -200,7 +200,7 @@ int		elfsh_add_section(elfshobj_t	*file,
  */
 int             elfsh_add_runtime_section(elfshobj_t    *file,
 					  elfshsect_t   *sct,
-					  u_int         range,
+					  unsigned int         range,
 					  void          *dat)
 {
   int		ret;
@@ -321,7 +321,7 @@ elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
  */
 static
 elfshsect_t		*elfsh_get_section_by_type_withlist(elfshobj_t	*file,
-							    u_int	type,
+							    unsigned int	type,
 							    int		range,
 							    int		*index,
 							    int		*strindex,
@@ -375,7 +375,7 @@ elfshsect_t		*elfsh_get_section_by_type_withlist(elfshobj_t	*file,
  * @return
  */
 elfshsect_t		*elfsh_get_section_by_type(elfshobj_t	*file,
-						   u_int	type,
+						   unsigned int	type,
 						   int		range,
 						   int		*index,
 						   int		*strindex,
@@ -628,12 +628,12 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
  * @return
  */
 elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
-						     u_int	foff,
+						     unsigned int	foff,
 						     elfsh_SAddr *offset)
 {
   elfshsect_t	*s;
   char		i;
-  u_int		bval;
+  unsigned int		bval;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -699,7 +699,7 @@ elfshsect_t		*elfsh_get_section_from_sym(elfshobj_t *file,
  */
 int		elfsh_fill_section(elfshsect_t	*sect, 
 				   char		c,
-				   u_int	size)
+				   unsigned int	size)
 {
   char		*str;
   int		ret;
@@ -739,7 +739,7 @@ int		elfsh_fill_section(elfshsect_t	*sect,
  */
 int		elfsh_append_data_to_section(elfshsect_t	*sect,
 					     void		*input,
-					     u_int		len)
+					     unsigned int		len)
 {
   elfshsect_t	*actual;
 
@@ -847,8 +847,8 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   elfsh_Shdr		*enew;
   elfsh_Phdr		*pht;
   elfsh_Sym		*sym;
-  u_int			idx;
-  u_int			size;
+  unsigned int			idx;
+  unsigned int			size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1050,7 +1050,7 @@ elfshsect_t		*elfsh_get_rsection_list(elfshobj_t *file, int *num)
 elfshsect_t		*elfsh_get_section_by_idx(elfshsect_t *list, 
 						  eresi_Addr index)
 {
-  u_int			cur;
+  unsigned int			cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1080,8 +1080,8 @@ elfshsect_t		*elfsh_get_section_by_nam(elfshobj_t *file, char *name)
  * @param sizelem The object size within this section, or 1 if reading raw.
  * @return A pointer on the section's data or NULL if error.
  */
-void		*elfsh_get_section_data(elfshsect_t *obj, u_int off, 
-					u_int sizelem)
+void		*elfsh_get_section_data(elfshsect_t *obj, unsigned int off, 
+					unsigned int sizelem)
 {
   char		*data;
 
@@ -1115,10 +1115,10 @@ void		*elfsh_get_section_data(elfshsect_t *obj, u_int off,
  * @return Error (-1) or Success (0).
  */
 int		elfsh_write_section_data(elfshsect_t		*sect,
-					 u_int			off,
+					 unsigned int			off,
 					 char			*data,
-					 u_int			size,
-					 u_int			sizelem)
+					 unsigned int			size,
+					 unsigned int			sizelem)
 {
   void	*rdata;
 

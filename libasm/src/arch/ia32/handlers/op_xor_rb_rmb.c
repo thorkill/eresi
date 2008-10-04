@@ -16,7 +16,7 @@
  * @param proc Pointer to processor structure.
 */
 
-int op_xor_rb_rmb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_xor_rb_rmb(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) 
 {
   new->instr = ASM_XOR;
   new->len += 1;

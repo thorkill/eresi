@@ -253,7 +253,7 @@ int                     e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp)
   fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] bp->addr %016x \n", bp->addr);
 #endif
 
-  memcpy(bp->savedinstr, (u_char *) bp->addr, 8);
+  memcpy(bp->savedinstr, (unsigned char *) bp->addr, 8);
 
   prot = elfsh_munprotect(f, bp->addr, 8);
   if (prot == (-1))
@@ -263,10 +263,10 @@ int                     e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp)
   fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] after munprotect\n");
 #endif
 
-  //*(u_long *)  bp->addr      = 0x91d02001;		/* opcode for ta 1 */
+  //*(unsigned long *)  bp->addr      = 0x91d02001;		/* opcode for ta 1 */
 
-  *((u_long *) bp->addr)     = 0x01000000;		/* put nop here */
-  *((u_long *) bp->addr + 1) = 0x01000000;		/* put nop here */
+  *((unsigned long *) bp->addr)     = 0x01000000;		/* put nop here */
+  *((unsigned long *) bp->addr + 1) = 0x01000000;		/* put nop here */
 
   addr = (bp->addr & (~7));
 

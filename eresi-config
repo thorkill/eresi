@@ -11,7 +11,7 @@
 TESTING=1
 
 # FIXME: incorrect ! ERESI can be present anywhere, or even already installed
-TESTING_ROOT=${ERESI_ENV}
+TESTING_ROOT=/home/camoroz0/eresi-0.81-b1-netdebug/
 
 # Those variables are path were eresi headers and libraries were installed.
 #

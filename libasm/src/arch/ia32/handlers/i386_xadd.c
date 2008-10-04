@@ -11,7 +11,7 @@
  <i386 func="" opcode="0xc1"/>
 */
 
-int i386_xadd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int i386_xadd(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   struct s_modrm        *modrm;
   modrm = (struct s_modrm *) opcode;

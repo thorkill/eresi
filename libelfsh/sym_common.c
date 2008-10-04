@@ -81,7 +81,7 @@ int	elfsh_set_symbol_value(elfsh_Sym *s, eresi_Addr value)
  * @param s
  * @return
  */
-u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
+unsigned char	elfsh_get_symbol_bind(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -97,7 +97,7 @@ u_char	elfsh_get_symbol_bind(elfsh_Sym *s)
  * @param opt
  * @return
  */
-u_char	elfsh_set_symbol_bind(elfsh_Sym *s, eresi_Addr opt)
+unsigned char	elfsh_set_symbol_bind(elfsh_Sym *s, eresi_Addr opt)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -113,7 +113,7 @@ u_char	elfsh_set_symbol_bind(elfsh_Sym *s, eresi_Addr opt)
  * @param s
  * @return
  */
-u_char	elfsh_get_symbol_type(elfsh_Sym *s)
+unsigned char	elfsh_get_symbol_type(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -129,7 +129,7 @@ u_char	elfsh_get_symbol_type(elfsh_Sym *s)
  * @param type
  * @return
  */
-u_char	elfsh_set_symbol_type(elfsh_Sym *s, eresi_Addr type)
+unsigned char	elfsh_set_symbol_type(elfsh_Sym *s, eresi_Addr type)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -145,7 +145,7 @@ u_char	elfsh_set_symbol_type(elfsh_Sym *s, eresi_Addr type)
  * @param s
  * @return
  */
-u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
+unsigned char	elfsh_get_symbol_visibility(elfsh_Sym *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -162,7 +162,7 @@ u_char	elfsh_get_symbol_visibility(elfsh_Sym *s)
  * @return
  * 
  */
-u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, eresi_Addr vis)
+unsigned int	elfsh_set_symbol_visibility(elfsh_Sym *s, eresi_Addr vis)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -178,7 +178,7 @@ u_int	elfsh_set_symbol_visibility(elfsh_Sym *s, eresi_Addr vis)
  * @param s
  * @return
  */
-u_int	elfsh_get_symbol_link(elfsh_Sym *s) 
+unsigned int	elfsh_get_symbol_link(elfsh_Sym *s) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -194,14 +194,14 @@ u_int	elfsh_get_symbol_link(elfsh_Sym *s)
  * @param val
  * @return
  */
-u_int	elfsh_set_symbol_link(elfsh_Sym *s, eresi_Addr val)
+unsigned int	elfsh_set_symbol_link(elfsh_Sym *s, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (NULL == s)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", -1);
-  s->st_shndx = (u_int) val;
+  s->st_shndx = (unsigned int) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -438,8 +438,8 @@ char		*elfsh_reverse_metasym(elfshobj_t *file,
 int		elfsh_endianize_symtab(elfshsect_t *tab)
 {
   elfsh_Sym	*symtab;
-  u_int		idx;
-  u_int		sz;
+  unsigned int		idx;
+  unsigned int		sz;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -484,10 +484,10 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 				 eresi_Addr limit, int inc)
 {
 #if	__DEBUG_RELADD__
-  static u_int	totshift = 0;
+  static unsigned int	totshift = 0;
 #endif
-  u_int		nbr;
-  u_int		idx;
+  unsigned int		nbr;
+  unsigned int		idx;
   elfsh_Sym	*sym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -607,12 +607,12 @@ elfshobj_t   		*elfsh_symbol_search(elfshobj_t *file, char *name)
 {
   char			**keys;
   int			keynbr;
-  u_int			index;
+  unsigned int			index;
   elfshobj_t		*child, *find = NULL;
   elfsh_Sym		*sym;
   elfshsect_t		*sect;
   char			*sect_name;
-  u_int			bindnum;
+  unsigned int			bindnum;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
   

@@ -20,7 +20,7 @@ int		revm_system_nowait(char *cmd)
 {
   char		**argv;
   int		blanks;
-  u_int		argc;
+  unsigned int		argc;
   int		ret;
 
   blanks = revm_findblanks(cmd);
@@ -48,7 +48,7 @@ int		revm_system_nowait(char *cmd)
  * @param min
  * @param max
  */
-void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
+void		revm_graph_legend(int fd, char *fnc, unsigned int min, unsigned int max)
 {
   char	buf[BUFSIZ];
 
@@ -84,13 +84,13 @@ void		revm_disasm_block(int fd, mjrblock_t *blk)
   char		*buffer;
   char		*name;
   elfsh_SAddr	off;
-  u_int		index = 0;
+  unsigned int		index = 0;
   int		revm_quiet,revm_colors;
   int		ret,cur;
-  u_int		foffset;
-  u_int		reloff;
+  unsigned int		foffset;
+  unsigned int		reloff;
   char		tmpbuf[20];
-  u_int		len;
+  unsigned int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_quiet = world.state.revm_quiet;
@@ -192,7 +192,7 @@ int		revm_prepare_storage_dir(void)
   char		*token, *brkt;
   char		*sep = "/";
   char		tmp[BUFSIZ], path[BUFSIZ];
-  u_int		cur;
+  unsigned int		cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -260,10 +260,10 @@ char		*revm_get_dotfile_name(char *opt,char *prefix)
  * @param s
  * @return
  */
-u_int		revm_get_vaddr(char *s)
+unsigned int		revm_get_vaddr(char *s)
 {
   elfsh_Sym	*sym;
-  u_int		min;
+  unsigned int		min;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -279,10 +279,10 @@ u_int		revm_get_vaddr(char *s)
 /**
  * Returns next function vaddress 
  */
-u_int		revm_get_next_function_vaddr(u_int min)
+unsigned int		revm_get_next_function_vaddr(unsigned int min)
 {
   container_t *cntnr;
-  u_int		max,tmp,ltmp;
+  unsigned int		max,tmp,ltmp;
   char		**keys;
   int		idx,fnbr;
 
@@ -656,11 +656,11 @@ int	revm_open_dot_file(char *dotfile, int *fd)
 
 
 
-u_int		revm_get_min_param(void)
+unsigned int		revm_get_min_param(void)
 {
   revmexpr_t	*expr;
   revmobj_t	*var;
-  u_int		min;
+  unsigned int		min;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   expr = revm_lookup_var(world.curjob->curcmd->param[1]);
@@ -682,10 +682,10 @@ int		cmd_graph(void)
   container_t	*cntnr;
   int		fd;
   char		buf[BUFSIZ];
-  u_int		min;
-  u_int		max;
+  unsigned int		min;
+  unsigned int		max;
   char		*dotfile;
-  u_int		maxdepth;
+  unsigned int		maxdepth;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   

@@ -64,11 +64,11 @@ eresi_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
  * @param size
  * @return
  */
-int		elfsh_shift_dtors(elfshobj_t *file, u_int size)
+int		elfsh_shift_dtors(elfshobj_t *file, unsigned int size)
 {
   elfshsect_t	*dtors;
   int		nbr;
-  u_int		idx;
+  unsigned int		idx;
   eresi_Addr	*addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -99,7 +99,7 @@ int		elfsh_set_dtors_entry_by_index(elfshobj_t	*file,
 {
   int		nbr;
   eresi_Addr	*dtors;
-  u_int		size;
+  unsigned int		size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -153,7 +153,7 @@ eresi_Addr     	*elfsh_get_dtors_entry_by_name(elfshobj_t *file, char *name)
   elfsh_Sym	*sym;
   eresi_Addr	*dtors;
   int		nbr;
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

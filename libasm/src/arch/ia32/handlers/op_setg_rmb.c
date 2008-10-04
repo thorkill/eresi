@@ -16,7 +16,7 @@
  * @return Length of instruction.
 */
 
-int op_setg_rmb(asm_instr *new, u_char *opcode, u_int len, 
+int op_setg_rmb(asm_instr *new, unsigned char *opcode, unsigned int len, 
 		asm_processor *proc)
 {
   new->instr = ASM_SET_S_GREATER;

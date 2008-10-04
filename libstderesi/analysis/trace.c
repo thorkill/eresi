@@ -88,7 +88,7 @@ int 			cmd_traces()
 
 int 			cmd_traceadd()
 {
-  u_int			index;
+  unsigned int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -111,7 +111,7 @@ int 			cmd_traceadd()
 
 int 			cmd_traceexclude()
 {
-  u_int			index;
+  unsigned int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

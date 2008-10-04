@@ -136,7 +136,7 @@ char		*revm_resolve(elfshobj_t *file, eresi_Addr addr,
  * @param maxlen
  */
 void		asm_do_resolve(void *data, eresi_Addr vaddr, 
-			       char *buf, u_int maxlen)
+			       char *buf, unsigned int maxlen)
 {
   elfshobj_t	*file;
   elfshsect_t	*parent;
@@ -166,7 +166,7 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
 
       if (off)
 	snprintf(buf + len, maxlen - len -  1, "%s%s", 
-		 revm_colornumber("%u", (u_int) off),
+		 revm_colornumber("%u", (unsigned int) off),
 		 revm_colorfieldstr(">"));
     }
   else
@@ -192,23 +192,23 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
  * @param nindex
  * @param buff
  */
-u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr, 
-				 u_int foffset, u_int size, char *name, 
-				 u_int nindex, char *buff)
+unsigned int		revm_instr_display(int fd, unsigned int index, eresi_Addr vaddr, 
+				 unsigned int foffset, unsigned int size, char *name, 
+				 unsigned int nindex, char *buff)
 			      
 {
   char		*s;
   char		buf[256];
-  u_int		idx_bytes;
-  u_int		ret;
+  unsigned int		idx_bytes;
+  unsigned int		ret;
   asm_instr	ptr;
   char		base[16] = "0123456789ABCDEF";
   char		logbuf[BUFSIZ];
   char		c1[2];
   char		c2[2];
-  u_int		strsz;
+  unsigned int		strsz;
   elfsh_Half	machine;
-  u_int		delta;
+  unsigned int		delta;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -247,7 +247,7 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
     }
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + delta, 
+  ret = asm_read_instr(&ptr, (unsigned char *)buff + index, size - index + delta, 
 		       world.curjob->proc);
   if (ret == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "asm_read_instruction faild (-1)", (ret));
@@ -335,17 +335,17 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
  * @param foffset The file offset where the object data stands at.
  * @return Always 0.
  */
-int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int index, 
-				  u_int size, u_int off, char *buff, u_int foffset)
+int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, unsigned int index, 
+				  unsigned int size, unsigned int off, char *buff, unsigned int foffset)
 {
   eresi_Addr	vaddr2;
-  u_int		curidx;
+  unsigned int		curidx;
   char		buf[256];
   char		logbuf[BUFSIZ];
   char		tmp[BUFSIZ];
   char		c1[2], c2[2];
-  u_int		ret;
-  u_int		loff;  
+  unsigned int		ret;
+  unsigned int		loff;  
   char		*pStr;
   char		base[16] = "0123456789ABCDEF";
 
@@ -444,7 +444,7 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int 
  * @return Always 0.
  */
 int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_Addr vaddr,
-				   char *name, u_int foffset)
+				   char *name, unsigned int foffset)
 {
   char		buf[256];
   char		str[256];
@@ -453,8 +453,8 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
   eresi_Addr	vaddr2;
   eresi_Addr	loff;
   elfshsect_t	*targ;
-  u_int		index;
-  u_int		off;
+  unsigned int		index;
+  unsigned int		off;
   char		*s;
   elfsh_SAddr	idx_bytes;
 
@@ -524,7 +524,7 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
 	    }
 	  if (idx_bytes)
 	    snprintf(str, sizeof(str), "%s + %u", 
-		     (s ? s : "<?>"), (u_int) idx_bytes);
+		     (s ? s : "<?>"), (unsigned int) idx_bytes);
 	  else
 	    snprintf(str, sizeof(str), "<IRREVELANT VADDR>");
 	  snprintf(logbuf, BUFSIZ, "%-75s %s \n", buf, str);
@@ -564,11 +564,11 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
  * @return
  */
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
-				  u_int off, u_int foffset, eresi_Addr vaddr, 
+				  unsigned int off, unsigned int foffset, eresi_Addr vaddr, 
 				  char *name, char otype)
 {
   char		*buff;
-  u_int		index;
+  unsigned int		index;
   elfsh_SAddr   idx_bytes;
   int		value;
   int		nbrinstr;
@@ -803,7 +803,7 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
   elfshsect_t	*s;
   char		*name;
   int		matchs = 0;
-  u_int		saved_size;
+  unsigned int		saved_size;
   elfsh_Sym	*sym;
   eresi_Addr	addr;
   int		index;
@@ -892,7 +892,7 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
   elfsh_Sym	*sym;
   char		*name;
   int		off;
-  u_int		matchs;
+  unsigned int		matchs;
   elfshsect_t	*s;
 
 #if __DEBUG_DISASM__

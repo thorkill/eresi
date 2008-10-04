@@ -5,7 +5,7 @@
 
 /* DERET */
 
-int asm_mips_deret(asm_instr *ins, u_char *buf, u_int len,
+int asm_mips_deret(asm_instr *ins, unsigned char *buf, unsigned int len,
                   asm_processor *proc)
 {
    ins->instr = ASM_MIPS_DERET;

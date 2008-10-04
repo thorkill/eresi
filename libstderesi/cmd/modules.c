@@ -107,7 +107,7 @@ int		cmd_modunload()
   revmmod_t	*act;
   revmmod_t	*todel;
   time_t	unload_time;
-  u_int		id;
+  unsigned int		id;
   char		buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

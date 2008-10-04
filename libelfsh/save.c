@@ -43,7 +43,7 @@ static char*		elfsh_strstr(char *buffer, char *neddle, int n)
  * @param idx Only consider sections header until index idx.
  * @return The number of previously removed section in this file.
  */
-static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
+static int		elfsh_find_previous_rmnbr(elfshobj_t *file, unsigned int idx)
 {
   elfshsect_t		*sect;
   int			index;
@@ -80,8 +80,8 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
   
 #if __DEBUG_MAP__
   printf("[DEBUG_MAP] Writing SHT \t\t\t\t (file offset %u, size %u)\n",
-	 (u_int) file->hdr->e_shoff, 
-	 (u_int) (file->hdr->e_shentsize * file->hdr->e_shnum));
+	 (unsigned int) file->hdr->e_shoff, 
+	 (unsigned int) (file->hdr->e_shentsize * file->hdr->e_shnum));
 #endif
   
   /* Allocate */
@@ -151,7 +151,7 @@ static int		elfsh_save_sht(elfshobj_t *file, int fd)
  */
 int		elfsh_save_relocate(elfshobj_t *file)
 {
-  u_int		index;
+  unsigned int		index;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
@@ -364,9 +364,9 @@ int		elfsh_store_obj(elfshobj_t *file, char *name)
 		 "vaddr = " AFMT ", idx %02u, foff %08u, size %08u, data = %08X)\n",	 
 		 actual->name, elfsh_get_section_name(file, actual), 
 		 (eresi_Addr) elfsh_get_section_addr(actual->shdr), actual->index, 
-		 (u_int) elfsh_get_section_foffset(actual->shdr),
+		 (unsigned int) elfsh_get_section_foffset(actual->shdr),
 		 elfsh_get_section_size(actual->shdr),
-		 (u_int) actual->data);
+		 (unsigned int) actual->data);
 #endif	  
 	  
 	  /* Write the section */
@@ -380,9 +380,9 @@ int		elfsh_store_obj(elfshobj_t *file, char *name)
 	       "vaddr = " AFMT " , idx %02u, foff %08u, size %08u, data = %08X)\n", 
 	       actual->name, elfsh_get_section_name(file, actual), 
 	       (eresi_Addr) elfsh_get_section_addr(actual->shdr), actual->index, 
-	       (u_int) elfsh_get_section_foffset(actual->shdr),
+	       (unsigned int) elfsh_get_section_foffset(actual->shdr),
 	       elfsh_get_section_size(actual->shdr),
-	       (u_int) actual->data);
+	       (unsigned int) actual->data);
 #endif
       
     }

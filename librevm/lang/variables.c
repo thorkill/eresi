@@ -52,7 +52,7 @@ int		revm_setvar_str(char *varname, char *value)
 /** 
  * Set a variable to a string value 
  */
-int             revm_setvar_raw(char *varname, char *value, u_int len)
+int             revm_setvar_raw(char *varname, char *value, unsigned int len)
 {
   revmexpr_t	*expr;
   revmobj_t	*var;
@@ -83,7 +83,7 @@ int             revm_setvar_raw(char *varname, char *value, u_int len)
 /** 
  * Set a variable to a string value 
  */
-int		revm_setvar_byte(char *varname, u_char byte)
+int		revm_setvar_byte(char *varname, unsigned char byte)
 {
   revmexpr_t	*expr;
   revmobj_t	*var;
@@ -137,7 +137,7 @@ int		revm_setvar_short(char *varname, u_short val)
 /** 
  * Set a variable to a string value 
  */
-int		revm_setvar_int(char *varname, u_int val)
+int		revm_setvar_int(char *varname, unsigned int val)
 {
   revmexpr_t	*expr;
   revmobj_t	*var;
@@ -164,7 +164,7 @@ int		revm_setvar_int(char *varname, u_int val)
 /** 
  * Set a variable to a string value 
  */
-int             revm_setvar_long(char *varname, u_long val)
+int             revm_setvar_long(char *varname, unsigned long val)
 {
   revmexpr_t	*expr;
   revmobj_t     *var;
@@ -192,7 +192,7 @@ int             revm_setvar_long(char *varname, u_long val)
 /* Allocate a new temporary variable name */
 char		*revm_tmpvar_create()
 {
-  static u_int	lastid = 1;
+  static unsigned int	lastid = 1;
   char		*name;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

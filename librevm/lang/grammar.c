@@ -30,7 +30,7 @@ static int	parse_lookup_varlist(char *param, char *fmt, ...)
  */
 revmobj_t	*parse_vector(char *param, char *fmt)
 {
-  u_int		size;
+  unsigned int		size;
   char		index[ERESI_MEANING];
   vector_t	*cur;
   int		dimnbr;
@@ -80,7 +80,7 @@ revmobj_t	*parse_vector(char *param, char *fmt)
  */
 revmobj_t	*parse_hash(char *param, char *fmt)
 {
-  u_int		size;
+  unsigned int		size;
   char		index[ERESI_MEANING];
   hash_t	*hash;
   revmobj_t	*ret;
@@ -187,7 +187,7 @@ revmobj_t	*parse_hash(char *param, char *fmt)
  */
 revmobj_t	*parse_list(char *param, char *fmt)
 {
-  u_int		size;
+  unsigned int		size;
   char		index[ERESI_MEANING];
   list_t	*list;
   revmobj_t	*ret;
@@ -244,13 +244,13 @@ revmobj_t	*parse_list(char *param, char *fmt)
  * @brief Lookup a parameter with 3 fields, 3rd field beeing an index 
  * Used by GOT, CTORS, DTORS 
  */
-revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
+revmobj_t		*parse_lookup3_index(char *param, char *fmt, unsigned int sep)
 {
   revmL1_t		*l1;
   void			*robj;
   void			*o1;
-  u_int			size;
-  u_int			real_index;
+  unsigned int			size;
+  unsigned int			real_index;
   revmobj_t		*pobj;
   char			obj[ERESI_MEANING];
   char			L1field[ERESI_MEANING];
@@ -349,7 +349,7 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
  * Lookup a parameter with 3 fields, all fields beeing non indexed 
  * Only used by ELF header 'til now 
  */
-revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
+revmobj_t		*parse_lookup3(char *param, char *fmt, unsigned int sep)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -420,7 +420,7 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
  *
  * Here need to add 1.rel[name].{L2fields} lookup
  */
-revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
+revmobj_t		*parse_lookup4(char *param, char *fmt, unsigned int sep)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -428,7 +428,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   void			*o1;
   int		  	real_index;
   int			isversion;
-  u_int			size;
+  unsigned int			size;
   revmobj_t		*pobj;
   char			obj[ERESI_MEANING];
   char			L1field[ERESI_MEANING];
@@ -436,8 +436,8 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   char			index[ERESI_MEANING];
   char			offfield[ERESI_MEANING];
   char			sizelemfield[ERESI_MEANING];
-  u_int			off;
-  u_int			sizelem;
+  unsigned int			off;
+  unsigned int			sizelem;
   int			ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -575,7 +575,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
  * Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
  * Used for Relocation tables and GOT tables 
  */
-revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
+revmobj_t		*parse_lookup5_index(char *param, char *fmt, unsigned int sep)
 {
   revmL1_t		*l1;
   revmL2_t		*l2;
@@ -583,7 +583,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
   void			*o1;
   int			real_index;
   int			real_index2;
-  u_int			size;
+  unsigned int			size;
   int			isversion;
   revmobj_t		*pobj;
   elfshsect_t		*sect;
@@ -650,7 +650,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 #endif
 
   // Do index sanity 
-  o1 = l1->get_obj_idx(robj, real_index, (u_int *) &size);
+  o1 = l1->get_obj_idx(robj, real_index, (unsigned int *) &size);
   if (!isversion && size <= real_index2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Second index too big", NULL);

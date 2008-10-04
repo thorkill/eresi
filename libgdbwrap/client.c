@@ -14,7 +14,9 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "libaspect.h"
 #include "gdbwrapper.h"
+
 
 extern int errno;
 extern int h_errno;
@@ -123,7 +125,7 @@ int main( int argc, char **argv )
 	  exit(0);
 	}
       else if(!strncmp("why", buffer,  3))
-	  gdbwrap_reason_halted(desc);
+	gdbwrap_reason_halted(desc);
       else if(!strncmp("test", buffer,  4))
 	gdbwrap_test(desc);
       else if(!strncmp("gpr", buffer,  3))
@@ -154,6 +156,6 @@ int main( int argc, char **argv )
     } while (strncmp("bye", buffer, 3));
   
   
-  close( sd );
+  close(sd);
   return (0);
 }

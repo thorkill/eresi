@@ -35,7 +35,7 @@ char buf[BUFSIZ];
  * @param main_type (0 = resolve way, 1 = main way)
  * @return generated uniform type 
  */
-static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, u_char main_type)
+static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, unsigned char main_type)
 {
   edfmttype_t		*etype = NULL;
   edfmttype_t		*stype = NULL;
@@ -43,7 +43,7 @@ static edfmttype_t     	*edfmt_stabs_transform_type_adv(edfmtstabstype_t *type, 
   edfmtstabsattr_t	*attr;
   char			*str = NULL;
   int			addtype = 1;
-  u_char		wasclink = 0;
+  unsigned char		wasclink = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 
@@ -274,7 +274,7 @@ static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
   edfmtstabsfunc_t	*func;
   edfmtstabsdata_t	*arg_func;
   edfmtfunc_t		*uni_func;
-  u_int			index;
+  unsigned int			index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
 

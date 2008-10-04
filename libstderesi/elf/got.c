@@ -34,7 +34,7 @@ int		cmd_got()
   FIRSTREGX(tmp);
 
   index2 = 0;
-  if ((got = elfsh_get_got_by_idx(world.curjob->curfile, index2, (u_int *)&size))
+  if ((got = elfsh_get_got_by_idx(world.curjob->curfile, index2, (unsigned int *)&size))
 		 	== NULL)
     RET(-1);
   
@@ -59,7 +59,7 @@ int		cmd_got()
 	  if (off != NULL)
 	    snprintf(off, sizeof(off), " %s %s", 
 		     revm_colorstr((offset < 0 ? "-" : "+")), 
-		     revm_colornumber("%u", (u_int) (offset > 0 ? offset : offset - offset - offset)));
+		     revm_colornumber("%u", (unsigned int) (offset > 0 ? offset : offset - offset - offset)));
 
 
 	  snprintf(buff, sizeof(buff), "%s : %s %s \t <%s%s>\n", 
@@ -85,7 +85,7 @@ int		cmd_got()
 	}
       
     next:
-      got = elfsh_get_got_by_idx(world.curjob->curfile, index2 + 1, (u_int *)&size);
+      got = elfsh_get_got_by_idx(world.curjob->curfile, index2 + 1, (unsigned int *)&size);
       revm_output("\n");
     }
 

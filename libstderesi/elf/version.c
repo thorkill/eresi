@@ -24,11 +24,11 @@
  */
 
 int			revm_version_punk(hashneed_t *pneed, hashdef_t *pdef,
-					u_int auxid, u_int index, char *id, 
+					unsigned int auxid, unsigned int index, char *id, 
 					char *name, char *type, regex_t	*regx)
 {
   char			*svtype;
-  u_int			vtype;
+  unsigned int			vtype;
   char			logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -83,12 +83,12 @@ int			revm_version_punk(hashneed_t *pneed, hashdef_t *pdef,
  * @param type
  * @param regx
  */
-int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
-					u_int index, char *id, char *name, 
+int			revm_version_pdef(hashdef_t *pdef, unsigned int auxid,
+					unsigned int index, char *id, char *name, 
 					char *type, regex_t *regx)
 {
   char			*dauxnames[3];
-  u_int			vtype;
+  unsigned int			vtype;
   char			*svtype;
   char			logbuf[BUFSIZ];
 
@@ -156,8 +156,8 @@ int			revm_version_pdef(hashdef_t *pdef, u_int auxid,
  * @param regx
  * @return
  */
-int			revm_version_pneed(hashneed_t *pneed, u_int auxid, 
-					 u_int index, char *id, char *name, 
+int			revm_version_pneed(hashneed_t *pneed, unsigned int auxid, 
+					 unsigned int index, char *id, char *name, 
 					 char *type, regex_t *regx)
 {
   char			*file;
@@ -223,16 +223,16 @@ int			revm_version_pneed(hashneed_t *pneed, u_int auxid,
  * @return
  */
 int			revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table, 
-					 u_int symsize, hash_t *t_need, hash_t *t_def,
+					 unsigned int symsize, hash_t *t_need, hash_t *t_def,
 					 regex_t *tmp)
 {
   elfshsect_t		*dsym_sect;
-  u_int			index;
+  unsigned int			index;
   char			s_temp[9];
-  u_int			typenum;
+  unsigned int			typenum;
   char	       		*name;
   char		      	*type;
-  u_int			auxid;
+  unsigned int			auxid;
   hashneed_t		*pneed;
   hashdef_t		*pdef;
   char			*id;
@@ -243,7 +243,7 @@ int			revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table,
   for (index = 0; index < symsize; index++)
     {
       /* Load tables */
-      auxid = (u_int) *(sym_table + index);
+      auxid = (unsigned int) *(sym_table + index);
       snprintf(s_temp, 8, "%u", auxid);
       pneed = hash_get(t_need, s_temp);
       pdef = hash_get(t_def, s_temp);
@@ -300,7 +300,7 @@ int 			cmd_version()
   hash_t		t_need, t_def;
   char			**keys;
   regex_t		*tmp; 
-  u_int			range = 0;
+  unsigned int			range = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -390,11 +390,11 @@ int 			cmd_verneed()
   void			*data;
   elfsh_Verneed		*table;
   elfsh_Vernaux		*tableaux;
-  u_int			offset;
-  u_int			auxset;
+  unsigned int			offset;
+  unsigned int			auxset;
   int			size;
-  u_int			index;
-  u_int			aux;
+  unsigned int			index;
+  unsigned int			aux;
   int			strindex;
   int			nbr;
   char			logbuf[BUFSIZ];

@@ -18,7 +18,7 @@
  * @return -1 on error and 0 on success
  */
 int		container_linklists_create(container_t *container,
-					   u_int	linktype)
+					   unsigned int	linktype)
 {
   aspectype_t  *type;
   char		bufname[BUFSIZ];
@@ -48,7 +48,7 @@ int		container_linklists_create(container_t *container,
   switch (linktype)
     {
     case CONTAINER_LINK_IN:
-      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "inputs");
+      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(unsigned long *) container->data, "inputs");
       newlist = elist_find(bufname);
       if (newlist)
 	container->inlinks = newlist;
@@ -60,7 +60,7 @@ int		container_linklists_create(container_t *container,
 
       break;
     case CONTAINER_LINK_OUT:
-      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(u_long *) container->data, "outputs");
+      snprintf(bufname, BUFSIZ, "%s_%08X_%s", prefix, *(unsigned long *) container->data, "outputs");
       newlist = elist_find(bufname);
       if (newlist)
 	container->outlinks = newlist;
@@ -87,7 +87,7 @@ int		container_linklists_create(container_t *container,
  * @Param outlist Output links list if any (else it will be created empty)
  * @return Container newly created
  */
-container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *outlist)
+container_t	*container_create(unsigned int type, void *data, list_t *inlist, list_t *outlist)
 {
   container_t	*newcntnr;
   aspectype_t	*rtype;

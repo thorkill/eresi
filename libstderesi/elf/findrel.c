@@ -17,7 +17,7 @@
  * @param vaddr
  * @return
  */
-char		*revm_reverse(elfshobj_t *file, u_int vaddr)
+char		*revm_reverse(elfshobj_t *file, unsigned int vaddr)
 {
   char		*str;
   char		*new;
@@ -35,7 +35,7 @@ char		*revm_reverse(elfshobj_t *file, u_int vaddr)
   if (off)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__,new, strlen(str) + 20, NULL);
-      sprintf(new, "%s + %u", str, (u_int) off);
+      sprintf(new, "%s + %u", str, (unsigned int) off);
     }
   else
     new = strdup(str);
@@ -52,7 +52,7 @@ char		*revm_reverse(elfshobj_t *file, u_int vaddr)
  * - dword is not part of only 1 operand
  * - dword do not point to a referenced place
  */
-static int		revm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
+static int		revm_catch_fp(asm_instr *i, unsigned int begin, unsigned int len, unsigned int dword)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -61,9 +61,9 @@ static int		revm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
  snprintf(logbuf, BUFSIZ - 1, "[elfsh:revm_catch_fp] begin: %08X, totlen: %u, op1: %08X/%u, "
 	 "op2: %08X/%u, op3: %08X/%u, dword: %08X \n",
 	 begin, len, 
-	 (i->op1 != NULL ? (u_int) i->op1->ptr : 0), (i->op1 != NULL ? i->op1->len : 0), 
-	 (i->op2 != NULL ? (u_int) i->op2->ptr : 0), (i->op2 != NULL ? i->op2->len : 0), 
-	 (i->op3 != NULL ? (u_int) i->op3->ptr : 0), (i->op3 != NULL ? i->op3->len : 0),
+	 (i->op1 != NULL ? (unsigned int) i->op1->ptr : 0), (i->op1 != NULL ? i->op1->len : 0), 
+	 (i->op2 != NULL ? (unsigned int) i->op2->ptr : 0), (i->op2 != NULL ? i->op2->len : 0), 
+	 (i->op3 != NULL ? (unsigned int) i->op3->ptr : 0), (i->op3 != NULL ? i->op3->len : 0),
 	 dword); 
   asm_display_instr_att(i, 0);
 #endif
@@ -81,17 +81,17 @@ static int		revm_catch_fp(asm_instr *i, u_int begin, u_int len, u_int dword)
  * @param dat
  * @param dword
  */
-static int	        revm_catch_relocfp(char *dat, u_int dword)
+static int	        revm_catch_relocfp(char *dat, unsigned int dword)
 {
   asm_instr		ptr;
-  u_int			ret;
-  u_int			begin;
+  unsigned int			ret;
+  unsigned int			begin;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   while (1)
     {
-      begin = (u_int) dat;
+      begin = (unsigned int) dat;
       ret = asm_read_instr(&ptr, dat, 10, &world.proc);
       if (!ret)
 	{
@@ -108,7 +108,7 @@ static int	        revm_catch_relocfp(char *dat, u_int dword)
     }
 }
 #else
-static __inline__ int	revm_catch_relocfp(char *dat, u_int word) 
+static __inline__ int	revm_catch_relocfp(char *dat, unsigned int word) 
 { 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
@@ -124,11 +124,11 @@ int		cmd_findrel()
   elfshobj_t	*file;
   elfshsect_t	*cur;
   elfshsect_t	*dst;
-  u_int		index;
+  unsigned int		index;
   char		soff[30];
   char		doff[30];
-  u_int		count;
-  u_int		dword;
+  unsigned int		count;
+  unsigned int		dword;
   char		*reloc_type;
   char		logbuf[BUFSIZ];
   void		*data;
@@ -182,7 +182,7 @@ int		cmd_findrel()
 	  /* Detect false positives */
 	  if (elfsh_get_section_execflag(cur->shdr))
 	    {
-	      dword = (u_int) data + cur->rel[index].off_src;
+	      dword = (unsigned int) data + cur->rel[index].off_src;
 
 	      /* Must be done here so that libelfsh stay libasm dependant */
 	      if (revm_catch_relocfp(data, dword))
@@ -211,8 +211,8 @@ int		cmd_findrel()
 					   NULL);
 	 snprintf(logbuf, BUFSIZ - 1, " [%03u] FROM %15s %12s TO %15s %12s [ %08X -> %08X ] {%s} \n",
 		 index, cur->name, soff, dst->name, doff, 
-		 (u_int) cur->shdr->sh_addr + cur->rel[index].off_src,
-	  	 (u_int) dst->shdr->sh_addr + cur->rel[index].off_dst,
+		 (unsigned int) cur->shdr->sh_addr + cur->rel[index].off_src,
+	  	 (unsigned int) dst->shdr->sh_addr + cur->rel[index].off_dst,
 		 reloc_type); 
 	  count++;
 	}

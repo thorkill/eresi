@@ -15,8 +15,8 @@
  */
 void		revm_do_feature1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
-  u_int		cnt;
-  u_int		idx;
+  unsigned int		cnt;
+  unsigned int		idx;
   char		buff[45];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -42,8 +42,8 @@ void		revm_do_feature1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
  */
 void      revm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
-  u_int		cnt;
-  u_int		idx;
+  unsigned int		cnt;
+  unsigned int		idx;
   char		buff[45];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -68,8 +68,8 @@ void      revm_do_posflag1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
  */
 void      revm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
-  u_int		cnt;
-  u_int		idx;
+  unsigned int		cnt;
+  unsigned int		idx;
   char		buff[45];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -94,8 +94,8 @@ void      revm_do_flags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
  */
 void      revm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
-  u_int		cnt;
-  u_int		idx;
+  unsigned int		cnt;
+  unsigned int		idx;
   char		buff[45];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -120,8 +120,8 @@ void      revm_do_flags1(elfshobj_t *file, elfsh_Dyn *entry, char *info)
  */
 void      revm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 {
-  u_int		cnt;
-  u_int		idx;
+  unsigned int		cnt;
+  unsigned int		idx;
   char		buff[45];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -316,9 +316,9 @@ void		revm_dynentinfo(elfshobj_t	*file,
  * GNU and SUN extensions for the dynamic section.
  * @param type
  */
-char		*revm_getdyntype(u_int type)
+char		*revm_getdyntype(unsigned int type)
 {
-  u_int		idx;
+  unsigned int		idx;
 
   for (idx = 0; idx < ELFSH_EXTDYN_MAX; idx++)
     if (elfsh_extdyn_type[idx].val == type)
@@ -334,9 +334,9 @@ char		*revm_getdyntype(u_int type)
  * GNU and Sun extensions for the dynamic section.
  * @param type
  */
-char		*revm_getdyntype_short(u_int type)
+char		*revm_getdyntype_short(unsigned int type)
 {
-  u_int		idx;
+  unsigned int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -362,7 +362,7 @@ char		*revm_getdyntype_short(u_int type)
 int		cmd_dyn()
 {
   elfsh_Dyn	*actual;
-  u_int		num;
+  unsigned int		num;
   int		index;
   int		typenum;
   char		*type;

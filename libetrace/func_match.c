@@ -23,15 +23,15 @@ static int		trace_match_symtab(elfshsect_t	*sect,
 					   int		num, 
 					   regex_t	*preg,
 					   char		***func_list, 
-					   u_int	*count,
+					   unsigned int	*count,
 					   char		*(*get_symname)(elfshobj_t *f, 
 									elfsh_Sym *s))
 {
-  u_int			index;
+  unsigned int			index;
   elfsh_Sym		*table;
   char			*name;
   char			**f_list;
-  u_int			cnum;
+  unsigned int			cnum;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -89,12 +89,12 @@ static int		trace_match_symtab(elfshsect_t	*sect,
  * @param func_list function list pointer
  * @param count position on the list
  */
-int			trace_match_addrtable(elfshobj_t *curfile, char ***func_list, u_int *count)
+int			trace_match_addrtable(elfshobj_t *curfile, char ***func_list, unsigned int *count)
 {
   eresi_Addr		*alist = NULL;
-  u_int			index;
+  unsigned int			index;
   char			**f_list;
-  u_int			cnum;
+  unsigned int			cnum;
   char			tmpstr[256];
   elfsh_Sym		*sym;
   char			*toadd;
@@ -164,7 +164,7 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
 {
   regex_t		preg;
   char			**f_list;
-  u_int			count = 0;
+  unsigned int			count = 0;
   elfshsect_t		*sect;
   int			num;
   elfsh_Sym		*symtab;

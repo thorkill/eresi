@@ -278,7 +278,7 @@ void			e2dbg_do_breakpoint()
   char			*s;
   eresi_Addr		*pc; 
   eresi_Addr		savedpc;
-  u_int			bpsz;
+  unsigned int			bpsz;
   elfshsect_t		*sect;
   elfshobj_t		*parent;
   elfsh_Sym		*sym;
@@ -314,13 +314,13 @@ void			e2dbg_do_breakpoint()
   bpdebug("BEFORE", bp, *pc, parent);
   if (bp)
     fprintf(stderr, " SAVED INSTR BYTE = %02X and PC-BPSZ BYTE = %02X \n",
-	    bp->savedinstr[0], *((u_char *) *pc - bpsz));
+	    bp->savedinstr[0], *((unsigned char *) *pc - bpsz));
   else
     fprintf(stderr, "No BP found at %08X ! \n", *pc);
 #endif
 
   /* If we are single-stepping or if we are stepping the breaked instruction */
-  if (!bp || (bp->savedinstr[0] == *((u_char *) *pc - bpsz)))
+  if (!bp || (bp->savedinstr[0] == *((unsigned char *) *pc - bpsz)))
     {
 
       /* We are single-stepping, display the instruction at $pc */
@@ -331,7 +331,7 @@ void			e2dbg_do_breakpoint()
 	  fprintf(stderr, "Single-stepping -IS- enabled \n");
 #endif
 
-	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, &world.proc);
+	  ret = asm_read_instr(&ptr, (unsigned char *) *pc, 16, &world.proc);
 	  if (!ret)
 	    ret++;
 	  sect   = elfsh_get_parent_section(parent, (eresi_Addr) *pc, NULL);
@@ -453,7 +453,7 @@ void			e2dbg_do_breakpoint()
       
       *pc -= bpsz;
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);
-      memcpy((u_char *) *pc, bp->savedinstr, bpsz);
+      memcpy((unsigned char *) *pc, bp->savedinstr, bpsz);
       elfsh_mprotect(*pc, bpsz, prot);
       e2dbg_setstep();
 
@@ -553,7 +553,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
   else
     fprintf(stderr, " NOT COLLECTING THREADS CONTEXTS (stopped thread %u state count = %u) \n", 
-	    (u_int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
+	    (unsigned int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
 #endif
 
   /* Call the real breakpoint code */
@@ -583,7 +583,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
   else
     fprintf(stderr, " NOT CONTINUING BECAUSE STOPPED THREAD (%u) STATE COUNT = %u \n", 
-	    (u_int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
+	    (unsigned int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
 #endif
 
   e2dbgworld.stoppedthread->state = E2DBG_THREAD_RUNNING;

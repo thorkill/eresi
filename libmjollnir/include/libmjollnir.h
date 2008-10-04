@@ -134,19 +134,19 @@ int		mjr_symbol_rename(mjrsession_t *,char *,char *);
 void		*mjr_fingerprint_function(mjrcontext_t *, eresi_Addr addr, int);
 void		mjr_function_dump(mjrcontext_t*, char *,container_t *);
 int		mjr_functions_get(mjrcontext_t *);
-int		mjr_function_register(mjrcontext_t *, u_int, container_t *);
-container_t	*mjr_function_get_by_vaddr(mjrcontext_t *, u_int);
+int		mjr_function_register(mjrcontext_t *, unsigned int, container_t *);
+container_t	*mjr_function_get_by_vaddr(mjrcontext_t *, unsigned int);
 int		mjr_function_symbol(mjrcontext_t*, container_t *);
 
 /* ondisk.c */
-int		mjr_flow_load(mjrcontext_t *c, u_int datatypeid);
-int		mjr_flow_store(mjrcontext_t *c, u_int datatypeid);
+int		mjr_flow_load(mjrcontext_t *c, unsigned int datatypeid);
+int		mjr_flow_store(mjrcontext_t *c, unsigned int datatypeid);
 
 /* link.c */
 int		mjr_link_block_call(mjrcontext_t *, eresi_Addr, eresi_Addr, eresi_Addr);
 int		mjr_link_block_jump(mjrcontext_t *, eresi_Addr, eresi_Addr, eresi_Addr);
 int		mjr_link_func_call(mjrcontext_t *ctxt, eresi_Addr src, eresi_Addr dst, eresi_Addr ret);
-container_t	*mjr_block_split(mjrcontext_t *ctxt, eresi_Addr	dst, u_char link_with);
+container_t	*mjr_block_split(mjrcontext_t *ctxt, eresi_Addr	dst, unsigned char link_with);
 
 /* history.c */
 void		mjr_history_shift(mjrcontext_t *cur, asm_instr i, eresi_Addr a);
@@ -154,37 +154,37 @@ void		mjr_history_write(mjrcontext_t*, asm_instr*, eresi_Addr a, int i);
 
 /* container.c */
 int		mjr_init_containers(mjrcontext_t*);
-int		mjr_resize_containers(mjrcontext_t*, u_int resize);
+int		mjr_resize_containers(mjrcontext_t*, unsigned int resize);
 unsigned int	mjr_register_container (mjrcontext_t*, container_t *cntnr);
 unsigned int	mjr_register_container_id (mjrcontext_t*, container_t *cntnr);
-void		mjr_unregister_container(mjrcontext_t*, u_int id);
-container_t *mjr_lookup_container (mjrcontext_t*,u_int id);
+void		mjr_unregister_container(mjrcontext_t*, unsigned int id);
+container_t *mjr_lookup_container (mjrcontext_t*,unsigned int id);
 container_t	*mjr_get_container_by_vaddr(mjrcontext_t*, eresi_Addr vaddr, int type);
 list_t		*mjr_link_get_by_direction(container_t *c, int dir);
 mjrlink_t	*mjr_get_link_by_type(list_t *listlink, int link_type);
-int		mjr_create_container_linklist(container_t *cur, u_int linktype);
-container_t	*mjr_create_block_container(mjrcontext_t*, u_int symoff, eresi_Addr v, u_int s, u_char);
+int		mjr_create_container_linklist(container_t *cur, unsigned int linktype);
+container_t	*mjr_create_block_container(mjrcontext_t*, unsigned int symoff, eresi_Addr v, unsigned int s, unsigned char);
 container_t	*mjr_create_function_container(mjrcontext_t*,
 					       eresi_Addr	vaddr,
-					       u_int		size,
+					       unsigned int		size,
 					       char		*name,
 					       mjrblock_t	*first,
 					       char		*md5);
 mjrlink_t	*mjr_container_add_link(mjrcontext_t *ctxt,
 					container_t *cntnr, 
-					u_int id, 
-					u_char link_type, 
-					u_char link_scope,
+					unsigned int id, 
+					unsigned char link_type, 
+					unsigned char link_scope,
 					int link_direction);
 
 /* findentry.c	*/
-eresi_Addr	mjr_trace_start(mjrcontext_t *c, u_char *, u_int, eresi_Addr);
+eresi_Addr	mjr_trace_start(mjrcontext_t *c, unsigned char *, unsigned int, eresi_Addr);
 eresi_Addr	mjr_find_main(elfshobj_t	*obj,
 			      asm_processor	*proc,
-			      u_char		*buf,
-			      u_int		len,
+			      unsigned char		*buf,
+			      unsigned int		len,
 			      eresi_Addr	vaddr,
-			      u_int		*dis);
+			      unsigned int		*dis);
 
 
 #endif

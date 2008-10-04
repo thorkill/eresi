@@ -457,7 +457,7 @@ void *kernsh_get_raw_by_addr(void *addr)
 int kernsh_info()
 {
   int ret;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *info;
   int          (*fct)();
 
@@ -602,7 +602,7 @@ void kernsh_unload_file(elfshobj_t *file)
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
+int kernsh_raw_write(elfshobj_t *file, unsigned int foffset, void *src_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -627,7 +627,7 @@ int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
+int kernsh_raw_read(elfshobj_t *file,  unsigned int foffset, void *dest_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -29,8 +29,8 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   //char                  *md5;
   eresi_Addr            tmpaddr;
   elfshsect_t           *dstsect;
-  u_char                scope;
-  u_char		isnew;
+  unsigned char                scope;
+  unsigned char		isnew;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -282,7 +282,7 @@ static int      mjr_block_relink(mjrcontext_t *ctx,
  */
 container_t             *mjr_block_split(mjrcontext_t   *ctxt,
                                          eresi_Addr     dst,
-                                         u_char         link_with)
+                                         unsigned char         link_with)
 {
   container_t           *tmpdst,*dstend;
   mjrblock_t            *blkdst;

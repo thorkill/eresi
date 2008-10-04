@@ -11,7 +11,7 @@
   <instruction func="op_sub_al_ib" opcode="0x2c"/>
 */
 
-int op_sub_al_ib(asm_instr *new, u_char *opcode, u_int len, 
+int op_sub_al_ib(asm_instr *new, unsigned char *opcode, unsigned int len, 
                  asm_processor *proc)
 {
   new->len += 1;

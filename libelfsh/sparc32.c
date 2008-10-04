@@ -26,9 +26,9 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 					    elfsh_Sym	*symbol,
 					    eresi_Addr  addr)
 {
-  u_int			ret;
+  unsigned int			ret;
   int			off;
-  u_char		buff[4];
+  unsigned char		buff[4];
   elfshsect_t		*hooks;
   char			*hook;
   int			prot;

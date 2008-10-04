@@ -11,7 +11,7 @@
   <instruction func="op_retf_i2" opcode="0xca"/>
 */
 
-int op_retf_i2(asm_instr *instr, u_char *opcode, u_int len, 
+int op_retf_i2(asm_instr *instr, unsigned char *opcode, unsigned int len, 
                asm_processor *proc)
 {
   instr->instr = ASM_RETF;

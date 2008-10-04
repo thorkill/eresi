@@ -99,7 +99,7 @@ void			*elfsh_get_raw(elfshsect_t *sect)
  * @return
  */
 int		elfsh_raw_write(elfshobj_t	*file, 
-				u_int		foffset, 
+				unsigned int		foffset, 
 				void		*src_buff, 
 				int		len)
 {
@@ -154,7 +154,7 @@ int		elfsh_raw_write(elfshobj_t	*file,
  * @param len
  * @return
  */
-int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
+int		elfsh_raw_read(elfshobj_t *file, unsigned int foffset, void *dest_buff, int len)
 {
   elfshsect_t	*sect;
   void		*src;
@@ -217,7 +217,7 @@ int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, eresi_Addr vaddr)
  * @param foffset
  * @return
  */
-int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset)
+int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, unsigned int foffset)
 {
   elfshsect_t	*root;
 

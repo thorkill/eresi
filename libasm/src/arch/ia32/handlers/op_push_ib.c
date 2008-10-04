@@ -9,7 +9,7 @@
   <instruction func="op_push_ib" opcode="0x6a"/>
 */
 
-int op_push_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_push_ib(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) 
 {
   new->instr = ASM_PUSH;
   new->len += 1;

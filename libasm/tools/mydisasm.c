@@ -33,7 +33,7 @@ int	usage(char *p)
   return (-1);
 }
 
-void	dump_opcodes(char *why, u_char *ptr, u_int curr, u_int vaddr)
+void	dump_opcodes(char *why, unsigned char *ptr, unsigned int curr, unsigned int vaddr)
 {
   printf("0x%08x (%s): .byte 0x%02x\n", (int) vaddr + curr, why, *(ptr + curr));
   printf(";; error reading instruction at %p\n", ptr + curr);
@@ -43,11 +43,11 @@ void	dump_opcodes(char *why, u_char *ptr, u_int curr, u_int vaddr)
 }
 
 int	main(int ac, char **av) {
-  u_char	*ptr;
+  unsigned char	*ptr;
   unsigned long	start;
   unsigned long	end;
   unsigned long	len;
-  u_int		curr;
+  unsigned int		curr;
   unsigned long	vaddr;
   char		*att_dump;
   int		i;
@@ -55,7 +55,7 @@ int	main(int ac, char **av) {
   elfshobj_t	*obj;
   asm_instr	instr;
   asm_processor	proc;
-  u_int		arch;
+  unsigned int		arch;
 
   if (ac < 3)
     return (usage(av[0]));

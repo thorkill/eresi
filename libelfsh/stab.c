@@ -101,7 +101,7 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
  * @param s
  * @return
  */
-u_int	elfsh_get_stab_type(elfshstabent_t *s)
+unsigned int	elfsh_get_stab_type(elfshstabent_t *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->type));

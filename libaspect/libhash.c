@@ -21,7 +21,7 @@ hash_t  *hash_hash = NULL;
  * @param type Type to document
  * @param Returns 0 on success, -1 on error or 1 if hash already exists.
  */
-int hash_init(hash_t *h, char *name, int size, u_int type)
+int hash_init(hash_t *h, char *name, int size, unsigned int type)
 {
   NOPROFILER_IN();
 
@@ -179,7 +179,7 @@ int		hash_add(hash_t *h, char *key, void *data)
   listent_t	*actual;
   listent_t	*newent;
   char		*backup;
-  u_int		index;
+  unsigned int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -351,7 +351,7 @@ listent_t   *hash_get_ent(hash_t *h, char *key)
  */
 listent_t *hash_get_head(hash_t *h, char *backup)
 {
-  u_int   index;
+  unsigned int   index;
 
   for (index = 0; *backup; backup++)
     index += *backup;
@@ -582,7 +582,7 @@ void*		hash_get_one(hash_t *hash)
  * Linear typing of list API.
  * @param h Hash table.
  */
-u_char		hash_linearity_get(hash_t *h)
+unsigned char		hash_linearity_get(hash_t *h)
 {
   if (!h)
     return (0);
@@ -594,7 +594,7 @@ u_char		hash_linearity_get(hash_t *h)
  * @param h
  * @param val
  */
-void		hash_linearity_set(hash_t *h, u_char val)
+void		hash_linearity_set(hash_t *h, unsigned char val)
 {
   if (!h)
     return;

@@ -95,8 +95,8 @@ typedef struct Struct_Obj_Entry {
      * These two items have to be set right for compatibility with the
      * original ElfKit crt1.o.
      */
-    u_int32_t magic;             /* Magic number (sanity check) */
-    u_int32_t version;           /* Version number of struct format */
+    uint32_t magic;             /* Magic number (sanity check) */
+    uint32_t version;           /* Version number of struct format */
 
     struct Struct_Obj_Entry *next;
     char *path;                 /* Pathname of underlying file (%) */
@@ -108,11 +108,11 @@ typedef struct Struct_Obj_Entry {
     caddr_t mapbase;            /* Base address of mapped region */
     size_t mapsize;             /* Size of mapped region in bytes */
     size_t textsize;            /* Size of text segment in bytes */
-    u_int32_t vaddrbase;         /* Base address in shared object file */
+    uint32_t vaddrbase;         /* Base address in shared object file */
     caddr_t relocbase;          /* Relocation constant = mapbase - vaddrbase */
-    const u_int32_t *dynamic;     /* Dynamic section */
+    const uint32_t *dynamic;     /* Dynamic section */
     caddr_t entry;              /* Entry point */
-    const u_int32_t *phdr;       /* Program header if it is mapped, else NULL */
+    const uint32_t *phdr;       /* Program header if it is mapped, else NULL */
     size_t phsize;              /* Size of program header in bytes */
     const char *interp;         /* Pathname of the interpreter, if any */
 
@@ -125,29 +125,29 @@ typedef struct Struct_Obj_Entry {
     size_t tlsalign;            /* Alignment of static TLS block */
 
     /* Items from the dynamic section. */
-    u_int32_t *pltgot;           /* PLT or GOT, depending on architecture */
-    const u_int32_t *rel;         /* Relocation entries */
+    uint32_t *pltgot;           /* PLT or GOT, depending on architecture */
+    const uint32_t *rel;         /* Relocation entries */
     unsigned long relsize;      /* Size in bytes of relocation info */
-    const u_int32_t *rela;       /* Relocation entries with addend */
+    const uint32_t *rela;       /* Relocation entries with addend */
     unsigned long relasize;     /* Size in bytes of addend relocation info */
-    const u_int32_t *pltrel;      /* PLT relocation entries */
+    const uint32_t *pltrel;      /* PLT relocation entries */
     unsigned long pltrelsize;   /* Size in bytes of PLT relocation info */
-    const u_int32_t *pltrela;    /* PLT relocation entries with addend */
+    const uint32_t *pltrela;    /* PLT relocation entries with addend */
     unsigned long pltrelasize;  /* Size in bytes of PLT addend reloc info */
-    const u_int32_t *symtab;      /* Symbol table */
+    const uint32_t *symtab;      /* Symbol table */
     const char *strtab;         /* String table */
     unsigned long strsize;      /* Size in bytes of string table */
 
-    const u_int32_t *buckets; /* Hash table buckets array */
+    const uint32_t *buckets; /* Hash table buckets array */
     unsigned long nbuckets;     /* Number of buckets */
-    const u_int32_t *chains;  /* Hash table chain array */
+    const uint32_t *chains;  /* Hash table chain array */
     unsigned long nchains;      /* Number of chains */
 
     const char *rpath;          /* Search path specified in object */
     Needed_Entry *needed;       /* Shared objects needed by this one (%) */
 
-    u_int32_t init;              /* Initialization function to call */
-    u_int32_t fini;              /* Termination function to call */
+    uint32_t init;              /* Initialization function to call */
+    uint32_t fini;              /* Termination function to call */
 
     unsigned char mainprog;              /* True if this is the main program */
     unsigned char rtld;                  /* True if this is the dynamic linker */
@@ -181,8 +181,8 @@ typedef struct Struct_Obj_Entry {
 #define RTLD_MAIN       0x800
 
 typedef struct Struct_Obj_Entry {
-        u_int32_t      magic;          /* Magic number (sanity check) */
-        u_int32_t      version;        /* Version number of struct format */
+        uint32_t      magic;          /* Magic number (sanity check) */
+        uint32_t      version;        /* Version number of struct format */
 
         struct Struct_Obj_Entry *next;
         char           *path;           /* Pathname of underlying file (%) */
@@ -193,34 +193,34 @@ typedef struct Struct_Obj_Entry {
         caddr_t         mapbase;        /* Base address of mapped region */
         size_t          mapsize;        /* Size of mapped region in bytes */
         size_t          textsize;       /* Size of text segment in bytes */
-        u_int32_t        vaddrbase;      /* Base address in shared object file */
+        uint32_t        vaddrbase;      /* Base address in shared object file */
         caddr_t         relocbase;      /* Reloc const = mapbase - *vaddrbase */
-        const u_int32_t        *dynamic;        /* Dynamic section */
+        const uint32_t        *dynamic;        /* Dynamic section */
         caddr_t         entry;          /* Entry point */
-        const u_int32_t *__junk001;
+        const uint32_t *__junk001;
         size_t          pathlen;        /* Pathname length */
 
         /* Items from the dynamic section. */
-        u_int32_t       *pltgot;         /* PLTGOT table */
-        const u_int32_t  *rel;            /* Relocation entries */
-        const u_int32_t  *rellim;         /* Limit of Relocation entries */
-        const u_int32_t *rela;           /* Relocation entries */
-        const u_int32_t *relalim;        /* Limit of Relocation entries */
-        const u_int32_t  *pltrel;         /* PLT relocation entries */
-        const u_int32_t  *pltrellim;      /* Limit of PLT relocation entries */
-        const u_int32_t *pltrela;        /* PLT relocation entries */
-        const u_int32_t *pltrelalim;     /* Limit of PLT relocation entries */
-        const u_int32_t  *symtab;         /* Symbol table */
+        uint32_t       *pltgot;         /* PLTGOT table */
+        const uint32_t  *rel;            /* Relocation entries */
+        const uint32_t  *rellim;         /* Limit of Relocation entries */
+        const uint32_t *rela;           /* Relocation entries */
+        const uint32_t *relalim;        /* Limit of Relocation entries */
+        const uint32_t  *pltrel;         /* PLT relocation entries */
+        const uint32_t  *pltrellim;      /* Limit of PLT relocation entries */
+        const uint32_t *pltrela;        /* PLT relocation entries */
+        const uint32_t *pltrelalim;     /* Limit of PLT relocation entries */
+        const uint32_t  *symtab;         /* Symbol table */
         const char     *strtab;         /* String table */
         unsigned long   strsize;        /* Size in bytes of string table */
 #ifdef __mips__
-        u_int32_t        local_gotno;    /* Number of local GOT entries */
-        u_int32_t        symtabno;       /* Number of dynamic symbols */
-        u_int32_t        gotsym;         /* First dynamic symbol in GOT */
+        uint32_t        local_gotno;    /* Number of local GOT entries */
+        uint32_t        symtabno;       /* Number of dynamic symbols */
+        uint32_t        gotsym;         /* First dynamic symbol in GOT */
 #endif
-        const u_int32_t *buckets;        /* Hash table buckets array */
+        const uint32_t *buckets;        /* Hash table buckets array */
         unsigned long   nbuckets;       /* Number of buckets */
-        const u_int32_t *chains;         /* Hash table chain array */
+        const uint32_t *chains;         /* Hash table chain array */
         unsigned long   nchains;        /* Number of chains */
 
         const char    *rpaths;         /* Search path specified in object */
@@ -236,7 +236,7 @@ typedef struct Struct_Obj_Entry {
         int             (*dlclose)(void *);
         int             (*dladdr)(const void *, Dl_info *);
 
-        u_int32_t       mainprog:1,     /* True if this is the main program */
+        uint32_t       mainprog:1,     /* True if this is the main program */
                         rtld:1,         /* True if this is the dynamic linker */
                         textrel:1,      /* True if there are relocations to
                                          * text seg */

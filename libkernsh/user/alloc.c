@@ -62,7 +62,7 @@ int kernsh_free(unsigned long addr)
 int kernsh_alloc_contiguous(size_t size, unsigned long *addr)
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *alloc;
   int          (*fct)();
 
@@ -93,7 +93,7 @@ int kernsh_alloc_contiguous(size_t size, unsigned long *addr)
 int kernsh_alloc_noncontiguous(size_t size, unsigned long *addr)
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *alloc;
   int          (*fct)();
 
@@ -123,7 +123,7 @@ int kernsh_alloc_noncontiguous(size_t size, unsigned long *addr)
 int kernsh_free_contiguous(unsigned long addr)
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *alloc;
   int          (*fct)();
 
@@ -153,7 +153,7 @@ int kernsh_free_contiguous(unsigned long addr)
 int kernsh_free_noncontiguous(unsigned long addr)
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *alloc;
   int          (*fct)();
 

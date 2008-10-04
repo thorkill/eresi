@@ -20,8 +20,8 @@
  * @return -1 on error or instruction fetched length
  */
 
-int	asm_read_instr(asm_instr *instr, u_char *buf, 
-		       u_int len, asm_processor *proc) 
+int	asm_read_instr(asm_instr *instr, unsigned char *buf, 
+		       unsigned int len, asm_processor *proc) 
 {
   int	to_ret;
   
@@ -47,7 +47,7 @@ int	asm_read_instr(asm_instr *instr, u_char *buf,
  * @return Length of written instruction or -1 on error.
  */
 
-int	asm_write_instr(asm_instr *instr, u_char *buf, u_int len) {
+int	asm_write_instr(asm_instr *instr, unsigned char *buf, unsigned int len) {
   /*
     if (instr->op1)
     asm_write_operand(instr->op1);
@@ -87,7 +87,7 @@ int     asm_int_pow2(int val) {
  */
 
 void	asm_set_resolve_handler(asm_processor *proc, 
-			        void (*fcn)(void *, u_int, char *, u_int), void *d) {
+			        void (*fcn)(void *, unsigned int, char *, unsigned int), void *d) {
   proc->resolve_immediate = fcn;
   proc->resolve_data = d;
 }

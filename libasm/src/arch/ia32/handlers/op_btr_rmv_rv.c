@@ -9,7 +9,7 @@
   <i386 func="op_btr_rmv_rv" opcode="0xb3"/>
 */
 
-int     op_btr_rmv_rv(asm_instr *new, u_char *opcode, u_int len,
+int     op_btr_rmv_rv(asm_instr *new, unsigned char *opcode, unsigned int len,
 		      asm_processor *proc)
 {
   new->len += 1;

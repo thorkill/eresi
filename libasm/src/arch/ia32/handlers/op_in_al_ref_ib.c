@@ -15,7 +15,7 @@
   <instruction func="op_in_al_ref_ib" opcode="0xe4"/>
 */
 
-int op_in_al_ref_ib(asm_instr *new, u_char *opcode, u_int len,
+int op_in_al_ref_ib(asm_instr *new, unsigned char *opcode, unsigned int len,
                     asm_processor *proc)
 {
   new->instr = ASM_IN;

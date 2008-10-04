@@ -32,8 +32,8 @@ edfmtmanage_t debug_format[] =
  * @param hash_name section name
  * @param strhash hash id for the linked string section
  */
-elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name, 
-					u_int strhash)
+elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, unsigned int hash, char *hash_name, 
+					unsigned int strhash)
 {
   elfshsect_t		*sect;
   int			strindex;
@@ -99,9 +99,9 @@ static char    	*edfmt_basename(char *str)
  */
 int			edfmt_format(elfshobj_t *file)
 {
-  u_int			i;
+  unsigned int			i;
   elfshsect_t 		*sect = NULL;
-  u_int			count = 0;
+  unsigned int			count = 0;
   char			*base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

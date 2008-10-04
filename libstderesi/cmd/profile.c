@@ -15,7 +15,7 @@
  * @param mask
  * @param feat
  */
-void		revm_profile_print(u_char mask, char *feat)
+void		revm_profile_print(unsigned char mask, char *feat)
 {
   char		buf[BUFSIZ];
 

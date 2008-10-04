@@ -13,13 +13,13 @@
 
 /* Token system */
 static char 	tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];
-static u_int 	curtok = 0;
+static unsigned int 	curtok = 0;
 
 /**
  * @brief Indicate if we print color 
  * 0 = color, 1 = without color
  */
-u_int 		nocolor = 1;
+unsigned int 		nocolor = 1;
 
 /**
  * @brief Init color structure 
@@ -130,9 +130,9 @@ static char	*revm_colornothing(char *sp, void *object)
  * @param start saved starting blank chars (for replace in another place)
  * @param end saved ending blank chars (for replace in another place)
  */
-static int	trim(char *from, char *to, u_int size, char *start, char *end)
+static int	trim(char *from, char *to, unsigned int size, char *start, char *end)
 {
-  u_int		len, istart, iend;
+  unsigned int		len, istart, iend;
 
   NOPROFILER_IN();
 
@@ -309,7 +309,7 @@ char *revm_coloraddress(char *pattern, eresi_Addr addr)
   return revm_colorget(pattern, "address", &addr); 
 }
 
-char *revm_colornumber(char *pattern, u_int numb) 		
+char *revm_colornumber(char *pattern, unsigned int numb) 		
 { 
   return revm_colorget(pattern, "number", &numb); 
 }

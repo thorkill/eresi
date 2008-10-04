@@ -9,7 +9,7 @@
   <i386 func="i386_shld_rmv_rv_cl" opcode="0xa7"/>
 */
 
-int     i386_xstorenrg(asm_instr *new, u_char *opcode, u_int len,
+int     i386_xstorenrg(asm_instr *new, unsigned char *opcode, unsigned int len,
 		       asm_processor *proc)
 {
   switch(*(opcode + 1))

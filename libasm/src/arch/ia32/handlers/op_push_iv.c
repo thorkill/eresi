@@ -13,7 +13,7 @@
   <instruction func="op_push_iv" opcode="0x68"/>
 */
 
-int op_push_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_push_iv(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc) 
 {
   new->instr = ASM_PUSH;
   new->len += 1;

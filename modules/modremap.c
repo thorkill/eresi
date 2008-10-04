@@ -24,15 +24,15 @@ int		remap_cmd()
 {
   elfshobj_t	*file;
   elfshsect_t	*cur;
-  u_int		new_base;
-  u_int		real_base = 0xffffffff;
+  unsigned int		new_base;
+  unsigned int		real_base = 0xffffffff;
   int		diff;
   int		i;
   int		cnt;
-  u_int		count_raw = 0;
-  u_int		count_pht = 0;
-  u_int		count_sht = 0;
-  u_int		count_ent = 0;
+  unsigned int		count_raw = 0;
+  unsigned int		count_pht = 0;
+  unsigned int		count_sht = 0;
+  unsigned int		count_ent = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

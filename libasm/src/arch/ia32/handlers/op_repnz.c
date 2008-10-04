@@ -11,7 +11,7 @@
   <instruction func="op_repnz" opcode="0xf2"/>
 */
 
-int op_repnz(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_repnz(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   if (!new->ptr_prefix)
     new->ptr_prefix = opcode;

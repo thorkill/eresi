@@ -56,7 +56,7 @@ elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
  * @param range
  * @return
  */
-char			*elfsh_get_comments_entry(elfshobj_t *file, u_int range)
+char			*elfsh_get_comments_entry(elfshobj_t *file, unsigned int range)
 {
   int			index;
   int			act;

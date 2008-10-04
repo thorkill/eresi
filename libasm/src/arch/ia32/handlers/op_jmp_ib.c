@@ -9,7 +9,7 @@
   <instruction func="op_jmp_ib" opcode="0xeb"/>
  */
 
-int op_jmp_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_jmp_ib(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->instr = ASM_BRANCH;
 

@@ -13,7 +13,7 @@
 int kernsh_sct(list_t *lsct)
 {
   int ret;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *sct;
   int          (*fct)();
 
@@ -185,7 +185,7 @@ int kernsh_sct_freebsd(list_t *lsct)
 int kernsh_syscall(int num, int argc, unsigned int argv[])
 {
   int ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *csct;
   int          (*fct)();
 

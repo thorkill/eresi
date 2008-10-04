@@ -22,20 +22,20 @@
  */
 
 #if WIP
-int     asm_operand_fetch(asm_operand *operand, u_char *opcode, int otype, 
+int     asm_operand_fetch(asm_operand *operand, unsigned char *opcode, int otype, 
 				asm_instr *ins, int opt)
 #else
-int     asm_operand_fetch(asm_operand *operand, u_char *opcode, int otype, 
+int     asm_operand_fetch(asm_operand *operand, unsigned char *opcode, int otype, 
 			  asm_instr *ins)
 #endif
 { 
   vector_t      *vec;
-  u_int         dim[1];
+  unsigned int         dim[1];
   int           to_ret;
 #if WIP
-  int           (*fetch)(asm_operand *, u_char *, int, asm_instr *, int);
+  int           (*fetch)(asm_operand *, unsigned char *, int, asm_instr *, int);
 #else
-  int           (*fetch)(asm_operand *, u_char *, int, asm_instr *);
+  int           (*fetch)(asm_operand *, unsigned char *, int, asm_instr *);
 #endif
 
   vec = aspect_vector_get(LIBASM_VECTOR_OPERAND_IA32);

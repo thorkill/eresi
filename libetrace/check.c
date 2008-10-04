@@ -25,13 +25,13 @@
  * @see etrace_tracable
  */
 static int		etrace_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
-						  int num, u_char dynsym, eresi_Addr *vaddr)
+						  int num, unsigned char dynsym, eresi_Addr *vaddr)
 {
-  u_int			index;
+  unsigned int			index;
   elfshsect_t		*sect;
   char			*sect_name;
   char			*func_name;
-  u_char		bind;
+  unsigned char		bind;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -90,7 +90,7 @@ static int		etrace_tracable_sym(elfshobj_t *file, char *name, elfsh_Sym *symtab,
  * @param vaddr returned virtual address
  */
 int			etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr,
-					   eresi_Addr *vaddr, u_char *dynsym)
+					   eresi_Addr *vaddr, unsigned char *dynsym)
 {
   int			retvalue;
 
@@ -121,7 +121,7 @@ int			etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr,
  * @see etrace_tracable_sym
  */
 int 			etrace_tracable(elfshobj_t *file, char *name,
-					eresi_Addr *vaddr, u_char *external)
+					eresi_Addr *vaddr, unsigned char *external)
 {
   elfsh_Sym		*symtab, *dynsym;
   int			symnum = 0, dynsymnum = 0;

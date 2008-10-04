@@ -16,6 +16,7 @@ NAME64			= libstderesi64
 
 LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 			-L../libdump/ -L/usr/pkg/lib/ 				  \
+			-L../libgdbwrap/					  \
 			-L../libmjollnir/ -lmjollnir32 $(LPTHREAD)       	  \
 			-L../libasm/ -lasm32 $(LDUIOPT32) -g3		          \
 			-L../liballocproxy -L../libmjollnir/                      \
@@ -28,6 +29,7 @@ LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32 	  \
 
 LDFLAGS64		+= -L../libedfmt/ -ledfmt64 -L../libelfsh/ -lelfsh64 	  \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/           \
+			-L../libgdbwrap/ 					  \
                         -lmjollnir64 $(LPTHREAD) -L../libasm/ -lasm64             \
 			-L../liballocproxy -L../libmjollnir/ $(LDUIOPT64)         \
 			-L../libaspect/ -laspect64 -lallocproxy $(LDMJOLLNIR)     \

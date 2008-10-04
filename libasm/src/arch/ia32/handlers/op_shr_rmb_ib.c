@@ -11,7 +11,7 @@
   <instruction func="op_shr_rmb_ib" opcode="0xc0"/>
 */
 
-int op_shr_rmb_ib(asm_instr *new, u_char *opcode, u_int len, 
+int op_shr_rmb_ib(asm_instr *new, unsigned char *opcode, unsigned int len, 
                   asm_processor *proc) {
   struct s_modrm        *modrm;
   int                   olen;

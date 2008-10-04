@@ -78,8 +78,8 @@ int			elfsh_set_symbol_name(elfshobj_t	*file,
 {
   elfshsect_t		*sct;
   char			*str;
-  u_int			len;
-  u_int			new_len;
+  unsigned int			len;
+  unsigned int			new_len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -551,8 +551,8 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
   elfsh_Sym	*ret;
   elfsh_Sym	*tab;
   elfsh_Sym	*enew;
-  u_int   	off;
-  u_int		movedsz;
+  unsigned int   	off;
+  unsigned int		movedsz;
   hash_t 	*uptable = NULL;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -568,7 +568,7 @@ int		elfsh_remove_symbol(elfshsect_t *symtab, char *name)
 
   /* Do it */
   tab = symtab->data;
-  off = (u_long) ret - (u_long) tab;
+  off = (unsigned long) ret - (unsigned long) tab;
   movedsz = symtab->shdr->sh_size - off - sizeof(elfsh_Sym);
   if (movedsz)
     memcpy((char *) symtab->data + off, 

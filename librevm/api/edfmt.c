@@ -26,7 +26,7 @@ hash_t var_queue;
 static int		revm_edfmt_register_type(char isunion,
 						 char *label, 
 						 char **fields, 
-						 u_int fieldnbr)
+						 unsigned int fieldnbr)
 {
 
   char			buf[BUFSIZ];
@@ -260,7 +260,7 @@ static int		revm_edfmt_add_var_queue(edfmtvar_t *vars)
 static int		revm_edfmt_proceed_var_queue()
 {
   char			**keys;
-  u_int			index;
+  unsigned int			index;
   int			keynbr = 0;
   edfmtvar_t		*var;
 

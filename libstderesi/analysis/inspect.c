@@ -43,7 +43,7 @@ int			cmd_inspect()
   char			*name;
   char			*pname;
   elfsh_SAddr		off;
-  u_int			vaddr;
+  unsigned int			vaddr;
   char			buflog[BUFSIZ];
   listent_t		*curent;
   mjrblock_t		*tmpblock;

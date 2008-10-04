@@ -45,17 +45,17 @@ static int		edfmt_dwarf2_cfa_newstate(edfmtdw2cfastate_t *reg)
  * Parse .debug_frame FDE + data 
  */
 static int		edfmt_dwarf2_cfa_data(edfmtdw2cfastate_t *state, 
-					      edfmtdw2cfahead_t *header, u_char init)
+					      edfmtdw2cfahead_t *header, unsigned char init)
 {
-  u_char		cfa, cfa_data, scfa, c_low, c_high;
+  unsigned char		cfa, cfa_data, scfa, c_low, c_high;
   int			data, reg;
   eresi_Addr		nloc;
   edfmtdw2cfastate_t 	save_stack[20];
   int			isave_pos = 0;
   int      		cie;
   int      		length, addr_range, addr_start;
-  u_long       		last_pos;
-  u_long		max_pos;
+  unsigned long       		last_pos;
+  unsigned long		max_pos;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -294,7 +294,7 @@ int			edfmt_dwarf2_cfa()
       if (dwarf2_pos(frame) < dwarf2_size(frame))
 	{
 	  /* Check if the next header is a CIE */
-	  if (header.cid == *(u_int *) (dwarf2_ac_pos(frame)+4))
+	  if (header.cid == *(unsigned int *) (dwarf2_ac_pos(frame)+4))
 	    break;
 	}
     } while(dwarf2_pos(frame) < dwarf2_size(frame));

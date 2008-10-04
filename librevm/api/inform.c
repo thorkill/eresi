@@ -29,8 +29,8 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
   aspectype_t		*curtype;
   revmexpr_t		*newexpr, *rootexpr, *prevexpr;
   eresi_Addr		childaddr;
-  u_int			len;
-  static u_int		pathsize = 0;
+  unsigned int			len;
+  static unsigned int		pathsize = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -184,8 +184,8 @@ revmexpr_t	*revm_inform_type_addr(char		*type,
 				       char		*varname, 
 				       eresi_Addr	addr, 
 				       revmexpr_t	*expr,
-				       u_char		print,
-				       u_char		rec)
+				       unsigned char		print,
+				       unsigned char		rec)
 {
   revmexpr_t	*ret;
   char		*addrbuf;
@@ -206,7 +206,7 @@ revmexpr_t	*revm_inform_type_addr(char		*type,
  */
 revmexpr_t	*revm_inform_type(char *type, char *varname, 
 				  char *straddr, revmexpr_t *expr,
-				  u_char print, u_char rec)
+				  unsigned char print, unsigned char rec)
 {
   hash_t	*hash;
   char		buf[BUFSIZ];
@@ -332,7 +332,7 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 
 
 /* Add an element to the inform table for a given type */
-int		revm_uninform_type(char *type, char *varname, u_char print)
+int		revm_uninform_type(char *type, char *varname, unsigned char print)
 {
   hash_t	*hash;
   char		buf[BUFSIZ];

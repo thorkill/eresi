@@ -28,7 +28,7 @@ int			e2dbg_linkmap_load(char *name)
   char			*gotname;
   char			*ename;
   elfsh_Ehdr		*hdr;
-  u_int			elftypenum;
+  unsigned int			elftypenum;
   elfsh_Sym		*endsym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

@@ -258,7 +258,7 @@ int		e2dbg_break_ia32(elfshobj_t *f,
   fprintf(stderr, "[DEBUG_BREAKPOINTS:ia32] bp->addr %08X \n", bp->addr);
 #endif
   
-  bp->savedinstr[0] = *(u_long *) bp->addr;
+  bp->savedinstr[0] = *(unsigned long *) bp->addr;
   prot = elfsh_munprotect(f, bp->addr, 4);
   if (prot == (-1))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Munprotect failed", (-1));
@@ -266,7 +266,7 @@ int		e2dbg_break_ia32(elfshobj_t *f,
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:ia32] after munprotect\n");
 #endif
-  *(u_char *) bp->addr = 0xCC;
+  *(unsigned char *) bp->addr = 0xCC;
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:ia32] after write\n");
 #endif

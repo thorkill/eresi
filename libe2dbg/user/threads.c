@@ -230,7 +230,7 @@ __sighandler_t		signal(int signum, __sighandler_t fctptr)
 void		e2dbg_threads_print()
 {
   e2dbgthread_t	*cur;
-  u_int         index;
+  unsigned int         index;
   char		logbuf[BUFSIZ];
   char		*stime, *nl, *state, *entry;
   char		c;
@@ -342,7 +342,7 @@ int		cmd_threads()
 int		e2dbg_thread_stopall(int signum)
 {
   e2dbgthread_t	*cur;
-  u_int         index;
+  unsigned int         index;
   char		**keys;
   int		keynbr;
   char		*sig;
@@ -350,7 +350,7 @@ int		e2dbg_thread_stopall(int signum)
   int		ret;
 
 #if __DEBUG_THREADS__
-  u_int	called = rand() % 1000;
+  unsigned int	called = rand() % 1000;
 
   /*
   printf(" [*] Stopping all user threads \n");
@@ -460,7 +460,7 @@ void		e2dbg_thread_contall()
   e2dbgthread_t	*cur;
   char		**keys;
   int		keynbr;
-  u_int         index;
+  unsigned int         index;
 
 #if (__DEBUG_THREADS__ || __DEBUG_BP__)
   fprintf(stderr, " [*] Continuing all threads (current number of threads = %u) \n",

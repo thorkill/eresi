@@ -13,12 +13,12 @@
  */
 struct s_mips_decode_reg
 {
-  u_int32_t	op:6;	/*! opcode field		*/
-  u_int32_t	rs:5;	/*! 1st source register		*/
-  u_int32_t	rt:5;	/*! 2nd source register		*/
-  u_int32_t	rd:5;	/*! destination register	*/
-  u_int32_t	sa:5;	/*! shift amount (shift instr)	*/
-  u_int32_t	fn:6;	/*! function to perform		*/
+  uint32_t	op:6;	/*! opcode field		*/
+  uint32_t	rs:5;	/*! 1st source register		*/
+  uint32_t	rt:5;	/*! 2nd source register		*/
+  uint32_t	rd:5;	/*! destination register	*/
+  uint32_t	sa:5;	/*! shift amount (shift instr)	*/
+  uint32_t	fn:6;	/*! function to perform		*/
 };
 
 /**
@@ -26,10 +26,10 @@ struct s_mips_decode_reg
  */
 struct s_mips_decode_imm
 {
-  u_int32_t	op:6;
-  u_int32_t	rs:5;
-  u_int32_t	rt:5;
-  u_int32_t	im:16;
+  uint32_t	op:6;
+  uint32_t	rs:5;
+  uint32_t	rt:5;
+  uint32_t	im:16;
 };
 
 /**
@@ -37,8 +37,8 @@ struct s_mips_decode_imm
  */
 struct s_mips_decode_jump
 {
-  u_int32_t	op:6;	/*! opcode field		*/
-  u_int32_t	ta:26;	/*! target to jump to		*/
+  uint32_t	op:6;	/*! opcode field		*/
+  uint32_t	ta:26;	/*! target to jump to		*/
 };
 
 /**
@@ -46,11 +46,11 @@ struct s_mips_decode_jump
  */
 struct s_mips_decode_trap
 {
-  u_int32_t	op:6;
-  u_int32_t	rs:5;
-  u_int32_t	rt:5;
-  u_int32_t	code:10;
-  u_int32_t	fn:6;
+  uint32_t	op:6;
+  uint32_t	rs:5;
+  uint32_t	rt:5;
+  uint32_t	code:10;
+  uint32_t	fn:6;
 };
 
 /**
@@ -58,14 +58,14 @@ struct s_mips_decode_trap
  */
 struct s_mips_decode_mov
 {
-  u_int32_t	op:6;
-  u_int32_t	rs:5;
-  u_int32_t	cc:3;
-  u_int32_t	b1:1;
-  u_int32_t	tf:1;
-  u_int32_t	rd:5;
-  u_int32_t	b2:5;
-  u_int32_t	fn:6;
+  uint32_t	op:6;
+  uint32_t	rs:5;
+  uint32_t	cc:3;
+  uint32_t	b1:1;
+  uint32_t	tf:1;
+  uint32_t	rd:5;
+  uint32_t	b2:5;
+  uint32_t	fn:6;
 };
 
 /**
@@ -73,12 +73,12 @@ struct s_mips_decode_mov
  */
 struct s_mips_decode_cop2
 {
-  u_int32_t	op:6;
-  u_int32_t	rs:5;
-  u_int32_t	rt:5;
-  u_int32_t	rd:5;
-  u_int32_t	fn:8;
-  u_int32_t	sl:3;
+  uint32_t	op:6;
+  uint32_t	rs:5;
+  uint32_t	rt:5;
+  uint32_t	rd:5;
+  uint32_t	fn:8;
+  uint32_t	sl:3;
 };
 
 #define s_mips_decode_priv s_mips_decode_cop2
@@ -88,13 +88,13 @@ struct s_mips_decode_cop2
  */
 struct s_mips_decode_cop1x
 {
-  u_int32_t	op:6;
-  u_int32_t	bs:5;
-  u_int32_t	in:5;
-  u_int32_t	f1:5;
-  u_int32_t	f2:5;
-  u_int32_t	fn:3;
-  u_int32_t	fmt:3;
+  uint32_t	op:6;
+  uint32_t	bs:5;
+  uint32_t	in:5;
+  uint32_t	f1:5;
+  uint32_t	f2:5;
+  uint32_t	fn:3;
+  uint32_t	fmt:3;
 };
 
 #endif

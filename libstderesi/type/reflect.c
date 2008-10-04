@@ -98,7 +98,7 @@ int		cmd_reflect()
       
       /* Fetch the current instruction */
       XALLOC(__FILE__, __FUNCTION__, __LINE__, cur, sizeof(asm_instr), -1);
-      ret = asm_read_instr(cur, (u_char *) blocdata + off, 
+      ret = asm_read_instr(cur, (unsigned char *) blocdata + off, 
 			   curblock->size - off + 10, world.curjob->proc);
       if (ret < 0)
 	{

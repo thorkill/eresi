@@ -14,7 +14,7 @@
 #include <libasm.h>
 #include <libasm-sparc.h>
 
-void asm_resolve_sparc(void *d, u_int val, char *buf, u_int len)
+void asm_resolve_sparc(void *d, unsigned int val, char *buf, unsigned int len)
 {
   sprintf(buf, "0x%x", val);
 }

@@ -47,14 +47,14 @@ typedef struct          s_color
 #define COLOR_BG_MAGENTA   45
 #define COLOR_BG_CYAN      46
 #define COLOR_BG_WHITE     47
-  u_int                 fground;
-  u_int                 bground;
-  u_int                 bold;
-  u_int                 underline;                                            
+  unsigned int                 fground;
+  unsigned int                 bground;
+  unsigned int                 bold;
+  unsigned int                 underline;                                            
   
 }                       color_t;
 
-extern u_int		nocolor;
+extern unsigned int		nocolor;
 
 /* Color functions */
 color_t         *revm_colortable(char *t, char *te);

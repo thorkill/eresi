@@ -23,7 +23,7 @@
 int		ds(elfshobj_t	*file,
 		   elfshsect_t	*sect,
 		   elfsh_Sym	*tab,
-		   u_int        num,
+		   unsigned int        num,
 		   regex_t	*regx,
 		   char		*(*get_symname)(elfshobj_t *f, elfsh_Sym *s))
 {
@@ -31,9 +31,9 @@ int		ds(elfshobj_t	*file,
   char		*name;
   char		*type;
   char		*bind;
-  u_int		typenum;
-  u_int		bindnum;
-  u_int		foff;
+  unsigned int		typenum;
+  unsigned int		bindnum;
+  unsigned int		foff;
   int		index;
   char		*sect_name;
   char		buff[512];
@@ -102,7 +102,7 @@ int		ds(elfshobj_t	*file,
 					
       if (sect && sect->shdr->sh_addr != table[index].st_value)
 	sprintf(off, " + %s", revm_colornumber("%u", 
-					     (u_int) (table[index].st_value - sect->shdr->sh_addr)));
+					     (unsigned int) (table[index].st_value - sect->shdr->sh_addr)));
       else
 	*off = '\0';
 

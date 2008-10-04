@@ -13,7 +13,7 @@
 /* Use setcolor */
 int 		cmd_color()
 {
-  u_int 	fg, bg, bd, ul, f, z, icolor;
+  unsigned int 	fg, bg, bd, ul, f, z, icolor;
   color_t 	*ex;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -59,10 +59,10 @@ int 		cmd_color()
   if (!fg || !bg) 
     {
       if (!fg)
-	icolor = (u_int) hash_get(&fg_color_hash, 
+	icolor = (unsigned int) hash_get(&fg_color_hash, 
 				  world.curjob->curcmd->param[2]);
       else
-	icolor = (u_int) hash_get(&bg_color_hash, 
+	icolor = (unsigned int) hash_get(&bg_color_hash, 
 				  world.curjob->curcmd->param[2]);
 
       if (icolor == 0)

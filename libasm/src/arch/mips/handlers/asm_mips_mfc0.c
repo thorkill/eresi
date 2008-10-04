@@ -5,7 +5,7 @@
 
 /* MFC0 rt,rd */
 
-int asm_mips_mfc0(asm_instr *ins, u_char *buf, u_int len,
+int asm_mips_mfc0(asm_instr *ins, unsigned char *buf, unsigned int len,
                   asm_processor *proc)
 {
    struct s_mips_decode_priv temp;

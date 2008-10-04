@@ -141,10 +141,10 @@ static int	revm_links_propagate(revmexpr_t *dest, revmexpr_t *source)
 */
 static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 {
-  u_int		dstnbr;
+  unsigned int		dstnbr;
   char		*curptr;
   char		*foundptr;
-  u_int		curidx;
+  unsigned int		curidx;
   list_t	*exprlist;
   aspectype_t	*type;
   char		namebuf[BUFSIZ];

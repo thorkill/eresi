@@ -10,7 +10,7 @@
 */
 
 
-int  op_je(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int  op_je(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->instr = ASM_BRANCH_EQUAL;

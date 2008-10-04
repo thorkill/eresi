@@ -18,7 +18,7 @@ int kernsh_openmem()
   int ret, mmap, mmap_size;
 
   char *device, *mode, *value;
-  u_int         dim[4];
+  unsigned int         dim[4];
   vector_t      *mem;
   int          (*fct)();
 
@@ -175,7 +175,7 @@ int kernsh_openmem()
 int kernsh_closemem()
 {
   int ret;
-  u_int         dim[4];
+  unsigned int         dim[4];
   vector_t      *mem;
   int          (*fct)();
 
@@ -214,7 +214,7 @@ int kernsh_closemem()
 int kernsh_readmem(unsigned long offset, void *buf, int size)
 {
   int ret;
-  u_int         dim[4];
+  unsigned int         dim[4];
   vector_t      *mem;
   int          (*fct)();
 
@@ -254,7 +254,7 @@ int kernsh_readmem(unsigned long offset, void *buf, int size)
 int kernsh_writemem(unsigned long offset, void *buf, int size)
 {
   int ret;
-  u_int         dim[4];
+  unsigned int         dim[4];
   vector_t      *mem;
   int          (*fct)();
 

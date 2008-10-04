@@ -12,7 +12,7 @@
  * <instruction func="op_sub_eax_iv" opcode="0x2d"/>
 */
 
-int op_sub_eax_iv(asm_instr *new, u_char *opcode, u_int len, 
+int op_sub_eax_iv(asm_instr *new, unsigned char *opcode, unsigned int len, 
                   asm_processor *proc)
 {
   new->instr = ASM_SUB;

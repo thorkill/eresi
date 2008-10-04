@@ -20,17 +20,17 @@ struct s_asm_op
   //asm_processor *proc;
   /** operand length. (usefull on ia32 only).
    * operands expressed in R byte from ModRM byte have a null size.	*/
-  u_int	len;			
+  unsigned int	len;			
   /* pointer to operand in buffer */
-  u_char *ptr;
+  unsigned char *ptr;
   /* operand type: contain operand type flags */
-  u_int	type;
+  unsigned int	type;
   /* a pointer to the operand name in string format */
   char *name;
   /* contain operand size flags	*/
-  u_int	size;
+  unsigned int	size;
   /* Operand content flags */
-  u_int	content;
+  unsigned int	content;
   /* register set: 8/16/32 bits general registers, segment registers ..
    * (ia32 only) */
   int regset;
@@ -67,7 +67,7 @@ struct s_asm_op
 struct s_asm_instr 
 {
   /* pointer to instruction buffer -- please let this field in first if using containers */
-  u_char *ptr_instr;
+  unsigned char *ptr_instr;
   /* internal processor structure */
   asm_processor	*proc;
   /* instruction name */
@@ -95,7 +95,7 @@ struct s_asm_instr
   /* Array of operands */
   asm_operand	op[4];
   /* instruction/operands full lengh */
-  u_int len;   
+  unsigned int len;   
 };
 
 
@@ -113,7 +113,7 @@ struct s_asm_instr
 struct s_asm_processor 
 {
   /* handler to resolving function */
-  void (*resolve_immediate)(void *, u_int, char *, u_int); 
+  void (*resolve_immediate)(void *, unsigned int, char *, unsigned int); 
   /* handler data pointer */
   void *resolve_data;
   /* processor type */
@@ -122,7 +122,7 @@ struct s_asm_processor
   char **instr_table;
   /* fetching instruction. points to processor fetching function. */
   LIBASM_HANDLER_FETCH(fetch);
-  //int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *proc);
+  //int (*fetch)(asm_instr *, unsigned char *, unsigned int, asm_processor *proc);
   /* output handler. print instruction in a readable string	*/
   char *(*display_handle)(asm_instr *instr, int addr);
   /* pointer to an internal structure. */

@@ -14,7 +14,7 @@
 /* Strip a group of char */
 static void		__strip_group_char(char *str, char s, char e)
 {
-  u_int			len, diff, pos;
+  unsigned int			len, diff, pos;
   char			*search, *search_end;
 
   NOPROFILER_IN();
@@ -43,7 +43,7 @@ static void		logtofile(char *str)
   revmexpr_t		*stripexpr;
   revmobj_t		*stripvar;
   char			*tmp;
-  u_int			len;
+  unsigned int			len;
 
   NOPROFILER_IN();
   len = strlen(str);

@@ -20,18 +20,18 @@
  * @param len
  * @param proc
  */ 
-int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc) 
+int fetch_sparc(asm_instr *ins, unsigned char *buf, unsigned int len, asm_processor *proc) 
 { 
   vector_t *vec;
-  u_int dim[3];
-  int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *); 
+  unsigned int dim[3];
+  int (*fetch)(asm_instr *, unsigned char *, unsigned int, asm_processor *); 
   
   int converted;  
   
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-  u_char *ptr;
+  unsigned char *ptr;
   int i;
-  ptr = (u_char*) &converted;
+  ptr = (unsigned char*) &converted;
   
   for (i = 0; i < 4; i++)
     *(ptr + i) = *(buf + 3 - i);
@@ -94,7 +94,7 @@ int fetch_sparc(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   }
   
   fetch = aspect_vectors_select(vec, dim);
-  return (fetch(ins, (u_char*) &converted, len, proc));
+  return (fetch(ins, (unsigned char*) &converted, len, proc));
   
   printf("[DEBUG_SPARC] fetch_sparc:impossible execution path\n");
   return (-1);

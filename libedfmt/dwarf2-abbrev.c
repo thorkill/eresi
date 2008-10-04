@@ -30,7 +30,7 @@ if (_var == NULL)					\
  * @param num_fetch used to found the abbrev entity on the abbrev hash table
  * @return abbrev entity structure
  */
-static edfmtdw2abbent_t	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
+static edfmtdw2abbent_t	*edfmt_dwarf2_lookup_abbrev(unsigned int num_fetch)
 {
   char			ckey[EDFMT_CKEY_SIZE];
   edfmtdw2abbent_t 	*res;
@@ -49,7 +49,7 @@ static edfmtdw2abbent_t	*edfmt_dwarf2_lookup_abbrev(u_int num_fetch)
  * @param fnum abbrev entity fetch number
  * @param ipos abbrev entity key to set
  */
-int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, u_long fnum, u_long ipos)
+int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, unsigned long fnum, unsigned long ipos)
 {
   edfmtdw2abbent_t	*fetch;
 
@@ -86,9 +86,9 @@ int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, u_long fnum, u_long ipos)
 int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
 {
   char			**keys;
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
-  u_long		*value;
+  unsigned long		*value;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -105,7 +105,7 @@ int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
     {
       for (index = 0; index < keynbr; index++)
 	{
-	  value = (u_long *) hash_get(abbrev_table, keys[index]);
+	  value = (unsigned long *) hash_get(abbrev_table, keys[index]);
 
 	  if (value)
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,value);
@@ -121,12 +121,12 @@ int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
  */
 int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
 {
-  u_int			num;
-  u_int			base;
+  unsigned int			num;
+  unsigned int			base;
   edfmtdw2abbent_t	*ent;
   char			ckey[EDFMT_CKEY_SIZE];
-  u_int			allocattr = 0;
-  u_int			attri = 0;
+  unsigned int			allocattr = 0;
+  unsigned int			attri = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -181,8 +181,8 @@ int			edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table)
 static int    		edfmt_dwarf2_form_it(edfmtdw2abbattr_t *attr)
 {
   long			data;
-  u_long		size;
-  u_int			form;
+  unsigned long		size;
+  unsigned int			form;
 
   NOPROFILER_IN();
 
@@ -271,10 +271,10 @@ fvstart:
  */
 int 	   		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
 {
-  u_int			i;
+  unsigned int			i;
   char			*ptr;
-  u_char 		addr[10]; /* 10 should be enough */
-  u_int			data;
+  unsigned char 		addr[10]; /* 10 should be enough */
+  unsigned int			data;
   long			ddata;
 
   NOPROFILER_IN();
@@ -295,14 +295,14 @@ fvstart:
     {
     case DW_FORM_ref_addr:
       for (i = 0; i < current_cu->addr_size; i++)
-	dwarf2_ipos(addr[i], info, u_char);
+	dwarf2_ipos(addr[i], info, unsigned char);
 
-      attr->u.udata = *(u_long *) addr;
+      attr->u.udata = *(unsigned long *) addr;
       break;
     case DW_FORM_addr:
       DW2_GETPTR(attr->u.vbuf, current_cu->addr_size, -1);
       for (i = 0; i < current_cu->addr_size; i++)
-	dwarf2_ipos(attr->u.vbuf[i], info, u_char);
+	dwarf2_ipos(attr->u.vbuf[i], info, unsigned char);
       break;
     case DW_FORM_block1:
     case DW_FORM_block2:
@@ -325,24 +325,24 @@ fvstart:
 	  DW2_GETPTR(attr->u.vbuf, attr->asize, -1);
 	  
 	  for (i = 0; i < attr->asize; i++)
-	    dwarf2_ipos(attr->u.vbuf[i], info, u_char);
+	    dwarf2_ipos(attr->u.vbuf[i], info, unsigned char);
 	}
       break;
     case DW_FORM_data1:
       dwarf2_iread_1(ddata, info);
-      attr->u.udata = (u_long) ddata & 0xFF;
+      attr->u.udata = (unsigned long) ddata & 0xFF;
       break;
     case DW_FORM_data2:
       dwarf2_iread_2(ddata, info);
-      attr->u.udata = (u_long) ddata & 0xFFFF;
+      attr->u.udata = (unsigned long) ddata & 0xFFFF;
       break;
     case DW_FORM_data4:
       dwarf2_iread_4(ddata, info);
-      attr->u.udata = (u_long) ddata & 0xFFFFFFFF;
+      attr->u.udata = (unsigned long) ddata & 0xFFFFFFFF;
       break;
     case DW_FORM_data8:
       dwarf2_iread_8(ddata, info);
-      attr->u.udata = (u_long) ddata;
+      attr->u.udata = (unsigned long) ddata;
       break;
     case DW_FORM_string:
       attr->u.str = dwarf2_ac_pos(info);
@@ -358,7 +358,7 @@ fvstart:
       break;
     case DW_FORM_flag:
       dwarf2_iread_1(ddata, info);
-      attr->u.udata = (u_long) ddata & 0xFF;
+      attr->u.udata = (unsigned long) ddata & 0xFF;
       break;
     case DW_FORM_strp:
       ptr = (char *) dwarf2_data(str);
@@ -405,9 +405,9 @@ fvstart:
  * @param abbent abbrev entity to fill
  * @param pos info position
  */
-int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
+int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, unsigned int pos)
 {  
-  u_int			num_fetch, i;
+  unsigned int			num_fetch, i;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -460,11 +460,11 @@ int			edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos)
  * XXX: Re use it when it will be usefull
  * Read macinfo data 
  */
-int			edfmt_dwarf2_mac(u_long offset)
+int			edfmt_dwarf2_mac(unsigned long offset)
 {
   int			line = 0, file = 0;
-  u_char      		type;
-  u_int			i;
+  unsigned char      		type;
+  unsigned int			i;
   char			*str = NULL;
   edfmtdw2macro_t 	*mac;
 
@@ -540,9 +540,9 @@ int			edfmt_dwarf2_mac(u_long offset)
  * @param buf location is read from this buffer
  * @param size size of the buffer
  */
-int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
+int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, unsigned char *buf, unsigned int size)
 {
-  u_int			i, spos, bsize, tmp_op;
+  unsigned int			i, spos, bsize, tmp_op;
   eresi_Addr		tmp_value;
   edfmtdw2loc_t		stack[75];
   int			bra;
@@ -579,7 +579,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 	    stack[spos].value = *(eresi_Addr *) stack[spos].value;
 	  break;
 	case DW_OP_const1u:
-	  stack[spos].value = *(u_char *) (buf + (++i));
+	  stack[spos].value = *(unsigned char *) (buf + (++i));
 	  i++;
 	  break;
 	case DW_OP_const1s:
@@ -595,7 +595,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 	  i += 2;
 	  break;
 	case DW_OP_const4u:
-	  stack[spos].value = *(u_int *) (buf + (++i));
+	  stack[spos].value = *(unsigned int *) (buf + (++i));
 	  i += 4;
 	  break;
 	case DW_OP_const4s:
@@ -603,7 +603,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 	  i += 4;
 	  break;
 	case DW_OP_const8u:
-	  stack[spos].value = *(u_long *) (buf + (++i));
+	  stack[spos].value = *(unsigned long *) (buf + (++i));
 	  i += 8;
 	  break;
 	case DW_OP_const8s:	
@@ -902,16 +902,16 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 {
   eresi_Addr  		addr;
-  u_int			file;
-  u_int			line;
-  u_int			column;
-  u_int	      		is_stmt;
-  u_int	       		basic_block;
-  u_int			end_sequence;
-  u_long		tmpf;
+  unsigned int			file;
+  unsigned int			line;
+  unsigned int			column;
+  unsigned int	      		is_stmt;
+  unsigned int	       		basic_block;
+  unsigned int			end_sequence;
+  unsigned long		tmpf;
 
-  u_int			i, bsize;
-  u_char       		opc, ext_opc;
+  unsigned int			i, bsize;
+  unsigned char       		opc, ext_opc;
   char			*read_addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -962,7 +962,7 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		      DW2_GETPTR(read_addr, current_cu->addr_size, -1);
 		      
 		      for (i = 0; i < current_cu->addr_size; i++)
-			dwarf2_ipos(read_addr[i], line, u_char);
+			dwarf2_ipos(read_addr[i], line, unsigned char);
 
 		      addr = *(eresi_Addr *) read_addr;
 		      break;
@@ -972,11 +972,11 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_name, header->files_name, 
 			       sizeof(char*)*header->files_number, -1);
 		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_dindex, header->files_dindex, 
-			       sizeof(u_int)*header->files_number, -1);
+			       sizeof(unsigned int)*header->files_number, -1);
 		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_time, header->files_time, 
-			       sizeof(u_int)*header->files_number, -1);
+			       sizeof(unsigned int)*header->files_number, -1);
 		      XREALLOC(__FILE__, __FUNCTION__, __LINE__,header->files_len, header->files_len, 
-			       sizeof(u_int)*header->files_number, -1);
+			       sizeof(unsigned int)*header->files_number, -1);
 
 		      /* Read information and fill new entrie */
 		      dwarf2_istr(header->files_name[header->files_number], line);
@@ -1033,11 +1033,11 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
  * XXX: Re use it when it will be usefull
  * Parse .debug_line 
  */
-int			edfmt_dwarf2_line(u_long offset)
+int			edfmt_dwarf2_line(unsigned long offset)
 {
-  u_int			i;
+  unsigned int			i;
   edfmtdw2linehead_t 	header;
-  u_long      		prev_pos, tmpf;
+  unsigned long      		prev_pos, tmpf;
   char			*strf;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1088,9 +1088,9 @@ int			edfmt_dwarf2_line(u_long offset)
   dwarf2_pos(line) = prev_pos;
 
   DW2_GETPTR(header.files_name, sizeof(char*)*i, -1);
-  DW2_GETPTR(header.files_dindex, sizeof(u_int)*i, -1);
-  DW2_GETPTR(header.files_time, sizeof(u_int)*i, -1);
-  DW2_GETPTR(header.files_len, sizeof(u_int)*i, -1);
+  DW2_GETPTR(header.files_dindex, sizeof(unsigned int)*i, -1);
+  DW2_GETPTR(header.files_time, sizeof(unsigned int)*i, -1);
+  DW2_GETPTR(header.files_len, sizeof(unsigned int)*i, -1);
 
   header.files_number = i+1;
 
@@ -1126,8 +1126,8 @@ int			edfmt_dwarf2_line(u_long offset)
  * XXX: Re use it when it will be usefull
  * Record a new line entry
  */
-int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, 
-					      eresi_Addr addr, u_int fid)
+int			edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, unsigned int line, unsigned int column, 
+					      eresi_Addr addr, unsigned int fid)
 {
   edfmtdw2line_t 	*pline;
 

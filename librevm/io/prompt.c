@@ -12,7 +12,7 @@
 #include "revm.h"
 
 
-void	(*prompt_token_setup)(char *name, u_int size);
+void	(*prompt_token_setup)(char *name, unsigned int size);
 char	prompt_token[512];
 
 
@@ -21,7 +21,7 @@ char	prompt_token[512];
  * @brief TO COMPLETE
  * @ingroup io
  */
-void    revm_set_prompt(void (*func) (char *name, u_int size))
+void    revm_set_prompt(void (*func) (char *name, unsigned int size))
 {
   prompt_token_setup = func;
 }
@@ -30,7 +30,7 @@ void    revm_set_prompt(void (*func) (char *name, u_int size))
  * @brief TO COMPLETE
  * @ingroup io
  */
-void	revm_create_default_prompt(char *name, u_int size)
+void	revm_create_default_prompt(char *name, unsigned int size)
 {
   snprintf(name, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",

@@ -17,7 +17,7 @@
 int		cmd_type()
 {
   int		nocmd;
-  u_char	isunion;
+  unsigned char	isunion;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

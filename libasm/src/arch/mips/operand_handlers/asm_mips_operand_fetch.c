@@ -5,14 +5,14 @@
 
 #include <libasm.h>
 
-int asm_mips_operand_fetch(asm_operand *op, u_char *opcode, int otype,
+int asm_mips_operand_fetch(asm_operand *op, unsigned char *opcode, int otype,
                                           asm_instr *ins)
 
 { 
   vector_t      *vec;
-  u_int         dim[1];
+  unsigned int         dim[1];
   int           ret;
-  int           (*func_op)(asm_operand *op, u_char *opcode, int otype, asm_instr *ins);
+  int           (*func_op)(asm_operand *op, unsigned char *opcode, int otype, asm_instr *ins);
   
   vec = aspect_vector_get(LIBASM_VECTOR_OPERAND_MIPS);
   dim[0] = otype;

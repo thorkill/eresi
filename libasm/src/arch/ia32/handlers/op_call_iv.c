@@ -9,7 +9,7 @@
   <instruction func="op_call_iv" opcode="0xe8"/>
 */
 
-int op_call_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_call_iv(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->instr = ASM_CALL;

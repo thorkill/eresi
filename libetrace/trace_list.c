@@ -19,7 +19,7 @@
 int		traces_list_detail(hash_t *table, char *name)
 {
   char		**keys;
-  u_int		index;
+  unsigned int		index;
   int		keynbr;
   trace_t	*entrie;
   char		buf[BUFSIZ];
@@ -74,7 +74,7 @@ int		traces_list_detail(hash_t *table, char *name)
 int		traces_list(elfshobj_t *file, char *name, char **optarg)
 {
   char		**keys = NULL;
-  u_int		index;
+  unsigned int		index;
   int		keynbr;
   hash_t	*subtable;
   char		funcreg[256];

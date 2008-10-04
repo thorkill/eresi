@@ -10,7 +10,7 @@
   <instruction func="op_insd" opcode="0x6d"/>
 */
 
-int     op_insw(asm_instr *new, u_char *opcode, u_int len,
+int     op_insw(asm_instr *new, unsigned char *opcode, unsigned int len,
 		asm_processor *proc)
 {
   new->len += 1;

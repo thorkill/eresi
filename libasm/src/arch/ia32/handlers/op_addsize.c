@@ -9,7 +9,7 @@
   <instruction func="op_addsize" opcode="0x67"/>
  */
 
-int     op_addsize(asm_instr *new, u_char *opcode, u_int len,
+int     op_addsize(asm_instr *new, unsigned char *opcode, unsigned int len,
                    asm_processor *proc)
 {
   asm_i386_processor    *i386p;

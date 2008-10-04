@@ -9,7 +9,7 @@
   <instruction func="op_hlt" opcode="0xf4"/>
 */
 
-int op_hlt(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_hlt(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->len += 1;

@@ -12,7 +12,7 @@
 
 
 /**
- * @fn int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+ * @fn int asm_fetch_mips(asm_instr *ins, unsigned char *buf, unsigned int len, asm_processor *proc)
  * @brief MIPS main fetching handler.
  *
  * This function is called by asm_read_instr.
@@ -24,18 +24,18 @@
  * @param proc Pointer to processor structure.
  * @return Lengh of instruction or 0 on error.
  */
-int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
+int asm_fetch_mips(asm_instr *ins, unsigned char *buf, unsigned int len, asm_processor *proc)
 {
   vector_t *vec = 0;
-  u_int i = 0, converted = 0;
-  u_int dim[3];
-  u_char *for_help;
+  unsigned int i = 0, converted = 0;
+  unsigned int dim[3];
+  unsigned char *for_help;
   LIBASM_HANDLER_FETCH(fetch);
 
   if (asm_config_get_endian() == CONFIG_ASM_BIG_ENDIAN) {
      memcpy((char *)&converted,buf,sizeof(converted));
   } else if (asm_config_get_endian() == CONFIG_ASM_LITTLE_ENDIAN) {
-     for_help = (u_char*)&converted;
+     for_help = (unsigned char*)&converted;
      for(i=0;i<4;i++)
        *(for_help + i) = *(buf + 3 - i);
   } else {
@@ -111,7 +111,7 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 
       case MIPS_OPCODE_COP0:
          do {
-	    u_int tmp = (converted >> 3) & 0xFF;
+	    unsigned int tmp = (converted >> 3) & 0xFF;
 	    
 	    if (!tmp)
 	       dim[1] = tmp;
@@ -123,8 +123,8 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
       case MIPS_OPCODE_COP1:
          do {
 	
-	    u_int tmp = (converted >> 0) & 0x3F;
-	    u_int fmt = (converted >> 21) & 0x1F;
+	    unsigned int tmp = (converted >> 0) & 0x3F;
+	    unsigned int fmt = (converted >> 21) & 0x1F;
 
             if (fmt == MIPS_OPCODE_BCC2) {
 	       dim[1] = fmt;
@@ -142,7 +142,7 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
          break;
       case MIPS_OPCODE_COP2:
          do {
-            u_int tmp = (converted >> 25) & 0x1;
+            unsigned int tmp = (converted >> 25) & 0x1;
 	 
 	    if (tmp)
 	       dim[1] = tmp;
@@ -162,7 +162,7 @@ int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
    }
    
    fetch = aspect_vectors_select(vec,dim);
-   return (fetch(ins,(u_char *)&converted,len,proc));
+   return (fetch(ins,(unsigned char *)&converted,len,proc));
 }
 
 /**

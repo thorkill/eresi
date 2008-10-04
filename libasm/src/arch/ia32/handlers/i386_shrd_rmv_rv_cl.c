@@ -9,7 +9,7 @@
  <i386 func="i386_shrd_rmv_rv_cl" opcode="0xad"/>
 */
 
-int i386_shrd_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len,
+int i386_shrd_rmv_rv_cl(asm_instr *new, unsigned char *opcode, unsigned int len,
 			asm_processor *proc)
 {
     new->instr = ASM_SHRD;

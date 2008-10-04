@@ -18,7 +18,7 @@
  * @return Return length of instruction.
  */
 
-int op_xor_al_ib(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc) {
+int op_xor_al_ib(asm_instr *instr, unsigned char *opcode, unsigned int len, asm_processor *proc) {
   instr->instr = ASM_XOR;
   instr->len += 1;
   instr->ptr_instr = opcode;

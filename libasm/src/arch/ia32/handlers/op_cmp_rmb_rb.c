@@ -9,7 +9,7 @@
   <instruction func="op_cmp_rmb_rb" opcode="0x38"/>
 */
 
-int op_cmp_rmb_rb(asm_instr *new, u_char *opcode, u_int len,
+int op_cmp_rmb_rb(asm_instr *new, unsigned char *opcode, unsigned int len,
                   asm_processor *proc)
 {
   new->ptr_instr = opcode;

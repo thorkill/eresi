@@ -64,7 +64,7 @@ int			elfsh_flush_bss(elfshobj_t *file)
 int			elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht)
 {
   elfshsect_t		*bss;
-  u_int			range = 0;
+  unsigned int			range = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -96,7 +96,7 @@ elfshsect_t		*elfsh_fixup_bss(elfshobj_t *file)
   static elfshobj_t	*obj = NULL;
   static elfshsect_t	*last = NULL;
   elfshsect_t		*bss = NULL;
-  u_int			idx = 0;
+  unsigned int			idx = 0;
   char			fixflag;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -169,7 +169,7 @@ int		elfsh_fixup_bss_real(elfshobj_t *file,
 {
   elfshsect_t	*next;
   elfshsect_t	*actual;
-  u_int		size;
+  unsigned int		size;
   eresi_Off	size2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -321,7 +321,7 @@ int		elfsh_find_bsslen(elfshobj_t	*host,
   elfsh_Sym	*symtab;
   elfsh_Sym	enew;
   int		size;
-  u_int		index;
+  unsigned int		index;
   char		*name;
   char		buff[BUFSIZ];
   eresi_Addr	bss_size;

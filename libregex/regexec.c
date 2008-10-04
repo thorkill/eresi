@@ -18,7 +18,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-typedef u_char bool;
+typedef unsigned char bool;
 
 #define true 1
 #define false 0

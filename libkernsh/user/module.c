@@ -13,7 +13,7 @@
 int kernsh_kload_module(char *name)
 {
   int		ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *kload;
   int          (*fct)();
   char		buff[BUFSIZ];
@@ -89,7 +89,7 @@ int kernsh_kload_module_linux(char *name)
 int kernsh_kunload_module(char *name)
 {
   int		ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *kunload;
   int          (*fct)();
   char		buff[BUFSIZ];
@@ -155,7 +155,7 @@ int kernsh_kunload_module_linux(char *name)
 int kernsh_relink_module(char *orig, char *injec, char *evil)
 {
   int		ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *rel;
   int          (*fct)();
   char		buff[BUFSIZ];
@@ -248,7 +248,7 @@ int kernsh_infect_module(char *module,
 			 char *original_fname, char *evil_fname)
 {
   int		ret;
-  u_int         dim[2];
+  unsigned int         dim[2];
   vector_t      *inf;
   int          (*fct)();
   char		buff[BUFSIZ];
@@ -333,7 +333,7 @@ int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
   elfshsect_t *sct, *gnu;
   elfsh_Sym *table;
   elfsh_Rel *rel, *cur;
-  u_int idx;
+  unsigned int idx;
   void *data;
   char buff[BUFSIZ];
 

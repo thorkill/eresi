@@ -78,8 +78,8 @@ elfshsect_t *stabs_sect_str;
 edfmtstabsent_t *stabs_ent;
 
 /* Index */
-u_int stabs_index;
-u_int stabs_num;
+unsigned int stabs_index;
+unsigned int stabs_num;
 char *stabs_datastr;
 
 /* File structure pointers */
@@ -166,7 +166,7 @@ static int		edfmt_stabs_initrestable()
  * @param type watch if we got a type waiting for this type
  * @param token help to make an unique search name
  */
-static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, u_char token)
+static int		edfmt_stabs_update_cref(edfmtstabstype_t *type, unsigned char token)
 {
   char			buf[BUFSIZ];
   edfmtstabstype_t 	*seek_type;
@@ -238,7 +238,7 @@ int	    		edfmt_stabs_addfile(char *dir, char *file)
 int     		edfmt_stabs_func(edfmtstabsfunc_t *func, char **str)
 {
   char			*my_str;
-  u_int			arg_index = 0;
+  unsigned int			arg_index = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -362,7 +362,7 @@ int	 	     	edfmt_stabs_range(edfmtstabstype_t *type, char **str)
  * @param isVector indicate if this array is a vector
  */
 int	      		edfmt_stabs_array(edfmtstabstype_t *type, char **str, 
-				  u_char isString, u_char isVector)
+				  unsigned char isString, unsigned char isVector)
 {
   edfmtstabstype_t 	*rtype;
   long			low, high;
@@ -550,8 +550,8 @@ edfmtstabstype_t 	*edfmt_stabs_type(char **str, char *link)
   char			ctypenum[STABS_CTYPENUM_SIZE];
   char			name[STABS_NAME_SIZE];
   long			tsize = 0;
-  u_char       		isString = 0;
-  u_char		isVector = 0;
+  unsigned char       		isString = 0;
+  unsigned char		isVector = 0;
   int			addtype = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -969,8 +969,8 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 {
   char			*str, *sfile;
   edfmtstabsfile_t 	*tmp;
-  u_char		parse_str;
-  u_char		inc;
+  unsigned char		parse_str;
+  unsigned char		inc;
   edfmtstabsline_t 	*line;
   edfmtstabsdata_t	*data;
 
@@ -1044,7 +1044,7 @@ int			edfmt_stabs_parse(elfshobj_t *file)
 	  STABS_GETPTR(line, sizeof(edfmtstabsline_t), -1);
 
 	  /* Fill right informations */
-	  line->line = (u_int) stabs_c_ent.desc;
+	  line->line = (unsigned int) stabs_c_ent.desc;
 	  line->addr = stabs_c_ent.value;
 	      
 	  /* Update pointers */

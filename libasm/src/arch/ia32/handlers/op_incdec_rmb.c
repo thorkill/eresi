@@ -9,7 +9,7 @@
   <instruction func="op_incdec_rmb" opcode="0xfe"/>
 */
 
-int op_incdec_rmb(asm_instr *new, u_char *opcode, u_int len,
+int op_incdec_rmb(asm_instr *new, unsigned char *opcode, unsigned int len,
                   asm_processor *proc)
 {
   struct s_modrm        *modrm;

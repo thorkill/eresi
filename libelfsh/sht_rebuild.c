@@ -207,7 +207,7 @@ int	elfsh_merge_shtentry(elfshobj_t *file,
  * @param num
  * @return
  */
-static int	elfsh_init_sht(elfshobj_t *file, u_int num)
+static int	elfsh_init_sht(elfshobj_t *file, unsigned int num)
 {
   elfsh_Shdr	shdr;
   elfshsect_t	*sect;
@@ -624,7 +624,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
     {
       asm_instr instr;
       asm_processor proc;
-      u_char temp[1024];
+      unsigned char temp[1024];
       //int curr;
 
       sect_addr = dyn->d_un.d_ptr;
@@ -694,7 +694,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
     {
       asm_instr instr;
       asm_processor proc;
-      u_char temp[1024];
+      unsigned char temp[1024];
 
       sect_addr = dyn->d_un.d_ptr;
 
@@ -812,13 +812,13 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
 /**
  * First round : Read PHT and guess .bss, .interp, .dynamic and .notes bounds 
  */
-static void	sht_first_round(elfshobj_t *file, u_int num)
+static void	sht_first_round(elfshobj_t *file, unsigned int num)
 {
   /*
     elfsh_Phdr	*dyn;
     elfsh_Shdr	shdr;
   */
-  u_int		index;
+  unsigned int		index;
   int		flags;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -893,11 +893,11 @@ static void	sht_first_round(elfshobj_t *file, u_int num)
  * @param num
  * @return
  */
-static void	sht_second_round(elfshobj_t *file, u_int num)
+static void	sht_second_round(elfshobj_t *file, unsigned int num)
 {
   /* elfsh_Phdr	*dyn; */
   elfsh_Shdr	shdr;
-  u_int		index;
+  unsigned int		index;
   int		flags;
   char		*name;
   char		i;

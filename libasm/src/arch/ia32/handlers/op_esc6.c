@@ -9,7 +9,7 @@
   <instruction func="op_esc6" opcode="0xde"/>
  */
 
-int op_esc6(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_esc6(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   struct s_modrm        *modrm;
   new->ptr_instr = opcode;

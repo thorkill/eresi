@@ -18,7 +18,7 @@
  * @param key key to transform
  * @return the modified pointer or NULL
  */
-char 			*edfmt_ckey(char *buf, u_int size, long key)
+char 			*edfmt_ckey(char *buf, unsigned int size, long key)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -40,7 +40,7 @@ char 			*edfmt_ckey(char *buf, u_int size, long key)
  * @param file filename
  * @return the modified pointer or NULL
  */
-char 			*edfmt_cline(char *buf, u_int size, u_int line, char *file)
+char 			*edfmt_cline(char *buf, unsigned int size, unsigned int line, char *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -65,7 +65,7 @@ char 			*edfmt_cline(char *buf, u_int size, u_int line, char *file)
  * @param addr address to transform
  * @return the modified pointer or NULL
  */
-char 			*edfmt_caddr(char *buf, u_int size, eresi_Addr addr)
+char 			*edfmt_caddr(char *buf, unsigned int size, eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

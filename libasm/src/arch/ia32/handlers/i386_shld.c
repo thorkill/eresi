@@ -16,7 +16,7 @@
  * @return Length of instruction.
 */
 
-int i386_shld(asm_instr *new, u_char *opcode, u_int len,
+int i386_shld(asm_instr *new, unsigned char *opcode, unsigned int len,
 	      asm_processor *proc)
 {
   struct s_modrm        *modrm;

@@ -31,8 +31,8 @@ stabs_ent[stabs_index]
 typedef struct	s_stabsent
 {
   eresi_Addr   	strindex; 	/*!< The index to find the string on the string stab section */
-  u_char       	type;		/*!< Type id */
-  u_char	other;		/*!< Never use, already @ 0 */
+  unsigned char       	type;		/*!< Type id */
+  unsigned char	other;		/*!< Never use, already @ 0 */
   u_short	desc;		/*!< Used to store short information like line */
   eresi_Addr  	value;		/*!< Used to store addr aligned informations */
 }	     	edfmtstabsent_t;
@@ -126,7 +126,7 @@ typedef struct	s_stabsarray
  */
 typedef struct 	s_stabsfunc
 {
-  u_int		s_line; /* Start line */
+  unsigned int		s_line; /* Start line */
   eresi_Addr	s_addr; /* Start address */
   eresi_Addr	e_addr; /* End address */
 
@@ -162,7 +162,7 @@ struct		s_stabstype
 #define STABS_TYPE_VOLATILE 12
 #define STABS_TYPE_CONST    13
 #define STABS_TYPE_CLINK    14
-  u_char       	type;
+  unsigned char       	type;
 
   edfmtstabstypenum_t num;
   char cnum[STABS_CTYPENUM_SIZE];
@@ -214,7 +214,7 @@ struct		s_stabsdata
 #define STABS_SCOPE_VARREG       13
 #define STABS_SCOPE_STATICVAR    14
 #define STABS_SCOPE_PSTATICVAR   15
-  u_char	scope;
+  unsigned char	scope;
 
   edfmtstabstype_t *type;
 
@@ -236,7 +236,7 @@ struct		s_stabsdata
  */
 typedef struct	s_stabsline
 {
-  u_int		line;
+  unsigned int		line;
   eresi_Addr	addr;
 
   struct s_stabsline *next;
@@ -295,8 +295,8 @@ typedef struct	s_stabsinfo
   /* Files informations */
   char 		**dir_list;
   char 		**file_list;
-  u_int 	index_list;
-  u_int 	num_list;
+  unsigned int 	index_list;
+  unsigned int 	num_list;
 
   char 		*alloc_pool;
   int 		alloc_pos;

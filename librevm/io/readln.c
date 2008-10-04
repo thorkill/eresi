@@ -170,7 +170,7 @@ void		revm_buffer_free(char *buf)
 void		revm_strip_char(char *str, char c)
 {
 #if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
-  u_int		len, pos;
+  unsigned int		len, pos;
   char		*search;
 
   NOPROFILER_IN();

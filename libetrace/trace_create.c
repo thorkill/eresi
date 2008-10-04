@@ -95,7 +95,7 @@ hash_t			*etrace_get(char *trace)
  * @return pointer A edfmtfunc_t* representing the function debugging information.
  */
 edfmtfunc_t 		*trace_func_debug_get(elfshobj_t *file, char *func_name,
-							 u_char external)
+							 unsigned char external)
 {
   elfshobj_t		*sym_file;
   edfmtfunc_t		*func = NULL;
@@ -131,9 +131,9 @@ edfmtfunc_t 		*trace_func_debug_get(elfshobj_t *file, char *func_name,
  */
 int			trace_param_build(elfshobj_t *file, trace_t *ent, 
 					  edfmtfunc_t *func, eresi_Addr vaddr, 
-					  u_char external)
+					  unsigned char external)
 {
-  u_int			index;
+  unsigned int			index;
   int			*argcount;
   edfmtfuncarg_t	*arg;
   char			buf[BUFSIZ];
@@ -207,7 +207,7 @@ int			trace_param_build(elfshobj_t *file, trace_t *ent,
  */
 trace_t		*trace_param_create(elfshobj_t *file, char *name,
 				    edfmtfunc_t *func, eresi_Addr vaddr,
-				    u_char external)
+				    unsigned char external)
 {
   trace_t 	*newtrace;
 

@@ -31,15 +31,15 @@ int		elfsh_insert_code_section(elfshobj_t	*file,
 					  elfshsect_t	*sect,
 					  elfsh_Shdr	hdr,
 					  void		*data,
-					  u_int		mod)
+					  unsigned int		mod)
 {
   elfshsect_t	*first;
   elfsh_Phdr	*phdr;
   elfsh_Phdr	*cur;
   int		range;
   char		*rdata;
-  u_int		rsize;
-  u_int		index;
+  unsigned int		rsize;
+  unsigned int		index;
   int		err;
   elfshsect_t	*relsect;
   int		check;
@@ -267,7 +267,7 @@ int		elfsh_insert_code_section_up(elfshobj_t		*file,
 					     elfshsect_t	*sect,
 					     elfsh_Shdr		hdr,
 					     void		*data,
-					     u_int	        mod)
+					     unsigned int	        mod)
 {
   elfshsect_t	*last;
   elfsh_Phdr	*phdr;
@@ -276,9 +276,9 @@ int		elfsh_insert_code_section_up(elfshobj_t		*file,
   elfsh_Phdr	*cur;
   int		range;
   char		*rdata;
-  u_int		rsize;
-  u_int		alignedsize;
-  u_int		alignedsize2;
+  unsigned int		rsize;
+  unsigned int		alignedsize;
+  unsigned int		alignedsize2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -427,9 +427,9 @@ int		elfsh_insert_data_section(elfshobj_t	*file,
 {
   elfshsect_t	*last;
   void		*rdata;
-  u_int		pad = 0;
+  unsigned int		pad = 0;
   elfsh_Phdr	*phdr = NULL, *phdr2 = NULL;
-  u_int		range;
+  unsigned int		range;
 
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -537,10 +537,10 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 					     elfsh_Shdr	 hdr,
 					     void	 *data,
 					     int	 mode,
-					     u_int	 mod)
+					     unsigned int	 mod)
 {
   elfsh_Phdr	phdr;
-  u_int		rsize;
+  unsigned int		rsize;
   char		*rdata;
   int		range;
   /*
@@ -680,11 +680,11 @@ int		elfsh_insert_static_section(elfshobj_t	 *file,
 					    elfsh_Shdr	 hdr,
 					    void	 *data,
 					    int		 mode,
-					    u_int	 mod)
+					    unsigned int	 mod)
 {
   elfsh_Phdr	phdr;
   elfsh_Phdr	*curphdr;
-  u_int		rsize;
+  unsigned int		rsize;
   char		*rdata;
   elfshsect_t	*lastsect;
   elfshsect_t	*cursect;
@@ -825,7 +825,7 @@ int		elfsh_insert_mapped_section(elfshobj_t	*file,
 					    elfsh_Shdr	hdr,
 					    void	*data,
 					    int		mode,
-					    u_int	modulo)
+					    unsigned int	modulo)
 {
   int		err;
 
@@ -961,8 +961,8 @@ elfshsect_t*		elfsh_insert_section(elfshobj_t	 *file,
 					     char	 *name, 
 					     char	*data,
 					     char	 mode, 
-					     u_int	 size,
-					     u_int	 mod)
+					     unsigned int	 size,
+					     unsigned int	 mod)
 {
   elfshsect_t	*sect;
   elfsh_Shdr	hdr;
@@ -1032,7 +1032,7 @@ int		elfsh_insert_section_idx(elfshobj_t	*file,
 					 elfshsect_t	*sect,
 					 elfsh_Shdr	hdr,
 					 void		*data,
-					 u_int		index)
+					 unsigned int		index)
 {
   elfshsect_t	*s;
 

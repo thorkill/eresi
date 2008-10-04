@@ -9,7 +9,7 @@
   <i386 func="i386_movq_pq_qq" opcode="0x6e"/>
  */
 
-int     i386_movd_pd_qd(asm_instr *new, u_char *opcode, u_int len,
+int     i386_movd_pd_qd(asm_instr *new, unsigned char *opcode, unsigned int len,
 			asm_processor *proc)
 {
   new->ptr_instr = opcode;

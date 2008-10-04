@@ -22,7 +22,7 @@
  */
 int			etrace_funcsetstatus(hash_t *table, int status)
 {
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   char			**keys;
   trace_t		*ret_trace;

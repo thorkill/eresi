@@ -9,7 +9,7 @@
   <instruction func="op_ja" opcode="0x77"/>
 */
 
-int  op_ja(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int  op_ja(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   new->type = ASM_TYPE_CONDBRANCH;

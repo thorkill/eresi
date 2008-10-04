@@ -10,7 +10,7 @@
 */
 
 
-int i386_jge(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int i386_jge(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   // new->type = IS_COND_BRANCH;
   new->instr = ASM_BRANCH_S_GREATER_EQUAL;

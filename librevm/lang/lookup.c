@@ -220,7 +220,7 @@ revmobj_t		*revm_lookup_immed(char *param)
 /** 
  * @brief Lookup an index 
  */
-u_int     		revm_lookup_index(char *param)
+unsigned int     		revm_lookup_index(char *param)
 {
   revmconst_t		*actual;
   revmobj_t		*ptr;
@@ -246,20 +246,20 @@ u_int     		revm_lookup_index(char *param)
 	  ptr->otype->type == ASPECT_TYPE_CADDR ||
 	  ptr->otype->type == ASPECT_TYPE_DADDR)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		      (ptr->immed ? (u_int) ptr->immed_val.ent : 
-		       (u_int) ptr->get_obj(ptr->parent)));
+		      (ptr->immed ? (unsigned int) ptr->immed_val.ent : 
+		       (unsigned int) ptr->get_obj(ptr->parent)));
       
       if (revm_convert_object(expr, ASPECT_TYPE_INT) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid parameter", 0);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		    (ptr->immed ? (u_int) ptr->immed_val.ent : 
-		     (u_int) ptr->get_obj(ptr->parent)));
+		    (ptr->immed ? (unsigned int) ptr->immed_val.ent : 
+		     (unsigned int) ptr->get_obj(ptr->parent)));
     }
 
   /* Lookup a constant */
   actual = hash_get(&const_hash, param);
   if (actual != NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (u_int) actual->val);
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (unsigned int) actual->val);
   
   /* Lookup hexadecimal numeric value */
   ret = sscanf(param, XFMT "%c", &val, &eol);
@@ -273,7 +273,7 @@ u_int     		revm_lookup_index(char *param)
 
   /* We do not match -- returns ERR */
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to lookup valid object", ((u_int) -1));
+		    "Unable to lookup valid object", ((unsigned int) -1));
 }
 
 
@@ -328,7 +328,7 @@ char			*revm_lookup_string(char *param)
  */
 elfshobj_t		*revm_lookup_file(char *param)
 {
-  u_int			idx;
+  unsigned int			idx;
   revmobj_t		*ptr;
   revmexpr_t		*expr;
   elfshobj_t		*ret;
@@ -372,7 +372,7 @@ elfshobj_t		*revm_lookup_file(char *param)
  */
 revmexpr_t		*revm_lookup_param(char *param)
 {
-  revmobj_t		*(*funcptr)(char *param, char *fmt, u_int sepnbr);
+  revmobj_t		*(*funcptr)(char *param, char *fmt, unsigned int sepnbr);
   char			**keys;
   int			keynbr;
   char			*parm;

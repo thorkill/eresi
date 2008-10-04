@@ -11,7 +11,7 @@
 /* AZERTY TAB */  
 #define AZERTY
 #ifdef AZERTY 
-static u_char scantable_MAJ[] = {
+static unsigned char scantable_MAJ[] = {
   0,  0, '1','2','3','4','5','6','7','8','9','0','?','-', 0,
   0, 'A','Z','E','R','T','Y','U','I','O','P', 0, 0, 0,
   0, 'Q','S','D','F','G','H','J','K','L','M','%', 0, 0,
@@ -26,7 +26,7 @@ static u_char scantable_MAJ[] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 };
 
-static u_char scantable_N_MAJ[] = {
+static unsigned char scantable_N_MAJ[] = {
   0, 0, '&','e','"','\'','(','-','e','_','c','a',')','=', 0,
   0, 'a','z','e','r','t','y','u','i','o','p','^','$', 0,
   0, 'q','s','d','f','g','h','j','k','l','m','u','*', 0, 
@@ -43,7 +43,7 @@ static u_char scantable_N_MAJ[] = {
 
 #else
 /* ====== quertzy ======*/
-static u_char scantable_MAJ[] = {
+static unsigned char scantable_MAJ[] = {
   0,  0, '!','"','§','$','%','&','/','(',')','=','?','`', 0,  
   0, 'Q','W','E','R','T','Y','U','I','O','P','Ü','*', 0,   
   0, 'A','S','D','F','G','H','J','K','L','Ö','Ä','\'', 0,  
@@ -58,7 +58,7 @@ static u_char scantable_MAJ[] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  
 };
 
-static u_char scantable_N_MAJ[] =	{
+static unsigned char scantable_N_MAJ[] =	{
   0,  0, '1','2','3','4','5','6','7','8','9','0','?','­', 0,  
   0, 'q','w','e','r','t','y','u','i','o','p','ü','+', 0,   
   0, 'a','s','d','f','g','h','j','k','l','ö','ä','#', 0,  

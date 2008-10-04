@@ -8,7 +8,7 @@
 int kernsh_autotypes()
 {
   int ret;
-  u_int         dim[3];
+  unsigned int         dim[3];
   vector_t      *autotypes;
   int          (*fct)();
 

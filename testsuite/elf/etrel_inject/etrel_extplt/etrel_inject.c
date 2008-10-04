@@ -21,7 +21,7 @@ int		main(int argc, char **argv)
   elfshsect_t	*txtsect;
   elfsh_Sym	*puts_troj;
   int		idx;
-  u_long	addr;
+  unsigned long	addr;
 
   /* Map host file and relocatable file */
   rel = elfsh_map_obj(RELOC_FILE);

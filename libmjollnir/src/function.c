@@ -152,7 +152,7 @@ void			*mjr_fingerprint_function(mjrcontext_t  *ctx,
   unsigned char		digest[16];
   char			*pt;
   void			*ret;
-  u_int			i;
+  unsigned int			i;
   int 			mlen;
   elfsh_SAddr		off;
   elfshsect_t		*sect;
@@ -210,7 +210,7 @@ void			*mjr_fingerprint_function(mjrcontext_t  *ctx,
  * @param vaddr virtual address of the function
  * @param fun function container
  */
-int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
+int		mjr_function_register(mjrcontext_t *ctx, unsigned int vaddr, container_t *fun)
 {
   char		*tmpstr;
   
@@ -240,7 +240,7 @@ int		mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
  * @param ctx mjollnir context structure
  * @param vaddr virtual address of requested function
  */
-container_t		*mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
+container_t		*mjr_function_get_by_vaddr(mjrcontext_t *ctx, unsigned int vaddr)
 {
   container_t	*container;
 

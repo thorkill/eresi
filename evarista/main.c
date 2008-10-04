@@ -19,7 +19,7 @@ void		eva_setup_quit_msg()
   revm_quitmsg_set(logbuf);
 }
 
-void		eva_create_prompt(char *buf, u_int size)
+void		eva_create_prompt(char *buf, unsigned int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",

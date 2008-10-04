@@ -18,7 +18,7 @@
  * @return Length of disassembled instruction.
  */
 
-int op_fwait(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_fwait(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   new->len += 1;
   if (!new->ptr_prefix)

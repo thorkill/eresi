@@ -83,7 +83,7 @@ void		elfsh_update_symlinkidx_equ(elfshobj_t *file, int idx, int diff)
 {
   elfshsect_t	*s;
   int		index;
-  u_int		size;
+  unsigned int		size;
   elfsh_Sym	*sym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -113,7 +113,7 @@ void		elfsh_update_shidx(elfshobj_t *file, elfshsect_t *tab, int idx, int diff)
 {
   elfshsect_t	*s;
   int		index;
-  u_int		size;
+  unsigned int		size;
   elfsh_Sym	*sym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

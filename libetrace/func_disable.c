@@ -51,7 +51,7 @@ int			etrace_funcdisable(char *trace, char *name)
  */
 int			etrace_funcdisableall(char *trace)
 {
-  u_int			index;
+  unsigned int			index;
   int			keynbr;
   char			**keys;
   hash_t		*table;

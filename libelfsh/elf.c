@@ -260,13 +260,13 @@ elfsh_Half	elfsh_get_arch(elfsh_Ehdr *hdr)
  * @param val
  * @return 
  */
-u_int	elfsh_set_arch(elfsh_Ehdr *hdr, eresi_Addr val)
+unsigned int	elfsh_set_arch(elfsh_Ehdr *hdr, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (u_int) -1);
+		 "Invalid NULL parameter", (unsigned int) -1);
   hdr->e_machine = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -292,13 +292,13 @@ elfsh_Half	elfsh_get_objtype(elfsh_Ehdr *hdr)
  * @param val
  * @return 
  */
-u_int	elfsh_set_objtype(elfsh_Ehdr *e, eresi_Addr val)
+unsigned int	elfsh_set_objtype(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (u_int) -1);
+		 "Invalid NULL parameter", (unsigned int) -1);
   e->e_type = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -324,13 +324,13 @@ elfsh_Half	elfsh_get_shstrtab_index(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, eresi_Addr val)
+unsigned int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter ", (u_int) -1);
+		 "Invalid NULL parameter ", (unsigned int) -1);
   e->e_shstrndx = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -341,13 +341,13 @@ u_int	elfsh_set_shstrtab_index(elfsh_Ehdr *e, eresi_Addr val)
  * @param val
  * @return 
  */
-u_int	elfsh_set_version(elfsh_Ehdr *e, eresi_Addr val)
+unsigned int	elfsh_set_version(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (u_int) -1);
+		 "Invalid NULL parameter", (unsigned int) -1);
   e->e_version = (elfsh_Word) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -373,13 +373,13 @@ elfsh_Word	elfsh_get_version(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_ehsize(elfsh_Ehdr *e, eresi_Addr val)
+unsigned int	elfsh_set_ehsize(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (u_int) -1);
+		 "Invalid NULL parameter", (unsigned int) -1);
   e->e_ehsize = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -405,13 +405,13 @@ elfsh_Half	elfsh_get_ehsize(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_phentsize(elfsh_Ehdr *e, eresi_Addr val)
+unsigned int	elfsh_set_phentsize(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (u_int) -1);
+		 "Invalid NULL parameter", (unsigned int) -1);
   e->e_phentsize = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -437,13 +437,13 @@ elfsh_Half	elfsh_get_phentsize(elfsh_Ehdr *e)
  * @param val
  * @return 
  */
-u_int	elfsh_set_shentsize(elfsh_Ehdr *e, eresi_Addr val)
+unsigned int	elfsh_set_shentsize(elfsh_Ehdr *e, eresi_Addr val)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!e)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", (u_int) -1);
+		 "Invalid NULL parameter", (unsigned int) -1);
   e->e_shentsize = (elfsh_Half) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -492,7 +492,7 @@ int		elfsh_set_encoding(elfsh_Ehdr *hdr, eresi_Addr type)
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  hdr->e_ident[EI_DATA] = (u_char) type;
+  hdr->e_ident[EI_DATA] = (unsigned char) type;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -508,7 +508,7 @@ int		elfsh_get_magic(elfsh_Ehdr *hdr)
   if (hdr == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*(u_int *) hdr->e_ident));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*(unsigned int *) hdr->e_ident));
 }
 
 /**
@@ -524,7 +524,7 @@ int		elfsh_set_magic(elfsh_Ehdr *hdr, eresi_Addr mag)
   if (hdr == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  *(u_int *) hdr->e_ident = (u_int) mag;
+  *(unsigned int *) hdr->e_ident = (unsigned int) mag;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -556,7 +556,7 @@ int		elfsh_set_class(elfsh_Ehdr *hdr, eresi_Addr eclass)
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
-  hdr->e_ident[EI_CLASS] = (u_char) eclass;
+  hdr->e_ident[EI_CLASS] = (unsigned char) eclass;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

@@ -17,17 +17,24 @@ NAME32			= etrace32
 NAME64			= etrace64
 
 CFLAGS32		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
-			 -I../libelfsh/include/ \
-			 -I../libetrace/include/ -I../libstderesi/include/    \
-			 -I../libdump/include/ -I../libasm/include/ \
-			 -I../e2dbg/include/ -I/usr/pkg/include/  \
-			-I../libui/include/ -I../libmjollnir/include/ \
-			-I../libaspect/include/ -I../librevm/include/ \
+			-I../libelfsh/include/ 		\
+			-I../libgdbwrap/include/ 	\
+			-I../libetrace/include/ 	\
+			-I../libstderesi/include/    	\
+			-I../libdump/include/ 		\
+			-I../libasm/include/ 		\
+			-I../e2dbg/include/ 		\
+			-I/usr/pkg/include/  		\
+			-I../libui/include/ 		\
+			-I../libmjollnir/include/ 	\
+			-I../libaspect/include/ 	\
+			-I../librevm/include/ 		\
 			-I../libedfmt/include/  $(STATOPT2) \
 			$(ASMOPT) -DERESI32 $(NCURSESLNOPT) $(READLNOPT)
 
 CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			 -I../libelfsh/include/ \
+			-I../libgdbwrap/include/ 	\
 			 -I../libetrace/include/ -I../libstderesi/include/ \
 			 -I../libdump/include/ -I../libasm/include/ \
 			 -I../e2dbg/include/ -I/usr/pkg/include/  \
@@ -37,6 +44,7 @@ CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			$(ASMOPT) -DERESI64 $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
+			-L../libgdbwrap/					  \
 			-L../libetrace/ -letrace32 -L../libstderesi -lstderesi32  \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/		  \
 			-lmjollnir32 $(LPTHREAD)				  \
@@ -48,6 +56,7 @@ LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
 			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT)
 
 LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
+			-L../libgdbwrap/					  \
 			-L../libetrace/ -letrace64 -L../libstderesi -lstderesi64  \
 			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) 		  \
                         -L../libasm/ -lasm64 -L../libui/ -lui64 -g3   		  \

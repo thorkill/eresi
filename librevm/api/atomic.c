@@ -59,7 +59,7 @@ int                     revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2)
 
 /* Preconditions on arithmetic operations */
 /* Used by add, sub, mul, div, mod */
-int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
+int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, unsigned char op)
 {
   eresi_Addr		src;
   eresi_Addr		dst;
@@ -172,7 +172,7 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
 int			revm_hash_add(hash_t *h, revmexpr_t *e)
 {
   eresi_Addr		elem;
-  u_char		*key;
+  unsigned char		*key;
   hash_t		*src;
   revmobj_t		*o;
 
@@ -199,10 +199,10 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
       if (revm_convert_object(e, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
-      key = (u_char *) (h->type != o->otype->type ? strdup(o->immed_val.str) : o->immed_val.str);
+      key = (unsigned char *) (h->type != o->otype->type ? strdup(o->immed_val.str) : o->immed_val.str);
     }
   else
-    key = (u_char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
+    key = (unsigned char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
 	   
   if (!key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -386,7 +386,7 @@ int			revm_elist_del(list_t *h, revmexpr_t *e)
 
 
 /* API for setting elements inside hash */
-int			revm_hash_set(char *table, char *elmname, void *obj, u_int type)
+int			revm_hash_set(char *table, char *elmname, void *obj, unsigned int type)
 {
   hash_t		*h;
 
@@ -410,7 +410,7 @@ int			revm_hash_set(char *table, char *elmname, void *obj, u_int type)
 
 
 /* API for setting elements inside lists */
-int			revm_elist_set(char *table, char *elmname, void *obj, u_int type)
+int			revm_elist_set(char *table, char *elmname, void *obj, unsigned int type)
 {
   list_t		*h;
 
@@ -444,8 +444,8 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
   revmobj_t		*o2;
   char                  *str;
   eresi_Addr            val64;
-  u_int                 val32;
-  u_char                val8;
+  unsigned int                 val32;
+  unsigned char                val8;
   u_short               val16;
   hash_t		*hash;
   list_t		*list;
@@ -543,7 +543,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       break;
 
     case ASPECT_TYPE_LONG:
-      if (sizeof(u_long) == 4)
+      if (sizeof(unsigned long) == 4)
 	{
 	  o1->set_obj = revm_int_setobj;
 	  goto intcopy;
@@ -612,9 +612,9 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
   char			*str;
   char			*str2;
   eresi_Addr	       	val2;
-  u_char		bval2;
+  unsigned char		bval2;
   u_short		hval2;
-  u_int			ival2;
+  unsigned int			ival2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e2 || !e2)
@@ -683,7 +683,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
     case ASPECT_TYPE_LONG:
       val2  = (o2->immed ? o2->immed_val.ent : o2->get_obj(o2->parent));
       *val  = (o1->immed ? o1->immed_val.ent : o1->get_obj(o1->parent));
-      if (sizeof(u_long) == 4)
+      if (sizeof(unsigned long) == 4)
 	{
 	  val2 = val2 & 0xFFFFFFFF;
 	  *val = *val & 0xFFFFFFFF;
@@ -726,7 +726,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
 
 
 /* Test a bit in a bitfield */
-int			revm_testbit(revmexpr_t *e1, revmexpr_t *e2, u_int *result)
+int			revm_testbit(revmexpr_t *e1, revmexpr_t *e2, unsigned int *result)
 {
   revmobj_t		*o1;
   revmobj_t		*o2;

@@ -12,7 +12,7 @@
  * <instruction func="op_mov_ref_iv_al" opcode="0xa2"/>
  */
 
-int op_mov_ref_iv_al(asm_instr *new, u_char *opcode, u_int len,
+int op_mov_ref_iv_al(asm_instr *new, unsigned char *opcode, unsigned int len,
 		     asm_processor *proc)
 {
   new->instr = ASM_MOV;

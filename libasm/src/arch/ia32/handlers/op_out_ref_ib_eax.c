@@ -11,7 +11,7 @@
   <instruction func="op_out_ref_ib_eax" opcode="0xe7"/>
 */
 
-int op_out_ref_ib_eax(asm_instr *new, u_char *opcode, u_int len, 
+int op_out_ref_ib_eax(asm_instr *new, unsigned char *opcode, unsigned int len, 
                       asm_processor *proc) 
 {
   new->ptr_instr = opcode;

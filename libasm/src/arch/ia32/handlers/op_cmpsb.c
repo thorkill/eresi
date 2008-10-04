@@ -17,7 +17,7 @@
  * @return Length of instruction .
  */
 
-int op_cmpsb(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
+int op_cmpsb(asm_instr *instr, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   instr->instr = ASM_CMPSB;
   instr->len += 1;

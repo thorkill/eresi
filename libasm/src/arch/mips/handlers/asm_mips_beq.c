@@ -3,11 +3,11 @@
 
 #include <libasm.h>
 
-int asm_mips_beq(asm_instr *ins, u_char *buf, u_int len,
+int asm_mips_beq(asm_instr *ins, unsigned char *buf, unsigned int len,
                   asm_processor *proc)
 {
    struct s_mips_decode_imm temp;
-   u_int converted = 0;
+   unsigned int converted = 0;
 
    memcpy((char *)&converted,buf,sizeof(converted));
 

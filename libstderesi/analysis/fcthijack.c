@@ -143,7 +143,7 @@ int		cmd_hijack()
 		      "Function redirection failed", (-1));
   
   /* Add it to redirection hash table */
-  redir = revm_create_REDIR((u_char) err, world.curjob->curcmd->param[0], 
+  redir = revm_create_REDIR((unsigned char) err, world.curjob->curcmd->param[0], 
 			  world.curjob->curcmd->param[1], hookedaddr, addr);
   hash_add(&world.curjob->curfile->redir_hash, 
 	   world.curjob->curcmd->param[0], 

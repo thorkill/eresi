@@ -11,7 +11,7 @@
  <instruction func="op_lds_rm_rmp" opcode="0xc5"/>
 */
 
-int op_lds_rm_rmp(asm_instr *new, u_char *opcode, u_int len,
+int op_lds_rm_rmp(asm_instr *new, unsigned char *opcode, unsigned int len,
 		  asm_processor *proc)
 {
   new->ptr_instr = opcode;

@@ -40,7 +40,7 @@ void    elfsh_init()
 /**
  * @brief The functions for simple ondisk/memory state flag 
  */
-u_char	elfsh_is_static_mode()
+unsigned char	elfsh_is_static_mode()
 {
   return (dbgworld.mode == LIBELFSH_MODE_STATIC);
 }
@@ -57,7 +57,7 @@ void	elfsh_set_static_mode()
 /**
  * @ brief check if we are running in debug mode
  */
-u_char	elfsh_is_debug_mode()
+unsigned char	elfsh_is_debug_mode()
 {
  return (dbgworld.mode == LIBELFSH_MODE_E2DBG);
 }
@@ -75,7 +75,7 @@ void	elfsh_set_debug_mode()
  * @brief set mode
  * @param mode
  */
-void	elfsh_set_mode(u_char mode)
+void	elfsh_set_mode(unsigned char mode)
 {
   //fprintf(stderr, "MODE changed for [%s] ! \n",
   //(mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
@@ -86,7 +86,7 @@ void	elfsh_set_mode(u_char mode)
 /**
  * @brief get mode
  */
-u_char	elfsh_get_mode()
+unsigned char	elfsh_get_mode()
 {
   return (dbgworld.mode);
 }
@@ -94,7 +94,7 @@ u_char	elfsh_get_mode()
 /**
  * check if we are in debug
  */ 
-u_char	elfsh_debugger_present()
+unsigned char	elfsh_debugger_present()
 {
   return (dbgworld.indebug);
 }

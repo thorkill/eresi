@@ -22,8 +22,8 @@ int			elfsh_sort_sht(elfshobj_t *file)
   elfshsect_t		*tmpsct;
   elfshsect_t		*next;
   elfsh_Shdr		tmp;
-  u_int			index;
-  u_int			pass;
+  unsigned int			index;
+  unsigned int			pass;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -163,7 +163,7 @@ void		elfsh_sync_sectnames(elfshobj_t *file)
  */
 void		elfsh_sync_sht(elfshobj_t *file)
 {
-  u_int		idx;
+  unsigned int		idx;
   elfshsect_t	*cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -398,7 +398,7 @@ elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
 {
   elfsh_Sym		*current;
   int			index;
-  u_int			nbr;
+  unsigned int			nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -488,7 +488,7 @@ elfsh_Shdr		elfsh_create_shdr(elfsh_Word name,
  */
 int		elfsh_insert_shdr(elfshobj_t	*file,
 				  elfsh_Shdr	hdr,
-				  u_int		range,
+				  unsigned int		range,
 				  char		*name,
 				  char		shiftflag)
 {
@@ -521,7 +521,7 @@ int		elfsh_insert_shdr(elfshobj_t	*file,
   if (shname < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot inject data in .shstrtab", -1);
-  hdr.sh_name = (u_int) shname;
+  hdr.sh_name = (unsigned int) shname;
 
   /* Keep track of what is shifted since our new shdr is not
      yet in SHT */
@@ -582,7 +582,7 @@ int		elfsh_insert_shdr(elfshobj_t	*file,
  */
 int		elfsh_insert_runtime_shdr(elfshobj_t	*file,
 					  elfsh_Shdr	hdr,
-					  u_int		range,
+					  unsigned int		range,
 					  char		*name,
 					  char		shiftflag)
 {
@@ -622,7 +622,7 @@ int		elfsh_insert_runtime_shdr(elfshobj_t	*file,
   if (shname < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot inject data in .rshstrtab", -1);
-  hdr.sh_name = (u_int) shname;
+  hdr.sh_name = (unsigned int) shname;
 
   /* Extend the SHT and fill the new slot */
   XREALLOC(__FILE__, __FUNCTION__, __LINE__,file->rsht, file->rsht,
@@ -714,8 +714,8 @@ int			elfsh_set_section_name(elfshobj_t	*file,
 					       char		*name)
 {
   char		*str;
-  u_int		len;
-  u_int		new_len;
+  unsigned int		len;
+  unsigned int		new_len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1311,7 +1311,7 @@ elfsh_Shdr		*elfsh_get_sht_entry_by_index(elfsh_Shdr *s,
 elfsh_Shdr		*elfsh_get_sht_entry_by_name(elfshobj_t *file, char *name)
 {
   elfshsect_t		*sect;
-  u_int			index;
+  unsigned int			index;
   char			*curnam;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

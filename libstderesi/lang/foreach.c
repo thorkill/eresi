@@ -16,7 +16,7 @@ int		cmd_foreach()
 {
   revmexpr_t	*indexpr;
   revmobj_t	*var;
-  u_char	flag;
+  unsigned char	flag;
   char		**keys;
   int		keynbr;
   hash_t	*table;
@@ -25,14 +25,14 @@ int		cmd_foreach()
   void		*elem;
   int		infbound;
   int		upbound;
-  u_int		typeid;
+  unsigned int		typeid;
   eresi_Addr	lastvalue;
   char		*setname;
   revmexpr_t	*setexpr;
   revmobj_t	*setobj;
   char		*typename;
   char		*indname;
-  u_long	addr;
+  unsigned long	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   table = NULL;

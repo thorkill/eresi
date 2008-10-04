@@ -75,7 +75,7 @@ char		*revm_read_input()
 {
   char		tmpbuf[BUFSIZ + 1];
   int		len;
-  u_char	wantmore;
+  unsigned char	wantmore;
 
   NOPROFILER_IN();
   

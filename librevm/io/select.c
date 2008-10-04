@@ -23,7 +23,7 @@ int             revm_getmaxfd()
   int           index;
   int		keynbr;
   char		**keys;
-  u_long	port;
+  unsigned long	port;
   int           ret;
   revmjob_t    *serv;
   int		fd;
@@ -39,7 +39,7 @@ int             revm_getmaxfd()
 
   for (index = 0; index < keynbr; index++)
     {
-      port = (u_long) hash_get(&dump_world.ports, keys[index]);
+      port = (unsigned long) hash_get(&dump_world.ports, keys[index]);
       if (port > ret)
 	ret = port;
 #if __DEBUG_NETWORK__
@@ -99,12 +99,12 @@ int		revm_prepare_select(fd_set *sel_sockets)
   int		keynbr;
   revmjob_t	*job;
 #if defined(ERESI_NET)
-  u_long	port;
+  unsigned long	port;
 
   keys = hash_get_keys(&dump_world.ports, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
-      port = (u_long) hash_get(&dump_world.ports, keys[index]);
+      port = (unsigned long) hash_get(&dump_world.ports, keys[index]);
 #if __DEBUG_NETWORK__
       fprintf(stderr, 
 	      "[DEBUG NETWORK] prepare_4_select : (DUMP) socket : "DFMT" \n",

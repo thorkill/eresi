@@ -323,7 +323,7 @@ long		back_disasm(unsigned int cur_eip, int min_back_line)
 
       do
 	{
-	  ret = asm_read_instr(&my_ins, (u_char *) tmp_eip, 32, world.curjob->proc);
+	  ret = asm_read_instr(&my_ins, (unsigned char *) tmp_eip, 32, world.curjob->proc);
 	  tmp_eip += ret;
 	  num_instr++;  
 	} while ((ret) && (tmp_eip < cur_eip));
@@ -334,7 +334,7 @@ long		back_disasm(unsigned int cur_eip, int min_back_line)
 
   while (num_instr > min_back_line)
     {
-      testing_eip += asm_read_instr(&my_ins, (u_char *) testing_eip, 32, world.curjob->proc);
+      testing_eip += asm_read_instr(&my_ins, (unsigned char *) testing_eip, 32, world.curjob->proc);
       num_instr--;
     }
 

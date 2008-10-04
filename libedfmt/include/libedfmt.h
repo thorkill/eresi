@@ -40,7 +40,7 @@
 typedef struct 		s_edfmtmanage
 {
   char 			*sect_name;		/* Section name */
-  u_int			sect_hash;		/* Section hash */
+  unsigned int			sect_hash;		/* Section hash */
   int			(*func)(elfshobj_t*);	/* Management function */
   int			(*trans)(elfshobj_t*);	/* Transform function */
   int			(*clean)(elfshobj_t*);	/* Clean function */
@@ -76,19 +76,19 @@ edfmtvar_t	*edfmt_add_var_global(edfmttype_t *type, char *name,
 edfmtfunc_t	*edfmt_add_func(char *name, edfmttype_t *ret, 
 				eresi_Addr start, eresi_Addr end);
 edfmtfuncarg_t	*edfmt_add_arg(edfmtfunc_t *func, char *name,
-			       u_int reg, int pos, edfmttype_t *type);
+			       unsigned int reg, int pos, edfmttype_t *type);
 edfmttype_t	*edfmt_check_type(char *name);
 edfmtvar_t	*edfmt_check_var(char *name);
 edfmtfunc_t	*edfmt_check_func(char *name);
 
 /* edfmt.c */
 int		edfmt_format(elfshobj_t *file);
-elfshsect_t    	*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name, 
-				u_int strhash);
+elfshsect_t    	*edfmt_get_sect(elfshobj_t *file, unsigned int hash, char *hash_name, 
+				unsigned int strhash);
 /* edfmt-utils.c */
-char 		*edfmt_ckey(char *buf, u_int size, long key);
-char 		*edfmt_cline(char *buf, u_int size, u_int line, char *file);
-char 		*edfmt_caddr(char *buf, u_int size, eresi_Addr addr);
+char 		*edfmt_ckey(char *buf, unsigned int size, long key);
+char 		*edfmt_cline(char *buf, unsigned int size, unsigned int line, char *file);
+char 		*edfmt_caddr(char *buf, unsigned int size, eresi_Addr addr);
 eresi_Addr     	edfmt_lookup_addr(elfshobj_t *file, char *param);
 void 	       	*edfmt_alloc_pool(char **pool, int *apos, int *asize, 
 				  int astep, int nsize);
@@ -103,43 +103,43 @@ int		edfmt_stabs_clean(elfshobj_t *file);
 int		edfmt_stabs_transform(elfshobj_t *file);
 
 /* stabs-utils.c */
-char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim);
+char		*edfmt_stabs_readstr(char *buf, unsigned int size, char **str, char c_delim);
 int		edfmt_stabs_readnumber(char **str, char c_delim, long *set_num);
 int		edfmt_stabs_typenum(edfmtstabstypenum_t *tnum, char **str);
-int		edfmt_stabs_ctypenum(char *buf, u_int size, edfmtstabstypenum_t *tnum);
+int		edfmt_stabs_ctypenum(char *buf, unsigned int size, edfmtstabstypenum_t *tnum);
 
 /* dwarf2.c */
 edfmtdw2info_t 	*edfmt_dwarf2_getinfo(elfshobj_t *file);
 int		edfmt_dwarf2_parse(elfshobj_t *file);
 int 		edfmt_dwarf2_clean(elfshobj_t *file);
 int		edfmt_dwarf2_block_entrie(elfshobj_t *file);
-int		edfmt_dwarf2_block_loop(u_int endpos);
+int		edfmt_dwarf2_block_loop(unsigned int endpos);
 int		edfmt_dwarf2_build_tree(edfmtdw2abbent_t *parent,
 					edfmtdw2abbent_t *fent,
 					edfmtdw2abbent_t *ref);
 int 		edfmt_dwarf2_getent(edfmtdw2cu_t *cu, 
 				    edfmtdw2abbent_t *abbent, 
-				    u_int pos);
+				    unsigned int pos);
 
 /* dwarf2-trans.c */
-int		edfmt_dwarf2_transform_abbrev(u_int pos);
+int		edfmt_dwarf2_transform_abbrev(unsigned int pos);
 edfmttype_t    	*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev);
 int		edfmt_dwarf2_transform(elfshobj_t *file);
-edfmtdw2abbattr_t *edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbrev, u_int attr);
+edfmtdw2abbattr_t *edfmt_dwarf2_getattr(edfmtdw2abbent_t *abbrev, unsigned int attr);
 
 /* dwarf2-utils.c */
-u_long 		edfmt_read_uleb128(void *data, u_int *bread);
-long 		edfmt_read_leb128(void *data, u_int *bread);
+unsigned long 		edfmt_read_uleb128(void *data, unsigned int *bread);
+long 		edfmt_read_leb128(void *data, unsigned int *bread);
 
 /* dwarf2-abbrev.c */
-int	      	edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size);
-int		edfmt_dwarf2_line(u_long offset);
-int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, u_int line, u_int column, eresi_Addr addr, u_int fid);
-int		edfmt_dwarf2_mac(u_long offset);
-int		edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *abbent, u_long pos, u_long ipos);
+int	      	edfmt_dwarf2_loc(edfmtdw2loc_t *loc, unsigned char *buf, unsigned int size);
+int		edfmt_dwarf2_line(unsigned long offset);
+int		edfmt_dwarf2_line_rec(edfmtdw2cu_t *cu, unsigned int line, unsigned int column, eresi_Addr addr, unsigned int fid);
+int		edfmt_dwarf2_mac(unsigned long offset);
+int		edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *abbent, unsigned long pos, unsigned long ipos);
 int		edfmt_dwarf2_abbrev_enum(hash_t *abbrev_table);
 int		edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table);
-int		edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, u_int pos);
+int		edfmt_dwarf2_form(edfmtdw2abbent_t *abbent, unsigned int pos);
 int 	   	edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr);
 
 /* dwarf2-cfa */

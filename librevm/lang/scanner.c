@@ -13,9 +13,9 @@
 /**
  * Replace \xNUM by the value, I wished readline could have done that 
  */
-void			revm_findhex(u_int argc, char **argv)
+void			revm_findhex(unsigned int argc, char **argv)
 {
-  u_int			index;
+  unsigned int			index;
   char			*buf;
   char			*ptr;
   
@@ -38,12 +38,12 @@ void			revm_findhex(u_int argc, char **argv)
 /** 
  * Translate a speblanks string 
  */
-int			revm_trans_speblank(const char *in, char ***av, u_int *ac)
+int			revm_trans_speblank(const char *in, char ***av, unsigned int *ac)
 {
   char			**argv;
-  u_int			argc = 1;
-  u_int			index;
-  u_int			count = 0;
+  unsigned int			argc = 1;
+  unsigned int			index;
+  unsigned int			count = 0;
   size_t		len;
   char			*ptr;
   char			str[BUFSIZ];
@@ -110,9 +110,9 @@ int			revm_trans_speblank(const char *in, char ***av, u_int *ac)
 /** 
  * Replace '\ ' by the ' ', I wished readline could have done that 
  */
-void			revm_replace_speblanks(u_int argc, char **argv)
+void			revm_replace_speblanks(unsigned int argc, char **argv)
 {
-  u_int			index;
+  unsigned int			index;
   char			*buf;
   char			*ptr;
   size_t		len;
@@ -142,7 +142,7 @@ void			revm_replace_speblanks(u_int argc, char **argv)
 /** 
  * Count blanks, so that we can allocate argv 
  */
-u_int		revm_findblanks(char *buf)
+unsigned int		revm_findblanks(char *buf)
 {
   int		index;
   int		len;
@@ -191,9 +191,9 @@ u_int		revm_findblanks(char *buf)
 /** 
  * Cut words of the newline and create argv 
  */
-char		**revm_doargv(u_int nbr, u_int *argc, char *buf)
+char		**revm_doargv(unsigned int nbr, unsigned int *argc, char *buf)
 {
-  u_int		index;
+  unsigned int		index;
   char		*sav;
   char		**argv;
   char		*ptr;
@@ -311,7 +311,7 @@ char		**revm_input(int *argc, char *available_line)
   nbr = revm_findblanks(buf);
 
   /* Allocate the correct pointer array for argv */
-  argv = revm_doargv(nbr, (u_int *) argc, buf);
+  argv = revm_doargv(nbr, (unsigned int *) argc, buf);
 
   /* Find and replace "\xXX" sequences, then return the array */
   revm_findhex(*argc, argv);

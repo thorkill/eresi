@@ -16,11 +16,11 @@ int		cmd_declare()
   aspectype_t	*type;
   char		*varname;
   char		buf[BUFSIZ];
-  u_int		curlen;
-  u_int		curidx;
-  u_int		curpidx;
-  u_int		openbrace;
-  u_int		closebrace;
+  unsigned int		curlen;
+  unsigned int		curidx;
+  unsigned int		curpidx;
+  unsigned int		openbrace;
+  unsigned int		closebrace;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

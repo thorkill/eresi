@@ -28,7 +28,7 @@ void		esh_setup_quit_msg()
  * @param buf
  * @param size
  */
-void		esh_create_prompt(char *buf, u_int size)
+void		esh_create_prompt(char *buf, unsigned int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",

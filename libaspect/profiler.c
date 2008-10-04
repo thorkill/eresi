@@ -14,10 +14,10 @@
 static char	mem[2][PROFILER_MAX_PATTERN][80] = {{{0,0,0}}};	
 
 /* Patterns hit counters */
-static u_int	hit[2][PROFILER_MAX_PATTERN]     = {{0,0}};	
+static unsigned int	hit[2][PROFILER_MAX_PATTERN]     = {{0,0}};	
 
 /* Selection of memory */
-static u_int	sel;						
+static unsigned int	sel;						
 
 /* The last error message */
 char		*profiler_error_str = NULL;
@@ -32,7 +32,7 @@ static char	profiler_direction = '+';
 static profallocentry_t		allocentries[PROFILER_MAX_ALLOC];
 
 /* Current allocation depth */
-static u_int	profiler_adepth = 0;
+static unsigned int	profiler_adepth = 0;
 
 
 
@@ -47,11 +47,11 @@ static u_int	profiler_adepth = 0;
  * @param optype Type of operation to be found
  * @return Allocation profiler entry corresponding to input criterions
  */
-profallocentry_t	*profiler_alloc_find(u_char direction,
-					     u_long addr, 
-					     u_char optype)
+profallocentry_t	*profiler_alloc_find(unsigned char direction,
+					     unsigned long addr, 
+					     unsigned char optype)
 {
-  u_int			index;
+  unsigned int			index;
   
   switch (direction)
     {
@@ -113,7 +113,7 @@ void		profiler_alloc_warnprint(char *str, int fatal, int idx)
  * @brief Warn if anything bad is happening 
  * @param warntype Either PROFILER_WARNING_LAST, PROFILER_WARNING_FIRST or PROFILER_WARNING_UNKNOW
  */
-void			profiler_alloc_warning(u_char warntype)
+void			profiler_alloc_warning(unsigned char warntype)
 {
   profallocentry_t	*ent;
   profallocentry_t	*ent2;
@@ -238,8 +238,8 @@ void			profiler_alloc_shift()
  * @param otype Type of allocation operation
  */
 static void		profiler_alloc_add(char *file, char *func, 
-					   u_int line, u_long addr, 
-					   u_char atype, u_char otype)
+					   unsigned int line, unsigned long addr, 
+					   unsigned char atype, unsigned char otype)
 {
   allocentries[profiler_adepth].alloctype = atype;
   allocentries[profiler_adepth].optype    = otype;
@@ -262,8 +262,8 @@ static void		profiler_alloc_add(char *file, char *func,
  * @return 0 if we are filling the last cache entry, 0 if not
  */
 int			profiler_alloc_update(char *file, char *func, 
-					      u_int line, u_long addr, 
-					      u_char atype, u_char otype)
+					      unsigned int line, unsigned long addr, 
+					      unsigned char atype, unsigned char otype)
 {
   //void			*profunc;
   // XXX: remove this ?
@@ -303,9 +303,9 @@ int			profiler_alloc_update(char *file, char *func,
  * @brief Reset profiler memory
  * @param lsel Identifiant for profiler cache bank to be used
  */
-void		profiler_reset(u_int lsel)
+void		profiler_reset(unsigned int lsel)
 {
-  u_int		idx;
+  unsigned int		idx;
   
   for (idx = 0; idx < PROFILER_MAX_PATTERN; idx++)
     {
@@ -324,7 +324,7 @@ void		profiler_reset(u_int lsel)
  * @return 1 if message is already present in bank, 0 if not
  */
 int		profiler_print(char *file, char *func, 
-			       u_int line, char *msg)
+			       unsigned int line, char *msg)
 {
   char		buff[80];
   char		buf[BUFSIZ];
@@ -403,7 +403,7 @@ int		profiler_print(char *file, char *func,
  * @param msg Profiling message suffix to be printed
  */
 void		profiler_err(char *file, char *func, 
-			     u_int line, char *msg)
+			     unsigned int line, char *msg)
 {
   char		buff[80];
   char		buf[BUFSIZ];
@@ -457,7 +457,7 @@ void		profiler_err(char *file, char *func,
  * @param func Generally called with __FUNCTION__ (gcc), contains the function name where allocation is done
  * @param line Generally called with __LINE__ (gcc), contains the line number in related file
  */
-void		profiler_out(char *file, char *func, u_int line)
+void		profiler_out(char *file, char *func, unsigned int line)
 {
   char		buff[160];
   char		*space;
@@ -505,7 +505,7 @@ void		profiler_out(char *file, char *func, u_int line)
 /** 
  * @brief Profiler is started ? 
  */
-u_char		profiler_started()
+unsigned char		profiler_started()
 {
   return (aspectworld.profstarted);
 }

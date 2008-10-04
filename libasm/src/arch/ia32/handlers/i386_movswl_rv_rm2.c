@@ -10,7 +10,7 @@
 */
 
 
-int i386_movswl_rv_rm2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int i386_movswl_rv_rm2(asm_instr *new, unsigned char *opcode, unsigned int len, asm_processor *proc)
 {
   if (asm_proc_opsize(proc))
     new->instr = ASM_MOVSBW;

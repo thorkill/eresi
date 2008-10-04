@@ -23,7 +23,7 @@ void		*malloc(size_t t)
   void		*chunk;
 #if __DEBUG_EMALLOC__
   char		buf[256];
-  u_int		len;
+  unsigned int		len;
 #endif
 
 #if __DEBUG_EMALLOC__
@@ -140,7 +140,7 @@ void		*calloc(size_t t, size_t nbr)
   //static int	cnt = 0;
 
 #if __DEBUG_EMALLOC__
-  u_int		len;
+  unsigned int		len;
 
   write(2, "Calling HOOKED calloc \n", 23);
 #endif
@@ -244,7 +244,7 @@ void		*calloc(size_t t, size_t nbr)
  * @param t
  * @param nbr
  */
-void		*memalign(size_t t, u_int nbr)
+void		*memalign(size_t t, unsigned int nbr)
 {
   void		*(*memalignptr)();
   void		*chunk;
@@ -252,7 +252,7 @@ void		*memalign(size_t t, u_int nbr)
   //static int	cnt = 0;
 
 #if __DEBUG_EMALLOC__
-  u_int		len;
+  unsigned int		len;
 
   write(2, "Calling HOOKED memalign \n", 23);
 #endif
