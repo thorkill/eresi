@@ -7,10 +7,12 @@
 
 include ../../config.h
 
+LD			?= ld
 SRC			= backtrace.c breakpoints.c display.c mode.c stack.c \
 			step.c dumpregs.c dbghooks.c mutex.c dbg-ia32.c dbg-sparc32.c \
 			dbg-amd64.c
 OBJ32			= $(SRC:.c=.32.o)
+OBJNAME32		= libe2dbg-common32
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 RM			= rm -f
@@ -40,6 +42,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 all			: all32 all64
 
 all32			: ${OBJ32}
+			  $(LD) -r ${OBJ32} -o $(OBJNAME32).o
 
 all64			: ${OBJ64}
 

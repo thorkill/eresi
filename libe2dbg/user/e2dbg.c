@@ -16,26 +16,30 @@
 e2dbgworld_t	e2dbgworld;
 
 
-/**
- * Debugger library initialisation
- * Only useful when debugger takes control by .ctors  
- */
-void		e2dbg_init(void)
+void           e2dbg_register_command(void)
 {
-#if __DEBUG_E2DBG__
-  write(2, " [D] Calling DLSYM_INIT from e2dbg_init() !\n", 45);
-#endif
-
-  aspect_called_ctors_inc();
-
-  e2dbg_dlsym_init();
-
-  if (aspect_called_ctors_finished())
-    e2dbg_presence_reset();
-
-#if __DEBUG_E2DBG__
-  write(2, " [D] Finished e2dbg ctors \n", 27);
-#endif
+  /* Debugger only script commands */
+  revm_command_add(CMD_MODE     , (void *) cmd_mode     , revm_getvarparams, 0, HLP_MODE);
+  revm_command_add(CMD_LINKMAP  , (void *) cmd_linkmap  , NULL,            1, HLP_LINKMAP);
+  revm_command_add(CMD_BT       , (void *) cmd_bt       , NULL,            1, HLP_BT);
+  revm_command_add(CMD_BT2      , (void *) cmd_bt       , NULL,            1, HLP_BT);
+  revm_command_add(CMD_BP       , (void *) cmd_bp       , revm_getvarparams, 1, HLP_BP);
+  revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH);
+  revm_command_add(CMD_BP2      , (void *) cmd_bp       , revm_getvarparams, 1, HLP_BP);
+  revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK);
+  revm_command_add(CMD_DBGSTACK , (void *) cmd_dbgstack , revm_getoption,    1, HLP_DBGSTACK);
+  revm_command_add(CMD_DUMPREGS , (void *) cmd_dumpregs , NULL,            1, HLP_DUMPREGS);
+  revm_command_add(CMD_DELETE   , (void *) cmd_delete   , revm_getoption,    1, HLP_DELETE);
+  revm_command_add(CMD_CONTINUE , (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
+  revm_command_add(CMD_CONTINUE2, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
+  revm_command_add(CMD_START    , (void *) cmd_start    , (void *) NULL,   1, HLP_START);
+  revm_command_add(CMD_STEP     , (void *) cmd_step     , (void *) NULL,   1, HLP_STEP);
+  revm_command_add(CMD_DISPLAY  , (void *) cmd_display  , revm_getvarparams, 1, HLP_DISPLAY);
+  revm_command_add(CMD_UNDISPLAY, (void *) cmd_undisplay, revm_getvarparams, 1, HLP_UNDISPLAY);
+  revm_command_add(CMD_RSHT     , (void *) cmd_rsht     , revm_getregxoption, 1, HLP_RSHT);
+  revm_command_add(CMD_RPHT     , (void *) cmd_rpht     , revm_getregxoption, 1, HLP_RPHT);
+  revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS);
+  revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);
 }
 
 
@@ -97,29 +101,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
   /* Only on first execution */
   if (first)
     {
-      /* Debugger only script commands */
-      revm_command_add(CMD_MODE     , (void *) cmd_mode     , revm_getvarparams, 0, HLP_MODE);
-      revm_command_add(CMD_LINKMAP  , (void *) cmd_linkmap  , NULL,            1, HLP_LINKMAP);
-      revm_command_add(CMD_BT       , (void *) cmd_bt       , NULL,            1, HLP_BT);
-      revm_command_add(CMD_BT2      , (void *) cmd_bt       , NULL,            1, HLP_BT);
-      revm_command_add(CMD_BP       , (void *) cmd_bp       , revm_getvarparams, 1, HLP_BP);
-      revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH);
-      revm_command_add(CMD_BP2      , (void *) cmd_bp       , revm_getvarparams, 1, HLP_BP);
-      revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK);
-      revm_command_add(CMD_DBGSTACK , (void *) cmd_dbgstack , revm_getoption,    1, HLP_DBGSTACK);
-      revm_command_add(CMD_DUMPREGS , (void *) cmd_dumpregs , NULL,            1, HLP_DUMPREGS);
-      revm_command_add(CMD_DELETE   , (void *) cmd_delete   , revm_getoption,    1, HLP_DELETE);
-      revm_command_add(CMD_CONTINUE , (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
-      revm_command_add(CMD_CONTINUE2, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
-      revm_command_add(CMD_START    , (void *) cmd_start    , (void *) NULL,   1, HLP_START);
-      revm_command_add(CMD_STEP     , (void *) cmd_step     , (void *) NULL,   1, HLP_STEP);
-      revm_command_add(CMD_DISPLAY  , (void *) cmd_display  , revm_getvarparams, 1, HLP_DISPLAY);
-      revm_command_add(CMD_UNDISPLAY, (void *) cmd_undisplay, revm_getvarparams, 1, HLP_UNDISPLAY);
-      revm_command_add(CMD_RSHT     , (void *) cmd_rsht     , revm_getregxoption, 1, HLP_RSHT);
-      revm_command_add(CMD_RPHT     , (void *) cmd_rpht     , revm_getregxoption, 1, HLP_RPHT);
-      revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS);
-      revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);
-
+      e2dbg_register_command();
 #if __DEBUG_E2DBG__
       fprintf(stderr, "[e2dbg_entry] CHECKPOINT 4bis\n");
 #endif

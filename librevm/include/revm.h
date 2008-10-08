@@ -56,8 +56,6 @@
 #include "libedfmt.h"
 #include "libaspect.h"
 
-#include <gdbwrapper.h>
-
 #if defined(ERESI_NET)
  #include <libdump.h>
 #endif

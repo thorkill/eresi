@@ -3,18 +3,8 @@
    http://neworder.box.sk/newsread.php?newsid=2844.
 */
 
-#include <errno.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <assert.h>
 
-#include "libaspect.h"
+#include "revm.h"
 #include "gdbwrapper.h"
 
 

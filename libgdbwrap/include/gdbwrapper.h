@@ -1,6 +1,7 @@
 /* File to include to use the wrapper. */
 
 #include <sys/socket.h>
+#include <netdb.h>
 
 
 
