@@ -23,8 +23,8 @@ LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 
 EXTRAOBJ32		= ../libasm/libasm32.o ../libmjollnir/libmjollnir32.o     \
 			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o         \
-			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o	  \
-			../libaspect/libaspect32.o ../libstderesi/libstderesi32.o \
+			../liballocproxy/liballocproxy.o ../librevm/revm-*.32.o 	  \
+			 ../libaspect/libaspect32.o ../libstderesi/libstderesi32.o \
 			../libetrace/libetrace32.o $(LDDUMPOBJ32)
 
 EXTRAOBJ64		= ../libasm/libasm64.o ../libmjollnir/libmjollnir64.o     \
@@ -33,16 +33,17 @@ EXTRAOBJ64		= ../libasm/libasm64.o ../libmjollnir/libmjollnir64.o     \
 			../libaspect/libaspect64.o ../libstderesi/libstderesi64.o \
 			../libetrace/libetrace64.o $(LDDUMPOBJ64)
 
-COBJ32			= common/*.32.o
+COBJ32			= common/libe2dbg-common32.o
 COBJ64			= common/*.64.o
 KOBJ32			= kernel/*.32.o
 KOBJ64			= kernel/*.64.o
-UOBJ32			= user/*.32.o
+UOBJ32			= user/libe2dbg-user32.o
 UOBJ64			= user/*.64.o
 
 all			: all32 all64
 
 all32			: mod32 lib32
+all32			: lib32
 
 mod32			:
 			$(MAKE) -C common all32

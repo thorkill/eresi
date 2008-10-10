@@ -107,7 +107,7 @@ int		cmd_netkill()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  tokill = revm_GetCurJobParameter(0);
+  tokill = revm_get_cur_job_parameter(0);
 
   tokill = revm_lookup_string(tokill);
 
@@ -184,7 +184,7 @@ int		cmd_connect()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  toconnect = revm_GetCurJobParameter(0);
+  toconnect = revm_get_cur_job_parameter(0);
   toconnect = revm_lookup_string(toconnect);
 
   if (world.state.revm_net != 1)
@@ -232,7 +232,7 @@ int		cmd_discon()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  todisconnect = revm_GetCurJobParameter(0);
+  todisconnect = revm_get_cur_job_parameter(0);
 
   todisconnect = revm_lookup_string(todisconnect);
 
@@ -291,14 +291,14 @@ int			cmd_rcmd()
 
   sz -= 2;
 
-  for (idx = 1; revm_GetCurJobParameter(idx) != NULL; idx++)
+  for (idx = 1; revm_get_cur_job_parameter(idx) != NULL; idx++)
     {
       strncat(data, " ", sz - 1);
       sz -= 1;
       if (sz < 2)
 	break;
-      strncat(data, revm_GetCurJobParameter(idx), sz - 1);
-      sz -= strlen(revm_GetCurJobParameter(idx));
+      strncat(data, revm_get_cur_job_parameter(idx), sz - 1);
+      sz -= strlen(revm_get_cur_job_parameter(idx));
       if (sz < 2)
 	break;
     }
@@ -306,7 +306,7 @@ int			cmd_rcmd()
   if (idx < 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid number of parameters", (-1));
 
-  to = revm_GetCurJobParameter(idx);
+  to = revm_get_cur_job_parameter(idx);
 
   to = revm_lookup_string(to);
 

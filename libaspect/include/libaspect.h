@@ -94,6 +94,11 @@
 
 #endif
 
+#ifndef __RELEASE
+#define ASSERT(_x)      assert(_x)
+#define NOT_REACHED()   ASSERT(FALSE)
+#endif
+
 #ifndef swap32
 #define swap32(x)						\
 	((uint32_t)(						\
@@ -138,7 +143,6 @@
 #elif defined(ERESI64)
  typedef uint64_t	eresi_Addr;
  typedef uint64_t	eresi_Off;
-
 #if __WORDSIZE == 32
  #define XFMT		"0x%016llX"
  #define AFMT		"%016llX"
@@ -165,6 +169,18 @@
 typedef  uint8_t        Bool;
 #define  TRUE           1
 #define  FALSE          0
+
+/* Typedef the registers, linear addresses, virtual, etc for better
+   understanding. */
+typedef  uint32_t       ureg32;
+typedef  uint64_t       ureg64;
+
+typedef  uint32_t       la32;
+typedef  uint64_t       la64;
+
+typedef  uint32_t       va32;
+typedef  uint64_t       va64;
+
 
 /* Include this here since it contains an allocation too */
 #ifndef __KERNEL__
@@ -231,6 +247,25 @@ typedef  uint8_t        Bool;
 /* Some general purpose macros */
 #define	IS_VADDR(s)		(s[0] == '0' && (s[1] == 'X' || s[1] == 'x'))
 #define	PRINTABLE(c)		(c >= 32 && c <= 126)
+
+#define LOWORD(_dw)     ((_dw) & 0xffff)
+#define HIWORD(_dw)     (((_dw) >> 16) & 0xffff)
+#define LOBYTE(_w)      ((_w) & 0xff)
+#define HIBYTE(_w)      (((_w) >> 8) & 0xff)
+
+#define HIDWORD(_qw)    ((uint32)((_qw) >> 32))
+#define LODWORD(_qw)    ((uint32)(_qw)) 
+#define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
+
+#define WORD_IN_BYTE    2        
+#define DWORD_IN_BYTE   4
+#define QWORD_IN_BYTE   8
+#define BYTE_IN_BIT     8
+#define WORD_IN_BIT     16        
+#define DWORD_IN_BIT    32
+#define QWORD_IN_BIT    64
+
+#define NEXT_CHAR(_x)   _x + 1
 
 /* A structure for the type information */
 typedef struct		s_info

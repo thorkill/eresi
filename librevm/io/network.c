@@ -13,8 +13,22 @@
 
 
 /* Number of clients connected */
-int  	       elfsh_net_client_count = 0;
+int  	        elfsh_net_client_count = 0;
 
+int             revm_netgdb_output(void)
+{
+  fprintf(stderr, "output called :) - output.\n"
+	  "Info: job->ws.io.type: %d", world.curjob->ws.io.type);
+  
+  return 0;
+}
+
+
+char            *revm_netgdb_input(void)
+{
+  fprintf(stderr, "input called :) - input \n");
+  return "\n";
+}
 
 
 /* Is net support enable ? */

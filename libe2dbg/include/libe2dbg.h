@@ -487,6 +487,7 @@ void		e2dbg_last_init(void) __attribute__ ((constructor));
 
 int		e2dbg_setup(char *name);
 int		e2dbg_entry(e2dbgparams_t *);
+void		e2dbg_register_command(void);
 void		e2dbg_start_proc();
 int		e2dbg_output();
 

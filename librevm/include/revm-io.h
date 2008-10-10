@@ -292,6 +292,9 @@ char*		revm_socket_merge_recvd(revmsock_t *socket);
 int             revm_getmaxfd();
 int             revm_clean_jobs();
 
+char            *revm_netgdb_input(void);
+int             revm_netgdb_output(void);
+
 /* Readline interface */
 int             revm_init_history(int mode);
 int             revm_quit(int mode);

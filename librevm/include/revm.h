@@ -625,6 +625,10 @@ int		revm_source(char **params);
 int		revm_help(char *command);
 void		revm_print_actual(revmargv_t *cur);
 int		revm_printscript(revmargv_t *start);
+char            *revm_get_cur_job_parameter(uint8_t p);
+char            *revm_get_cur_job_parameter_with_job(revmjob_t *job, uint8_t p);
+uint8_t         revm_get_argc(void);
+int             revm_create_new_workspace(char *ws_name);
 
 /* Vector related functions */
 int		revm_vectors_getdims(char *str, unsigned int *dims);
@@ -763,7 +767,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr);
 int              revm_screen_switch();
 int              revm_screen_clear(int i, char c);
 int              revm_screen_update(u_short isnew, u_short prompt_display);
-int		revm_workspace_next();
+int		 revm_workspace_next();
 
 /* libedfmt related functions */
 int		revm_edfmt_parse(elfshobj_t *file);
