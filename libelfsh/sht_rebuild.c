@@ -435,7 +435,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       
       XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
-      printf("READ: %d bytes\n", read(file->fd, data, sect_size));
+      printf("READ: %d bytes data @ %p (%ld)\n", read(file->fd, data, sect_size), data, sect_size);
 
       if(elfsh_add_section(file, sect, idx, data, 
 			   ELFSH_SHIFTING_ABSENT)<0)
@@ -472,9 +472,11 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       sect->name = strdup(".dynsym");
       
       XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, data,
-	     ((sect_size / dyn->d_un.d_val) * ent_size)+1, -1);
-      XREAD(file->fd, data, (sect_size*6), -1);
+      //XALLOC(__FILE__, __FUNCTION__, __LINE__, data,
+	  //  ((sect_size / dyn->d_un.d_val) * ent_size)+1, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
+	  XREAD(file->fd, data, sect_size, -1);
+      //XREAD(file->fd, data, (sect_size*6), -1);
       
       if(elfsh_add_section(file, sect, idx, data,ELFSH_SHIFTING_ABSENT)<0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
