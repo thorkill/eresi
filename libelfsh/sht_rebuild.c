@@ -244,7 +244,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
         }
     }
   total++;
-  file->hdr->e_shnum     = 100;//total+1; /* total, for the shstrtab */
+  file->hdr->e_shnum     = total+1; /* total, for the shstrtab */
   file->hdr->e_shentsize = sizeof(elfsh_Shdr);
 
   /* insert the sht at the end of the file */
@@ -255,7 +255,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, file->sht, 
 	 file->hdr->e_shentsize * (total + 8), -1);
 
-  printf("SHT @ 0x%p\n", file->sht);
+  //printf("SHT @ 0x%p\n", file->sht);
   snames = ehnames = tlsnames = nnames = lnames = dnames = 0;
   
   /* rebuild the sht based on the pht entries */
@@ -366,7 +366,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       
       XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
       sect->name=strdup(name); 
-      printf("IDX[%d]: %s\n", idx, sect->name);
+      //printf("IDX[%d]: %s\n", idx, sect->name);
       if (elfsh_add_section(file, sect, idx++, data, ELFSH_SHIFTING_ABSENT)<0)
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                      "Unable to add section", -1);
@@ -420,8 +420,8 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-      printf("@" XFMT " => SECT SIZE: " XFMT " %hd bytes\n", 
-	     sect_addr - base_addr, sect_size, sect_size);
+     // printf("@" XFMT " => SECT SIZE: " XFMT " %hd bytes\n", 
+	  //   sect_addr - base_addr, sect_size, sect_size);
       
       shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,
@@ -435,7 +435,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       
       XSEEK(file->fd, sect_addr - base_addr, SEEK_SET, -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
-      printf("READ: %d bytes data @ %p (%ld)\n", read(file->fd, data, sect_size), data, sect_size);
+      //printf("READ: %d bytes data @ %p (%ld)\n", read(file->fd, data, sect_size), data, sect_size);
 
       if(elfsh_add_section(file, sect, idx, data, 
 			   ELFSH_SHIFTING_ABSENT)<0)
@@ -606,7 +606,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       XALLOC(__FILE__, __FUNCTION__, __LINE__, sect, sizeof(elfshsect_t), -1);
       sect->name = strdup(".got");
       
-      printf("OFFSET: " AFMT " (size: " DFMT ")\n", sect_addr, (dyn_size));
+      //printf("OFFSET: " AFMT " (size: " DFMT ")\n", sect_addr, (dyn_size));
       XSEEK(file->fd, sect_addr - (base_addr + 0x1000), SEEK_SET, -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sect_size + 1, -1);
       XREAD(file->fd, data, sect_size, -1);
@@ -781,8 +781,8 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
   for (idx= 0, sect = file->sectlist; sect; sect=sect->next, idx++) 
     {
       sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
-      printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
-	     sect->name, sect->shdr->sh_addr);
+      //printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
+	  //   sect->name, sect->shdr->sh_addr);
       section_offset += strlen(sect->name) + 1;
     }
 #endif
