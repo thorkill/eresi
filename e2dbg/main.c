@@ -115,7 +115,7 @@ char*		revm_debugger_inject(elfshobj_t *file)
 	return (NULL);
     }
 
-  return (buf);
+  return buf;
 }
 
 

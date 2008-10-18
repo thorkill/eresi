@@ -1,6 +1,6 @@
 include ../config.h
 
-SRC       = gdbwrapper.c e2interface.c
+SRC       = gdbwrapper.c interface.c
 CLIENT    = client.o
 CLIENT    = client.c
 OBJ       = $(SRC:.c=.o)

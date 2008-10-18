@@ -11,8 +11,11 @@
 
 #include             <netdb.h>
 #include             "libaspect.h"
-#include             "gdbwrapper-internals.h"
 #include             "gdbwrapper.h"
+#include             "gdbwrapper-internals.h"
+
+
+gdbwrapworld_t       gdbwrapworld;
 
 
 static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
@@ -220,7 +223,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
   unsigned           iter;
   unsigned           strlenc;
   unsigned           locmaxsize = 0;
-  
+
   ASSERT(dstpacket != NULL && srcpacket != NULL &&
 	 strncmp(srcpacket, GDBWRAP_START_ENCOD, 1));
   if (&*srcpacket != &*dstpacket)
@@ -313,8 +316,8 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval) {
     desc->packet[rval] = GDBWRAP_NULL_CHAR;
-    gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET, NULL,
-				sizeof(checksum));
+    gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET,
+				NULL, sizeof(checksum));
     /* If no error, we ack the packet. */
     if (rval != -1 &&
 	gdbwrap_atoh(checksum, strlen(checksum)) ==
@@ -327,11 +330,9 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 	return gdbwrap_run_length_decode(desc->packet, desc->packet,
 					 desc->max_packet_size);
       }
-    else
-      ASSERT(FALSE);
-  } else
-    desc->is_active = FALSE;
-
+    else ASSERT(FALSE);
+  } else desc->is_active = FALSE;
+  
   return NULL;
 }
 
@@ -346,6 +347,7 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
   if (gdbwrap_is_active(desc))
     {
       mes  = gdbwrap_make_message(query, desc);
+
       rval = send(desc->fd, mes, strlen(mes), 0);
       ASSERT(rval != -1);
       mes  = gdbwrap_get_packet(desc);
@@ -357,6 +359,23 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
     }
   
   return mes;
+}
+
+
+/**
+ * Set/Get the gdbwrapworld variable. It's not mandatory to use the
+ * other functions, but sometimes a global variable is required.
+ */
+gdbwrapworld_t       gdbwrap_current_set(gdbwrap_t *world)
+{
+  gdbwrapworld.gdbwrapptr = world;
+  return gdbwrapworld;
+}
+
+
+gdbwrap_t            *gdbwrap_current_get(void)
+{
+  return gdbwrapworld.gdbwrapptr;
 }
 
 
@@ -466,7 +485,8 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
   ureg32             regvalue;
   
   rec = gdbwrap_send_data(GDBWRAP_GENPURPREG, desc);
-  for (i = 0; i < strlen(rec) / sizeof(ureg32); i++)
+
+  for (i = 0; i < sizeof(gdbwrap_gdbreg32) / sizeof(ureg32); i++)
     {
       /* 1B = 2 characters */
        regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
@@ -474,7 +494,7 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
        *(&desc->reg32.eax + i) = regvalue;
        rec += 2 * DWORD_IN_BYTE;
     }
-
+  
   return &desc->reg32;
 }
 
@@ -484,7 +504,8 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   char               *rec;
 
   rec = gdbwrap_send_data(GDBWRAP_CONTINUETHREAD0, desc);
-  if (!strncmp(rec, GDBWRAP_ERROR, strlen(GDBWRAP_ERROR)))
+  if (gdbwrap_is_active(desc) && !strncmp(rec, GDBWRAP_ERROR,
+					  strlen(GDBWRAP_ERROR)))
     rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
 }
 

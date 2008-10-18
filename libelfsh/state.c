@@ -57,7 +57,7 @@ void	elfsh_set_static_mode()
 /**
  * @ brief check if we are running in debug mode
  */
-u_char	elfsh_is_debug_mode()
+Bool	elfsh_is_debug_mode()
 {
  return (dbgworld.mode == LIBELFSH_MODE_E2DBG);
 }
@@ -79,7 +79,6 @@ void	elfsh_set_mode(u_char mode)
 {
   //fprintf(stderr, "MODE changed for [%s] ! \n",
   //(mode == LIBELFSH_MODE_STATIC ? "static" : "dynamic"));
-
   dbgworld.mode = mode;
 }
 

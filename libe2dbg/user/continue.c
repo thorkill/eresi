@@ -41,7 +41,7 @@ int		cmd_start()
   
   if (world.curjob->curfile->running)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Process is already started", -1);
+		 "Process is already started", -1);
   if (!world.state.revm_quiet)
     e2dbg_output(" [*] Starting process\n");
   e2dbg_start_proc();
@@ -54,7 +54,7 @@ int		cmd_start()
  * See the count in e2dbg/signal.c that makes e2dbg need this 
  * @return
  */
-int	cmd_cont()
+int	        cmd_cont()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

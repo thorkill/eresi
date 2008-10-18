@@ -79,7 +79,7 @@ int		e2dbg_default_breakhandler(elfshobj_t   *null,
 
 /* Register a next frame-pointer handler */
 int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype, 
-					  u_char ostype, void *fct)
+					  u_char ostype, void (*fct)(void *frame))
 {
   vector_t	*nextfp;
   u_int		*dim;
@@ -166,7 +166,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
 
 /* Register an SETREGS injection handler */
 int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostype,
-				 void *fct)
+				  void *fct)
 {
   vector_t	*getregs;
   u_int		*dim;
@@ -312,7 +312,7 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
 					 u_char ostype, void *fct)
 {
   vector_t	*breakp;
-  u_int		*dim;
+  u_int		dim[4];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   breakp = aspect_vector_get(E2DBG_HOOK_BREAK);
@@ -326,8 +326,6 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
   if (ostype >= ELFSH_OSNUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
-
-  dim = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;

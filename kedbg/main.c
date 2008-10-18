@@ -1,17 +1,33 @@
-#include "revm.h"
-#include "libe2dbg.h"
-#include "gdbwrapper.h"
+#include "kedbg.h"
 
-#define  ERROR_CONNECTION  "problem when connecting... exiting\n"
-#define  USAGE             "Usage: ./netgdb <server> <port> <file>\n"
-#define  E2NETGDBNAME      "kedbg"
 
-void		netgdb_create_prompt(char *buf, unsigned int size)
+/**************** Command registration ****************/
+void            kedbg_register_command(void)
+{
+  revm_command_add(COM1,          cmd_com1, revm_getvarparams, 0, HELPCOM1);
+  /* These commands are overwritten. */
+  revm_command_add(CMD_START,     cmd_kedbgcont, NULL, 1, HLP_START);
+  revm_command_add(CMD_CONTINUE,  cmd_kedbgcont,  NULL, 1, HLP_CONTINUE);
+  revm_command_add(CMD_CONTINUE2, cmd_kedbgcont,  NULL, 1, HLP_CONTINUE);
+}
+
+
+/**************** Vector initialization ****************/
+void           kedbg_register_vector(void)
+{
+/*   e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC,  */
+/* 			   ELFSH_OS_FREEBSD, e2dbg_get_regvars_ia32_bsd); */
+
+}
+
+
+/**************** Main stuff ****************/
+void		kedbg_create_prompt(char *buf, unsigned int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
 	   revm_colorget("%s", "pspecial", "("),
-	   revm_colorget("%s", "psname" , E2NETGDBNAME),
+	   revm_colorget("%s", "psname" , KEDBGNAME),
 	   revm_colorget("%s", "pspecial", "-"),
 	   revm_colorget("%s", "pversion", REVM_VERSION),
 	   revm_colorget("%s", "pspecial", "-"),
@@ -24,21 +40,27 @@ void		netgdb_create_prompt(char *buf, unsigned int size)
   revm_endline();
 }
 
-int		netgdb_main(int argc, char **argv)
+
+/**
+ * Shell related stuff.
+ */
+int             kedbg_main(int argc, char **argv)
 {
-  //  elfshobj_t	*file;
+  int           ret;
 
   /* The "1" stands for interactive. */
   revm_setup(1, argv, REVM_STATE_CMDLINE, REVM_SIDE_CLIENT);
-  revm_config(".e2netgdbrc");
-  revm_set_prompt(netgdb_create_prompt);
+  revm_config(".kedbgrc");
+  revm_set_prompt(kedbg_create_prompt);
+
   e2dbg_register_command();
-  elfsh_set_debug_mode();
-  fprintf(stderr, "Micosacholomo: %s\n", world.curjob->ws.name);
-  fflush(stderr);
+  /* Overwrite of some commands. */
+  kedbg_register_command();
   
-/*   file = elfsh_map_obj(argv[3]); */
-/*   revm_file_load(argv[3], 0, NULL); */
+
+  ret = revm_file_load(argv[3], 0, NULL);
+  ASSERT(!ret);
+  elfsh_set_debug_mode();
   revm_run(argc, argv);
   fprintf(stderr, "Double mouche");
   fflush(stderr);
@@ -46,9 +68,9 @@ int		netgdb_main(int argc, char **argv)
 }
 
 
-int		main(int argc, char **argv)
+int             main(int argc, char **argv)
 {
-  int           ret;
+  int           fd;
 
   if (argc != 4)
     {
@@ -56,27 +78,23 @@ int		main(int argc, char **argv)
       return -1;
     }
 
-  ret = gdbwrap_simpleconnect(argv[1], atoi(argv[2]));
+  fd = gdbwrap_simpleconnect(argv[1], atoi(argv[2]));
 
-  if (ret == -1)
+  if (fd == -1)
     {
       fprintf(stderr, ERROR_CONNECTION);
       return -1;
     }
 
-  netgdb_main(argc, argv);
+  /* Initialize and set the gdbwrap global variable. */
+  gdbwrap_current_set(gdbwrap_init(fd));
+  /* Let's say hello to the server, gdbstyle 8) */
+  gdbwrap_hello(gdbwrap_current_get());
+  
+  
+  kedbg_main(argc, argv);
   return 0;
 }
 
 
-int             cmd_linkmap(void)
-{
-  return 0;
-}
 
-
-int             e2dbg_linkmap_load(char *name)
-{
-  name = NULL;
-  return 0;
-}

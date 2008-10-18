@@ -29,14 +29,14 @@ elfshobj_t		*elfsh_load_obj(char *name)
 
   /* Get the file size on disk */
   if (0 != fstat(file->fd,&file->fstat))
-   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get fstat(2)", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Unable to get fstat(2)", NULL);
 
   file->hdr = elfsh_get_hdr(file);
   file->rights = O_RDONLY;
   if (file->hdr == NULL || file->name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unable to get ELF header", NULL);
+		 "Unable to get ELF header", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
@@ -74,13 +74,13 @@ void		elfsh_unload_obj(elfshobj_t *file)
 
       if (sect->altdata)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
-
+      
       if (sect->terdata)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->terdata);
 
       if (sect->lastdata)
 	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->lastdata);
-
+      
       XFREE(__FILE__, __FUNCTION__, __LINE__,sect->name);
       next = sect->next;
       XFREE(__FILE__, __FUNCTION__, __LINE__,sect);

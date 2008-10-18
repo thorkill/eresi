@@ -15,7 +15,7 @@
 /* The debugger world */
 e2dbgworld_t	e2dbgworld;
 
-void           e2dbg_register_command(void)
+void            e2dbg_register_command(void)
 {
   /* Debugger only script commands */
   revm_command_add(CMD_MODE     , (void *) cmd_mode     , revm_getvarparams, 0, HLP_MODE);

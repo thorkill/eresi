@@ -13,9 +13,9 @@ OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 RM			= rm -f
-DBGNAME			= e2netgdb
-DBGNAME32		= e2netgdb32
-DBGNAME64		= e2netgdb64
+DBGNAME			= kedbg
+DBGNAME32		= kedbg32
+DBGNAME64		= kedbg64
 
 CFLAGS32 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libgdbwrap/include/			      	 \
@@ -31,10 +31,18 @@ CFLAGS32 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libetrace/include/ 				 \
 			-DERESI32
 
-LDFLAGS32		+= -L../libstderesi -lstderesi32    			 \
-			-L../libgdbwrap/ -lgdbwrap				 \
-			../libe2dbg/common/libe2dbg-common32.o 			 \
-			../libe2dbg/user/libe2dbg-user-noinit32.o 		 \
+LDFLAGS32               += -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32        \
+                        -L../libetrace/ -letrace32 -L../libstderesi/ -lstderesi32   \
+                        -L/usr/pkg/lib/ -L../libmjollnir/ -lmjollnir32              \
+                        -L../libetrace -letrace32 $(LPTHREAD) -L../libasm/ -lasm32  \
+                        $(LDUIOPT32) -g3 $(STATOPT) \
+                        -L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
+                        -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)        \
+                        $(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
+                        ../libgdbwrap/libgdbwrap.o                               \
+                        ../libe2dbg/common/libe2dbg-common32.o                   \
+                        ../libe2dbg/user/libe2dbg-user-noinit32.o                \
+
 
 
 all			: all32 

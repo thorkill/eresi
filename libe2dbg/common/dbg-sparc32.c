@@ -13,10 +13,6 @@
 #include "libe2dbg.h"
 
 
-
-
-
-
 /* Regvars handler for the IA32 architecture on BSD */
 void		  e2dbg_get_regvars_sparc32_bsd()
 { 
@@ -28,7 +24,6 @@ void		  e2dbg_get_regvars_sparc32_bsd()
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 
 /* Regvars handler for the IA32 architecture on SYSV */

@@ -27,15 +27,16 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 
   if (!file || !s)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL parameter", NULL);
-
+		 "Invalid NULL parameter", NULL);
+  
   if (file->secthash[ELFSH_SECTION_DYNSYM] == NULL)
     if (NULL == elfsh_get_dynsymtab(file, NULL))
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Unable to get DYNSYM", NULL);
+		   "Unable to get DYNSYM", NULL);
   
   rdata = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
   ret = (char *) rdata + s->st_name;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -368,7 +369,7 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   for (idx = 0; idx < size; idx++)
     {
       actual = elfsh_get_dynsymbol_name(file, sym + idx);
-      if (actual && !strcmp(actual, name))
+      if (actual != NULL && !strcmp(actual, name))
 	{
 #if __DEBUG_HASH_BY_NAME__
 	  printf("[DEBUG_HASH_BY_NAME] DYNSYM ITERATE Search by name for %s => %d\n", 
@@ -383,7 +384,7 @@ elfsh_Sym	*elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
 #endif
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Symbol not found", NULL);
+	       "Symbol not found", NULL);
 }
 
 

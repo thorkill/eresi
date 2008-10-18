@@ -128,7 +128,7 @@ int main( int argc, char **argv )
 	gdbwrap_vmwareinit(desc);
       else if(!strncmp("stepi", buffer, 5))
 	gdbwrap_stepi(desc);
-      else if(strncmp("signal", buffer, 5))
+      else if(!strncmp("signal", buffer, 5))
 	gdbwrap_signal(0x1, desc);
       else if(!strncmp("own", buffer,  3))
 	{
@@ -140,8 +140,7 @@ int main( int argc, char **argv )
 	      printf("\n%s - size: %d", ret, strlen(ret));
 	    }
 	}
-      else
-	printf("not supported yet\n");
+      else printf("not supported yet\n");
       
     } while (strncmp("bye", buffer, 3));
   

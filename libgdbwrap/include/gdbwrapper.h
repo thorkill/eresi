@@ -36,6 +36,13 @@ typedef struct gdbwrap_t
 } gdbwrap_t;
 
 
+typedef struct
+{
+  gdbwrap_t *gdbwrapptr;
+} gdbwrapworld_t;
+
+gdbwrapworld_t   gdbwrap_current_set(gdbwrap_t *world);
+gdbwrap_t        *gdbwrap_current_get(void);
 gdbwrap_t        *gdbwrap_init(int fd);
 void             gdbwrap_close(gdbwrap_t *desc);
 void             gdbwrap_hello(gdbwrap_t *desc);
@@ -50,7 +57,7 @@ char             *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
 void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);
-void             gdbwrap_vmwareinit(gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+void             gdbwrap_vmwareinit(gdbwrap_t *desc);
 
-int              gdbwrap_simpleconnect(char *host, int port);
+

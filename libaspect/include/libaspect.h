@@ -21,6 +21,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdint.h>
+#include <assert.h>
 
 /* Debug flags */
 #define		__DEBUG_LIST__	1
