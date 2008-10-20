@@ -446,8 +446,7 @@ int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_setstephook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *f);
+int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void (*fct)(void *frame));
 int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
 
