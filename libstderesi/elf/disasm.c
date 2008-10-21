@@ -476,12 +476,12 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
 	tmpbuff = buff;
       else
 	{
-	  tmpbuff  = elfsh_get_raw(parent);
+	  tmpbuff  = elfsh_readmem(parent);
 	  tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
 	}
       
 #if defined(KERNSH)
-      if (kernsh_is_mem_mode())
+      if (elfsh_is_debug_mode())
 	parent->parent->rhdr.base = 0;
 #endif
       
@@ -533,7 +533,7 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
       /* else if yes, print the pointed data too */
       else
 	{
-	  s = elfsh_get_raw(targ);
+	  s = elfsh_readmem(targ);
 	  s += off;
 	  memcpy(str, s, 
 		 (sizeof(str) > (targ->shdr->sh_size - off)) ?
@@ -596,7 +596,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   /* Get the pointer on relevant data */
   if (parent)
     {
-      buff  = elfsh_get_raw(parent);
+      buff  = elfsh_readmem(parent);
       buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
       index = off;
     }
@@ -607,7 +607,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
     }
 
 #if defined(KERNSH)  
-  if (kernsh_is_mem_mode())
+  if (elfsh_is_debug_mode())
       parent->parent->rhdr.base = 0;
 #endif  
 
@@ -696,7 +696,7 @@ int		revm_section_display(elfshsect_t	*s,
   revm_output(logbuf);
   actual = elfsh_get_symtab(s->parent, &symtab_size);
   tot = 0;
-  if (s && !elfsh_get_raw(s))
+  if (s && !elfsh_readmem(s))
     elfsh_get_anonymous_section(s->parent, s);
   
   if (!actual)
@@ -819,7 +819,7 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
   saved_size = actual->size;
   
   /* Iterate on symbols */
-  sym = (flag ? elfsh_get_raw(symtab) : (elfsh_Sym *) symtab->altdata);
+  sym = (flag ? elfsh_readmem(symtab) : (elfsh_Sym *) symtab->altdata);
   for (index = 0; index < symtab->shdr->sh_size / sizeof(elfsh_Sym); index++)
     {
       
@@ -850,7 +850,7 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
       if (flag && !elfsh_get_symbol_value(sym + index))
 	{
 	  elfsh_toggle_mode();
-	  sym = elfsh_get_raw(symtab);
+	  sym = elfsh_readmem(symtab);
 	  elfsh_toggle_mode();
 	  s = elfsh_get_parent_section(file, 
 				       file->rhdr.base + sym[index].st_value,

@@ -151,7 +151,7 @@ int		cmd_findrel()
     {
 
       /* Do not look for cross references on unmapped or void sections */
-      data = elfsh_get_raw(cur);
+      data = elfsh_readmem(cur);
       if (data == NULL)
 	{
 	  if (!world.state.revm_quiet)

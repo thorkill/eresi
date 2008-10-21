@@ -173,7 +173,7 @@ int		mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int fla
 
   hash_add(&sess->cur->blkhash, _vaddr2str(addr), block);
 
-  ptr      = elfsh_get_raw(parent);
+  ptr      = elfsh_readmem(parent);
   len      = parent->shdr->sh_size;
 
   if (mjr_analyse_code(sess, ptr, offset, addr, len, 0, maxdepth) < 0)
@@ -227,7 +227,7 @@ int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
 #endif
 
   /* Setup initial conditions */
-  ptr      = elfsh_get_raw(sess->cur->cursct);
+  ptr      = elfsh_readmem(sess->cur->cursct);
   len      = sess->cur->cursct->shdr->sh_size;
   vaddr    = sess->cur->cursct->shdr->sh_addr;
   e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));

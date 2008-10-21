@@ -48,7 +48,7 @@ int			cmd_write()
       cur = elfsh_get_parent_section(world.curjob->curfile, o1->immed_val.ent, &off);
       if (cur)
 	{
-	  sdata  = elfsh_get_raw(cur);
+	  sdata  = elfsh_readmem(cur);
 	  sdata += off;
 	}
 

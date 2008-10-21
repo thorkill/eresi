@@ -60,7 +60,7 @@ int		ds(elfshobj_t	*file,
 
   /* Avoid reading inexistant memory in the process for .symtab */
   else
-    table = (elfsh_Sym *) (sect->shdr->sh_addr ? elfsh_get_raw(sect) : sect->data);
+    table = (elfsh_Sym *) (sect->shdr->sh_addr ? elfsh_readmem(sect) : sect->data);
 
   /* Browse symtab */
   for (index = 0; index < num; index++)

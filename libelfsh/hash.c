@@ -404,7 +404,7 @@ void		*elfsh_get_hashtable(elfshobj_t *file, int *num)
       file->secthash[ELFSH_SECTION_HASH] = enew;
     }  
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_HASH]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_HASH]);
 
   /* Search number of entry do we get here */
   nbr = file->secthash[ELFSH_SECTION_HASH]->shdr->sh_size;
@@ -502,7 +502,7 @@ int		elfsh_get_dynsymbol_by_hash(elfshobj_t *file, char *name)
   ** The first fetched dynamic symbol isnt the one we are looking for
   ** so we loop on the entry .
   */
-  for (sym = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]); 
+  for (sym = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSYM]); 
        index < nchain; index = symid)
     {
 

@@ -59,7 +59,7 @@ int		cmd_kmem_hash()
 	       "%s:%s:%s:%s:%s:%s\n\n",
 	       revm_coloraddress(XFMT, (eresi_Addr) vaddr),
 	       revm_colornumber("%u", libkernshworld.mem),
-	       revm_colornumber("%u", (int)config_get_data(LIBKERNSH_VMCONFIG_HASH)),
+	       revm_colornumber("%u", (int)config_get_data(LIBKERNSH_CONFIG_HASH)),
 	       revm_colornumber("%u", new_size),
 	       revm_colornumber("%u", actual->off),
 	       revm_colorstr((char *)buffhash));
@@ -69,7 +69,7 @@ int		cmd_kmem_hash()
 		   "0x%lx:%d:%d:%d:%d:%s\n",
 		   (unsigned long) vaddr,
 		   libkernshworld.mem,
-	       (int)config_get_data(LIBKERNSH_VMCONFIG_HASH),
+	       (int)config_get_data(LIBKERNSH_CONFIG_HASH),
 		   new_size,
 		   actual->off,
 		   buffhash);
@@ -88,7 +88,7 @@ int		cmd_kmem_hash()
 		   "0x%lx:%d:%d:%d:%d:%s\n",
 		   (unsigned long) vaddr,
 		   libkernshworld.mem,
-		   (int)config_get_data(LIBKERNSH_VMCONFIG_HASH),
+		   (int)config_get_data(LIBKERNSH_CONFIG_HASH),
 		   new_size,
 		   actual->off,
 		   buffhash);
@@ -184,7 +184,7 @@ int		cmd_kmem_chash()
 
   param = world.curjob->curcmd->param[0];
 
-  stype = (int)config_get_data(LIBKERNSH_VMCONFIG_HASH);
+  stype = (int)config_get_data(LIBKERNSH_CONFIG_HASH);
 
   if (param != NULL)
     {
@@ -232,13 +232,13 @@ int		cmd_kmem_chash()
 			       "Bad format", -1);
 		}
 	      /* Switch to the mode where the hash has been done */
-	      origmode = kernsh_get_mode();
-	      kernsh_set_mode(mode);
+	      origmode = elfsh_get_mode();
+	      elfsh_set_mode(mode);
 
-	      config_update_key(LIBKERNSH_VMCONFIG_HASH, (void *)type);
+	      config_update_key(LIBKERNSH_CONFIG_HASH, (void *)type);
 	      hashbuffer = kernsh_hash(addr+off, size, &nsize);	      
 	      	      
-	      kernsh_set_mode(origmode);
+	      elfsh_set_mode(origmode);
 
 	      i = 0;
 	      tmp = buffhash;
@@ -298,12 +298,12 @@ int		cmd_kmem_chash()
 			 "Bad format", -1);
 	  }
 
-	  origmode = kernsh_get_mode();
-	  kernsh_set_mode(mode);
-	  config_update_key(LIBKERNSH_VMCONFIG_HASH, (void *)type);
+	  origmode = elfsh_get_mode();
+	  elfsh_set_mode(mode);
+	  config_update_key(LIBKERNSH_CONFIG_HASH, (void *)type);
 	  hashbuffer = kernsh_hash(addr+off, size, &nsize);
 
-	  kernsh_set_mode(origmode);
+	  elfsh_set_mode(origmode);
 	  i = 0;
 	  tmp = buffhash;
 	  while((i < sizeof(buffhash)) && (hashbuffer[i] != '\0'))
@@ -349,7 +349,7 @@ int		cmd_kmem_chash()
 	}
     }
 
-  config_update_key(LIBKERNSH_VMCONFIG_HASH, (void *)stype);
+  config_update_key(LIBKERNSH_CONFIG_HASH, (void *)stype);
 
   revm_setvar_int(REVM_VAR_RESULT, val);  
 

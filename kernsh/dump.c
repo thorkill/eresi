@@ -78,15 +78,15 @@ int		cmd_kdump_vma()
 
       snprintf(buff, sizeof(buff),
                "Dumped into %s%s%s%s\n\n",
-               revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH)),
-	       revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX)),
+               revm_colorstr((char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH)),
+	       revm_colorstr((char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX)),
 	       revm_colorstr("_"),
 	       revm_colornumber("%u", atoi(world.curjob->curcmd->param[0])));
       revm_output(buff);
       snprintf(buff, sizeof(buff),
                "Check the metadata file %s%s%s%s/metadata*\n\n",
-               revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH)),
-	       revm_colorstr((char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX)),
+               revm_colorstr((char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH)),
+	       revm_colorstr((char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX)),
 	       revm_colorstr("_"),
 	       revm_colornumber("%u", atoi(world.curjob->curcmd->param[0])));
       revm_output(buff);

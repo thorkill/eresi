@@ -36,7 +36,7 @@ int		elfsh_endianize_dynamic(elfshsect_t *newent)
 #else
 #error Unexpected __BYTE_ORDER !
 #endif
-    dyn = (elfsh_Dyn *) elfsh_get_raw(newent);
+    dyn = (elfsh_Dyn *) elfsh_readmem(newent);
     for (idx = 0; idx < newent->shdr->sh_size / sizeof(elfsh_Dyn); idx++)
       {
 	dyn[idx].d_tag      = swaplong(dyn[idx].d_tag);
@@ -86,7 +86,7 @@ elfsh_Dyn	*elfsh_get_dynamic(elfshobj_t *file, u_int *num)
       elfsh_endianize_dynamic(newent);
     }
 
-  ret = (elfsh_Dyn *) elfsh_get_raw(newent);
+  ret = (elfsh_Dyn *) elfsh_readmem(newent);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -141,6 +141,7 @@ elfsh_Word	elfsh_get_dynentry_val(elfsh_Dyn *d)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_un.d_val));
 }
 
+
 /**
  * Change the val field of the dynamic entry 
  * @param d
@@ -157,6 +158,7 @@ int		elfsh_set_dynentry_val(elfsh_Dyn *d, eresi_Addr val)
   d->d_un.d_val = (elfsh_Word) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
 
 
 /**
@@ -184,7 +186,7 @@ char		*elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid .dynstr offset", NULL);
 
-  data = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
+  data = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSTR]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + ent->d_un.d_val));
 }
 

@@ -81,6 +81,6 @@ elfsh_Sword	*elfsh_get_gpvalue_addr(elfshobj_t* file)
 		      "Can't read .reginfo section", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (&((elfsh_RegInfo *) elfsh_get_raw(reginfo))->ri_gp_value));
+		     (&((elfsh_RegInfo *) elfsh_readmem(reginfo))->ri_gp_value));
 }
 

@@ -57,7 +57,7 @@ int kernsh_kload_module(char *name)
 /**
  * @brief Load a linux loadable kernel module\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_KLOAD
+ * LIBKERNSH_CONFIG_KLOAD
  * @param name Module's pathname
  * @return 0 on success, -1 on return
  */
@@ -74,7 +74,7 @@ int kernsh_kload_module_linux(char *name)
 #endif
 
   if(fork() == 0)
-    ret = execve((char *) config_get_data(LIBKERNSH_VMCONFIG_KLOAD), params, environ);
+    ret = execve((char *) config_get_data(LIBKERNSH_CONFIG_KLOAD), params, environ);
   else
     wait(NULL);
 
@@ -121,7 +121,7 @@ int kernsh_kunload_module(char *name)
 /**
  * @brief Unload a linux loadable kernel module\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_KUNLOAD
+ * LIBKERNSH_CONFIG_KUNLOAD
  * @param name Module's name
  * @return 0 on success, -1 on return
  */
@@ -138,7 +138,7 @@ int kernsh_kunload_module_linux(char *name)
 #endif
 
   if(fork() == 0)
-    ret = execve((char *) config_get_data(LIBKERNSH_VMCONFIG_KUNLOAD), params, environ);
+    ret = execve((char *) config_get_data(LIBKERNSH_CONFIG_KUNLOAD), params, environ);
   else
     wait(NULL);
 
@@ -230,7 +230,7 @@ int kernsh_relink_module_linux(char *orig, char *injec, char *evil)
 #endif
 
   if(fork() == 0)
-    ret = execve((char *) config_get_data(LIBKERNSH_VMCONFIG_LD), params, environ);
+    ret = execve((char *) config_get_data(LIBKERNSH_CONFIG_LD), params, environ);
   else
     wait(NULL);
 
@@ -407,7 +407,7 @@ int kernsh_infect_module_linux_2_6(char *module, elfshobj_t *mod,
 
   for (idx = 0; idx < size && !end; idx++)
     {
-      data = elfsh_get_raw(gnu);
+      data = elfsh_readmem(gnu);
       cur = (void *) ((elfsh_Rel  *) data + idx);
       if (elfsh_get_relsym(cur) == idx_init)
 	{
@@ -470,7 +470,7 @@ int kernsh_infect_module_linux_2_4(char *module, elfshobj_t *mod,
 		   "Unable to find original function name", -1);
     }
 
-  elfsh_raw_write(mod, strtab->shdr->sh_offset + so->st_name, evil_fname, strlen(evil_fname));
+  elfsh_writememf(mod, strtab->shdr->sh_offset + so->st_name, evil_fname, strlen(evil_fname));
   elfsh_save_obj(mod, mod->name);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

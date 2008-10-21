@@ -32,7 +32,7 @@ int		cmd_flush()
   plt = elfsh_get_plt(world.curjob->curfile, NULL);
   origplt = world.curjob->curfile->secthash[ELFSH_SECTION_ALTPLT];
   if (origplt && plt)
-    memcpy(elfsh_get_raw(plt), elfsh_get_raw(origplt), plt->shdr->sh_size);
+    memcpy(elfsh_readmem(plt), elfsh_readmem(origplt), plt->shdr->sh_size);
 
   /* Remove pre-interp injected sections */
   interp = elfsh_get_segment_by_type(world.curjob->curfile, PT_INTERP, 0);

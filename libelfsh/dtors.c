@@ -52,7 +52,7 @@ eresi_Addr	*elfsh_get_dtors(elfshobj_t *file, int *num)
   /* Return data */
   if (num != NULL)
     *num = enew->shdr->sh_size / sizeof(eresi_Addr);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(enew)));
 }
 
 

@@ -162,14 +162,14 @@ int		cmd_ksym()
 {
   char          *param;
   char		buff[BUFSIZ];
-  unsigned long	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   param = world.curjob->curcmd->param[0];
 
   if (param)
     {
-      if(kernsh_get_addr_by_name(param, &addr, strlen(param)))
+      if (kernsh_get_addr_by_name(param, &addr, strlen(param)))
 	{
 	  revm_setvar_int("_", -1);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -316,13 +316,13 @@ int		cmd_kmem_info()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_DEVICE);
+  data = (char *)config_get_data(LIBKERNSH_CONFIG_DEVICE);
   snprintf(buff, sizeof(buff), 
 	   "DEVICE : %s\n",
 	   data);
   revm_output(buff);
 
-  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_MODE);
+  data = (char *)config_get_data(LIBKERNSH_CONFIG_MODE);
   snprintf(buff, sizeof(buff), 
 	   "FLAGS : %s\n",
 	   data);
@@ -341,13 +341,13 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
 
-  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP);
+  data = (char *)config_get_data(LIBKERNSH_CONFIG_SYSTEMMAP);
   snprintf(buff, sizeof(buff), 
 	   "SYSTEMMAP : %s\n",
 	   data);
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_MMAP);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_MMAP);
   switch (val)
     {
     case 0 :
@@ -361,31 +361,31 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_MMAP_SIZE);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_MMAP_SIZE);
   snprintf(buff, sizeof(buff), 
 	   "MMAP_SIZE : 0x%lx\n",
 	   (unsigned long)val);
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_KERNEL_START);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_KERNEL_START);
   snprintf(buff, sizeof(buff), 
 	   "KERNEL_START : 0x%lx\n",
 	   (unsigned long)val);
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_KERNEL_END);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_KERNEL_END);
   snprintf(buff, sizeof(buff), 
 	   "KERNEL_END : 0x%lx\n",
 	   (unsigned long)val);
   revm_output(buff);
 
-  data = (char *)config_get_data(LIBKERNSH_VMCONFIG_KERNEL);
+  data = (char *)config_get_data(LIBKERNSH_CONFIG_KERNEL);
   snprintf(buff, sizeof(buff), 
 	   "KERNEL : %s\n",
 	   data);
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_USE_KERNEL);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_USE_KERNEL);
   switch (val)
     {
     case 0 :
@@ -400,7 +400,7 @@ int		cmd_kmem_info()
   revm_output(buff);
 
   
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_ALLOC);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_ALLOC);
   switch (val)
     {
     case 0 :
@@ -414,19 +414,19 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
   
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_NB_SYSCALLS);
   snprintf(buff, sizeof(buff), 
 	   "NB_SYSCALLS : %d\n",
 	   val);
   revm_output(buff);
   
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_NIL_SYSCALL);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_NIL_SYSCALL);
   snprintf(buff, sizeof(buff), 
 	   "NIL_SYSCALL : %d\n",
 	   val);
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_USEVM);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_USEVM);
   switch (val)
     {
     case 0 :
@@ -440,7 +440,7 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
   switch (val)
     {
     case LIBKERNSH_KERNEL_MODE:
@@ -454,13 +454,13 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL);
   snprintf(buff, sizeof(buff), 
 	   "VIRTM_NIL_SYSCALL : %d\n",
 	   val);
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_HASH);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_HASH);
   switch (val)
     {
     case LIBKERNSH_HASH_MD5:
@@ -474,7 +474,7 @@ int		cmd_kmem_info()
     }
   revm_output(buff);
 
-  val = (int)config_get_data(LIBKERNSH_VMCONFIG_VMA);
+  val = (int)config_get_data(LIBKERNSH_CONFIG_VMA);
   switch (val)
     {
     case LIBKERNSH_VMA_USERLAND:
@@ -525,8 +525,8 @@ int		cmd_kmem_read()
 	       revm_colornumber("%u", len));
       revm_output(buff);
 
-      ret = kernsh_readmem(addr, new_buff, len);
-
+      ret = elfsh_readmema(libkernshworld.root, addr, new_buff, len);
+      
       kernsh_hexdump((unsigned char *)new_buff, len, addr);
 
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
@@ -623,7 +623,7 @@ int		cmd_kmem_write()
   revm_output(buff);
 
   kernsh_hexdump((unsigned char *)dat, size, (unsigned int)dat);
-  ret = kernsh_writemem(addr, dat, size);
+  ret = elfsh_writemem(libkernshworld.root, addr, dat, size);
 
   if (ret != size)
     {
@@ -661,7 +661,7 @@ int		cmd_kmem_disasm()
 
       memset(new_buff, '\0', len);
 
-      ret = kernsh_readmem(addr, new_buff, len);
+      ret = elfsh_readmema(libkernshworld.root, addr, new_buff, len);
 
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff),

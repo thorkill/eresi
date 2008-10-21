@@ -49,7 +49,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
 		      "Invalid address to hijack", -1);
 
   /* Read two instruction */
-  ret = elfsh_raw_read(file, off, buff, 8);
+  ret = elfsh_readmemf(file, off, buff, 8);
   if (ret != 8)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Failed to read an opcode", -1);
@@ -62,7 +62,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Cannot get and inject .hooks", -1);
 
-  hook = elfsh_get_raw(hooks) + hooks->curend;
+  hook = elfsh_readmem(hooks) + hooks->curend;
   opcode = (uint32_t *) hook;
 
 #define SPARC32_B_OPCODE(_size) 0x10000000 + (_size < 0 ? 0xb00000 : 0x800000) + (((_size - (_size % 4)) / 4) & 0xFFFFF)
@@ -71,7 +71,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
   /* Create the hook for this function */
   prot = elfsh_munprotect(file, (eresi_Addr) hook, 28);
 
-  diff = addr - (hooks->shdr->sh_addr + (hook - (char *) elfsh_get_raw(hooks)));
+  diff = addr - (hooks->shdr->sh_addr + (hook - (char *) elfsh_readmem(hooks)));
   opcode[0] = SPARC32_B_OPCODE(diff); // b <redirect function>
   opcode[1] = SPARC32_NOP;
 
@@ -93,7 +93,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
   opcode[0] = SPARC32_B_OPCODE(diff);
   opcode[1] = SPARC32_NOP;
 
-  ret = elfsh_raw_write(file, off, buff, 8);
+  ret = elfsh_writememf(file, off, buff, 8);
   if (ret != 8)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Error during hook installation", -1);
@@ -156,7 +156,7 @@ int		elfsh_hijack_plt_sparc32(elfshobj_t *file,
   opcode[2] = 0x01000000;
   
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
+  elfsh_writememf(file, foffset, opcode, 3 * sizeof(uint32_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -200,7 +200,7 @@ int		elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
   opcode[2] = 0x01000000;
   
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
+  elfsh_writememf(file, foffset, opcode, 3 * sizeof(uint32_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -308,7 +308,7 @@ PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot find .plt symbol .. ", -1
   opcode[11] = 0xe623e008;
 
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 12 * sizeof(uint32_t));
+  elfsh_writememf(file, foffset, opcode, 12 * sizeof(uint32_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

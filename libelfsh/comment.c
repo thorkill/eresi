@@ -37,10 +37,10 @@ elfshsect_t		*elfsh_get_comments(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to get .comment by name", NULL);
 
-  if (NULL == elfsh_get_raw(enew))
+  if (NULL == elfsh_readmem(enew))
     {
       enew->data = elfsh_load_section(file, enew->shdr);
-      if (NULL == elfsh_get_raw(enew))
+      if (NULL == elfsh_readmem(enew))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load .comment", NULL);
     }
@@ -71,7 +71,7 @@ char			*elfsh_get_comments_entry(elfshobj_t *file, u_int range)
 		      "Unable to get .comments", NULL);
 
   index = act = 0;
-  data = elfsh_get_raw(file->secthash[ELFSH_SECTION_COMMENT]);
+  data = elfsh_readmem(file->secthash[ELFSH_SECTION_COMMENT]);
   while (!data[index] && CHECK_SZ)
     index++;
   while (act != range && CHECK_SZ) 

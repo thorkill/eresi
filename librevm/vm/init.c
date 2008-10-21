@@ -104,32 +104,32 @@ int		revm_setup(int ac, char **av,
     }
 
   /* on.load. */
-  config_add_item(ERESI_VMCONFIG_ONLOAD_RCONTROL,
+  config_add_item(ERESI_CONFIG_ONLOAD_RCONTROL,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
   
-  config_add_item(ERESI_VMCONFIG_GRAPH_STORAGEPATH,
+  config_add_item(ERESI_CONFIG_GRAPH_STORAGEPATH,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *)"/tmp/");
 
-  config_add_item(ERESI_VMCONFIG_GRAPH_VIEWCMD,
+  config_add_item(ERESI_CONFIG_GRAPH_VIEWCMD,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *)"xzgv");
 
-  config_add_item(ERESI_VMCONFIG_GRAPH_AUTOVIEW,
+  config_add_item(ERESI_CONFIG_GRAPH_AUTOVIEW,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
 
-  config_add_item(ERESI_VMCONFIG_GRAPH_AUTOBUILD,
+  config_add_item(ERESI_CONFIG_GRAPH_AUTOBUILD,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
 
-  config_add_item(ERESI_VMCONFIG_USE_MORE,
+  config_add_item(REVM_CONFIG_USEMORE,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 1);
@@ -142,7 +142,7 @@ int		revm_setup(int ac, char **av,
   memset(buff, '\0', sizeof(buff));
   snprintf(buff, sizeof(buff), "%s/%s", getenv("HOME"),  ERESI_DEFAULT_HISTORY);
 
-  config_add_item(ERESI_VMCONFIG_HISTORY,
+  config_add_item(ERESI_CONFIG_HISTORY,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *)buff);

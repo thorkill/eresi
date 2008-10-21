@@ -103,7 +103,7 @@ int		elfsh_reloc_symtab(elfshsect_t *s, eresi_Addr diff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is not a symbol table", -1);
 
-  symtab = elfsh_get_raw(s);
+  symtab = elfsh_readmem(s);
   base = elfsh_get_object_baseaddr(s->parent);
   for (count = i = 0; i < s->shdr->sh_size / sizeof(elfsh_Sym); i++)
     {
@@ -139,7 +139,7 @@ int		elfsh_reloc_raw(elfshsect_t *cur, eresi_Addr diff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
 
-  if (elfsh_get_raw(cur) == NULL || cur->rel == NULL)
+  if (elfsh_readmem(cur) == NULL || cur->rel == NULL)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   /* Read the actual section and find valid references */
@@ -156,7 +156,7 @@ int		elfsh_reloc_raw(elfshsect_t *cur, eresi_Addr diff)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid IDX_DST",  -1);
 
-	str = elfsh_get_raw(cur) + cur->rel[index].off_src;
+	str = elfsh_readmem(cur) + cur->rel[index].off_src;
 	addr = target->shdr->sh_addr + cur->rel[index].off_dst + diff;
 	memcpy(str, &addr, sizeof(eresi_Addr));
 
@@ -195,7 +195,7 @@ int		elfsh_reloc_dynamic(elfshsect_t *sect, eresi_Addr diff)
 		      "Unexpected section type", -1);
 
   nbr = sect->shdr->sh_size / sizeof(elfsh_Dyn);
-  for (dyn = elfsh_get_raw(sect), count = index = 0; index < nbr; index++)
+  for (dyn = elfsh_readmem(sect), count = index = 0; index < nbr; index++)
     {
       val = elfsh_get_dynentry_val(dyn + index);
       parent = elfsh_get_parent_section(sect->parent, val, NULL);
@@ -234,7 +234,7 @@ int		elfsh_reloc_rel(elfshsect_t *sect, eresi_Addr diff)
 		      "Unexpected section type", -1);
 
   nbr = sect->shdr->sh_size / sizeof(elfsh_Rel);
-  for (rel = elfsh_get_raw(sect), count = index = 0; index < nbr; index++)
+  for (rel = elfsh_readmem(sect), count = index = 0; index < nbr; index++)
     {
       parent = elfsh_get_parent_section(sect->parent, 
 					rel[index].r_offset, 
@@ -301,7 +301,7 @@ int		elfsh_reloc_got(elfshsect_t *sect, eresi_Addr diff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section name", -1);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_readmem(sect), 
 			    sect->shdr->sh_size / sizeof(eresi_Addr), diff)));
 }
 
@@ -323,7 +323,7 @@ int		elfsh_reloc_ctors(elfshsect_t *sect, eresi_Addr diff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section name", -1);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_readmem(sect), 
 			    sect->shdr->sh_size / sizeof(eresi_Addr), 
 			    diff)));
 }
@@ -346,7 +346,7 @@ int		elfsh_reloc_dtors(elfshsect_t *sect, eresi_Addr diff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unexpected section name", -1);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_readmem(sect), 
 			    sect->shdr->sh_size / sizeof(eresi_Addr), 
 			    diff)));
 }
@@ -370,7 +370,7 @@ int		elfsh_reloc_hash(elfshsect_t *sect, eresi_Addr diff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is not HASH", -1);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_get_raw(sect), 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_reloc_array(sect->parent, elfsh_readmem(sect), 
 			    sect->shdr->sh_size / sizeof(eresi_Addr), diff)));
 }
 
@@ -388,7 +388,7 @@ int		elfsh_relocate_section(elfshsect_t *sect, eresi_Addr diff)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = 0;
-  if (sect == NULL || elfsh_get_raw(sect) == NULL)
+  if (sect == NULL || elfsh_readmem(sect) == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL paramater", -1);
 

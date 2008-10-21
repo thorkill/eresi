@@ -30,8 +30,9 @@ int kernsh_openmem_kmem_linux_2_6()
   XOPEN(libkernshworld.fd, 
 	LIBKERNSH_STRING_DEVICE_KMEM, 
 	libkernshworld.fdmode, 
-	0, 
-	-1);
+	0, -1);
+
+  libkernshworld.root->iotype = ELFSH_IOTYPE_DEVKMEM26;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -60,16 +61,18 @@ int kernsh_closemem_kmem_linux_2_6()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
+int kernsh_readmema_kmem_linux_2_6(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
 #endif
   
   XREAD(libkernshworld.fd, buf, size, -1);
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
@@ -80,9 +83,12 @@ int kernsh_readmem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
  * @param size Count bytes to write
  * @return size on success, -1 on error
  */
-int kernsh_writemem_kmem_linux_2_6(unsigned long offset, void *buf, int size)
+int kernsh_writemem_kmem_linux_2_6(elfshobj_t *file, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
@@ -125,6 +131,8 @@ int kernsh_openmem_kmem_linux_2_4()
 #endif
     }
 
+  libkernshworld.root->iotype = ELFSH_IOTYPE_DEVKMEM24;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -159,26 +167,27 @@ int kernsh_closemem_kmem_linux_2_4()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-int kernsh_readmem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
+int kernsh_readmema_kmem_linux_2_4(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
   if (libkernshworld.mmap)
     {
       if (memcpy(buf, libkernshworld.ptr+offset, size) == NULL)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Memcpy failed !", -1);
-	}
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Memcpy failed !", -1);
     }
   else
     {
 #if defined(__linux__)
-  XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
+      XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
 #endif
-  XREAD(libkernshworld.fd, buf, size, -1);
+      XREAD(libkernshworld.fd, buf, size, -1);
     }
-
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
 }
 
@@ -189,9 +198,12 @@ int kernsh_readmem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
  * @param size Count bytes to write
  * @return size on success, -1 on error
  */
-int kernsh_writemem_kmem_linux_2_4(unsigned long offset, void *buf, int size)
+int kernsh_writemem_kmem_linux_2_4(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
   if (libkernshworld.mmap)
     {

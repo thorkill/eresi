@@ -543,24 +543,8 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   u_int		rsize;
   char		*rdata;
   int		range;
-  /*
-  elfshsect_t	*bss;
-  */
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Grab the BSS */
-  /*
-  bss = elfsh_get_section_by_name(file,
-				  ELFSH_SECTION_NAME_BSS,
-				  NULL, NULL, NULL);
-  if (!bss)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot find ondisk BSS", -1);
-  while (bss->next)
-    bss = bss->next;
-  */
 
   /* Pad the new section if needed */
   if (mod && (hdr.sh_size % mod))
@@ -599,8 +583,13 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 	 data, phdr.p_vaddr, getpid());
 #endif
 
+  /* Write data at address */
+  elfsh_writemem(file, phdr.p_vaddr, data, rsize);
+
+  /* -- replaced by a vector
+
 #if defined(KERNSH)
-  if(kernsh_is_mem_mode())
+  if (elfsh_is_debug_mode())
     {
       kernsh_writemem(phdr.p_vaddr, data, rsize);
     }
@@ -611,24 +600,20 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 #else
   memcpy((void *) phdr.p_vaddr, data, rsize);
 #endif
+  */
 
   /* Modify some ondisk information */
   phdr.p_paddr  = phdr.p_vaddr;
   hdr.sh_addr   = phdr.p_vaddr;
-  //hdr.sh_offset = bss->shdr->sh_offset + bss->shdr->sh_size;
 
 #if	__DEBUG_RUNTIME__	      
   printf("[DEBUG_RUNTIME] Runtime injection of %s section data ! \n", sect->name);
 #endif
 
-
-
   /* Insert the new program header in the runtime PHDR */
   /* XXX: insert in real PHT if doing non-runtime _static file_ injection */
-  /* Should already work on runtime static binary modification */
   /* Use elfsh_insert_phdr in this static case */
-  /* After modification, should be OK at least on x86 */
-  //phdr.p_offset = sect->shdr->sh_offset;  
+  /* After modification, OK at least on x86 */
   sect->phdr = elfsh_insert_runtime_phdr(file, &phdr); 
   if (!sect->phdr)
     {
@@ -1077,3 +1062,15 @@ int		elfsh_insert_section_idx(elfshobj_t	*file,
 }
 
 
+/*
+**
+** HANDLER OF THE WRITEMEM VECTOR !!!
+**
+**
+*/
+
+
+int		elfsh_memcpy(elfshobj_t *null, eresi_Addr addr, void *buf, u_int size)
+{
+  return (memcpy((void *) addr, buf, size));
+}

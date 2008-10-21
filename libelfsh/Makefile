@@ -13,14 +13,14 @@ RM			= rm -f
 AR			= ar rc
 CFLAGS32		+= -Iinclude -Wall -fPIC -g3 -O2 $(EXTRACFLAGS) \
 			-I../libasm/include/ -I../libaspect/include/    \
-			$(KERNSHINC) $(KERNSH) -DERESI32 $(BUILDOP)
+			-DERESI32 $(BUILDOP)
 
 CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 $(EXTRACFLAGS) \
 			-I../libasm/include/ -I../libaspect/include/    \
-			$(KERNSHINC) $(KERNSH) -DERESI64 $(BUILDOP)
+			-DERESI64 $(BUILDOP)
 
 LDFLAGS32		= -L../liballocproxy/ -lallocproxy -L../libaspect/ \
-			-laspect32 -L../libasm -lasm32 $(KERNSHLIB32)
+			-laspect32 -L../libasm -lasm32
 
 LDFLAGS64		= -L../liballocproxy/ -lallocproxy -L../libaspect/ \
 			-laspect64 -L../libasm -lasm64
@@ -34,7 +34,9 @@ SRC			= dynamic.c dynsym.c elf.c fixup.c got.c hash.c     \
 			bss.c sort.c hooks.c ia32.c sparc32.c sparc64.c     \
 			mips32.c alpha64.c ia64.c mips64.c reginfo.c        \
 			altplt.c altgot.c extplt.c runtime.c state.c        \
-			inject.c linkmap.c bp.c rpht.c version.c dwarf.c
+			inject.c linkmap.c bp.c rpht.c version.c dwarf.c    \
+			vectors_default.c vectors_register.c vectors_call.c \
+			vectors_fetch.c
 
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)

@@ -34,7 +34,7 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to get DYNSYM", NULL);
   
-  rdata = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
+  rdata = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSTR]);
   ret = (char *) rdata + s->st_name;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -69,7 +69,7 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
 		      "Cannot retreive symbol table", -1);
 
   /* Else use the symbol string table */
-  data = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
+  data = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSTR]);
   if (file->secthash[ELFSH_SECTION_DYNSTR] == NULL || 
       data == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -178,7 +178,7 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   if (num != NULL)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSYM]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

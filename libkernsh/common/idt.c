@@ -54,7 +54,7 @@ int kernsh_idt_linux(list_t *lidt)
 #endif
 
   /* Interrupts is not set in static kernel ! */
-  if (kernsh_is_static_mode())
+  if (elfsh_is_static_mode())
     {
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to get idt in static mode !", -1);
@@ -71,7 +71,7 @@ int kernsh_idt_linux(list_t *lidt)
 	   i >= 0;
 	   i--)
 	{
-	  kernsh_readmem(libkernshworld.idt_base+sizeof(unsigned long)*2*i,
+	  elfsh_readmema(libkernshworld.root, libkernshworld.idt_base+sizeof(unsigned long)*2*i,
 			 &idt,
 			 sizeof(idt));
 

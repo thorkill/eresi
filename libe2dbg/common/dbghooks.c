@@ -87,13 +87,13 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   nextfp = aspect_vector_get(E2DBG_HOOK_NEXTFP);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
@@ -118,13 +118,13 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getret = aspect_vector_get(E2DBG_HOOK_GETRET);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
@@ -146,13 +146,13 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setregs = aspect_vector_get(E2DBG_HOOK_SETREGS);
   
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
@@ -174,13 +174,13 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getregs = aspect_vector_get(E2DBG_HOOK_GETREGS);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
@@ -202,13 +202,13 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getpc = aspect_vector_get(E2DBG_HOOK_GETPC);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
@@ -230,13 +230,13 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   getfp = aspect_vector_get(E2DBG_HOOK_GETFP);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
@@ -258,13 +258,13 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   setstep = aspect_vector_get(E2DBG_HOOK_SETSTEP);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
@@ -286,13 +286,13 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   resetstep = aspect_vector_get(E2DBG_HOOK_RESETSTEP);
   
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
 
@@ -317,13 +317,13 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   breakp = aspect_vector_get(E2DBG_HOOK_BREAK);
 
-  if (archtype >= ELFSH_ARCHNUM)
+  if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOSTNUM)
+  if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
-  if (ostype >= ELFSH_OSNUM)
+  if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
   dim[0] = archtype;
@@ -347,9 +347,9 @@ static int	e2dbg_register_vectors()
   /* All hooks have the same dimensions here */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
-  dims[0]    = ELFSH_ARCHNUM;
-  dims[1]    = E2DBG_HOSTNUM;
-  dims[2]    = ELFSH_OSNUM;
+  dims[0]    = ELFSH_ARCH_NUM;
+  dims[1]    = E2DBG_HOST_NUM;
+  dims[2]    = ELFSH_OS_NUM;
   strdims[0] = "ARCHTYPE";
   strdims[1] = "HOSTYPE";
   strdims[2] = "OSTYPE";
@@ -400,140 +400,140 @@ void		e2dbg_setup_hooks()
   e2dbg_register_vectors();
 
   /* Linux / AMD64 target */
-  e2dbg_register_gregshook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_AMD64, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_get_regvars_amd64_sysv);
-  e2dbg_register_sregshook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_AMD64, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_set_regvars_amd64_sysv);
-  e2dbg_register_getpchook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_AMD64, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_getpc_sysv_amd64);
-  e2dbg_register_setstephook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_AMD64, E2DBG_HOST_USER, 
 			     ELFSH_OS_LINUX, e2dbg_setstep_sysv_amd64);
-  e2dbg_register_resetstephook(ELFSH_ARCH_AMD64, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_AMD64, E2DBG_HOST_USER, 
 			       ELFSH_OS_LINUX, e2dbg_resetstep_sysv_amd64);
-  e2dbg_register_nextfphook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_AMD64, ELFSH_FILE_LIB, 
 			    ELFSH_OS_LINUX, e2dbg_bt_amd64);
-  e2dbg_register_getfphook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_AMD64, ELFSH_FILE_LIB, 
 			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_amd64);
-  e2dbg_register_getrethook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_AMD64, ELFSH_FILE_LIB, 
 			    ELFSH_OS_LINUX, e2dbg_getret_amd64);
-  e2dbg_register_breakhook(ELFSH_ARCH_AMD64, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_AMD64, ELFSH_FILE_LIB,   
 			   ELFSH_OS_LINUX, e2dbg_break_amd64);  
 
   /* Initialize vectors */
-  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_get_regvars_ia32_bsd);
-  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_NETBSD, e2dbg_get_regvars_ia32_bsd);
-  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_OPENBSD, e2dbg_get_regvars_ia32_bsd);
-  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_get_regvars_ia32_sysv);
-  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_get_regvars_ia32_sysv);
 
-  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_set_regvars_ia32_bsd);
-  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_NETBSD, e2dbg_set_regvars_ia32_bsd);
-  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_OPENBSD, e2dbg_set_regvars_ia32_bsd);
-  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_set_regvars_ia32_sysv);
-  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_set_regvars_ia32_sysv);
 
 
-  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_getpc_bsd_ia32);
-  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_NETBSD, e2dbg_getpc_bsd_ia32);
-  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_OPENBSD, e2dbg_getpc_bsd_ia32);
-  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_getpc_sysv_ia32);
-  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_getpc_sysv_ia32);
   
-  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			     ELFSH_OS_FREEBSD, e2dbg_setstep_bsd_ia32);
-  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			     ELFSH_OS_NETBSD, e2dbg_setstep_bsd_ia32);
-  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			     ELFSH_OS_OPENBSD, e2dbg_setstep_bsd_ia32);
-  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			     ELFSH_OS_LINUX, e2dbg_setstep_sysv_ia32);
-  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			     ELFSH_OS_SOLARIS, e2dbg_setstep_sysv_ia32);
   
-  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			       ELFSH_OS_FREEBSD, e2dbg_resetstep_bsd_ia32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			       ELFSH_OS_NETBSD, e2dbg_resetstep_bsd_ia32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			       ELFSH_OS_OPENBSD, e2dbg_resetstep_bsd_ia32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			       ELFSH_OS_LINUX, e2dbg_resetstep_sysv_ia32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			       ELFSH_OS_SOLARIS, e2dbg_resetstep_sysv_ia32);
 
 
   /* For sparc32 */
 
-  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_get_regvars_sparc32_bsd);
-  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_NETBSD, e2dbg_get_regvars_sparc32_bsd);
-  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_OPENBSD, e2dbg_get_regvars_sparc32_bsd);
-  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_get_regvars_sparc32_sysv);
-  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_get_regvars_sparc32_sysv);
 
 
-  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_set_regvars_sparc32_bsd);
-  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_NETBSD, e2dbg_set_regvars_sparc32_bsd);
-  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_OPENBSD, e2dbg_set_regvars_sparc32_bsd);
-  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_set_regvars_sparc32_sysv);
-  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_set_regvars_sparc32_sysv);
 
 
-  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_getpc_bsd_sparc32);
-  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_NETBSD, e2dbg_getpc_bsd_sparc32);
-  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_OPENBSD, e2dbg_getpc_bsd_sparc32);
-  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_LINUX, e2dbg_getpc_sysv_sparc32);
-  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_getpc_sysv_sparc32);
   
-  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			     ELFSH_OS_FREEBSD, e2dbg_setstep_bsd_sparc32);
-  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			     ELFSH_OS_NETBSD, e2dbg_setstep_bsd_sparc32);
-  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			     ELFSH_OS_OPENBSD, e2dbg_setstep_bsd_sparc32);
-  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			     ELFSH_OS_LINUX, e2dbg_setstep_sysv_sparc32);
-  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_setstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			     ELFSH_OS_SOLARIS, e2dbg_setstep_sysv_sparc32);
   
-  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			       ELFSH_OS_FREEBSD, e2dbg_resetstep_bsd_sparc32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			       ELFSH_OS_NETBSD, e2dbg_resetstep_bsd_sparc32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			       ELFSH_OS_OPENBSD, e2dbg_resetstep_bsd_sparc32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			       ELFSH_OS_LINUX, e2dbg_resetstep_sysv_sparc32);
-  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_PROC, 
+  e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER, 
 			       ELFSH_OS_SOLARIS, e2dbg_resetstep_sysv_sparc32);
 
 
@@ -542,47 +542,47 @@ void		e2dbg_setup_hooks()
   /***********************************/
   
   /* Usual nextfp targets for ET_EXEC/ET_DYN on IA32 */
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_LINUX, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_FREEBSD, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_NETBSD, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_OPENBSD, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_SOLARIS, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_LINUX, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_FREEBSD, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_NETBSD, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_OPENBSD, e2dbg_bt_ia32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_SOLARIS, e2dbg_bt_ia32);
   
   /* Now for sparc */
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_LINUX, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_FREEBSD, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_NETBSD, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_OPENBSD, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_SOLARIS, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_LINUX, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_FREEBSD, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_NETBSD, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_OPENBSD, e2dbg_bt_sparc32);
-  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_SOLARIS, e2dbg_bt_sparc32);
 
 
@@ -592,47 +592,47 @@ void		e2dbg_setup_hooks()
   /***********************************/
   
   /* Usual getfp targets for ET_EXEC/ET_DYN on IA32 */
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_FREEBSD, e2dbg_getfp_bsd_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_NETBSD, e2dbg_getfp_bsd_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_FREEBSD, e2dbg_getfp_bsd_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_NETBSD, e2dbg_getfp_bsd_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_ia32);
 
   /* Now for sparc */
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_FREEBSD, e2dbg_getfp_bsd_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_NETBSD, e2dbg_getfp_bsd_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			   ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_LINUX, e2dbg_getfp_sysv_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_FREEBSD, e2dbg_getfp_bsd_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_NETBSD, e2dbg_getfp_bsd_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_sparc32);
-  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			   ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_sparc32);
 
 
@@ -641,93 +641,93 @@ void		e2dbg_setup_hooks()
   /***********************************/
   
   /* Usual getret targets for ET_EXEC/IA32 */
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_LINUX, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_FREEBSD, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_NETBSD, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_OPENBSD, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_SOLARIS, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_LINUX, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_FREEBSD, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_NETBSD, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_OPENBSD, e2dbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_SOLARIS, e2dbg_getret_ia32);
   
   /* Now for sparc32 */
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_LINUX, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_FREEBSD, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_NETBSD, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_OPENBSD, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC, 
 			    ELFSH_OS_SOLARIS, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_LINUX, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_FREEBSD, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_NETBSD, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_OPENBSD, e2dbg_getret_sparc32);
-  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN, 
+  e2dbg_register_getrethook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB, 
 			    ELFSH_OS_SOLARIS, e2dbg_getret_sparc32);
 
   /***********************************/
   /* Now register breakpoint hooks   */
   /***********************************/
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_LINUX, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_NETBSD, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_LINUX, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_NETBSD, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_ia32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);
 
   /* Now for sparc */
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_LINUX, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_NETBSD, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_EXEC,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_EXEC,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_LINUX, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_FREEBSD, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_NETBSD, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
-  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_TYPE_DYN,   
+  e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);
   
   done = 1;

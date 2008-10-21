@@ -197,10 +197,10 @@ int kernsh_autotask_offsetuid_linux_2_6(char *buffer, size_t size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, offset);
 }
 
-int kernsh_autotask_linux_2_6()
+int		kernsh_autotask_linux_2_6()
 {
-  unsigned long init_task, lst_addr, current_addr;
-  char buffer[1024];
+  eresi_Addr	init_task, lst_addr, current_addr;
+  char		buffer[1024];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -210,7 +210,7 @@ int kernsh_autotask_linux_2_6()
 
   kernsh_get_addr_by_name("init_task", &init_task, strlen("init_task"));
   
-  kernsh_readmem(init_task, buffer, sizeof(buffer));
+  elfsh_readmema(libkernshworld.root, init_task, buffer, sizeof(buffer));
 
   libkernshworld.typetask.offset_name = 
     kernsh_autotask_offsetname_linux_2_6(buffer, sizeof(buffer));
@@ -224,7 +224,7 @@ int kernsh_autotask_linux_2_6()
   printf("OFFSET NAME %d\n", libkernshworld.typetask.offset_name);
 #endif
 
-  kernsh_readmem(init_task+40, buffer, 200);
+  elfsh_readmema(libkernshworld.root, init_task+40, buffer, 200);
   
   libkernshworld.typetask.offset_list = 
     kernsh_autotask_offsetlist_linux_2_6(buffer, 200);
@@ -236,11 +236,11 @@ int kernsh_autotask_linux_2_6()
   printf("OFFSET LIST %d\n", libkernshworld.typetask.offset_list);
 #endif
 
-  kernsh_readmem(init_task + libkernshworld.typetask.offset_list,
+  elfsh_readmema(libkernshworld.root, init_task + libkernshworld.typetask.offset_list,
 		 &lst_addr,
 		 sizeof(unsigned long));
 
-  kernsh_readmem(lst_addr, buffer, 256);
+  elfsh_readmema(libkernshworld.root, lst_addr, buffer, 256);
 
 #if __DEBUG_KERNSH__
   printf("LST_ADDR 0x%lx\n", lst_addr);
@@ -254,7 +254,7 @@ int kernsh_autotask_linux_2_6()
 #endif
 
 
-  kernsh_readmem(lst_addr + libkernshworld.typetask.offset_next,
+  elfsh_readmema(libkernshworld.root, lst_addr + libkernshworld.typetask.offset_next,
 		 &current_addr,
 		 sizeof(unsigned long));
 
@@ -262,7 +262,7 @@ int kernsh_autotask_linux_2_6()
   printf("CURRENT_ADDR 0x%lx\n", current_addr);
 #endif
 
-  kernsh_readmem(current_addr + libkernshworld.typetask.offset_list,
+  elfsh_readmema(libkernshworld.root, current_addr + libkernshworld.typetask.offset_list,
 		 buffer,
 		 sizeof(buffer));
 
@@ -277,7 +277,7 @@ int kernsh_autotask_linux_2_6()
   printf("OFFSET PID %d\n", libkernshworld.typetask.offset_pid);
 #endif
 
-  kernsh_readmem(current_addr + libkernshworld.typetask.offset_pid,
+  elfsh_readmema(libkernshworld.root, current_addr + libkernshworld.typetask.offset_pid,
 		 buffer,
 		 sizeof(buffer));
 

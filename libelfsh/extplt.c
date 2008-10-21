@@ -116,7 +116,7 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
 		 "Invalid Parameters", -1);
 
   /* Dynsym data & size */
-  ret = elfsh_get_raw(dynsym);
+  ret = elfsh_readmem(dynsym);
 
   size = dynsym->curend ? dynsym->curend / sizeof(elfsh_Sym) : 
     dynsym->shdr->sh_size / sizeof(elfsh_Sym);
@@ -138,7 +138,7 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
 		 "Cannot find dynamic symbol by name", -1);
 
   /* Hash pointer */
-  data = elfsh_get_raw(hash);
+  data = elfsh_readmem(hash);
 
   /* Get bucket & chain pointers */
   bucket = elfsh_get_hashbucket(data);
@@ -261,7 +261,7 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSYM", -1);
   enew->shdr->sh_entsize = sizeof(elfsh_Sym);
-  data = elfsh_get_raw(enew);
+  data = elfsh_readmem(enew);
 
   /* Take the fixed ondisk version of dynsym as original data */
   memcpy(data, dynsym->data, dynsym->shdr->sh_size);
@@ -283,8 +283,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTDYNSTR", -1);
-  data = elfsh_get_raw(enew);
-  memcpy(data, elfsh_get_raw(dynstr), dynstr->shdr->sh_size);
+  data = elfsh_readmem(enew);
+  memcpy(data, elfsh_readmem(dynstr), dynstr->shdr->sh_size);
 
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_STRTAB);
   if (!dynent)
@@ -308,8 +308,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to inject ALTRELGOT", -1);
 
-      data = elfsh_get_raw(enew);
-      memcpy(data, elfsh_get_raw(relgot), relgot->shdr->sh_size);
+      data = elfsh_readmem(enew);
+      memcpy(data, elfsh_readmem(relgot), relgot->shdr->sh_size);
       dynent = elfsh_get_dynamic_entry_by_type(file, IS_REL(dynamic) ? DT_REL : DT_RELA);
       if (!dynent)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -328,8 +328,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to inject ALTRELPLT", -1);
-  data = elfsh_get_raw(enew);
-  memcpy(data, elfsh_get_raw(relplt), relplt->shdr->sh_size);
+  data = elfsh_readmem(enew);
+  memcpy(data, elfsh_readmem(relplt), relplt->shdr->sh_size);
   dynent = elfsh_get_dynamic_entry_by_type(file, DT_JMPREL);
   if (!dynent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -350,8 +350,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
       if (!enew)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to inject ALTVERSYM", -1);
-      data = elfsh_get_raw(enew);
-      memcpy(data, elfsh_get_raw(versym), versym->shdr->sh_size);
+      data = elfsh_readmem(enew);
+      memcpy(data, elfsh_readmem(versym), versym->shdr->sh_size);
 
       enew->curend = versym->shdr->sh_size;
       enew->shdr->sh_type = versym->shdr->sh_type;
@@ -374,8 +374,8 @@ int		elfsh_extplt_mirror_sections(elfshobj_t *file)
   if (!enew)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to inject ALTHASHM", -1);
-  data = elfsh_get_raw(enew);
-  memcpy(data, elfsh_get_raw(hash), hash->shdr->sh_size);
+  data = elfsh_readmem(enew);
+  memcpy(data, elfsh_readmem(hash), hash->shdr->sh_size);
   
   enew->curend = hash->shdr->sh_size;
   enew->shdr->sh_type = hash->shdr->sh_type;
@@ -583,11 +583,11 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 			    0, 0, 0);
   sym.st_name = dynstr->curend;
   elfsh_set_symbol_bind(&sym, STB_GLOBAL);
-  memcpy(elfsh_get_raw(dynsym) + dynsym->curend, &sym, sizeof(sym));
+  memcpy(elfsh_readmem(dynsym) + dynsym->curend, &sym, sizeof(sym));
   dynsym->curend += sizeof(elfsh_Sym);
 
   /* Insert string referenced by the previous injected symbol */
-  memcpy(elfsh_get_raw(dynstr) + dynstr->curend, name, len + 1);
+  memcpy(elfsh_readmem(dynstr) + dynstr->curend, name, len + 1);
   dynstr->curend += len + 1;
   elfsh_sync_sorted_symtab(file->secthash[ELFSH_SECTION_DYNSYM]);
 
@@ -613,6 +613,6 @@ elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name)
 		 "Unable to add an entry on ALTHASH", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     elfsh_get_raw(dynsym) + dynsym->curend - sizeof(elfsh_Sym));
+		     elfsh_readmem(dynsym) + dynsym->curend - sizeof(elfsh_Sym));
 }
 

@@ -31,30 +31,6 @@ int kernsh_closemem_default()
 	       "closemem default !", -1);
 }
 
-int kernsh_readmem_default()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_KERNEL__
-  printf("READMEM DEFAULT!!!\n");
-#endif
-
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "readmem default !", -1);
-}
-
-int kernsh_writemem_default()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if __DEBUG_KERNEL__
-  printf("WRITEMEM DEFAULT!!!\n");
-#endif
-
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "writemem default !", -1);
-}
-
 int kernsh_sct_default()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

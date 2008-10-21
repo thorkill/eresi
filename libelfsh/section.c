@@ -538,10 +538,10 @@ void		*elfsh_get_anonymous_section(elfshobj_t *file, elfshsect_t *sect)
 
   /* If the section is already loaded */
   if (sect->data != NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(sect)));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(sect)));
 
   sect->data = elfsh_load_section(file, sect->shdr);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(sect)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(sect)));
 }
 
 /**
@@ -1100,7 +1100,7 @@ void		*elfsh_get_section_data(elfshsect_t *obj, u_int off,
 		      "Offset too big", NULL);
 
   /* Return the data */
-  data = elfsh_get_raw(obj);
+  data = elfsh_readmem(obj);
   data += (off * sizelem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (data));
 }
@@ -1134,7 +1134,7 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is too small", -1);
 
-  rdata = elfsh_get_raw(sect);
+  rdata = elfsh_readmem(sect);
   memcpy(rdata + (off * sizelem), data, size);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

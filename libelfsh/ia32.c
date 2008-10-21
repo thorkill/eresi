@@ -75,7 +75,7 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 
   /* 6 is the size of the first instruction of a .plt entry on x86 */
   gotent = extplt->shdr->sh_addr + extplt->curend + 6;
-  memcpy(elfsh_get_raw(altgot) + altgot->curend, 
+  memcpy(elfsh_readmem(altgot) + altgot->curend, 
 	 (char *) &gotent, sizeof(gotent));
   altgot->curend += sizeof(gotent);
  
@@ -85,21 +85,21 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 #endif
 
   /* 7 is the offset for the relocation offset location, encoded in GOT */
-  ent = elfsh_get_raw(extplt) + extplt->curend;
+  ent = elfsh_readmem(extplt) + extplt->curend;
   reloc  = (int *) ((char *) ent + 7);
   prot = elfsh_munprotect(extplt->parent, 
 			  (eresi_Addr) reloc, 
-			  (char *) reloc - (char *) elfsh_get_raw(extplt));
+			  (char *) reloc - (char *) elfsh_readmem(extplt));
   *reloc = relplt->curend;
   elfsh_mprotect((eresi_Addr) reloc, 
-		 (char *) reloc - (char *) elfsh_get_raw(extplt), prot);
+		 (char *) reloc - (char *) elfsh_readmem(extplt), prot);
   extplt->curend += elfsh_get_pltentsz(extplt->parent);
 
   /* Insert relocation entry pointing on the new PLT entry */
   relentsz = IS_REL(extplt) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
   r = elfsh_create_relent(R_386_JMP_SLOT, dynsym->curend / sizeof(elfsh_Sym), 
 			  altgot->shdr->sh_addr + altgot->curend - sizeof(eresi_Addr));
-  memcpy(elfsh_get_raw(relplt) + relplt->curend, &r, relentsz);
+  memcpy(elfsh_readmem(relplt) + relplt->curend, &r, relentsz);
   relplt->curend += relentsz;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -315,7 +315,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid address to hijack", -1);
 
-  ret = elfsh_raw_read(file, off, buff, 32);
+  ret = elfsh_readmemf(file, off, buff, 32);
   if (ret != 32)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Function too small to be hijacked", -1);
@@ -328,7 +328,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot get and inject .hooks", -1);
 
-  hook = elfsh_get_raw(hooks) + hooks->curend;
+  hook = elfsh_readmem(hooks) + hooks->curend;
 
   /* Determine the minimal aligned length */
   if (!proc_init)
@@ -343,7 +343,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   prot = elfsh_munprotect(file, (eresi_Addr) hook, 16);
   memset(hook, 0x90, 40);
   memcpy(hook, "\xe9\x00\x00\x00\x00", 5);
-  *(uint32_t *) ((char *) hook + 1) = addr - (hooks->shdr->sh_addr + (hook + 1 - (char *) elfsh_get_raw(hooks)) + 4);
+  *(uint32_t *) ((char *) hook + 1) = addr - (hooks->shdr->sh_addr + (hook + 1 - (char *) elfsh_readmem(hooks)) + 4);
   memcpy(hook + 5, buff, ret);
   memcpy(hook + 5 + ret, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hook + 6 + ret) = symbol->st_value - (hooks->shdr->sh_addr + hooks->curend + 10);
@@ -368,7 +368,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   memcpy(hookbuf, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hookbuf + 1) = (hooks->shdr->sh_addr + hooks->curend) - (symbol->st_value + 5); 
   memset(hookbuf + 5, 0x90, ret - 5);
-  len = elfsh_raw_write(file, off, hookbuf, ret);
+  len = elfsh_writememf(file, off, hookbuf, ret);
   if (len != ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error during hook installation", -1);
@@ -429,15 +429,15 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
   prot         = elfsh_munprotect(file, 
 				  symbol->st_value, 
 				  elfsh_get_pltentsz(file));
-  elfsh_raw_write(file, foffset, &opcode, sizeof(opcode));
+  elfsh_writememf(file, foffset, &opcode, sizeof(opcode));
 
   /* Byte order test for cross-endianess ability */
 #if __BYTE_ORDER == __BIG_ENDIAN
   displacement = swap32(displacement);
-  elfsh_raw_write(file, foffset + sizeof(opcode), 
+  elfsh_writememf(file, foffset + sizeof(opcode), 
 		  &displacement, sizeof(displacement));
 #else
-  elfsh_raw_write(file, foffset + sizeof(opcode), 
+  elfsh_writememf(file, foffset + sizeof(opcode), 
 		  &displacement, sizeof(displacement));
 #endif
 
@@ -748,7 +748,7 @@ static eresi_Addr elfsh_ac_foundcallto(elfshobj_t *file, eresi_Addr vaddr, eresi
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to get an anonymous section", 0);
   
-  data = elfsh_get_raw(text);
+  data = elfsh_readmem(text);
   len = text->shdr->sh_size;
 
   base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
@@ -806,7 +806,7 @@ static char	*elfsh_ac_get_sect_ptr(elfshobj_t *file, eresi_Addr vaddr)
 
   if (sect)
     {
-      buf = elfsh_get_raw(sect);
+      buf = elfsh_readmem(sect);
       buf += vaddr - (sect->parent->rhdr.base + sect->shdr->sh_addr);
     }
 

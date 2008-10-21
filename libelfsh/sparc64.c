@@ -74,7 +74,7 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
   opcode[2] = 0x01000000;
   
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 3 * sizeof(uint32_t));
+  elfsh_writememf(file, foffset, opcode, 3 * sizeof(uint32_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -162,7 +162,7 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
   opcode[11] = 0xe623e008;
 
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
-  elfsh_raw_write(file, foffset, opcode, 12 * sizeof(uint32_t));
+  elfsh_writememf(file, foffset, opcode, 12 * sizeof(uint32_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

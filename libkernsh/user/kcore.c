@@ -38,6 +38,7 @@ int kernsh_openmem_kcore_linux_2_6()
     }
 
   libkernshworld.open = 1;
+  libkernshworld.root->iotype = ELFSH_IOTYPE_KCORE;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -75,11 +76,15 @@ int kernsh_closemem_kcore_linux_2_6()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
+int		kernsh_readmema_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr offset, 
+						void *buf, int size)
 {
-  unsigned long roffset;
+  eresi_Addr	roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
   roffset = offset - libkernshworld.kernel_start + 0x1000;
 
@@ -109,11 +114,15 @@ int kernsh_readmem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
  * @param size Count bytes to write
  * @return size on success, -1 on error
  */
-int kernsh_writemem_kcore_linux_2_6(unsigned long offset, void *buf, int size)
+int		kernsh_writemem_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr offset, void *buf, 
+						int size)
 {
-  unsigned long roffset;
+  eresi_Addr	roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
   roffset = offset - libkernshworld.kernel_start + 0x1000;
 

@@ -217,7 +217,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
     {
       *data = (void *) *(u_long *) *data;
       if (translateaddr)
-	*data = elfsh_get_raw_by_addr(world.curjob->curfile, *data);
+	*data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) *data, NULL, 0);
     }
 
   if (!*data)
@@ -262,10 +262,10 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
       if (translateaddr)
 	{
 	  data = (void *) *(eresi_Addr *) data;
-	  data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
+	  data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) data, NULL, 0);
 	}
       else
-	data = (void *) *(u_long *) data;
+	data = (void *) *(eresi_Addr *) data;
     }
   path->parent = (void *) data;
 
@@ -356,7 +356,7 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 		      "Cannot find requested data object", NULL);
   data = (void *) annot->addr;
   if (translateaddr)
-    data = elfsh_get_raw_by_addr(world.curjob->curfile, data);
+    data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) data, NULL, 0);
 
   /* Get recursively the leaf type and data pointer */
   /* If the objpath is empty, its a scalar that was requested */

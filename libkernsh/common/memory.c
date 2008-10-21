@@ -9,7 +9,7 @@
 /**
  * @brief Open kernel memory\n
  * Configure : \n
- * LIBKERNSH_VMCONFIG_KERNEL_START, LIBKERNSH_VMCONFIG_KERNEL_END, LIBKERNSH_VMCONFIG_DEVICE, LIBKERNSH_VMCONFIG_MODE, LIBKERNSH_VMCONFIG_MMAP, LIBKERNSH_VMCONFIG_MMAP_SIZE, LIBKERNSH_VMCONFIG_SYSTEMMAP, LIBKERNSH_VMCONFIG_USEVM
+ * LIBKERNSH_CONFIG_KERNEL_START, LIBKERNSH_CONFIG_KERNEL_END, LIBKERNSH_CONFIG_DEVICE, LIBKERNSH_CONFIG_MODE, LIBKERNSH_CONFIG_MMAP, LIBKERNSH_CONFIG_MMAP_SIZE, LIBKERNSH_CONFIG_SYSTEMMAP, LIBKERNSH_CONFIG_USEVM
  * 
  * @return 0 on success, -1 on return
  */
@@ -29,10 +29,10 @@ int kernsh_openmem()
 #endif
 
   libkernshworld.kernel_start = (unsigned long) 
-    config_get_data(LIBKERNSH_VMCONFIG_KERNEL_START);
+    config_get_data(LIBKERNSH_CONFIG_KERNEL_START);
   
   libkernshworld.kernel_end = (unsigned long) 
-    config_get_data(LIBKERNSH_VMCONFIG_KERNEL_END);
+    config_get_data(LIBKERNSH_CONFIG_KERNEL_END);
 
 
 #if __DEBUG_KERNSH__
@@ -45,10 +45,10 @@ int kernsh_openmem()
     {
       /* Check configure device, mode etc */
 
-      device = (char *) config_get_data(LIBKERNSH_VMCONFIG_DEVICE);
-      mode = (char *) config_get_data(LIBKERNSH_VMCONFIG_MODE);
-      mmap = (int) config_get_data(LIBKERNSH_VMCONFIG_MMAP);
-      mmap_size = (int) config_get_data(LIBKERNSH_VMCONFIG_MMAP_SIZE);
+      device = (char *) config_get_data(LIBKERNSH_CONFIG_DEVICE);
+      mode = (char *) config_get_data(LIBKERNSH_CONFIG_MODE);
+      mmap = (int) config_get_data(LIBKERNSH_CONFIG_MMAP);
+      mmap_size = (int) config_get_data(LIBKERNSH_CONFIG_MMAP_SIZE);
 
       if (device == NULL)
 	{
@@ -103,7 +103,7 @@ int kernsh_openmem()
       libkernshworld.mmap_size = mmap_size;
 
 #if  __DEBUG_KERNSH__     
-      printf("SYSTEM %s\n", (char *) config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP));
+      printf("SYSTEM %s\n", (char *) config_get_data(LIBKERNSH_CONFIG_SYSTEMMAP));
 #endif
 
     }
@@ -139,28 +139,28 @@ int kernsh_openmem()
   if(ret == 0)
     {
       libkernshworld.open = 1;
-      int vm = (int) config_get_data(LIBKERNSH_VMCONFIG_USEVM);
+      int vm = (int) config_get_data(LIBKERNSH_CONFIG_USEVM);
       if (vm == 0)
 	kernsh_info();
       else
 	{
-	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_IDTBASE);
+	  value = (char *) config_get_data(LIBKERNSH_CONFIG_SPECIFY_IDTBASE);
 	  libkernshworld.idt_base = strtoull(value, NULL, 16);
 
-	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_IDTLIMIT);
+	  value = (char *) config_get_data(LIBKERNSH_CONFIG_SPECIFY_IDTLIMIT);
 	  libkernshworld.idt_limit = strtoull(value, NULL, 16);
 
-	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_GDTBASE);
+	  value = (char *) config_get_data(LIBKERNSH_CONFIG_SPECIFY_GDTBASE);
 	  libkernshworld.gdt_base = strtoull(value, NULL, 16);
 
-	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT);
+	  value = (char *) config_get_data(LIBKERNSH_CONFIG_SPECIFY_GDTLIMIT);
 	  libkernshworld.gdt_limit = strtoull(value, NULL, 16);
 
 #if defined(__linux__)
-	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL);
+	  value = (char *) config_get_data(LIBKERNSH_CONFIG_SPECIFY_SYSTEMCALL);
 	  libkernshworld.system_call = strtoull(value, NULL, 16);
 #endif
-	  value = (char *) config_get_data(LIBKERNSH_VMCONFIG_SPECIFY_SCT);
+	  value = (char *) config_get_data(LIBKERNSH_CONFIG_SPECIFY_SCT);
 	  libkernshworld.sct = strtoull(value, NULL, 16);
 	}
     }
@@ -200,86 +200,6 @@ int kernsh_closemem()
   libkernshworld.idt_base = 0;
   libkernshworld.idt_limit = 0;
   libkernshworld.sct = 0;
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-}
-
-/**
- * @brief Read kernel memory
- * @param offset Offset to read memory
- * @param buf Read memory into the buf
- * @param size Count bytes to read
- * @return size on success, -1 on error
- */
-int kernsh_readmem(unsigned long offset, void *buf, int size)
-{
-  int ret;
-  u_int         dim[4];
-  vector_t      *mem;
-  int          (*fct)();
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (!libkernshworld.open)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Memory not open !", -1);
-    }
-
-  if (size < 0)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Size is negative", -1);
-    }
-
-  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_READMEM);
-  dim[0] = libkernshworld.arch;
-  dim[1] = libkernshworld.os;
-  dim[2] = libkernshworld.device;
-  
-  fct = aspect_vectors_select(mem, dim);
-
-  ret = fct(offset, buf, size);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
-}
-
-/**
- * @brief Write into kernel memory
- * @param offset Offset to write memory
- * @param buf Write buf into memoryr
- * @param size Count bytes to write
- * @return size on success, -1 on error
- */
-int kernsh_writemem(unsigned long offset, void *buf, int size)
-{
-  int ret;
-  u_int         dim[4];
-  vector_t      *mem;
-  int          (*fct)();
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (!libkernshworld.open)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Memory not open !", -1);
-    }
-
-  if (size < 0)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Size is negative", -1);
-    }
-
-  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_WRITEMEM);
-  dim[0] = libkernshworld.arch;
-  dim[1] = libkernshworld.os;
-  dim[2] = libkernshworld.device;
-  
-  fct = aspect_vectors_select(mem, dim);
-  
-  ret = fct(offset, buf, size);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

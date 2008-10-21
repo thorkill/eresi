@@ -67,7 +67,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid address to hijack", -1);
 
-  ret = elfsh_raw_read(file, off, (void *) buff, 3*4);
+  ret = elfsh_readmemf(file, off, (void *) buff, 3*4);
   if (ret != 3*4)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Function too small to be hijacked", -1);
@@ -102,7 +102,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   ret = 3 * 4; 
 
   /* Create the hook for this function */
-  data = elfsh_get_raw(hooks);
+  data = elfsh_readmem(hooks);
   memset(data + hooks->curend, 0x00, 40); // nop 
 
   /* addi $t, $s, imm : 0010 00ss ssst tttt iiii iiii iiii iiii */
@@ -155,7 +155,7 @@ int			elfsh_cflow_mips32(elfshobj_t *file,
   /* delay slot's NOP */
   *((uint32_t *) ((char *) (hookbuf) + 0x8)) = 0x00000000;
 
-  len = elfsh_raw_write(file, off, hookbuf, ret);
+  len = elfsh_writememf(file, off, hookbuf, ret);
   if (len != ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error during hook installation", -1);
@@ -244,13 +244,13 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
 
   /* Signed 16bits displacement from %gp to last word of .pad.got */
   diff = 0x800c;
-  originstr = elfsh_get_raw(padgot->data) + padgot->shdr->sh_size - 4;
+  originstr = elfsh_readmem(padgot->data) + padgot->shdr->sh_size - 4;
   *originstr = altgotprolog->shdr->sh_addr; 
   gotdiff = (uint16_t) got->shdr->sh_addr - altgot->shdr->sh_addr;
 
   /* Valid _start signature on Linux, may you FIXME for other OS */
   /* lw      t9, __libc_start_main_off(gp) */
-  originstr = ((uint32_t *) elfsh_get_raw(start) + 19);	
+  originstr = ((uint32_t *) elfsh_readmem(start) + 19);	
 
   /* Grab infos on .got using .dynamic */
   dynent  = elfsh_get_dynamic_entry_by_type(file, DT_MIPS_GOTSYM);
@@ -267,7 +267,7 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GOT smaller than DT_MIPS_GOTSYM", -1);
 
-  sym   = elfsh_get_raw(dynsym);
+  sym   = elfsh_readmem(dynsym);
   sym  += gotsym;
 
   /* Find all .dynsym entries matching external variables
@@ -327,8 +327,8 @@ int		elfsh_hijack_altplt_mips32(elfshobj_t *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      ".pad.got section too small", -1);
 
-  elfsh_raw_write(file, altgotprolog->shdr->sh_offset, opcode, sizeof(uint32_t) * 7);
-  elfsh_raw_write(file, padgot->shdr->sh_offset, opcode + 7, sizeof(uint32_t) * (2 + (varnbr * 2)));
+  elfsh_writememf(file, altgotprolog->shdr->sh_offset, opcode, sizeof(uint32_t) * 7);
+  elfsh_writememf(file, padgot->shdr->sh_offset, opcode + 7, sizeof(uint32_t) * (2 + (varnbr * 2)));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

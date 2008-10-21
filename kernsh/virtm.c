@@ -39,11 +39,11 @@ int		cmd_kvirtm_loadme()
 
   if (filename != NULL)
     {
-      snprintf(buff, sizeof(buff), "%s %s hijack_sct=1 sct_value=0x%lx free_syscall=%d",
-	       (char *)config_get_data(LIBKERNSH_VMCONFIG_KLOAD),
+      snprintf(buff, sizeof(buff), "%s %s hijack_sct=1 sct_value="XFMT" free_syscall=%d",
+	       (char *)config_get_data(LIBKERNSH_CONFIG_KLOAD),
 	       filename,
 	       libkernshworld.sct,
-	       (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL));
+	       (int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL));
       
       snprintf(buff2, sizeof(buff2),
 	       "Loading %s with : %s\n\n",

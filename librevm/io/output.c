@@ -80,7 +80,7 @@ int		revm_output(char *str)
       || world.curjob->ws.io.type == REVM_IO_DUMP
       || !world.curjob->ws.io.outcache.lines
       || world.curjob->curscope
-      || !(int)config_get_data(ERESI_VMCONFIG_USE_MORE))
+      || !(int)config_get_data(REVM_CONFIG_USEMORE))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
 	 (world.curjob->ws.io.output(str)));
 
@@ -159,10 +159,21 @@ int		revm_outerr(char *str)
 int		revm_stdoutput(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  write(world.curjob->ws.io.output_fd, str, strlen(str));
+  printf("%s", str);
+  fflush(stdout);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,0);
 }
 
+
+
+/** 
+ * @brief Change the Output handler
+ * @ingroup io
+ */
+void	revm_setoutput_handler(revmworkspace_t *ws, void *hdl)
+{
+  ws->io.output = hdl;
+}
 
 /** 
  * @brief Change the Output file 

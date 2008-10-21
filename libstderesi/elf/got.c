@@ -42,7 +42,7 @@ int		cmd_got()
   for (index2 = 0; got; index2++)
     {
   
-      data = elfsh_get_raw(got);
+      data = elfsh_readmem(got);
     
       snprintf(logbuf, BUFSIZ - 1, " [Global Offset Table .::. GOT : %s ]\n [Object %s]\n\n", 
 	       elfsh_get_section_name(world.curjob->curfile, got),

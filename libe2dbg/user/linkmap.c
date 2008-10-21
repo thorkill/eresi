@@ -56,6 +56,7 @@ int			e2dbg_linkmap_load(char *name)
 #endif
       
       world.curjob->curfile->linkmap = E2DBG_DYNAMIC_LINKMAP;
+      world.curjob->curfile->iotype  = ELFSH_IOTYPE_EMBEDDED;
       world.curjob->curfile->running = 0;
     }
   
@@ -126,7 +127,7 @@ int			e2dbg_linkmap_load(char *name)
       //fprintf(stderr, "[e2dbg_linkmap_load] after ELF header \n");
 
       /* Get ALTGOT entry */
-      data          = elfsh_get_raw(got);
+      data          = elfsh_readmem(got);
 
       //fprintf(stderr, "[e2dbg_linkmap_load] after get_raw (data = %08X) \n", data);
 
@@ -154,12 +155,7 @@ int			e2dbg_linkmap_load(char *name)
 	 world.curjob->curfile->linkmap);
 #endif
 
-
-
-
-  
   revm_doswitch(1);
-
   
   /* now load all linkmap's files */
   for (actual = elfsh_linkmap_get_lprev(world.curjob->curfile->linkmap);
@@ -178,6 +174,7 @@ int			e2dbg_linkmap_load(char *name)
 	  if (revm_file_load(ename, elfsh_linkmap_get_laddr(actual), 
 			   world.curjob->curfile->linkmap) < 0)
 	    e2dbg_output(" [EE] Loading failed");
+	  world.curjob->curfile->iotype  = ELFSH_IOTYPE_EMBEDDED;
 	}      
     }
 
@@ -202,6 +199,7 @@ int			e2dbg_linkmap_load(char *name)
 	  if (revm_file_load(ename, elfsh_linkmap_get_laddr(actual), 
 			   world.curjob->curfile->linkmap) < 0)
 	    e2dbg_output(" [EE] Loading failed");
+	  world.curjob->curfile->iotype  = ELFSH_IOTYPE_EMBEDDED;
 	}      
     }
 

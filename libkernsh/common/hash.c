@@ -21,15 +21,15 @@ unsigned char *kernsh_hash_md5(unsigned long addr, int size)
   memset(buff, '\0', size);
   memset(digest, '\0', LIBKERNSH_HASH_MD5_SIZE);
 
-  if (kernsh_is_mem_mode())
+  if (elfsh_is_debug_mode())
     {
-      kernsh_readmem(addr, buff, size);
+      elfsh_readmema(libkernshworld.root, addr, buff, size);
     }
   else
     {
       start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
 					   addr);
-      elfsh_raw_read(libkernshworld.root, start, buff, size);
+      elfsh_readmemf(libkernshworld.root, start, buff, size);
     }
 
   MD5_Init(&md5ctx);
@@ -49,7 +49,7 @@ unsigned char *kernsh_hash(unsigned long addr, int size, int *new_size)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   buffer = NULL;
-  hash = (int)config_get_data(LIBKERNSH_VMCONFIG_HASH);
+  hash = (int)config_get_data(LIBKERNSH_CONFIG_HASH);
 
   if (size < 0)
     {

@@ -48,14 +48,6 @@ int kernsh_init_vectors()
 			 kernsh_closemem_default,
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
 
-  aspect_register_vector(LIBKERNSH_VECTOR_NAME_READMEM, 
-			 kernsh_readmem_default,
-			 dims, strdims, 3, ASPECT_TYPE_CADDR);
-
-  aspect_register_vector(LIBKERNSH_VECTOR_NAME_WRITEMEM, 
-			 kernsh_writemem_default,
-			 dims, strdims, 3, ASPECT_TYPE_CADDR);
-
 
   /* Syscalls ARCH, OS */
 #if __DEBUG_KERNSH__
@@ -385,85 +377,46 @@ int kernsh_register_vectors()
 			   LIBKERNSH_DEVICE_KVIRTM, 
 			   kernsh_kvirtm_closemem);
 
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			  LIBKERNSH_DEVICE_KMEM, 
-			  kernsh_readmem_kmem_linux_2_6);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-			  LIBKERNSH_DEVICE_KMEM, 
-			  kernsh_readmem_kmem_linux_2_4);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			  LIBKERNSH_DEVICE_MEM, 
-			  kernsh_readmem_mem_linux);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-			  LIBKERNSH_DEVICE_MEM, 
-			  kernsh_readmem_mem_linux);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			  LIBKERNSH_DEVICE_KCORE, 
-			  kernsh_readmem_kcore_linux_2_6);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
-			  LIBKERNSH_DEVICE_MEM, 
-			  kernsh_readmem_netbsd);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			  LIBKERNSH_DEVICE_KVIRTM, 
-			  kernsh_kvirtm_readmem);
-  kernsh_register_readmem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-			  LIBKERNSH_DEVICE_KVIRTM, 
-			  kernsh_kvirtm_readmem);
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVKMEM26, kernsh_readmema_kmem_linux_2_6);
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVKMEM24, kernsh_readmema_kmem_linux_2_4);
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVMEM26,  kernsh_readmema_mem_linux);
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVMEM24, kernsh_readmema_mem_linux);
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_KCORE, kernsh_readmema_kcore_linux_2_6);
+  elfsh_register_readmema(ELFSH_OS_NETBSD, ELFSH_IOTYPE_DEVMEM24, kernsh_readmema_netbsd);
+  elfsh_register_readmema(ELFSH_OS_NETBSD, ELFSH_IOTYPE_DEVMEM26, kernsh_readmema_netbsd);
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_KVIRTM,  kernsh_kvirtm_readmema);
+  
+  elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVKMEM26, kernsh_writemem_kmem_linux_2_6);
+  elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVKMEM24, kernsh_writemem_kmem_linux_2_4);
+  elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVMEM24, kernsh_writemem_mem_linux);
+  elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_DEVMEM26, kernsh_writemem_mem_linux);
+  elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_KCORE, kernsh_writemem_kcore_linux_2_6);
+  elfsh_register_writemem(ELFSH_OS_NETBSD, ELFSH_IOTYPE_DEVMEM26, kernsh_writemem_netbsd);
+  elfsh_register_writemem(ELFSH_OS_NETBSD, ELFSH_IOTYPE_DEVMEM26, kernsh_writemem_netbsd);
 
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_KMEM, 
-			   kernsh_writemem_kmem_linux_2_6);
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-			   LIBKERNSH_DEVICE_KMEM, 
-			   kernsh_writemem_kmem_linux_2_4);
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_MEM, 
-			   kernsh_writemem_mem_linux);
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-			   LIBKERNSH_DEVICE_MEM, 
-			   kernsh_writemem_mem_linux);
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_KCORE, 
-			   kernsh_writemem_kcore_linux_2_6);
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_NETBSD,
-			   LIBKERNSH_DEVICE_MEM, kernsh_writemem_netbsd);
+  elfsh_register_writememf(E2DBG_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_write);
+  elfsh_register_writememf(E2DBG_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_write);
 
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-			   LIBKERNSH_DEVICE_KVIRTM, 
-			   kernsh_kvirtm_writemem);
-  kernsh_register_writemem(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-			   LIBKERNSH_DEVICE_KVIRTM, 
-			   kernsh_kvirtm_writemem);
+  elfsh_register_readmemf(E2DBG_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_read);
+  elfsh_register_readmemf(E2DBG_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_read);
+  
+  kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, kernsh_sct_linux);
+  kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, kernsh_sct_linux);
 
-  kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-		      kernsh_sct_linux);
-  kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-		      kernsh_sct_linux);
+  kernsh_register_callsc(LIBKERNSH_OS_LINUX_2_6, kernsh_syscall_linux);
+  kernsh_register_callsc(LIBKERNSH_OS_LINUX_2_4, kernsh_syscall_linux);
 
-  kernsh_register_callsc(LIBKERNSH_OS_LINUX_2_6, 
-			 kernsh_syscall_linux);
-  kernsh_register_callsc(LIBKERNSH_OS_LINUX_2_4, 
-			 kernsh_syscall_linux);
+  kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, kernsh_idt_linux);
+  kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, kernsh_idt_linux);
 
-  kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-		      kernsh_idt_linux);
-  kernsh_register_idt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-		      kernsh_idt_linux);
+  kernsh_register_gdt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, kernsh_gdt_linux);
+  kernsh_register_gdt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, kernsh_gdt_linux);
 
-  kernsh_register_gdt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-		      kernsh_gdt_linux);
-  kernsh_register_gdt(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-		      kernsh_gdt_linux);
+  kernsh_register_info(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, kernsh_info_linux);
+  kernsh_register_info(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, kernsh_info_linux);
 
-  kernsh_register_info(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6,
-		       kernsh_info_linux);
-  kernsh_register_info(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4,
-		       kernsh_info_linux);
-
-  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_6, 
-			       kernsh_decompkernel_linux);
-  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_4, 
-			       kernsh_decompkernel_linux);
+  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_6, kernsh_decompkernel_linux);
+  kernsh_register_decompkernel(LIBKERNSH_OS_LINUX_2_4, kernsh_decompkernel_linux);
 
   kernsh_register_symbs_abn(LIBKERNSH_ARCH_I386, 
 			    LIBKERNSH_OS_LINUX_2_6, 

@@ -24,7 +24,7 @@ int		cmd_kmode()
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Static kernel is not loaded !", -1);
 	  
-	  kernsh_set_static_mode();
+	  elfsh_set_static_mode();
 	  revm_output("[*] kernsh is now in STATIC mode\n\n");
 	}
       else if (*param == 'd' || *param == 'D')
@@ -33,7 +33,7 @@ int		cmd_kmode()
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Unable to switch to dynamic mode, please open the memory !", -1);
 	  
-	  kernsh_set_mem_mode();
+	  elfsh_set_debug_mode();
 	  revm_output("[*] kernsh is now in DYNAMIC mode\n\n");
 	}
       
@@ -45,10 +45,10 @@ int		cmd_kmode()
     }
   else
     {
-      if (kernsh_is_static_mode())
+      if (elfsh_is_static_mode())
 	param = "STATIC";
       
-      else if (kernsh_is_mem_mode())
+      else if (elfsh_is_debug_mode())
 	param = "DYNAMIC";
       
       else

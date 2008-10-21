@@ -42,7 +42,7 @@ static int		trace_match_symtab(elfshsect_t	*sect,
 
   f_list = *func_list;
   cnum = *count;
-  table = (elfsh_Sym *) (sect->shdr->sh_addr ? elfsh_get_raw(sect) : sect->data);
+  table = (elfsh_Sym *) (sect->shdr->sh_addr ? elfsh_readmem(sect) : sect->data);
 
   /* Parse every function */
   for (index = 0; index < num; index++)

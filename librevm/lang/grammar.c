@@ -669,7 +669,7 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
   // since only relocation tables use this rule.
   
   sect = (elfshsect_t *) o1;
-  o1 = elfsh_get_raw(sect);
+  o1 = elfsh_readmem(sect);
 
   // Finally we fill the intermediate object format for the guessed object 
   pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);

@@ -28,101 +28,101 @@ int kernsh_init_ia32(char *os, char *release)
   libkernshworld.arch = LIBKERNSH_ARCH_I386;
   
   /* By default we use static kernel */
-  kernsh_set_static_mode();
+  elfsh_set_static_mode();
   
-  config_add_item(LIBKERNSH_VMCONFIG_WITHOUT_KERNEL,
+  config_add_item(LIBKERNSH_CONFIG_WITHOUT_KERNEL,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
 
-  config_add_item(LIBKERNSH_VMCONFIG_USE_KERNEL,
+  config_add_item(LIBKERNSH_CONFIG_USE_KERNEL,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
 
-  config_add_item(LIBKERNSH_VMCONFIG_ALLOC,
+  config_add_item(LIBKERNSH_CONFIG_ALLOC,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
 
-  config_add_item(LIBKERNSH_VMCONFIG_GZIP,
+  config_add_item(LIBKERNSH_CONFIG_GZIP,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) LIBKERNSH_DEFAULT_GZIP);
   
-  config_add_item(LIBKERNSH_VMCONFIG_OBJCOPY,
+  config_add_item(LIBKERNSH_CONFIG_OBJCOPY,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) LIBKERNSH_DEFAULT_OBJCOPY);
 
-  config_add_item(LIBKERNSH_VMCONFIG_LD,
+  config_add_item(LIBKERNSH_CONFIG_LD,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) LIBKERNSH_DEFAULT_LD);
 
-  config_add_item(LIBKERNSH_VMCONFIG_FENDSIZE,
+  config_add_item(LIBKERNSH_CONFIG_FENDSIZE,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) LIBKERNSH_DEFAULT_FENDSIZE);
-
-  config_add_item(LIBKERNSH_VMCONFIG_USEVM,
+  
+  config_add_item(LIBKERNSH_CONFIG_USEVM,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) 0);
 
-  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_IDTBASE,
+  config_add_item(LIBKERNSH_CONFIG_SPECIFY_IDTBASE,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 
-  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_IDTLIMIT,
+  config_add_item(LIBKERNSH_CONFIG_SPECIFY_IDTLIMIT,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 
-  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_GDTBASE,
+  config_add_item(LIBKERNSH_CONFIG_SPECIFY_GDTBASE,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 
-  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT,
+  config_add_item(LIBKERNSH_CONFIG_SPECIFY_GDTLIMIT,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 
 #if defined(__linux__)
- config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL,
+ config_add_item(LIBKERNSH_CONFIG_SPECIFY_SYSTEMCALL,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 #endif
 
-  config_add_item(LIBKERNSH_VMCONFIG_SPECIFY_SCT,
+  config_add_item(LIBKERNSH_CONFIG_SPECIFY_SCT,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) "0x0");
 
-  config_add_item(LIBKERNSH_VMCONFIG_VIRTM,
+  config_add_item(LIBKERNSH_CONFIG_VIRTM,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) LIBKERNSH_KERNEL_MODE);
 
-  config_add_item(LIBKERNSH_VMCONFIG_HASH,
+  config_add_item(LIBKERNSH_CONFIG_HASH,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) LIBKERNSH_HASH_MD5);
 
-  config_add_item(LIBKERNSH_VMCONFIG_VMA,
+  config_add_item(LIBKERNSH_CONFIG_VMA,
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) LIBKERNSH_VMA_USERLAND);
 
-  config_add_item(LIBKERNSH_VMCONFIG_VMA_PREFIX,
+  config_add_item(LIBKERNSH_CONFIG_VMA_PREFIX,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) LIBKERNSH_DEFAULT_VMA_PREFIX);
 
-  config_add_item(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX,
+  config_add_item(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX,
 		  CONFIG_TYPE_STR,
 		  CONFIG_MODE_RW,
 		  (char *) LIBKERNSH_DEFAULT_DUMP_VMA_PREFIX);
@@ -144,22 +144,22 @@ int kernsh_init_ia32(char *os, char *release)
 		       "Release not supported", -1);
 	}
  
-      config_add_item(LIBKERNSH_VMCONFIG_DEVICE,
+      config_add_item(LIBKERNSH_CONFIG_DEVICE,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (char *) LIBKERNSH_STRING_DEVICE_MEM);
       
-      config_add_item(LIBKERNSH_VMCONFIG_MODE,
+      config_add_item(LIBKERNSH_CONFIG_MODE,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (char *)"write");
 
-      config_add_item(LIBKERNSH_VMCONFIG_MMAP,
+      config_add_item(LIBKERNSH_CONFIG_MMAP,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) 1);
       
-      config_add_item(LIBKERNSH_VMCONFIG_MMAP_SIZE,
+      config_add_item(LIBKERNSH_CONFIG_MMAP_SIZE,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_MMAP_SIZE);
@@ -167,22 +167,22 @@ int kernsh_init_ia32(char *os, char *release)
       memset(buffer, '\0', sizeof(buffer));
       snprintf(buffer, sizeof(buffer), "%s-%s", LIBKERNSH_DEFAULT_LINUX_KERNEL, release);
       
-      config_add_item(LIBKERNSH_VMCONFIG_KERNEL,
+      config_add_item(LIBKERNSH_CONFIG_KERNEL,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) buffer);
       
-      config_add_item(LIBKERNSH_VMCONFIG_KERNELGZ,
+      config_add_item(LIBKERNSH_CONFIG_KERNELGZ,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_KERNELGZ);
       
-      config_add_item(LIBKERNSH_VMCONFIG_KERNELELF,
+      config_add_item(LIBKERNSH_CONFIG_KERNELELF,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_KERNELELF);
 
-      config_add_item(LIBKERNSH_VMCONFIG_STORAGE_PATH,
+      config_add_item(LIBKERNSH_CONFIG_STORAGE_PATH,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_STORAGE_PATH);
@@ -190,42 +190,42 @@ int kernsh_init_ia32(char *os, char *release)
       memset(buffer, '\0', sizeof(buffer));
       snprintf(buffer, sizeof(buffer), "%s-%s", LIBKERNSH_DEFAULT_LINUX_MAP, release);
   
-      config_add_item(LIBKERNSH_VMCONFIG_SYSTEMMAP,
+      config_add_item(LIBKERNSH_CONFIG_SYSTEMMAP,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (char *) buffer);
 
-      config_add_item(LIBKERNSH_VMCONFIG_NB_SYSCALLS,
+      config_add_item(LIBKERNSH_CONFIG_NB_SYSCALLS,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_NB_SYSCALLS);
 
-      config_add_item(LIBKERNSH_VMCONFIG_NIL_SYSCALL,
+      config_add_item(LIBKERNSH_CONFIG_NIL_SYSCALL,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_NIL_SYSCALL);
-
-        config_add_item(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL,
-		  CONFIG_TYPE_INT,
-		  CONFIG_MODE_RW,
-		  (void *) LIBKERNSH_DEFAULT_LINUX_VIRTM_NIL_SYSCALL);
-
-      config_add_item(LIBKERNSH_VMCONFIG_KERNEL_START,
+      
+      config_add_item(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL,
+		      CONFIG_TYPE_INT,
+		      CONFIG_MODE_RW,
+		      (void *) LIBKERNSH_DEFAULT_LINUX_VIRTM_NIL_SYSCALL);
+      
+      config_add_item(LIBKERNSH_CONFIG_KERNEL_START,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_I386_LINUX_START);
       
-      config_add_item(LIBKERNSH_VMCONFIG_KERNEL_END,
+      config_add_item(LIBKERNSH_CONFIG_KERNEL_END,
 		      CONFIG_TYPE_INT,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_I386_LINUX_END);
 
-      config_add_item(LIBKERNSH_VMCONFIG_KLOAD,
+      config_add_item(LIBKERNSH_CONFIG_KLOAD,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_INSMOD);
 
-      config_add_item(LIBKERNSH_VMCONFIG_KUNLOAD,
+      config_add_item(LIBKERNSH_CONFIG_KUNLOAD,
 		      CONFIG_TYPE_STR,
 		      CONFIG_MODE_RW,
 		      (void *) LIBKERNSH_DEFAULT_LINUX_RMMOD);
@@ -256,9 +256,8 @@ int kernsh_init_ia32(char *os, char *release)
 
   kernsh_init_vectors();
   kernsh_register_vectors();
-  kernsh_present_set();
-
   asm_init_arch(&libkernshworld.proc, ASM_PROC_IA32);
+  kernsh_present_set();
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -276,104 +275,12 @@ int kernsh_del_ia32()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/**
- * @brief Kernsh is in memory mode ?
- * @return 1 on memory mode, 0 on error 
- */
-int kernsh_is_mem_mode()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		(libkernshworld.mem == LIBKERNSH_MEM_MODE));
-}
 
 /**
- * @brief Set kernsh in memory mode
- * @return 0 on sucess, -1 on error 
- */
-int kernsh_set_mem_mode()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  libkernshworld.mem= LIBKERNSH_MEM_MODE;
-
-  elfsh_set_debug_mode();
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/**
- * @brief Kernsh is in static mode ?
- * @return 1 on static mode, 0 on error 
- */
-int kernsh_is_static_mode()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		(libkernshworld.mem == LIBKERNSH_STATIC_MODE));
-}
-
-/**
- * @brief Set kernsh in static mode
- * @return 0 on sucess, -1 on error 
- */
-int kernsh_set_static_mode()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  
-  libkernshworld.mem= LIBKERNSH_STATIC_MODE;
-
-  elfsh_set_static_mode();
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/**
- * @brief Get kernsh mode
- * @return return the mode 
- */
-int kernsh_get_mode()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, libkernshworld.mem);
-}
-
-/**
- * @brief Set kernsh mode
- * @param mode The mode
- * @return 0 on sucess, -1 on error 
- */
-int kernsh_set_mode(int mode)
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  switch (mode)
-    {
-    case LIBKERNSH_MEM_MODE :
-      libkernshworld.mem = LIBKERNSH_MEM_MODE;
-      elfsh_set_debug_mode();
-      break;
-    case LIBKERNSH_STATIC_MODE :
-      libkernshworld.mem = LIBKERNSH_STATIC_MODE;
-      elfsh_set_static_mode();
-      break;
-    default :
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Invalide mode", -1);
-    }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-/**
- * @brief Called in elfsh_get_raw to interact with the memory
+ * @brief Called in elfsh_readmem to interact with the memory
  * @param sect The section
  */
-void *kernsh_get_raw(elfshsect_t *sect)
+void	*kernsh_get_raw(elfshsect_t *sect)
 {
   void *dataptr;
 
@@ -383,7 +290,7 @@ void *kernsh_get_raw(elfshsect_t *sect)
   printf("kernsh_get_raw\n");
 #endif
 
-  if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
+  if (libkernshworld.open && elfsh_is_debug_mode() && libkernshworld.mmap)
     { 
       /* We use physical memory ? */
       if (libkernshworld.physical)
@@ -424,12 +331,12 @@ void *kernsh_get_raw(elfshsect_t *sect)
 }
 
 /**
- * @brief Called in elfsh_get_raw_by_addr to interact with the memory
+ * @brief Called in elfsh_readmema to interact with the memory
  * @param addr The address
  */
-void *kernsh_get_raw_by_addr(void *addr)
+void	*kernsh_get_raw_by_addr(elfshobj_t *null, eresi_Addr addr, void *buf, u_int size)
 {
-  void *dataptr;
+  void	*dataptr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -437,14 +344,15 @@ void *kernsh_get_raw_by_addr(void *addr)
   printf("kernsh_get_raw_by_addr\n");
 #endif
 
-  if (libkernshworld.open && kernsh_is_mem_mode() && libkernshworld.mmap)
+  if (libkernshworld.open && elfsh_is_debug_mode() && libkernshworld.mmap)
     {
       /* We use physical memory ? */
       if (libkernshworld.physical)
-	dataptr = libkernshworld.ptr + ((eresi_Addr) addr - libkernshworld.kernel_start);
+	dataptr = libkernshworld.ptr + addr - libkernshworld.kernel_start;
       else
-	dataptr = libkernshworld.ptr + (eresi_Addr) addr;
-
+	dataptr = libkernshworld.ptr + addr;
+      if (buf && size)
+	memcpy(buf, dataptr, size);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
@@ -497,7 +405,7 @@ int kernsh_info_linux()
   printf("IDTR BASE 0x%lx LIMIT 0x%x\n", idtr.base,idtr.limit);
 #endif
 
-  kernsh_readmem(idtr.base+(2*sizeof(unsigned long))*0x80, 
+  elfsh_readmema(libkernshworld.root, idtr.base+(2*sizeof(unsigned long))*0x80, 
 		 &idt, 
 		 sizeof(idt));
   system_call = (idt.off2 << 16) | idt.off1;
@@ -513,7 +421,7 @@ int kernsh_info_linux()
   printf("SYSTEM_CALL : 0x%lx\n", system_call);
 #endif
 
-  kernsh_readmem(system_call, buffer, 255);
+  elfsh_readmema(libkernshworld.root, system_call, buffer, 255);
   p = (char *)kernsh_find_pattern(buffer, 255, "\xff\x14\x85", 3);
       
   if (p == NULL)
@@ -605,18 +513,12 @@ void kernsh_unload_file(elfshobj_t *file)
 int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (kernsh_is_mem_mode())
+  if (elfsh_is_debug_mode())
     {
-      kernsh_writemem(elfsh_get_vaddr_from_foffset(file, foffset), 
-		      src_buff, 
-		      len);
-
+      elfsh_writemem(file, elfsh_get_vaddr_from_foffset(file, foffset), src_buff, len);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
     }
-
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-	       "Mode is wrong", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Mode is wrong", -1);
 }
 
 /**
@@ -630,19 +532,15 @@ int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  if (kernsh_is_mem_mode())
+  if (elfsh_is_debug_mode())
     {
-      kernsh_readmem(elfsh_get_vaddr_from_foffset(file, foffset), 
-		     dest_buff, 
-		     len);
-
+      elfsh_readmema(file, elfsh_get_vaddr_from_foffset(file, foffset), dest_buff, len);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);
     }
-
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-	       "Mode is wrong", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Mode is wrong", -1);
 }
+
+
 
 /**
  * @brief Set kernsh's present
@@ -665,5 +563,5 @@ int kernsh_is_present()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		(libkernshworld.present == 1));
+                (libkernshworld.present == 1));
 }

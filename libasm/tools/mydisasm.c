@@ -137,7 +137,7 @@ int	main(int ac, char **av) {
   printf("Converted vaddr %08x to file offset : %i\n", vaddr, start);
   
   
-  curr = elfsh_raw_read(obj, start, ptr, len);
+  curr = elfsh_readmemf(obj, start, ptr, len);
   if (curr != len)
     {
       printf("error reading %li bytes at %li -> read %i bytes\n", len, start, curr);

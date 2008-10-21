@@ -76,7 +76,7 @@ int	test_binary(char *binary)
   printf("INFO file offset of %s = %08X\n", sym_name, foffset);
 
   ptr = malloc(len);
-  ret = elfsh_raw_read(obj, foffset, ptr, len);
+  ret = elfsh_readmemf(obj, foffset, ptr, len);
   printf("INFO raw_read returned %i\n", ret);
   if (len != ret)
     {

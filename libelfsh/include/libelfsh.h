@@ -88,20 +88,19 @@
 #define		ELFSH_ARCH_PARISC		4	/* no hooks yet */
 #define		ELFSH_ARCH_PPC32		5	/* no hooks yet */
 #define		ELFSH_ARCH_PPC64		6	/* no hooks yet */
-#define		ELFSH_ARCH_CRAY			7	/* no hooks yet */
-#define		ELFSH_ARCH_ALPHA64		8	
-#define		ELFSH_ARCH_MIPS32		9
-#define		ELFSH_ARCH_MIPS64		10	/* No hooks yet */
-#define         ELFSH_ARCH_ARM                  11
-#define		ELFSH_ARCH_AMD64		12
-#define         ELFSH_ARCHNUM                   13
+#define		ELFSH_ARCH_ALPHA64		7	
+#define		ELFSH_ARCH_MIPS32		8
+#define		ELFSH_ARCH_MIPS64		9	/* No hooks yet */
+#define         ELFSH_ARCH_ARM                  10
+#define		ELFSH_ARCH_AMD64		11
+#define         ELFSH_ARCH_NUM                   12
 #define		ELFSH_ARCH_ERROR		0xFF
 
 /* ELFsh ELF types */
-#define		ELFSH_TYPE_EXEC			0
-#define		ELFSH_TYPE_DYN			1
-#define		ELFSH_TYPENUM			2
-#define		ELFSH_TYPE_ERROR		0xFF
+#define		ELFSH_FILE_EXEC			0
+#define		ELFSH_FILE_LIB			1
+#define		ELFSH_FILE_NUM			2
+#define		ELFSH_FILE_ERROR		0xFF
 
 /* ELFsh OS types */
 #define		ELFSH_OS_LINUX			0
@@ -109,17 +108,32 @@
 #define		ELFSH_OS_NETBSD			2
 #define		ELFSH_OS_OPENBSD		3
 #define		ELFSH_OS_SOLARIS		4
-#define		ELFSH_OS_UNICOS			5
-#define		ELFSH_OS_BEOS			6
-#define		ELFSH_OS_IOS			7
-#define		ELFSH_OSNUM			8
+#define		ELFSH_OS_BEOS			5
+#define		ELFSH_OS_IRIX			6
+#define		ELFSH_OS_HPUX			7
+#define		ELFSH_OS_NUM			8
 #define		ELFSH_OS_ERROR			0xFF
 
-/* (k)e2dbg memory hosting types for the debugger hooks */
-#define		E2DBG_HOST_KERN			0
-#define		E2DBG_HOST_PROC			1
-#define		E2DBG_HOSTNUM			2
+/* KERNEL / USER memory hosting type */
+#define		E2DBG_HOST_USER			0
+#define		E2DBG_HOST_KERN			1
+#define		E2DBG_HOST_GDB			2
+#define		E2DBG_HOST_NUM			3
 #define		E2DBG_HOST_ERROR		0xFF
+
+/* Number of possible types for READ/WRITE memory hook - some reserved */
+#define		ELFSH_IOTYPE_STATIC		0
+#define		ELFSH_IOTYPE_EMBEDDED		1
+#define		ELFSH_IOTYPE_GDBPROT		2
+#define		ELFSH_IOTYPE_JTAG		3
+#define		ELFSH_IOTYPE_DEVMEM24		4
+#define		ELFSH_IOTYPE_DEVMEM26		5
+#define		ELFSH_IOTYPE_DEVKMEM24		6
+#define		ELFSH_IOTYPE_DEVKMEM26		7
+#define		ELFSH_IOTYPE_KCORE		8
+#define		ELFSH_IOTYPE_KVIRTM		9
+#define		ELFSH_IOTYPE_NUM		10
+#define		ELFSH_IOTYPE_ERROR		0xFF
 
 /* libelfsh block hijack types */
 #define		ELFSH_HIJACK_TYPE_FLOW		0x000000
@@ -139,6 +153,11 @@
 #define		ELFSH_HOOK_EXTPLT		"hook_extplt"
 #define		ELFSH_HOOK_ALTPLT		"hook_altplt"
 #define		ELFSH_HOOK_ARGC			"hook_argc"
+#define		ELFSH_HOOK_READMEM		"hook_readmem"
+#define		ELFSH_HOOK_WRITEMEM		"hook_writemem"
+#define		ELFSH_HOOK_READMEMA		"hook_readmema"
+#define		ELFSH_HOOK_READMEMF		"hook_readmemf"
+#define		ELFSH_HOOK_WRITEMEMF		"hook_writememf"
 
 /* Some defined values */
 #define		ELFSH_SECTION_NAME_MAPPED	".mapped"
@@ -177,16 +196,10 @@
 #define		ELFSH_SECTION_NAME_GOT		".got"
 #define		ELFSH_SECTION_NAME_RELPLT	".rel.plt"
 #define		ELFSH_SECTION_NAME_RELAPLT	".rela.plt"
-
 #define		ELFSH_SECTION_NAME_RELGOT	".rel.got"
 #define		ELFSH_SECTION_NAME_RELDYN	".rel.dyn"
 #define		ELFSH_SECTION_NAME_RELADYN	".rela.dyn"
 #define		ELFSH_SECTION_NAME_RELABSS	".rela.bss"
-#define		ELFSH_SECTION_NAME_ALTRELDYN	".elfsh.reldyn"
-#define		ELFSH_SECTION_NAME_ALTRELADYN	".elfsh.reladyn"
-#define		ELFSH_SECTION_NAME_ALTRELGOT	".elfsh.relgot"
-#define		ELFSH_SECTION_NAME_ALTRELBSS	".elfsh.relabss"
-
 #define		ELFSH_SECTION_NAME_GOTPLT	".got.plt"
 #define		ELFSH_SECTION_NAME_INTERP	".interp"
 #define		ELFSH_SECTION_NAME_SYMTAB	".symtab"
@@ -205,6 +218,8 @@
 #define		ELFSH_SECTION_NAME_EHFRAME	".eh_frame"
 #define		ELFSH_SECTION_NAME_INIT		".init"
 #define		ELFSH_SECTION_NAME_FINI		".fini"
+
+/* Debug section names */
 #define		ELFSH_SECTION_NAME_DEBUG       	".debug"
 #define 	ELFSH_SECTION_NAME_DW2_INFO 	".debug_info"
 #define 	ELFSH_SECTION_NAME_DW2_ARANGES 	".debug_aranges"
@@ -215,6 +230,12 @@
 #define 	ELFSH_SECTION_NAME_DW2_STR	".debug_str"
 #define 	ELFSH_SECTION_NAME_DW2_MACINFO	".debug_macinfo"
 #define 	ELFSH_SECTION_NAME_DW2_LOC	".debug_loc"
+
+/* EELF sections names */
+#define		ELFSH_SECTION_NAME_ALTRELDYN	".elfsh.reldyn"
+#define		ELFSH_SECTION_NAME_ALTRELADYN	".elfsh.reladyn"
+#define		ELFSH_SECTION_NAME_ALTRELGOT	".elfsh.relgot"
+#define		ELFSH_SECTION_NAME_ALTRELBSS	".elfsh.relabss"
 
 /* Section index in the secthash */
 #define		ELFSH_SECTION_NULL		0
@@ -266,7 +287,6 @@
 #define		ELFSH_SECTION_VERSYM		46
 #define		ELFSH_SECTION_MAX		254
 #define		ELFSH_SECTION_UNKNOWN		255
-
 
 /* Some constants */
 #define		ELFSH_PLT_ENTRY_SIZE	        16
@@ -749,20 +769,17 @@ typedef struct linux_core
 /**
  * BSD core file info structure
  */
-typedef struct bsd_core 
+typedef struct		bsd_core 
 {
   uint16_t		offset;
   uint16_t		filesz;
-
   elfsh_Nhdr		nhdr;
-
   long			flags;
-
   elfsh_bsdprstatus_t	prstatus;
   elfsh_bsdprpsinfo_t	prpsinfo;
   elfsh_bsdfpregs_t	fpregs;
 
-} elfshbsdcore_t;
+}			elfshbsdcore_t;
 
 /**
  * @brief ELF object structure 
@@ -791,7 +808,8 @@ struct		 s_obj
   int		 rights;		/* 0 = RO, 1 = WR */
   time_t	 loadtime;		/* Time of Loading */
   u_int		 id;			/* Object ID */
-
+  u_char	 hostype;		/* !< @brief Are we manipulating the kernel ? */
+  u_char	 iotype;		/* !< @brief IO type used to read and write memory */
   char		 running;		/* !< @brief Is the process running ? */
   char		 scanned;		/* !< @brief Has the object already been block scanned ? */
   char		 hdr_broken;		/* !< @brief Is the header broken/corrupted ? */
@@ -800,7 +818,6 @@ struct		 s_obj
   char		 strip;			/* !< @brief Mark file as stripped */
   char		 pending;		/* !< @brief Beeing injected */
   uint32_t	 nbrm;			/* !< @brief Number of section headers to remove at saving */
-
   char		 shtrb;			/* !< @brief Reconstruct the SHT if non present */
 
 #define		 ELFSH_MAXREL	1000	/* !< @brief Maximum number of injected ET_REL, change it ! */
@@ -854,10 +871,9 @@ struct		 s_obj
  */
 typedef struct	s_libstate
 {
-
-#define		LIBELFSH_MODE_UNKNOWN	0 
-#define		LIBELFSH_MODE_STATIC	1
-#define		LIBELFSH_MODE_E2DBG	2
+#define		LIBELFSH_MODE_STATIC	0
+#define		LIBELFSH_MODE_RUNTIME	1
+#define		LIBELFSH_MODE_NUM	2
   u_char	mode;		 /* The current working mode (ondisk/memory) */
   u_char	indebug;	 /* 1 when inside the debugger */
 }		libworld_t;
@@ -891,10 +907,6 @@ typedef struct	s_bp
 
 /* Extern data */
 extern libworld_t	dbgworld;
-
-#if defined(KERNSH)
-#include "libkernsh.h"
-#endif
 
 /*
  **
@@ -1321,10 +1333,8 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name);
 elfsh_Sword     elfsh_get_reladdend(elfsh_Rela *r);
 int             elfsh_set_reladdend(elfsh_Rela *r, eresi_Addr val);
 int		elfsh_endianize_relocs(elfshsect_t *s);
-elfsh_Rel	elfsh_create_relent(eresi_Addr type, eresi_Addr sym, 
-                              eresi_Addr off);
-elfsh_Rela	elfsh_create_relaent(eresi_Addr type, eresi_Addr sym, 
-                                 eresi_Addr off, eresi_Addr add);
+elfsh_Rel	elfsh_create_relent(eresi_Addr type, eresi_Addr sym, eresi_Addr off);
+elfsh_Rela	elfsh_create_relaent(eresi_Addr type, eresi_Addr sym, eresi_Addr off, eresi_Addr add);
 
 /* interp.c */
 char		*elfsh_get_interp(elfshobj_t *file);
@@ -1380,13 +1390,12 @@ int 		elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash, elfshsect_t 
 int		elfsh_extplt_mirror_sections(elfshobj_t *file);
 elfsh_Sym	*elfsh_request_pltent(elfshobj_t *file, char *name);
 
-
 /* raw.c */
 int		elfsh_raw_write(elfshobj_t *file, u_int dst, void *src, int len);
 int		elfsh_raw_read(elfshobj_t *file, u_int dst, void *src, int len);
 int		elfsh_get_foffset_from_vaddr(elfshobj_t *file, eresi_Addr vaddr);
 int		elfsh_get_vaddr_from_foffset(elfshobj_t *file, u_int foffset);
-void		*elfsh_get_raw_by_addr(elfshobj_t *current, void *addr);
+void		*elfsh_get_raw_by_addr(elfshobj_t *current, eresi_Addr addr, void *buf, u_int size);
 void		*elfsh_get_raw(elfshsect_t *sect);
 
 /* remap.c */
@@ -1492,21 +1501,12 @@ int		elfsh_sort_symtab(elfsh_Sym *symtab, int size, int type);
 
 /* hooks.c */
 u_char		elfsh_get_ostype(elfshobj_t *file);
+u_char		elfsh_get_iotype(elfshobj_t *file);
 u_char		elfsh_get_hosttype(elfshobj_t *file);
 u_char		elfsh_get_elftype(elfshobj_t *file);
 u_char		elfsh_get_archtype(elfshobj_t *file);
-int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, eresi_Addr n3);
-int		elfsh_default_relhandler(elfshsect_t *n, elfsh_Rel *n2, eresi_Addr *n3, eresi_Addr n4, elfshsect_t *n5);
-int		elfsh_default_cflowhandler(elfshobj_t *n, char *n1, elfsh_Sym *n2, eresi_Addr n3);
-int		elfsh_default_argchandler(eresi_Addr addr);
 
-int		elfsh_register_altplthook(u_char arch, u_char obj, u_char os, void *fct);
-int		elfsh_register_plthook(u_char arch, u_char o, u_char os, void *fct);
-int		elfsh_register_relhook(u_char a, u_char o, u_char os, void *fct);
-int		elfsh_register_cflowhook(u_char a, u_char o, u_char os, void *fct);
-int		elfsh_register_extplthook(u_char a, u_char o, u_char os, void *f);
-int		elfsh_register_argchook(u_char a, u_char o, u_char os, void *fct);
-
+/* How to fetch handlers in vectors */
 int             elfsh_register_vector(char      *name,
                                       void      *registerfunc,
                                       void      *defaultfunc,
@@ -1517,6 +1517,39 @@ int		elfsh_get_pagesize(elfshobj_t *file);
 u_int		elfsh_get_breaksize(elfshobj_t *file);
 void		elfsh_setup_hooks();
 
+/* Default handlers for vectors */
+int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, eresi_Addr n3);
+int		elfsh_default_relhandler(elfshsect_t *n, elfsh_Rel *n2, eresi_Addr *n3, eresi_Addr n4, elfshsect_t *n5);
+int		elfsh_default_cflowhandler(elfshobj_t *n, char *n1, elfsh_Sym *n2, eresi_Addr n3);
+int		elfsh_default_argchandler(eresi_Addr addr);
+void		*elfsh_default_readmem(elfshsect_t *sect);
+int		elfsh_default_writemem(elfshobj_t *file, eresi_Addr addr, void *data, u_int size);
+int		elfsh_default_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int sz);
+int		elfsh_default_writememf(elfshobj_t *file, u_int off, char *buff, int len);
+int		elfsh_default_readmemf(elfshobj_t *file, u_int off, char *buff, int len);
+int		elfsh_default_encodeplthandler(elfshobj_t *file, elfshsect_t *sect, eresi_Addr diff);
+int		elfsh_default_encodeplt1handler(elfshobj_t *file, elfshsect_t *sect, 
+						elfshsect_t *sect2, eresi_Addr diff);
+int		elfsh_default_extplthandler(elfshsect_t*, elfshsect_t*, elfshsect_t *, elfshsect_t *);
+int		elfsh_void_altplthandler(elfshobj_t *null, elfsh_Sym  *null2, eresi_Addr null3);
+int		elfsh_memcpy(elfshobj_t *null, eresi_Addr addr, void *buf, u_int size);
+
+/* Registering API */
+int		elfsh_register_altplthook(u_char arch, u_char obj, u_char os, void *fct);
+int		elfsh_register_plthook(u_char arch, u_char o, u_char os, void *fct);
+int		elfsh_register_relhook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_cflowhook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_extplthook(u_char a, u_char o, u_char os, void *f);
+int		elfsh_register_argchook(u_char a, u_char o, u_char os, void *fct);
+int		elfsh_register_readmema(u_int ostype, u_int devicetype, void *fct);
+int		elfsh_register_readmem(u_int, u_int, void *);
+int		elfsh_register_writemem(u_int, u_int, void *);
+int		elfsh_register_writememf(u_int hostype, u_int exectype, void *fct);
+int		elfsh_register_readmemf(u_int hostype, u_int exectype, void *fct);
+int		elfsh_register_encodeplthook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int		elfsh_register_encodeplt1hook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+
+/* Calling a vectored feature */
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr created);
 int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr created);
 int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
@@ -1530,8 +1563,11 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
 int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
                              elfshsect_t *dynsym, elfshsect_t *relplt);
 int		*elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr);
-
-
+void		*elfsh_readmem(elfshsect_t *base);
+void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size);
+int		elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len);
+int		elfsh_writemem(elfshobj_t *, eresi_Addr, void *, u_int);
+int		elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len);
 
 /* sparc32.c */
 int		elfsh_cflow_sparc32(elfshobj_t  *null,

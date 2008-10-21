@@ -54,55 +54,6 @@ int kernsh_register_closemem(u_int archtype, u_int ostype, u_int devicetype,
 }
 
 
-int kernsh_register_readmem(u_int archtype, u_int ostype, u_int devicetype, 
-			    void *fct)
-{
-  vector_t *mem;
-  u_int *dim;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_READMEM);
-
-  dim    = alloca(sizeof(u_int) * 4);
-  dim[0] = archtype;
-  dim[1] = ostype;
-  dim[2] = devicetype;
-
-#if __DEBUG_KERNSH__
-  printf("REGISTER READMEM\n");
-#endif
-
-  aspect_vectors_insert(mem, dim, (int)fct);
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
-int kernsh_register_writemem(u_int archtype, u_int ostype, u_int devicetype, 
-			    void *fct)
-{
-  vector_t *mem;
-  u_int *dim;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
-  mem = aspect_vector_get(LIBKERNSH_VECTOR_NAME_WRITEMEM);
-
-  dim    = alloca(sizeof(u_int) * 4);
-  dim[0] = archtype;
-  dim[1] = ostype;
-  dim[2] = devicetype;
-
-#if __DEBUG_KERNSH__
-  printf("REGISTER WRITEMEM\n");
-#endif
-
-  aspect_vectors_insert(mem, dim, (int)fct);
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
 int kernsh_register_sct(u_int archtype, u_int ostype, void *fct)
 {
   vector_t *sct;

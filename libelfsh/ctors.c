@@ -54,7 +54,7 @@ eresi_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
     *num = enew->shdr->sh_size / sizeof(eresi_Addr);
 
   /* Return a pointer on the data. Also work in debug mode */
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(enew)));
 }
 
 

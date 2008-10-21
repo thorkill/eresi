@@ -36,7 +36,7 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "New INTERP path too long", -1);
 
-  strncpy(elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP]), interp, size1);
+  strncpy(elfsh_readmem(file->secthash[ELFSH_SECTION_INTERP]), interp, size1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -66,13 +66,13 @@ char		*elfsh_get_interp(elfshobj_t *file)
 
   if (file->secthash[ELFSH_SECTION_INTERP]->data == NULL)
     {
-      enew->data = elfsh_load_section(file, 
-				     file->secthash[ELFSH_SECTION_INTERP]->shdr);
+      enew->data = elfsh_load_section(file, file->secthash[ELFSH_SECTION_INTERP]->shdr);
       if (enew->data == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to load .interp", NULL);
     }
 
+  /* We cannot call elfsh_readmem else we have an infinite loop */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		((char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP])));
 }

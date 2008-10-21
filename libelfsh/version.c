@@ -1183,7 +1183,7 @@ void    		*elfsh_get_verstrtable(elfshobj_t *file)
     
     }
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSTR]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSTR]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -1291,7 +1291,7 @@ void			*elfsh_get_versymtab(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_GNUVERSYM]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_GNUVERSYM]);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -1380,7 +1380,7 @@ void			*elfsh_get_verneedtab(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_GNUVERNEED]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_GNUVERNEED]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -1429,7 +1429,7 @@ void			*elfsh_get_verdeftab(elfshobj_t *file, int *num)
   if (num != NULL)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_GNUVERDEF]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_GNUVERDEF]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
@@ -1469,7 +1469,7 @@ elfshsect_t	       	*elfsh_get_verdeftab_by_idx(elfshobj_t *file, eresi_Addr ran
 			  "Version section", NULL); 
     }
 
-  ps = elfsh_get_raw(sect);
+  ps = elfsh_readmem(sect);
 
   do
     {

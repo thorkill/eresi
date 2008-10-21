@@ -30,7 +30,7 @@ void *kernsh_find_pattern(const void *haystack, int haystack_len,
 }
 
 /* Resolve name with addr */
-int kernsh_resolve_systemmap(unsigned long addr, char *name, size_t size)
+int kernsh_resolve_systemmap(eresi_Addr addr, char *name, size_t size)
 {
   FILE *input;
   char line[256];
@@ -45,7 +45,7 @@ int kernsh_resolve_systemmap(unsigned long addr, char *name, size_t size)
       memset(caddr, '\0', sizeof(caddr));
 
       snprintf(caddr, sizeof(caddr) - 1, "0x%lx", (unsigned long)addr);
-      if ((input = fopen((char *) config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP), 
+      if ((input = fopen((char *) config_get_data(LIBKERNSH_CONFIG_SYSTEMMAP), 
 			 "r")) == NULL)
 	{
 	  memcpy(name, "UNKNOWN_NAME", size - 1);
@@ -78,7 +78,7 @@ int kernsh_resolve_systemmap(unsigned long addr, char *name, size_t size)
 }
 
 /* Resolve add with name */
-int kernsh_rresolve_systemmap(const char *name, unsigned long *addr, size_t size)
+int kernsh_rresolve_systemmap(const char *name, eresi_Addr *addr, size_t size)
 {
   FILE *input;
   char *paddr, *pname;
@@ -86,7 +86,7 @@ int kernsh_rresolve_systemmap(const char *name, unsigned long *addr, size_t size
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  if ((input = fopen((char *) config_get_data(LIBKERNSH_VMCONFIG_SYSTEMMAP), 
+  if ((input = fopen((char *) config_get_data(LIBKERNSH_CONFIG_SYSTEMMAP), 
 		     "r")) == NULL)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to open systemmap", -1);
@@ -111,31 +111,27 @@ int kernsh_rresolve_systemmap(const char *name, unsigned long *addr, size_t size
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot get addr", -1);
 }
 
-int kernsh_find_end(unsigned long addr)
+int kernsh_find_end(eresi_Addr addr)
 {
   unsigned char buff[BUFSIZ];
   int curr, sizemax;
-  unsigned long addrcur, addrfinal, start;
+  eresi_Addr addrcur, addrfinal, start;
   asm_instr instr;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  addrcur = addr;
-  sizemax = (int) config_get_data(LIBKERNSH_VMCONFIG_FENDSIZE);
-  addrfinal = addr+sizemax;
-
+  addrcur   = addr;
+  sizemax   = (int) config_get_data(LIBKERNSH_CONFIG_FENDSIZE);
+  addrfinal = addr + sizemax;
   while (addrcur < addrfinal)
     {
-      if (kernsh_is_mem_mode())
+      if (elfsh_is_debug_mode())
 	{
-	  kernsh_readmem(addrcur, buff, sizeof(buff));
+	  elfsh_readmema(libkernshworld.root, addrcur, buff, sizeof(buff));
 	}
       else
 	{
-	  start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
-					       addrcur);
-	  elfsh_raw_read(libkernshworld.root, start, buff, sizeof(buff));
-
+	  start = elfsh_get_foffset_from_vaddr(libkernshworld.root, addrcur);
+	  elfsh_readmemf(libkernshworld.root, start, buff, sizeof(buff));
 	}
       curr = 0;
       while(curr < sizeof(buff))

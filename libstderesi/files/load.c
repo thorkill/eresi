@@ -189,7 +189,7 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
     revm_load_enumdep(new);
   
   /* Load EDFMT debug sections */
-  if ((int) config_get_data(ERESI_VMCONFIG_ONLOAD_RCONTROL)) 
+  if ((int) config_get_data(ERESI_CONFIG_ONLOAD_RCONTROL)) 
     {
       if (mjr_functions_get(world.mjr_session.cur) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

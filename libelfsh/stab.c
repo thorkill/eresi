@@ -33,7 +33,7 @@ char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot retreive stabs section",  NULL);
 
-  str = (char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_STABSTR]) + s->strindex;
+  str = (char *) elfsh_readmem(file->secthash[ELFSH_SECTION_STABSTR]) + s->strindex;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
 }
 
@@ -90,7 +90,7 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
       *num = nbr / sizeof(elfshstabent_t);
     }
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_STAB]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_STAB]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

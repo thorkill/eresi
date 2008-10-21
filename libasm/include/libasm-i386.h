@@ -45,6 +45,10 @@ struct s_asm_proc_i386 {
 /** 
  * Content of the operand.
  * Those flags are stored in asm_operand.content field.
+ *
+ * FIXME: MUST BE UNIFIED WITH libasm.h:156 e_op_types
+ * WARNING: used for pretty printing in libasm/ia32/
+ * Never used on others.
  */
 #define ASM_OP_VALUE		1	/*!< immediate value present	*/
 #define ASM_OP_BASE		2	/*!< base register present	*/

@@ -167,7 +167,7 @@ void			*mjr_fingerprint_function(mjrcontext_t  *ctx,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unknown parent section", NULL);
   
-  buff = elfsh_get_raw(sect);
+  buff = elfsh_readmem(sect);
   buff += off;
   
   /* Select the desired fingerprinting function */

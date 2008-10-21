@@ -113,41 +113,41 @@ enum
 
 #define	__DEBUG_KERNSH__			0
 
-#define LIBKERNSH_VMCONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
-#define LIBKERNSH_VMCONFIG_DEVICE		"libkernsh.device"
-#define LIBKERNSH_VMCONFIG_MODE			"libkernsh.mode"
-#define LIBKERNSH_VMCONFIG_SYSTEMMAP		"libkernsh.systemmap"
-#define LIBKERNSH_VMCONFIG_MMAP			"libkernsh.mmap"
-#define LIBKERNSH_VMCONFIG_MMAP_SIZE		"libkernsh.mmapsize"
-#define LIBKERNSH_VMCONFIG_KERNEL	        "libkernsh.kernel"
-#define LIBKERNSH_VMCONFIG_GZIP			"libkernsh.gzipcmd"
-#define LIBKERNSH_VMCONFIG_OBJCOPY		"libkernsh.objcopycmd"
-#define LIBKERNSH_VMCONFIG_LD			"libkernsh.ldcmd"
-#define LIBKERNSH_VMCONFIG_KERNELGZ		"libkernsh.kernelgz"
-#define LIBKERNSH_VMCONFIG_KERNELELF		"libkernsh.kernelelf"
-#define LIBKERNSH_VMCONFIG_USE_KERNEL		"libkernsh.use_kernel"
-#define LIBKERNSH_VMCONFIG_STORAGE_PATH		"libkernsh.storagepath"
-#define LIBKERNSH_VMCONFIG_NB_SYSCALLS		"libkernsh.nbsyscalls"
-#define LIBKERNSH_VMCONFIG_NIL_SYSCALL		"libkernsh.nilsyscall"
-#define LIBKERNSH_VMCONFIG_KERNEL_START		"libkernsh.kernel_start"
-#define LIBKERNSH_VMCONFIG_KERNEL_END		"libkernsh.kernel_end"
-#define LIBKERNSH_VMCONFIG_ALLOC		"libkernsh.alloc"
-#define LIBKERNSH_VMCONFIG_KLOAD		"libkernsh.kload"
-#define LIBKERNSH_VMCONFIG_KUNLOAD		"libkernsh.kunload"
-#define LIBKERNSH_VMCONFIG_FENDSIZE		"libkernsh.fendsize"
-#define LIBKERNSH_VMCONFIG_USEVM		"libkernsh.usevm"
-#define LIBKERNSH_VMCONFIG_SPECIFY_IDTBASE	"libkernsh.specify_idtbase"
-#define LIBKERNSH_VMCONFIG_SPECIFY_IDTLIMIT	"libkernsh.specify_idtlimit"
-#define LIBKERNSH_VMCONFIG_SPECIFY_GDTBASE	"libkernsh.specify_gdtbase"
-#define LIBKERNSH_VMCONFIG_SPECIFY_GDTLIMIT	"libkernsh.specify_gdtlimit"
-#define LIBKERNSH_VMCONFIG_SPECIFY_SYSTEMCALL	"libkernsh.specify_systemcall"
-#define LIBKERNSH_VMCONFIG_SPECIFY_SCT		"libkernsh.specify_sct"
-#define LIBKERNSH_VMCONFIG_VIRTM		"libkernsh.virtm"
-#define LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL	"libkernsh.virtm_nil_syscall"
-#define LIBKERNSH_VMCONFIG_HASH			"libkernsh.hash"
-#define LIBKERNSH_VMCONFIG_VMA			"libkernsh.vma"
-#define LIBKERNSH_VMCONFIG_VMA_PREFIX		"libkernsh.vma_prefix"
-#define LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX	"libkernsh.dump_vma_prefix"
+#define LIBKERNSH_CONFIG_WITHOUT_KERNEL	"libkernsh.without_kernel"
+#define LIBKERNSH_CONFIG_DEVICE		"libkernsh.device"
+#define LIBKERNSH_CONFIG_MODE			"libkernsh.mode"
+#define LIBKERNSH_CONFIG_SYSTEMMAP		"libkernsh.systemmap"
+#define LIBKERNSH_CONFIG_MMAP			"libkernsh.mmap"
+#define LIBKERNSH_CONFIG_MMAP_SIZE		"libkernsh.mmapsize"
+#define LIBKERNSH_CONFIG_KERNEL	        "libkernsh.kernel"
+#define LIBKERNSH_CONFIG_GZIP			"libkernsh.gzipcmd"
+#define LIBKERNSH_CONFIG_OBJCOPY		"libkernsh.objcopycmd"
+#define LIBKERNSH_CONFIG_LD			"libkernsh.ldcmd"
+#define LIBKERNSH_CONFIG_KERNELGZ		"libkernsh.kernelgz"
+#define LIBKERNSH_CONFIG_KERNELELF		"libkernsh.kernelelf"
+#define LIBKERNSH_CONFIG_USE_KERNEL		"libkernsh.use_kernel"
+#define LIBKERNSH_CONFIG_STORAGE_PATH		"libkernsh.storagepath"
+#define LIBKERNSH_CONFIG_NB_SYSCALLS		"libkernsh.nbsyscalls"
+#define LIBKERNSH_CONFIG_NIL_SYSCALL		"libkernsh.nilsyscall"
+#define LIBKERNSH_CONFIG_KERNEL_START		"libkernsh.kernel_start"
+#define LIBKERNSH_CONFIG_KERNEL_END		"libkernsh.kernel_end"
+#define LIBKERNSH_CONFIG_ALLOC		"libkernsh.alloc"
+#define LIBKERNSH_CONFIG_KLOAD		"libkernsh.kload"
+#define LIBKERNSH_CONFIG_KUNLOAD		"libkernsh.kunload"
+#define LIBKERNSH_CONFIG_FENDSIZE		"libkernsh.fendsize"
+#define LIBKERNSH_CONFIG_USEVM		"libkernsh.usevm"
+#define LIBKERNSH_CONFIG_SPECIFY_IDTBASE	"libkernsh.specify_idtbase"
+#define LIBKERNSH_CONFIG_SPECIFY_IDTLIMIT	"libkernsh.specify_idtlimit"
+#define LIBKERNSH_CONFIG_SPECIFY_GDTBASE	"libkernsh.specify_gdtbase"
+#define LIBKERNSH_CONFIG_SPECIFY_GDTLIMIT	"libkernsh.specify_gdtlimit"
+#define LIBKERNSH_CONFIG_SPECIFY_SYSTEMCALL	"libkernsh.specify_systemcall"
+#define LIBKERNSH_CONFIG_SPECIFY_SCT		"libkernsh.specify_sct"
+#define LIBKERNSH_CONFIG_VIRTM		"libkernsh.virtm"
+#define LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL	"libkernsh.virtm_nil_syscall"
+#define LIBKERNSH_CONFIG_HASH			"libkernsh.hash"
+#define LIBKERNSH_CONFIG_VMA			"libkernsh.vma"
+#define LIBKERNSH_CONFIG_VMA_PREFIX		"libkernsh.vma_prefix"
+#define LIBKERNSH_CONFIG_DUMP_VMA_PREFIX	"libkernsh.dump_vma_prefix"
 
 
 #define LIBKERNSH_DEFAULT_LINUX_KERNEL		"/boot/vmlinuz"
@@ -187,8 +187,8 @@ enum
 
 #define LIBKERNSH_VECTOR_NAME_OPENMEM			"openmem"
 #define LIBKERNSH_VECTOR_NAME_CLOSEMEM			"closemem"
-#define LIBKERNSH_VECTOR_NAME_READMEM			"readmem"
-#define LIBKERNSH_VECTOR_NAME_WRITEMEM			"writemem"
+//#define LIBKERNSH_VECTOR_NAME_READMEM			"readmem"
+//#define LIBKERNSH_VECTOR_NAME_WRITEMEM		"writemem"
 #define LIBKERNSH_VECTOR_NAME_SCT			"sct"
 #define LIBKERNSH_VECTOR_NAME_IDT			"idt"
 #define LIBKERNSH_VECTOR_NAME_GDT			"gdt"
@@ -219,92 +219,96 @@ enum
 /* Idtr segment struct */
 struct 
 {
-	unsigned short limit;
-	unsigned long base;
+  unsigned short limit;
+  unsigned long base;
 } __attribute__((packed)) idtr;
 
 /* Interrupt descriptor */
 struct 
 {
-	unsigned short off1;
-	unsigned short sel;
-	unsigned char none,flags;
-	unsigned short off2;
+  unsigned short off1;
+  unsigned short sel;
+  unsigned char none,flags;
+  unsigned short off2;
 } __attribute__ ((packed)) idt;
 
 /* gdtr */
 struct 
 {
-	unsigned short limit;
-	unsigned long base;
-} __attribute__ ((packed))gdtr;
+  unsigned short limit;
+  unsigned long base;
+} __attribute__ ((packed)) gdtr;
+
 
 /**
  * @brief Kmalloc struct
  */
-typedef struct s_libkernshkma 
+typedef struct	s_libkernshkma 
 {
-	unsigned long ( *kexec )( size_t, int );     /* Execution of kmalloc */
-	int size;	/* Size to alloc */
-	int flags;	/* Flags, by default GFP_KERNEL */
-	unsigned long mem; /* The address where the allocation has been done */
-} libkernshkma_t ;
+  eresi_Addr	(*kexec)(size_t, int);		    /* Execution of kmalloc */
+  int		size;				    /* Size to alloc */
+  int		flags;				    /* Flags, by default GFP_KERNEL */
+  unsigned long mem;				    /* The address where the allocation has been done */
+}		libkernshkma_t;
+
 
 /**
  * @brief Kfree struct 
  */
-typedef struct s_libkernshkfr 
+typedef struct	s_libkernshkfr 
 {
-	unsigned long ( *kexec )( const void * );     /* Execution of kfree */
-	const void * address;			      /* Address to be free */
-} libkernshkfr_t;
+  unsigned long (*kexec)(const void *);     /* Execution of kfree */
+  const void	*address;		    /* Address to be free */
+}		libkernshkfr_t;
+
 
 /**
  * @brief Vmalloc struct 
  */
-typedef struct s_libkernshvma 
+typedef struct	s_libkernshvma 
 {
-	unsigned long ( *kexec )( size_t );	/* Execution of vmalloc */
-	int size;				/* Size to alloc */
-	unsigned long mem; /* The address where the allocation has been done */
-} libkernshvma_t;
+  unsigned long (*kexec)(size_t);	/* Execution of vmalloc */
+  int		size;			/* Size to alloc */
+  unsigned long mem;			/* The address where the allocation has been done */
+}		libkernshvma_t;
+
 
 /**
  * @brief Vfree struct 
  */
-typedef struct s_libkernshvfr 
+typedef struct	s_libkernshvfr 
 {
-	unsigned long ( *kexec )( void * );	/* Execution of vfree */
-	void * address;				/* Address to be free */
-} libkernshvfr_t;
+  unsigned long (*kexec)(void *);	/* Execution of vfree */
+  void		*address;		/* Address to be free */
+}		libkernshvfr_t;
 
 /**
  * @brief Syscall struct 
  */
-typedef struct s_libkernshsyscall
+typedef struct	s_libkernshsyscall
 {
-	unsigned long addr;
-	char name[NAMESIZ];
-} libkernshsyscall_t;
+  eresi_Addr	addr;
+  char		name[NAMESIZ];
+}		libkernshsyscall_t;
 
 /**
  * @brief Interrupt struct 
  */
-typedef struct s_libkernshint
+typedef struct	s_libkernshint
 {
-	unsigned long addr;
-	char name[NAMESIZ];
-} libkernshint_t;
+  eresi_Addr	addr;
+  char		name[NAMESIZ];
+}		libkernshint_t;
 
 /**
  * @brief Gdt segment struct 
  */
-typedef struct s_libkernshsgdt
+typedef struct	s_libkernshsgdt
 {
-	unsigned long addr;
-	unsigned long deb;
-	unsigned long fin;
-} libkernshsgdt_t;
+  eresi_Addr	addr;
+  eresi_Addr	deb;
+  eresi_Addr	fin;
+}		libkernshsgdt_t;
 
 /** 
  * @brief md5 context
@@ -314,125 +318,92 @@ typedef struct s_libkernshmd5context
   unsigned long buf[4];
   unsigned long bits[2];
   unsigned char in[64];
-} libkernshmd5context_t;
+}		libkernshmd5context_t;
 
 
 /**
  * @brief dec task
  */
-typedef struct s_dectask
+typedef struct	s_dectask
 {
-	int dec_list;
-	int dec_pid;
-	int dec_uid;
-} dectask_t;
+  int		dec_list;
+  int		dec_pid;
+  int		dec_uid;
+}		dectask_t;
 
 /**
  * @brief auto task
  */  
-typedef struct s_autotask
+typedef struct	s_autotask
 {
-	int offset_name;
-        int offset_list;
-	int offset_next;
-	int offset_pid;
-	int offset_uid;
-
-	dectask_t dectask;
-} autotask_t;
+  int		offset_name;
+  int		offset_list;
+  int		offset_next;
+  int		offset_pid;
+  int		offset_uid;
+  dectask_t	dectask;
+}		autotask_t;
 
 /**
  * @brief World kernsh struct 
  */
-typedef struct s_libkernshworld
+typedef struct	s_libkernshworld
 {
-	u_int arch;	/* Arch type */
-	u_int os;	/* Os type */
-	u_int device;	/* Device type */
-	
-	int present;	/* Flag to test kernsh's present */
-	int open;	/* 0 => memory close, 1 => memory open */
-	int open_static;	/* 0 => static kernel close,
-				   1 => static kernel open */
+  u_int		arch;			/* Arch type */
+  u_int		os;			/* Os type */
+  u_int		device;			/* Device type */
+  int		open;			/* 0 => memory close, 1 => memory open */
+  int		open_static;		/* 0 => static kernel close, 1 => open */
+  char		*release;		/* Release name */
+  int		fd;			/* !< @brief File descriptor for the memory */
+  int		fdmode;			/* Mode to open memory (read/write) */
+  int		protmode;		/* Protection mode to mmap */
+  int		flagsmode;		/* Flags mode to mmap */
+  int		mmap;			/* 0 => memory not mmap, 1 => memory mmap */
+  int		mmap_size;		/* Size of the mmap */
+  void		*ptr;			/* Pointer of the mmap */
+  eresi_Addr	kernel_start;		/* Address of kernel start */
+  eresi_Addr	kernel_end;		/* Address of kernel end */
+  int		mem;			/* Static/Mem mode */
+  int		physical;		/* 0 => virtual memory address, 1 => physical memory addr */
+  eresi_Addr	idt_base;		/* Address of idt table */
+  u_short	idt_limit;		/* Length */
+  eresi_Addr	sct;			/* Address of syscall table */
+  eresi_Addr	system_call;
+  eresi_Addr	gdt_base;		/* Address of the gdt table */
+  u_short	gdt_limit;		/* Lenght */  
+  autotask_t	typetask;		/* Make type for task_struct */
+  asm_processor	proc;			/* To play with libasm of course */
+  elfshobj_t	*root;			/* Pointer to the kernel's elfshobj_t*/
+  u_char	present;		/* Is KERNSH being currently used ? */
+}		libkernshworld_t;
 
-	char *release;	/* Release name */
+extern libkernshworld_t     libkernshworld; /* Global libkernsh struct */
 
-	int fd;		/* !< @brief File descriptor for the memory */
-	int fdmode;	/* Mode to open memory (read/write) */
-	int protmode;	/* Protection mode to mmap */
-	int flagsmode;	/* Flags mode to mmap */
-
-	int mmap;	/* 0 => memory not mmap
-			   1 => memory mmap */
-	int mmap_size;	/* Size of the mmap */
-	void *ptr;	/* Pointer of the mmap*/
-  
-	unsigned long kernel_start;	/* Address of kernel start */
-	unsigned long kernel_end;	/* Address of kernel end */
-
-	int mem;	/* Static/Mem mode */
-
-	int physical;	/* 0 => virtual memory address 
-			   1 => physical memory address */
-
-	unsigned long idt_base;	/* Address of idt table */
-	unsigned short idt_limit;	/* Length */
-
-	unsigned long sct;	/* Address of syscall table */
-
-#if defined(__linux__)
-	unsigned long system_call;
-#endif
-	unsigned long gdt_base; /* Address of the gdt table */
-	unsigned short gdt_limit; /* Lenght */
-
-	autotask_t typetask;	/* Make type for task_struct */
-	
-	asm_processor proc;	/* To play with libasm of course */
-	elfshobj_t *root;	/* Pointer to the kernel's elfshobj_t*/
-} libkernshworld_t;
-
-extern libkernshworld_t     libkernshworld; /* Global libkernsh struct
-					       W00t W00t use it please !*/
 
 /* Init lib */
-int	kernsh_init_ia32(char *, char *);
-int	kernsh_del_ia32();
-
-/* Get raw */
-void	*kernsh_get_raw(elfshsect_t *);
-void	*kernsh_get_raw_by_addr(void *);
+int		kernsh_init_ia32(char *, char *);
+int		kernsh_del_ia32();
 
 /* Information about kernel */
-int	kernsh_info();
-int	kernsh_info_linux();
-int	kernsh_info_netbsd();
-int	kernsh_info_freebsd();
-
+int		kernsh_info();
+int		kernsh_info_linux();
+int		kernsh_info_netbsd();
+int		kernsh_info_freebsd();
 elfshobj_t	*kernsh_load_file(char *);
 void		kernsh_unload_file(elfshobj_t *);
-
-/* Memory or Static mode */
-int	kernsh_is_mem_mode();
-int	kernsh_set_mem_mode();
-int	kernsh_is_static_mode();
-int	kernsh_set_static_mode();
-int	kernsh_get_mode();
-int	kernsh_set_mode(int);
-
-void kernsh_present_set();
-int kernsh_is_present();
+int		kernsh_is_present();
+void		kernsh_present_set();
 
 /* Raw mode */
-int kernsh_raw_write(elfshobj_t *, u_int, void *, int);
-int kernsh_raw_read(elfshobj_t *,  u_int, void *, int);
+int		kernsh_raw_write(elfshobj_t *, u_int, void *, int);
+int		kernsh_raw_read(elfshobj_t *,  u_int, void *, int);
+void		*kernsh_get_raw(elfshsect_t *);
+void		*kernsh_get_raw_by_addr(elfshobj_t *, eresi_Addr, void*, u_int);
 
-/* Default vectors */
-
+/* Default vector handlers */
 int kernsh_openmem_default();
 int kernsh_closemem_default();
-int kernsh_readmem_default();
-int kernsh_writemem_default();
 int kernsh_sct_default();
 int kernsh_callsc_default();
 int kernsh_idt_default();
@@ -463,8 +434,6 @@ int	kernsh_init_vectors();
 int	kernsh_register_vectors();
 int	kernsh_register_openmem(u_int, u_int, u_int, void *);
 int	kernsh_register_closemem(u_int, u_int, u_int, void *);
-int	kernsh_register_readmem(u_int, u_int, u_int, void *);
-int	kernsh_register_writemem(u_int, u_int, u_int, void *);
 int	kernsh_register_sct(u_int, u_int, void *);
 int	kernsh_register_callsc(u_int, void *);
 int	kernsh_register_idt(u_int, u_int, void *);
@@ -505,19 +474,17 @@ int	kernsh_closemem_mem_linux();
 int	kernsh_closemem_kcore_linux_2_6();
 int	kernsh_closemem_netbsd();
 
-int	kernsh_readmem(unsigned long, void *, int);
-int	kernsh_readmem_kmem_linux_2_6(unsigned long, void *, int);
-int	kernsh_readmem_kmem_linux_2_4(unsigned long, void *, int);
-int	kernsh_readmem_mem_linux(unsigned long, void *, int);
-int	kernsh_readmem_kcore_linux_2_6(unsigned long, void *, int);
-int	kernsh_readmem_netbsd(unsigned long, void *, int);
+int	kernsh_readmema_kmem_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_readmema_kmem_linux_2_4(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_readmema_mem_linux(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_readmema_kcore_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_readmema_netbsd(elfshobj_t *file, eresi_Addr, void *, int);
 
-int	kernsh_writemem(unsigned long, void *, int);
-int	kernsh_writemem_kmem_linux_2_6(unsigned long, void *, int);
-int	kernsh_writemem_kmem_linux_2_4(unsigned long, void *, int);
-int	kernsh_writemem_mem_linux(unsigned long, void *, int);
-int	kernsh_writemem_kcore_linux_2_6(unsigned long, void *, int);
-int	kernsh_writemem_netbsd(unsigned long, void *, int);
+int	kernsh_writemem_kmem_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_writemem_kmem_linux_2_4(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_writemem_mem_linux(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_writemem_kcore_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
+int	kernsh_writemem_netbsd(elfshobj_t *file, eresi_Addr, void *, int);
 
 /* Syscalls table */
 int	kernsh_sct(list_t *);
@@ -541,33 +508,30 @@ int	kernsh_gdt_netbsd(list_t *);
 int	kernsh_gdt_freebsd(list_t *);
 
 /* Symbols */
-int	kernsh_get_addr_by_name(char *, unsigned long *, size_t);
-int	kernsh_get_name_by_addr(unsigned long, char *, size_t);
+int	kernsh_get_addr_by_name(char *, eresi_Addr*, size_t);
+int	kernsh_get_name_by_addr(eresi_Addr, char *, size_t);
 
-int	kernsh_get_addr_by_name_linux_2_6(char *, unsigned long *, size_t);
-int	kernsh_get_name_by_addr_linux_2_6(unsigned long, char *, size_t);
-int	kernsh_get_addr_by_name_linux_2_4(char *, unsigned long *, size_t);
-int	kernsh_get_name_by_addr_linux_2_4(unsigned long, char *, size_t);
+int	kernsh_get_addr_by_name_linux_2_6(char *, eresi_Addr*, size_t);
+int	kernsh_get_name_by_addr_linux_2_6(eresi_Addr, char *, size_t);
+int	kernsh_get_addr_by_name_linux_2_4(char *, eresi_Addr*, size_t);
+int	kernsh_get_name_by_addr_linux_2_4(eresi_Addr, char *, size_t);
 
-int	kernsh_walk_kstrtab(const char *, unsigned long *, size_t);
-int	kernsh_get_kernel_syms(char *, unsigned long *, size_t);
-
-/* Tasks */
-
+int	kernsh_walk_kstrtab(const char *, eresi_Addr*, size_t);
+int	kernsh_get_kernel_syms(char *, eresi_Addr*, size_t);
 
 /* Alloc-Free */
-int	kernsh_alloc(size_t, unsigned long *);
-int	kernsh_free(unsigned long);
+int	kernsh_alloc(size_t, eresi_Addr*);
+int	kernsh_free(eresi_Addr);
 
-int	kernsh_alloc_contiguous(size_t, unsigned long *);
-int	kernsh_free_contiguous(unsigned long);
-int	kernsh_alloc_noncontiguous(size_t, unsigned long *);
-int	kernsh_free_noncontiguous(unsigned long);
+int	kernsh_alloc_contiguous(size_t, eresi_Addr*);
+int	kernsh_free_contiguous(eresi_Addr);
+int	kernsh_alloc_noncontiguous(size_t, eresi_Addr*);
+int	kernsh_free_noncontiguous(eresi_Addr);
 
-int	kernsh_alloc_contiguous_linux(size_t, unsigned long *);
-int	kernsh_free_contiguous_linux(unsigned long);
-int	kernsh_alloc_noncontiguous_linux(size_t, unsigned long *);
-int	kernsh_free_noncontiguous_linux(unsigned long);
+int	kernsh_alloc_contiguous_linux(size_t, eresi_Addr*);
+int	kernsh_free_contiguous_linux(eresi_Addr);
+int	kernsh_alloc_noncontiguous_linux(size_t, eresi_Addr*);
+int	kernsh_free_noncontiguous_linux(eresi_Addr);
 
 /* Module */
 int	kernsh_kload_module(char *);
@@ -583,23 +547,14 @@ int	kernsh_infect_module(char *, char *, char *);
 int	kernsh_infect_module_linux_2_6(char *, elfshobj_t *, char *, char *);
 int	kernsh_infect_module_linux_2_4(char *, elfshobj_t *, char *, char *);
 
-/* Hijack */
-
 /* MD5 */
 unsigned char *kernsh_hash(unsigned long, int, int *);
-
 int	kernsh_md5init(libkernshmd5context_t *);
-int	kernsh_md5update(libkernshmd5context_t *, 
-			 unsigned char *, 
-			 unsigned);
+int	kernsh_md5update(libkernshmd5context_t *, unsigned char *, unsigned);
 int	kernsh_md5final(unsigned char [16], libkernshmd5context_t *);
-int	kernsh_md5transform(unsigned long [4], 
-			    const unsigned char [64]);
-int	kernsh_md5dump(unsigned char *, 
-		   int, 
-		   unsigned char [BUFSIZ]);
-
-int	kernsh_md5(unsigned long, int, unsigned char [BUFSIZ]);
+int	kernsh_md5transform(unsigned long [4], const unsigned char [64]);
+int	kernsh_md5dump(unsigned char *, int, unsigned char [BUFSIZ]);
+int	kernsh_md5(eresi_Addr, int, unsigned char [BUFSIZ]);
 
 /* Auto Types */
 int kernsh_autotypes();
@@ -617,48 +572,46 @@ int kernsh_autotask_offsetname_linux_2_6(char *, size_t);
 int kernsh_autotask_offsetlist_linux_2_6(char *, size_t);
 
 /* Kernel Decompression */
-int	kernsh_decompkernel();
-int	kernsh_decompkernel_linux();
+int kernsh_decompkernel();
+int kernsh_decompkernel_linux();
 
 /* Kvirtm */
+int kernsh_kvirtm_read_virtm(pid_t, eresi_Addr, char *, int);
+int kernsh_kvirtm_read_virtm_proc_linux(pid_t, eresi_Addr, char *, int);
+int kernsh_kvirtm_read_virtm_syscall_linux(pid_t, eresi_Addr, char *, int);
 
-int kernsh_kvirtm_read_virtm(pid_t, unsigned long, char *, int);
-int kernsh_kvirtm_read_virtm_proc_linux(pid_t, unsigned long, char *, int);
-int kernsh_kvirtm_read_virtm_syscall_linux(pid_t, unsigned long, char *, int);
-
-int kernsh_kvirtm_write_virtm(pid_t, unsigned long, char *, int);
-int kernsh_kvirtm_write_virtm_proc_linux(pid_t, unsigned long, char *, int);
-int kernsh_kvirtm_write_virtm_syscall_linux(pid_t, unsigned long, char *, int);
+int kernsh_kvirtm_write_virtm(pid_t, eresi_Addr, char *, int);
+int kernsh_kvirtm_write_virtm_proc_linux(pid_t, eresi_Addr, char *, int);
+int kernsh_kvirtm_write_virtm_syscall_linux(pid_t, eresi_Addr, char *, int);
 
 int kernsh_kvirtm_openmem();
 int kernsh_kvirtm_closemem();
 
-int kernsh_kvirtm_readmem(unsigned long, char *, int);
-int kernsh_kvirtm_readmem_proc_linux(unsigned long, char *, int);
-int kernsh_kvirtm_readmem_syscall_linux(unsigned long, char *, int);
+int kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr, char *, int);
+int kernsh_kvirtm_readmem_proc_linux(eresi_Addr, char *, int);
+int kernsh_kvirtm_readmem_syscall_linux(eresi_Addr, char *, int);
 
-int kernsh_kvirtm_writemem(unsigned long, char *, int);
-int kernsh_kvirtm_writemem_proc_linux(unsigned long, char *, int);
-int kernsh_kvirtm_writemem_syscall_linux(unsigned long, char *, int);
+int kernsh_kvirtm_writemem(elfshobj_t *kern, eresi_Addr, char *, int);
+int kernsh_kvirtm_writemem_proc_linux(eresi_Addr, char *, int);
+int kernsh_kvirtm_writemem_syscall_linux(eresi_Addr, char *, int);
 
 int kernsh_kvirtm_task_pid(pid_t, list_t *);
 int kernsh_kvirtm_task_pid_proc_linux(pid_t, list_t *);
 int kernsh_kvirtm_task_pid_syscall_linux(pid_t, list_t *);
 
 /* Dump */
-
-int kernsh_dump_kvirtm_elf(pid_t, char *);
+int	kernsh_dump_kvirtm_elf(pid_t, char *);
 list_t *kernsh_kdump_get_vma(pid_t);
-int kernsh_kdump_get_vma_userland_linux(pid_t, list_t *);
+int	kernsh_kdump_get_vma_userland_linux(pid_t, list_t *);
 
-int kernsh_kdump_vma(pid_t);
-int kernsh_kdump_vma_userland_linux(pid_t, hash_t *);
-int kernsh_kdump_vma_kernelland_linux(pid_t, hash_t *);
+int	kernsh_kdump_vma(pid_t);
+int	kernsh_kdump_vma_userland_linux(pid_t, hash_t *);
+int	kernsh_kdump_vma_kernelland_linux(pid_t, hash_t *);
 
 /* Misc */
 void	*kernsh_find_pattern(const void *, int, const void *, int);
-int	kernsh_resolve_systemmap(unsigned long, char *, size_t);
-int	kernsh_rresolve_systemmap(const char *,unsigned long *, size_t);
-int	kernsh_find_end(unsigned long);
+int	kernsh_resolve_systemmap(eresi_Addr, char *, size_t);
+int	kernsh_rresolve_systemmap(const char *, eresi_Addr*, size_t);
+int	kernsh_find_end(eresi_Addr);
 
 #endif

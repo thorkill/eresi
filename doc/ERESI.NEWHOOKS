@@ -1,30 +1,38 @@
-Those are the new hooks to be created in LIBELFSH:
 
+/////////////////////////////////////////////////////////////////////////////
 
+TODO:
 
-READMEM_BY_ADDR (elfshobj_t*, elfsh_Addr addr)
+- handler pas register dans libelfsh pour les nouveaux hooks
+- handler pas register dans libkernsh pour les nouveaux hooks
+- handler pas register dans libe2dbg pour les nouveaux hooks
+- faire marcher kernsh sur ubuntu (+ ajouter sa doc + splitter les man pages !)
+
+ALREADY IMPLEMENTED:
+
+READMEM_BY_ADDR void *f(elfshobj_t*, elfsh_Addr addr, void *buf, u_int size)
 ---------------
 
-KERNEL				USER
+KERNEL				USER						VM
 kernsh_get_raw_by_addr		elfsh_get_raw_by_addr
 
 
-READMEM: (elfshsect_t*)							(libelfsh)
+READMEM: void *(elfshsect_t*)							(libelfsh)
 --------
 
- KERNEL				USER
+ KERNEL				USER						VM
  kernsh_get_raw			elfsh_get_raw
 
 
 WRITEMEM: (vaddr, data, size)						(libelfsh)
 ---------
-		KERNEL					USER
+		KERNEL					USER			VM
 
-STATIC		memcpy					memcpy
-RUNTIME		kernsh_writemem				memcpy
+STATIC		elfsh_memcpy				elfsh_memcpy
+RUNTIME		kernsh_writemem				elfsh_memcpy
 
 
-WRITEMEM_BY_FOFF: (file, u_int off, char *buff, int len)	(APPELE WRITEMEM !)
+WRITEMEMF: (file, u_int off, char *buff, int len)	(APPELE WRITEMEM !)
 ----------------
 
 		KERNEL					USER
@@ -32,7 +40,7 @@ WRITEMEM_BY_FOFF: (file, u_int off, char *buff, int len)	(APPELE WRITEMEM !)
 STATIC		kernsh_raw_write			elfsh_raw_write
 RUNTIME		kernsh_raw_write			elfsh_raw_write
 
-READMEM_BY_FOFF: (file, u_int off, char *buff, int len)				(libelfsh)
+READMEMF: (file, u_int off, char *buff, int len)				(libelfsh)
 --------------
 
 		KERNEL					USER
@@ -40,6 +48,14 @@ READMEM_BY_FOFF: (file, u_int off, char *buff, int len)				(libelfsh)
 STATIC		kernsh_raw_read 			elfsh_raw_read
 RUNTIME		kernsh_raw_read 			elfsh_raw_read
 
+
+
+
+
+/////////////////////// NOT YET IMPLEMENTED //////////////////////////////
+
+
+Those are the new hooks to be created in LIBELFSH:
 
 MEMALLOC (u_int size, eresi_Addr*)					(libelfsh)
 --------
@@ -72,8 +88,4 @@ LINUX		empty					elfsh_munprotect
 BSD		empty					elfsh_munprotect
 SOLARIS		empty					elfsh_munprotect
 IRIX		empty					elfsh_munprotect
-
-
-
-
 

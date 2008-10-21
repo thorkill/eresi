@@ -59,7 +59,7 @@ void	elfsh_set_static_mode()
  */
 Bool	elfsh_is_debug_mode()
 {
- return (dbgworld.mode == LIBELFSH_MODE_E2DBG);
+ return (dbgworld.mode == LIBELFSH_MODE_RUNTIME);
 }
 
 /** 
@@ -67,7 +67,7 @@ Bool	elfsh_is_debug_mode()
  */
 void	elfsh_set_debug_mode()
 {
-  elfsh_set_mode(LIBELFSH_MODE_E2DBG);
+  elfsh_set_mode(LIBELFSH_MODE_RUNTIME);
   dbgworld.indebug = 1;
 }
 

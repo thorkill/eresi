@@ -36,7 +36,7 @@ int kernsh_decompkernel()
 /**
  * @brief Extract and gunzip the linux kernel\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_KERNEL, LIBKERNSH_VMCONFIG_STORAGE_PATH, LIBKERNSH_VMCONFIG_KERNELGZ, LIBKERNSH_VMCONFIG_KERNELELF, LIBKERNSH_VMCONFIG_OBJCOPY, LIBKERNSH_VMCONFIG_GZIP
+ * LIBKERNSH_CONFIG_KERNEL, LIBKERNSH_CONFIG_STORAGE_PATH, LIBKERNSH_CONFIG_KERNELGZ, LIBKERNSH_CONFIG_KERNELELF, LIBKERNSH_CONFIG_OBJCOPY, LIBKERNSH_CONFIG_GZIP
  * @return 0 on success, -1 on error 
  */
 int kernsh_decompkernel_linux()
@@ -59,13 +59,13 @@ int kernsh_decompkernel_linux()
 
         
   XOPEN(fd, 
-	(char *) config_get_data(LIBKERNSH_VMCONFIG_KERNEL), 
+	(char *) config_get_data(LIBKERNSH_CONFIG_KERNEL), 
 	O_RDONLY, 
 	0, 
 	-1);
 
 #if __DEBUG_KERNSH__
-  printf("OPEN KERNEL @ %s\n", (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNEL));
+  printf("OPEN KERNEL @ %s\n", (char *) config_get_data(LIBKERNSH_CONFIG_KERNEL));
 #endif
 
   if(fstat(fd, &st) == -1)
@@ -91,8 +91,8 @@ int kernsh_decompkernel_linux()
 
   memset(buf, '\0', sizeof(buf));
   snprintf(buf, sizeof(buf), "%s%s", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELGZ));
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_KERNELGZ));
 
   XOPEN(fz, buf, O_CREAT|O_RDWR, 0777, -1);
 
@@ -111,9 +111,9 @@ int kernsh_decompkernel_linux()
   
   memset(decomp, '\0', sizeof(decomp));
   snprintf(decomp, sizeof(decomp), "%s -d -f %s%s", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_GZIP), 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELGZ));
+	   (char *) config_get_data(LIBKERNSH_CONFIG_GZIP), 
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_KERNELGZ));
 
 #if __DEBUG_KERNSH__
   printf("DECOMP %s\n", decomp);
@@ -123,25 +123,25 @@ int kernsh_decompkernel_linux()
 
   memset(bufgz, '\0', sizeof(bufgz));
   snprintf(bufgz, sizeof(bufgz), "%s%s", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELGZ));
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_KERNELGZ));
 
   bufgz[strlen(bufgz) - 3] = '\0';
 
 
   memset(bufelf, '\0', sizeof(bufelf));
   snprintf(bufelf, sizeof(bufelf), "%s%s",
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELELF));
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_KERNELELF));
 
   memset(buf, '\0', sizeof(buf));
   snprintf(buf, sizeof(buf) , "%s -B i386 -I binary -O elf32-i386 %s %s",
-	 (char *) config_get_data(LIBKERNSH_VMCONFIG_OBJCOPY),
+	 (char *) config_get_data(LIBKERNSH_CONFIG_OBJCOPY),
 	 bufgz,
 	 bufelf);
 
 #if __DEBUG_KERNSH__
-  printf("EXTRACT ELF FROM DATA @ %s%s\n", (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH), (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELELF));
+  printf("EXTRACT ELF FROM DATA @ %s%s\n", (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH), (char *) config_get_data(LIBKERNSH_CONFIG_KERNELELF));
 #endif
 
   system(buf);

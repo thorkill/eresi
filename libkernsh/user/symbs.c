@@ -17,9 +17,9 @@
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
+int		kernsh_get_addr_by_name(char *name, eresi_Addr *addr, size_t size)
 {
-  int ret;
+  int		ret;
   u_int         dim[2];
   vector_t      *symbs;
   int          (*fct)();
@@ -27,19 +27,15 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!libkernshworld.open)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Memory not open !", -1);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not open !", -1);
 
   symbs = aspect_vector_get(LIBKERNSH_VECTOR_NAME_ADDRBYNAME);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
 
   fct = aspect_vectors_select(symbs, dim);
-
   ret = fct(name, addr, size);
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -50,9 +46,9 @@ int kernsh_get_addr_by_name(char *name, unsigned long *addr, size_t size)
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
+int		kernsh_get_name_by_addr(eresi_Addr addr, char *name, size_t size)
 {
-  int ret;
+  int		ret;
   u_int         dim[2];
   vector_t      *symbs;
   int          (*fct)();
@@ -83,7 +79,7 @@ int kernsh_get_name_by_addr(unsigned long addr, char *name, size_t size)
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_t size)
+int kernsh_walk_kstrtab(const char *symbol, eresi_Addr *addr, size_t size)
 {
   char srch[512];
   char tab[] = { '\0', '\xff' };
@@ -181,7 +177,7 @@ int kernsh_walk_kstrtab(const char *symbol, unsigned long *addr, size_t size)
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_addr_by_name_linux_2_6(char *name, unsigned long *addr, size_t size)
+int kernsh_get_addr_by_name_linux_2_6(char *name, eresi_Addr *addr, size_t size)
 {
   int ret;
 
@@ -213,7 +209,7 @@ int kernsh_get_addr_by_name_linux_2_6(char *name, unsigned long *addr, size_t si
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_name_by_addr_linux_2_6(unsigned long addr, char *name, size_t size)
+int kernsh_get_name_by_addr_linux_2_6(eresi_Addr addr, char *name, size_t size)
 {
   int ret;
 
@@ -231,7 +227,7 @@ int kernsh_get_name_by_addr_linux_2_6(unsigned long addr, char *name, size_t siz
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_kernel_syms(char *name, unsigned long *addr, size_t size)
+int kernsh_get_kernel_syms(char *name, eresi_Addr *addr, size_t size)
 {
 #if defined(__linux__)
 #if __LINUX_2_4__
@@ -274,7 +270,7 @@ int kernsh_get_kernel_syms(char *name, unsigned long *addr, size_t size)
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_addr_by_name_linux_2_4(char *name, unsigned long *addr, size_t size)
+int kernsh_get_addr_by_name_linux_2_4(char *name, eresi_Addr *addr, size_t size)
 {
   int ret;
 
@@ -295,7 +291,7 @@ int kernsh_get_addr_by_name_linux_2_4(char *name, unsigned long *addr, size_t si
  * @param size Symbol's name size
  * @return 0 on success, -1 on return
  */
-int kernsh_get_name_by_addr_linux_2_4(unsigned long addr, char *name, size_t size)
+int kernsh_get_name_by_addr_linux_2_4(eresi_Addr addr, char *name, size_t size)
 {
   int ret;
 

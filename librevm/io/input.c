@@ -69,7 +69,7 @@ char		*revm_getln()
 
 
 /** 
- * @brief Read input from the file descriptor 
+ * @brief Read input from the current IO file descriptor 
  */
 char		*revm_read_input()
 {
@@ -121,7 +121,7 @@ char		*revm_read_input()
 
 
 /** 
- * Input handler for the FIFO 
+ * IO Input handler for the debugger
  */
 char		*revm_fifoinput()
 {
@@ -163,7 +163,7 @@ char		*revm_fifoinput()
 
 
 /** 
- * INPUT handler for stdin 
+ * INPUT IO handler for stdin 
  */
 char		*revm_stdinput()
 {
@@ -185,7 +185,7 @@ char		*revm_stdinput()
 
 
 /** 
- * Change the Input file 
+ * Change the Input IO file descriptor
  */
 void	revm_setinput(revmworkspace_t *ws, int fd)
 {

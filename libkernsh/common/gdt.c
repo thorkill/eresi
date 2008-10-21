@@ -55,7 +55,7 @@ int kernsh_gdt_linux(list_t *lgdt)
 #endif
 
   /* Interrupts is not set in static kernel ! */
-  if (kernsh_is_static_mode())
+  if (elfsh_is_static_mode())
     {
      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to get gdt in static mode !", -1);
@@ -91,11 +91,11 @@ int kernsh_gdt_linux(list_t *lgdt)
 	  memset(key, '\0', BUFSIZ);
 
 	  sgdt->addr = libkernshworld.gdt_base+i;
-	  kernsh_readmem(libkernshworld.gdt_base+i,
+	  elfsh_readmema(libkernshworld.root, libkernshworld.gdt_base+i,
 			 &sgdt->deb,
 			 sizeof(unsigned long));
 
-	  kernsh_readmem(libkernshworld.gdt_base+i+4,
+	  elfsh_readmema(libkernshworld.root, libkernshworld.gdt_base+i+4,
 			 &sgdt->fin,
 			 sizeof(unsigned long));
 

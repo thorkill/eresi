@@ -83,7 +83,7 @@ int		cmd_reflect()
   /* Load the data from the bloc */
   blocdata = alloca(curblock->size);
   fileoff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, curblock->vaddr);
-  if (elfsh_raw_read(world.curjob->curfile, fileoff, 
+  if (elfsh_readmemf(world.curjob->curfile, fileoff, 
 		     blocdata, curblock->size) != curblock->size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to read data from bloc", -1);

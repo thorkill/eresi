@@ -9,7 +9,7 @@
 /**
  * @brief Dump elf\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
+ * LIBKERNSH_CONFIG_VIRTM
  * @param pid The process id
  * @param filename The output filename
  * @return 0 on success, -1 on error
@@ -29,7 +29,7 @@ int kernsh_dump_kvirtm_elf(pid_t pid, char *filename)
   printf("kernsh_kvirtm_dump_elf\n");
 #endif
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMDUMPELF);
   dim[0] = libkernshworld.os;
@@ -45,7 +45,7 @@ int kernsh_dump_kvirtm_elf(pid_t pid, char *filename)
 /**
  * @brief Get vma of a process id\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_VMA
+ * LIBKERNSH_CONFIG_VMA_PREFIX, LIBKERNSH_CONFIG_VMA
  * @param pid The process id
  * @return list_t on success, NULL on error
  */
@@ -63,7 +63,7 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, key, BUFSIZ, NULL);
   memset(key, '\0', BUFSIZ);
 
-  snprintf(key, BUFSIZ, "%s_%d", (char *)config_get_data(LIBKERNSH_VMCONFIG_VMA_PREFIX), pid);
+  snprintf(key, BUFSIZ, "%s_%d", (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX), pid);
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, l, sizeof(list_t), NULL);
 
@@ -73,7 +73,7 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
 		   "Failed to initialize list", NULL);
     }
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VMA);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VMA);
 
   kgv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KDUMPGETVMA);
   dim[0] = libkernshworld.os;
@@ -98,7 +98,7 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
 /**
  * @brief Get vma of a process id from userland\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VMA_PREFIX
+ * LIBKERNSH_CONFIG_VMA_PREFIX
  * @param pid The process id
  * @param l list_t to store vma
  * @return 0 on success, -1 on error
@@ -155,7 +155,7 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
 
       memset(key, '\0', BUFSIZ);
       snprintf(key, BUFSIZ, "%s_%d_%d", 
-	       (char *)config_get_data(LIBKERNSH_VMCONFIG_VMA_PREFIX), pid, j);
+	       (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX), pid, j);
 
       if (hash_init(h, key, 2, ASPECT_TYPE_LONG) == 1)
 	{
@@ -179,7 +179,7 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
 /**
  * @brief Get vma of a process id from kernelland\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VMA_PREFIX
+ * LIBKERNSH_CONFIG_VMA_PREFIX
  * @param pid The process id
  * @param l list_t to store vma
  * @return 0 on success, -1 on error
@@ -194,7 +194,7 @@ int kernsh_kdump_get_vma_kernelland_linux(pid_t pid, list_t *l)
 /**
  * @brief Dump vma of a process id\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_VMA, LIBKERNSH_VMCONFIG_STORAGE_PATH
+ * LIBKERNSH_CONFIG_VMA_PREFIX, LIBKERNSH_CONFIG_VMA, LIBKERNSH_CONFIG_STORAGE_PATH
  * @param pid The process id
  * @return 0 on success, -1 on error
  */
@@ -216,9 +216,9 @@ int kernsh_kdump_vma(pid_t pid)
 
   ret = 0;
 
-  sav_val = (char *)config_get_data(LIBKERNSH_VMCONFIG_VMA_PREFIX);
+  sav_val = (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX);
 
-  config_update_key(LIBKERNSH_VMCONFIG_VMA_PREFIX, (void *)"tmp_vma");
+  config_update_key(LIBKERNSH_CONFIG_VMA_PREFIX, (void *)"tmp_vma");
 
   l = kernsh_kdump_get_vma(pid);
 
@@ -228,7 +228,7 @@ int kernsh_kdump_vma(pid_t pid)
 		   "Failed to get vma", -1);
     }
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VMA);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VMA);
 
   kv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KDUMPVMA);
   dim[0] = libkernshworld.os;
@@ -238,16 +238,16 @@ int kernsh_kdump_vma(pid_t pid)
 
   memset(buff, '\0', sizeof(buff));
   snprintf(buff, sizeof(buff), "%s%s_%d", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
 	   pid);
 
   mkdir(buff, 0777);
 
   memset(buff, '\0', sizeof(buff));
   snprintf(buff, sizeof(buff), "%s%s_%d/metadata_%d", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
 	   pid,
 	   get);
 
@@ -287,7 +287,7 @@ int kernsh_kdump_vma(pid_t pid)
   hash_del(hash_lists, l->name);
   elist_destroy(l);
 
-  config_update_key(LIBKERNSH_VMCONFIG_VMA_PREFIX, sav_val);
+  config_update_key(LIBKERNSH_CONFIG_VMA_PREFIX, sav_val);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -295,7 +295,7 @@ int kernsh_kdump_vma(pid_t pid)
 /**
  * @brief Dump vma of a process id from userland\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_STORAGE_PATH
+ * LIBKERNSH_CONFIG_VMA_PREFIX, LIBKERNSH_CONFIG_STORAGE_PATH
  * @param pid The process id
  * @param h the hash table to store vma struct
  * @return 0 on success, -1 on error
@@ -345,8 +345,8 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
 
   memset(buff, '\0', sizeof(buff));
   snprintf(buff, sizeof(buff), "%s%s_%d/dump_userland_0x%lx", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
 	   pid, 
 	   vm_start);
 
@@ -364,7 +364,7 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
 /**
  * @brief Dump vma of a process id from kernelland\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VMA_PREFIX, LIBKERNSH_VMCONFIG_STORAGE_PATH
+ * LIBKERNSH_CONFIG_VMA_PREFIX, LIBKERNSH_CONFIG_STORAGE_PATH
  * @param pid The process id
  * @param h the hash table to store vma struct
  * @return 0 on success, -1 on error
@@ -400,8 +400,8 @@ int kernsh_kdump_vma_kernelland_linux(pid_t pid, hash_t *h)
   
   memset(buff, '\0', sizeof(buff));
   snprintf(buff, sizeof(buff), "%s%s_%d/dump_kernelland_0x%lx", 
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_VMCONFIG_DUMP_VMA_PREFIX),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
 	   pid, 
 	   vm_start);
 

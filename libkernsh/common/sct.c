@@ -39,7 +39,7 @@ int kernsh_sct(list_t *lsct)
 /**
  * @brief Get the sct on Linux\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_NB_SYSCALLS
+ * LIBKERNSH_CONFIG_NB_SYSCALLS
  * @param lsct List to store the sct
  * @return 0 on success, -1 on return
  */
@@ -58,10 +58,10 @@ int kernsh_sct_linux(list_t *lsct)
 #endif
 
   /* Get syscalls in the static kernel */
-  if (kernsh_is_static_mode())
+  if (elfsh_is_static_mode())
     {
       offset = 0;
-      for (i = (int) config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS) - 1;
+      for (i = (int) config_get_data(LIBKERNSH_CONFIG_NB_SYSCALLS) - 1;
 	   i >= 0;
 	   i--)
 	{
@@ -89,7 +89,7 @@ int kernsh_sct_linux(list_t *lsct)
 	  start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
 					       libkernshworld.sct + sizeof(unsigned long)*i);
 
-	  elfsh_raw_read(libkernshworld.root,
+	  elfsh_readmemf(libkernshworld.root,
 			 start,
 			 &syscall->addr,
 			 sizeof(unsigned long));
@@ -112,7 +112,7 @@ int kernsh_sct_linux(list_t *lsct)
 		       "Memory not open !", -1);
 	}
 
-      for (i = (int) config_get_data(LIBKERNSH_VMCONFIG_NB_SYSCALLS) - 1;
+      for (i = (int) config_get_data(LIBKERNSH_CONFIG_NB_SYSCALLS) - 1;
 	   i >= 0;
 	   i--)
 	{
@@ -137,7 +137,7 @@ int kernsh_sct_linux(list_t *lsct)
 		   "%d",
 		   i);
 
-	  kernsh_readmem(libkernshworld.sct + sizeof(unsigned long) * i, 
+	  elfsh_readmema(libkernshworld.root, libkernshworld.sct + sizeof(unsigned long) * i, 
 			 &syscall->addr, 
 			 sizeof(unsigned long));
 	  

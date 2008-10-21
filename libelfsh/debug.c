@@ -32,7 +32,7 @@ int		elfsh_print_sectlist(elfshobj_t *obj, char *label)
 		sctname = elfsh_get_section_name(obj, actual);
 		if (sctname == NULL)
 			sctname = "UNK";
-		data = elfsh_get_raw(actual);
+		data = elfsh_readmem(actual);
 		if (data == (u_char *)NULL)
 			data = (u_char *)"\xFF\xFF\xFF";
 		printf(" [%03u:%03u] %-15s HDRNAM: %-15s BYTES[%02X %02X %02X] P(%8p) "

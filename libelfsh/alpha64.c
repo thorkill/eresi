@@ -153,7 +153,7 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
   /* 00 00 60 d0     bsr     t2,120000ae0 <loop+0x1c> */
   opcode[11] = 0xd0600000;
 
-  elfsh_raw_write(file, altpltprolog->shdr->sh_offset, 
+  elfsh_writememf(file, altpltprolog->shdr->sh_offset, 
 		  opcode, sizeof(uint32_t) * 12);
 
 
@@ -161,7 +161,7 @@ int		elfsh_hijack_altplt_alpha64(elfshobj_t *file,
   off = ((-52) >> 2);
   off = (off & (~(0xffffffff << 20)));
   opcode[0] = 0xc0900000 | (uint32_t) off;
-  elfsh_raw_write(file, altplt->shdr->sh_offset, 
+  elfsh_writememf(file, altplt->shdr->sh_offset, 
 		  opcode, sizeof(uint32_t));
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -223,9 +223,9 @@ int		elfsh_hijack_plt_alpha64(elfshobj_t *file,
   opcode[0] = swap32(opcode[0]);
   opcode[1] = swap32(opcode[1]);
   opcode[2] = swap32(opcode[2]);  
-  elfsh_raw_write(file, foffset, opcode, sizeof(uint32_t) * 3);
+  elfsh_writememf(file, foffset, opcode, sizeof(uint32_t) * 3);
 #else
-  elfsh_raw_write(file, foffset, opcode, sizeof(uint32_t) * 3);
+  elfsh_writememf(file, foffset, opcode, sizeof(uint32_t) * 3);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -247,7 +247,7 @@ eresi_Addr	elfsh_modgot_find(elfshsect_t *modgot, eresi_Addr addr)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
-  cur = elfsh_get_raw(modgot);
+  cur = elfsh_readmem(modgot);
   for (idx = 0; idx < modgot->shdr->sh_size / sizeof(eresi_Addr); idx++)
     {
 
@@ -309,8 +309,8 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
       for (idx = 0; idx < sctcur->shdr->sh_size / size; idx++)
 	{
 	  relcur = (IS_REL(modrel) ?
-		    (void *) ((elfsh_Rel  *) elfsh_get_raw(sctcur) + idx) : 
-		    (void *) ((elfsh_Rela *) elfsh_get_raw(sctcur) + idx));
+		    (void *) ((elfsh_Rel  *) elfsh_readmem(sctcur) + idx) : 
+		    (void *) ((elfsh_Rela *) elfsh_readmem(sctcur) + idx));
 	  if (elfsh_get_reltype(relcur) == R_ALPHA_LITERAL)
 	    needed++;
 	}
@@ -333,7 +333,7 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
   if (modgot == NULL)
     goto bad;
 
-  got = elfsh_get_raw(modgot);
+  got = elfsh_readmem(modgot);
 
   /* 
   **   Fill the mod.o.got with pointers to the real data
@@ -346,8 +346,8 @@ elfshsect_t	*elfsh_modgot_alpha64(elfshsect_t *infile, elfshsect_t *modrel)
       for (idx = 0; idx < sctcur->shdr->sh_size / size; idx++)
 	{
 	  relcur = (IS_REL(modrel) ?
-		    (void *) ((elfsh_Rel  *) elfsh_get_raw(sctcur) + idx) :
-		    (void *) ((elfsh_Rela *) elfsh_get_raw(sctcur) + idx));
+		    (void *) ((elfsh_Rel  *) elfsh_readmem(sctcur) + idx) :
+		    (void *) ((elfsh_Rela *) elfsh_readmem(sctcur) + idx));
 	  
 	  /* Now there are many possible computations for the address */
 	  if (elfsh_get_reltype(relcur) == R_ALPHA_LITERAL)

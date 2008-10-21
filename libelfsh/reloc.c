@@ -227,7 +227,7 @@ int		elfsh_endianize_relocs(elfshsect_t *s)
 #else
 #error Unexpected __BYTE_ORDER !
 #endif
-    rel = (void *) elfsh_get_raw(s);
+    rel = (void *) elfsh_readmem(s);
     rela = (void *) rel;
 
     for (idx = 0; idx < sz; idx++)
@@ -398,7 +398,7 @@ elfsh_Sym	*elfsh_get_symbol_from_reloc(elfshobj_t *file,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to find DYNSYM", NULL);
 
-  sym = elfsh_get_raw(file->secthash[ELFSH_SECTION_DYNSYM]) + 
+  sym = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSYM]) + 
     (tmp * ELFSH_SYMTAB_ENTRY_SIZE);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
 }
@@ -472,7 +472,7 @@ elfsh_Rel	*elfsh_get_relent_by_name(elfshobj_t *file, char *name)
     {
       for (idx = 0; idx < num; idx++)
 	{
-	  data = elfsh_get_raw(sect);
+	  data = elfsh_readmem(sect);
 	  cur = (sect->shdr->sh_type == SHT_RELA ?
 		 (void *) ((elfsh_Rela *) data + idx) :
 		 (void *) ((elfsh_Rel  *) data + idx));
@@ -510,7 +510,7 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
   if (sect == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", NULL);
-  else if (elfsh_get_raw(sect) == NULL)
+  else if (elfsh_readmem(sect) == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section empty", NULL);
   else if (sect->shdr->sh_addr == NULL)
@@ -534,9 +534,9 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
   sect->srcref = sect->dstref = 0;
 
   /* Read the actual section and find valid references */
-  str = elfsh_get_raw(sect);
+  str = elfsh_readmem(sect);
   for (dword = (int *) str;
-       ((char *) dword + 4) <= ((char *) elfsh_get_raw(sect) + 
+       ((char *) dword + 4) <= ((char *) elfsh_readmem(sect) + 
 				sect->shdr->sh_size);
        dword = (int *) str)
     {
@@ -557,9 +557,9 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
   XALLOC(__FILE__, __FUNCTION__, __LINE__,rel, sect->srcref * sizeof(elfshrel_t), NULL);
 
   /* Read the actual section again and create section rel table */
-  str = elfsh_get_raw(sect);
+  str = elfsh_readmem(sect);
   for (index = 0, dword = (int *) str;
-       ((char *) dword + 4) <= ((char *) elfsh_get_raw(sect) +
+       ((char *) dword + 4) <= ((char *) elfsh_readmem(sect) +
 				sect->shdr->sh_size);
        dword = (int *) str)
     {
@@ -567,7 +567,7 @@ elfshrel_t	*elfsh_find_rel(elfshsect_t *sect)
       if (target != NULL)
 	{
 	  vaddr = sect->shdr->sh_addr + 
-	    (eresi_Addr) ((char *) str - (char *) elfsh_get_raw(sect));
+	    (eresi_Addr) ((char *) str - (char *) elfsh_readmem(sect));
 	  rel[index].idx_src = sect->index;
 	  rel[index].off_src = vaddr - sect->shdr->sh_addr;
 	  rel[index].idx_dst = target->index;

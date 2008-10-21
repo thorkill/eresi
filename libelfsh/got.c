@@ -77,7 +77,7 @@ int		elfsh_endianize_got(elfshsect_t *newsect)
 #else
 #error Unexpected __BYTE_ORDER !
 #endif
-    cur = elfsh_get_raw(newsect);
+    cur = elfsh_readmem(newsect);
     for (idx = 0; idx < newsect->shdr->sh_size / newsect->shdr->sh_entsize; idx++)
       cur[idx] = swaplong(cur[idx]);
   }
@@ -134,7 +134,7 @@ eresi_Addr     	*elfsh_get_got(elfshobj_t *file, int *num)
   /* Final things */
   if (num != NULL)
     *num = enew->shdr->sh_size / enew->shdr->sh_entsize;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_raw(enew)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(enew)));
 }
  
  

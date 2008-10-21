@@ -92,9 +92,9 @@ int		cmd_openmem()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if no static is set */
-  if (!(int) config_get_data(LIBKERNSH_VMCONFIG_WITHOUT_KERNEL))
+  if (!(int) config_get_data(LIBKERNSH_CONFIG_WITHOUT_KERNEL))
     {
-      if(!(int) config_get_data(LIBKERNSH_VMCONFIG_USE_KERNEL))
+      if(!(int) config_get_data(LIBKERNSH_CONFIG_USE_KERNEL))
 	{
 	  /* Gunzip/Extract the kernel */
 	  ret = kernsh_decompkernel();
@@ -104,8 +104,8 @@ int		cmd_openmem()
       snprintf(buff,
 	       sizeof(buff),
 	       "%s%s",
-	       (char *) config_get_data(LIBKERNSH_VMCONFIG_STORAGE_PATH),
-	       (char *) config_get_data(LIBKERNSH_VMCONFIG_KERNELELF));
+	       (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+	       (char *) config_get_data(LIBKERNSH_CONFIG_KERNELELF));
       
       ret = revm_file_load(buff, 0, NULL);
 
@@ -115,15 +115,13 @@ int		cmd_openmem()
     
       libkernshworld.root = revm_lookup_file(buff);
       if (libkernshworld.root == NULL)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unable to get elf file", -1);
-	}
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Unable to get elf file", -1);
       libkernshworld.open_static = 1;
     }
   else 
     {
-      kernsh_set_mem_mode();
+      elfsh_set_debug_mode();
     }
 
   /* Open memory */

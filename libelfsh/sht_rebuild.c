@@ -61,7 +61,7 @@ int	elfsh_merge_shtentry(elfshobj_t *file,
       if (file->sht[index].sh_offset == shdr.sh_offset && len < 4)
         {
           /* In the rare case where both names have equal lenght, we can optimize a bit */
-          data = elfsh_get_raw(file->secthash[ELFSH_SECTION_SHSTRTAB]);
+          data = elfsh_readmem(file->secthash[ELFSH_SECTION_SHSTRTAB]);
           len = (file->sht[index].sh_name ? strlen(data + file->sht[index].sh_name) : 0);
           if (len == namelen)
             {
@@ -217,10 +217,10 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
   unsigned int	nnames,lnames,dnames;
   unsigned int	tlsnames,ehnames,snames;
   unsigned int	dyn_size = 0;
-  long		type, total, section_offset, base_addr = 0, dyn_addr = 0;
+  long		type, total, section_offset;
+  eresi_Addr	sect_addr, base_addr = 0, dyn_addr = 0;
   int		flags;
   elfsh_Dyn	*dyn;
-  eresi_Addr	sect_addr;
   elfsh_Word	sect_size, ent_size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -403,7 +403,7 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
   for (idx= 0, sect = file->sectlist; sect; sect=sect->next, idx++) 
     {
       sect->shdr->sh_name = elfsh_insert_in_shstrtab(file, sect->name);
-      printf("name[%d][%d]:%s @ 0x%08x\n", idx, sect->shdr->sh_name, 
+      printf("name[%d][%d]:%s @ " XFMT "\n", idx, sect->shdr->sh_name, 
 	     sect->name, sect->shdr->sh_addr);
       section_offset += strlen(sect->name)+1;
     }
@@ -420,8 +420,6 @@ static int	elfsh_init_sht(elfshobj_t *file, u_int num)
       sect_addr = dyn->d_un.d_ptr;
       dyn = elfsh_get_dynamic_entry_by_type(file, DT_STRSZ);
       sect_size = dyn->d_un.d_val;
-     // printf("@" XFMT " => SECT SIZE: " XFMT " %hd bytes\n", 
-	  //   sect_addr - base_addr, sect_size, sect_size);
       
       shdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_ALLOC, sect_addr, 
 			       section_offset, sect_size,0,0,0,

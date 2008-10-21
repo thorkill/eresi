@@ -35,6 +35,8 @@ foreach $instr of $hash[instrlists:$begaddr]
 #print Transforming instruction: $instr
 set $curlen $instr.len
 
+D $begaddr%1
+
 rewrite $instr into
 
 # Prolog - SUB (ESP, imm)
@@ -272,13 +274,13 @@ into AssignMR(addr:$curaddr, dst(base(rid:$ESP)), src(rid:$instr.op1.name))
 case instr(sem:sp-wm, op1(sem:imm)) 
 into AssignIM(addr:$curaddr, dst(base(rid:$ESP)), src(val:$instr.op1.imm))
 
-# POPF
-case instr(sem:sp-rm-wf) 
-into AssignRM(addr:$curaddr, dst(rid:$EFLAGS), src(base(rid:$ESP)), uflags(val:$instr.wflags))
-
 # PUSHF
 case instr(sem:sp-wm-rf) 
 into AssignMR(addr:$curaddr, dst(base(rid:$ESP)), src(rid:$EFLAGS), uflags(val:$instr.rflags))
+
+# POPF
+case instr(sem:sp-rm-wf) 
+into AssignRM(addr:$curaddr, dst(rid:$EFLAGS), src(base(rid:$ESP)), uflags(val:$instr.wflags))
 
 # RET, RETF
 case instr(sem:r) 

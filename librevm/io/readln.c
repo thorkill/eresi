@@ -67,7 +67,7 @@ char            *revm_input_check()
 int             revm_init_history(int mode)
 {
 #if defined(USE_READLN)
-  return (readln_init(mode, (char *)config_get_data(ERESI_VMCONFIG_HISTORY)));
+  return (readln_init(mode, (char *)config_get_data(ERESI_CONFIG_HISTORY)));
 #else
   return (0);
 #endif
@@ -76,7 +76,7 @@ int             revm_init_history(int mode)
 int             revm_quit(int mode)
 {
 #if defined(USE_READLN)
-  return (readln_quit(mode, (char *)config_get_data(ERESI_VMCONFIG_HISTORY)));
+  return (readln_quit(mode, (char *)config_get_data(ERESI_CONFIG_HISTORY)));
 #else
   return (0);
 #endif
@@ -224,7 +224,7 @@ void		revm_conditional_rlquit()
 #if defined(USE_READLN)
   if (!(world.state.revm_mode == REVM_STATE_DEBUGGER
 	&& world.state.revm_side == REVM_SIDE_SERVER))
-    readln_quit(world.state.revm_mode, (char *)config_get_data(ERESI_VMCONFIG_HISTORY));
+    readln_quit(world.state.revm_mode, (char *)config_get_data(ERESI_CONFIG_HISTORY));
 #endif
 }
 

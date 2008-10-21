@@ -74,9 +74,19 @@ void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
+/** 
+ * @brief OUTPUT handler for graphviz file
+ * @ingroup analysis
+ */
+int		eresi_graph_output(char *str)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  write(world.curjob->ws.io.output_fd, str, strlen(str));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
 
 /* Just a static handler to be used with elist_apply */
-static int   revm_print_block_handler(listent_t *e, void *null)
+static int	revm_print_block_handler(listent_t *e, void *null)
 {
   revmexpr_t	*expr;
 
@@ -95,12 +105,16 @@ static int   revm_print_block_handler(listent_t *e, void *null)
 static void	revm_print_block(int fd, list_t *list)
 {
   int		savedfd;
+  void		*savedhdl;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   savedfd = revm_output_get(&world.curjob->ws);
+  savedhdl = world.curjob->ws.io.output;
   revm_setoutput(&world.curjob->ws, fd);
+  revm_setoutput_handler(&world.curjob->ws, eresi_graph_output);
   elist_apply(list, NULL, revm_print_block_handler);
   revm_setoutput(&world.curjob->ws, savedfd);
+  revm_setoutput_handler(&world.curjob->ws, savedhdl);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
@@ -142,7 +156,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
   foffset = elfsh_get_foffset_from_vaddr(world.curjob->curfile, blk->vaddr);
-  ret     = elfsh_raw_read(world.curjob->curfile, foffset, buffer, blk->size);
+  ret     = elfsh_readmemf(world.curjob->curfile, foffset, buffer, blk->size);
   if (ret > 0)
     {
       name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &off);
@@ -181,16 +195,16 @@ int	revm_graph_compile_graphic(char *dotfile)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if ((int) config_get_data(ERESI_VMCONFIG_GRAPH_AUTOBUILD))
+  if ((int) config_get_data(ERESI_CONFIG_GRAPH_AUTOBUILD))
     {
       snprintf(buf,sizeof(buf),"dot -Tpng -o %s.png %s",dotfile,dotfile);
       system(buf);
 
-      if ((int) config_get_data(ERESI_VMCONFIG_GRAPH_AUTOVIEW))
+      if ((int) config_get_data(ERESI_CONFIG_GRAPH_AUTOVIEW))
 	{
 	  snprintf(buf,sizeof(buf),
 		   "%s %s.png",
-		   (char *)config_get_data(ERESI_VMCONFIG_GRAPH_VIEWCMD),
+		   (char *)config_get_data(ERESI_CONFIG_GRAPH_VIEWCMD),
 		   dotfile);
 	  revm_system_nowait(buf);
 	}
@@ -241,7 +255,7 @@ int		revm_prepare_storage_dir(void)
   memset(tmp,0x00, BUFSIZ);
   memset(path,0x00, BUFSIZ);
 
-  snprintf(path,BUFSIZ-1,"%s/%s",(char *)config_get_data(ERESI_VMCONFIG_GRAPH_STORAGEPATH),
+  snprintf(path,BUFSIZ-1,"%s/%s",(char *)config_get_data(ERESI_CONFIG_GRAPH_STORAGEPATH),
 	   revm_flattern_path(world.mjr_session.cur->obj->name));
 
   for (token = strtok_r(path,sep,&brkt);
@@ -278,7 +292,7 @@ char		*revm_get_dotfile_name(char *opt,char *prefix)
   if (!prefix)
     prefix = "";
 
-  str1 = (char *) config_get_data(ERESI_VMCONFIG_GRAPH_STORAGEPATH);
+  str1 = (char *) config_get_data(ERESI_CONFIG_GRAPH_STORAGEPATH);
   str2 = revm_flattern_path(world.mjr_session.cur->obj->name);
   namelen = strlen(str1) + strlen(str2) + strlen(opt) + strlen(prefix) + 32;
 
@@ -288,7 +302,7 @@ char		*revm_get_dotfile_name(char *opt,char *prefix)
 		 "Cannot prepare storage directory", NULL);
   
   snprintf(dotfile,namelen,"%s%s/%s-%s.dot",
-	   (char *)config_get_data(ERESI_VMCONFIG_GRAPH_STORAGEPATH),
+	   (char *)config_get_data(ERESI_CONFIG_GRAPH_STORAGEPATH),
 	   revm_flattern_path(world.mjr_session.cur->obj->name),
 	   prefix,opt);
 

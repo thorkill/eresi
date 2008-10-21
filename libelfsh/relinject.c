@@ -244,7 +244,7 @@ static int	elfsh_relocate_etrel_section(elfshsect_t	*enew,
 			  "Unable to find symbol in ET_REL", -1);
 
       /* Grab a pointer on the dword that need to be relocated */
-      dword = (eresi_Addr *) ((char *) elfsh_get_raw(enew) + cur->r_offset);
+      dword = (eresi_Addr *) ((char *) elfsh_readmem(enew) + cur->r_offset);
 
       /*
       ** If symbol type is NOTYPE, we use ET_EXEC symtab, else if

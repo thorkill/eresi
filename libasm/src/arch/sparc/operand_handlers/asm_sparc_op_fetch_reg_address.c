@@ -12,7 +12,7 @@
  */
 
 int asm_sparc_op_fetch_reg_address(asm_operand *operand, u_char *opcode, 
-                       				   int otype, asm_instr *ins)
+				   int otype, asm_instr *ins)
 {
   operand->content = ASM_SP_OTYPE_REG_ADDRESS;
   operand->type    = ASM_OPTYPE_MEM;

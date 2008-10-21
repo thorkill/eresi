@@ -3,20 +3,19 @@
 ** @ingroup libkernsh_user
 **
 */
-
 #include "libkernsh.h"
 
 /**
  * @brief Read virtual memory of a pid\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
+ * LIBKERNSH_CONFIG_VIRTM
  * @param pid The process id
  * @param addr The address to read
  * @param buffer Read virtual memory into the buffer
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
+int		kernsh_kvirtm_read_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
   u_int         dim[3];
@@ -25,7 +24,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADVIRTM);
@@ -63,7 +62,7 @@ int kernsh_kvirtm_read_virtm(pid_t pid, unsigned long addr, char *buffer, int le
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;
@@ -89,26 +88,20 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
 	 -1);
   
   memset(proc_entry_root_tmp, '\0', nlen);
- 
   snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
 	   PROC_ENTRY_ROOT, 
 	   PROC_ENTRY_KERNSH_VIRTM,
 	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:0x%lx:%d:%d", 
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:%d", 
 	   LIBKERNSH_VIRTM_READ_MEM_PID, 
-	   addr,
-	   len,
-	   pid);
+	   addr, len, pid);
 
   ret = write(fd, buff, strlen(buff));
   if (ret != strlen(buff))
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio",
-		   -1);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Impossible to set vio",  -1);
 
   XCLOSE(fd, -1);
 
@@ -135,7 +128,7 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, unsigned long addr, char *buf
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
@@ -155,7 +148,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_READ_MEM_PID;
     
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
@@ -163,14 +156,14 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, unsigned long addr, char *
 /**
  * @brief Write virtual memory of a pid\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
+ * LIBKERNSH_CONFIG_VIRTM
  * @param pid The process id
  * @param addr The address to write
  * @param buffer Write buffer into virtual memory
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_write_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;;
   u_int         dim[3];
@@ -179,7 +172,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEVIRTM);
@@ -217,7 +210,7 @@ int kernsh_kvirtm_write_virtm(pid_t pid, unsigned long addr, char *buffer, int l
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;
@@ -243,27 +236,20 @@ int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, unsigned long addr, char *bu
 	 -1);
   
   memset(proc_entry_root_tmp, '\0', nlen);
- 
   snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
 	   PROC_ENTRY_ROOT, 
 	   PROC_ENTRY_KERNSH_VIRTM,
 	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:0x%lx:%d:%d", 
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:%d", 
 	   LIBKERNSH_VIRTM_WRITE_MEM_PID, 
-	   addr,
-	   len,
-	   pid);
+	   addr, len, pid);
 
   ret = write(fd, buff, strlen(buff));
   if (ret != strlen(buff))
-    {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio",
-		   -1);
-    }
-
+		   "Impossible to set vio", -1);
   XCLOSE(fd, -1);
 
   snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
@@ -288,7 +274,7 @@ int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, unsigned long addr, char *bu
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
@@ -308,7 +294,7 @@ int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, unsigned long addr, char 
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_WRITE_MEM_PID;
     
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
   if (rlen != len)
     ret = -1;
@@ -328,6 +314,7 @@ int kernsh_kvirtm_openmem()
   printf("OPEN KVIRTM OPEN MEM\n");
 #endif
 
+  libkernshworld.root->iotype = ELFSH_IOTYPE_KVIRTM;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -353,7 +340,7 @@ int kernsh_kvirtm_closemem()
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
+int		kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
   u_int         dim[3];
@@ -361,6 +348,9 @@ int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
   int          (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
   ret = 0;
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
@@ -369,7 +359,7 @@ int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
   printf("kernsh_kvirtm_read_mem\n");
 #endif
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM);
   dim[0] = libkernshworld.os;
@@ -403,7 +393,7 @@ int kernsh_kvirtm_readmem(unsigned long addr, char *buffer, int len)
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_readmem_syscall_linux(eresi_Addr addr, char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
@@ -423,7 +413,7 @@ int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int le
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_READ_MEM;
     
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
@@ -435,10 +425,10 @@ int kernsh_kvirtm_readmem_syscall_linux(unsigned long addr, char *buffer, int le
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
+int	kernsh_kvirtm_readmem_proc_linux(eresi_Addr addr, char *buffer, int len)
 {
-  int fd, ret, nlen;
-  char *proc_entry_root_tmp;
+  int	fd, ret, nlen;
+  char	*proc_entry_root_tmp;
   char	buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -472,7 +462,7 @@ int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
 	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:0x%lx:%d:", 
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:", 
 	   LIBKERNSH_VIRTM_READ_MEM, 
 	   (addr - libkernshworld.kernel_start),
 	   len);
@@ -482,8 +472,7 @@ int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
     {
       XCLOSE(fd, -1);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio",
-		   -1);
+		   "Impossible to set vio", -1);
     }
   XCLOSE(fd, -1);
 
@@ -510,7 +499,7 @@ int kernsh_kvirtm_readmem_proc_linux(unsigned long addr, char *buffer, int len)
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
+int		kernsh_kvirtm_writemem(elfshobj_t *kern, eresi_Addr addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
   u_int         dim[3];
@@ -518,6 +507,9 @@ int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
   int          (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!libkernshworld.open)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Memory not opened !", -1);
 
   ret = 0;
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
@@ -526,7 +518,7 @@ int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
   printf("kernsh_kvirtm_read_mem\n");
 #endif
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMWRITEMEM);
   dim[0] = libkernshworld.os;
@@ -560,7 +552,7 @@ int kernsh_kvirtm_writemem(unsigned long addr, char *buffer, int len)
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_writemem_syscall_linux(unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_writemem_syscall_linux(eresi_Addr addr, char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
@@ -580,7 +572,7 @@ int kernsh_kvirtm_writemem_syscall_linux(unsigned long addr, char *buffer, int l
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_WRITE_MEM;
     
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
@@ -592,7 +584,7 @@ int kernsh_kvirtm_writemem_syscall_linux(unsigned long addr, char *buffer, int l
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
+int kernsh_kvirtm_writemem_proc_linux(eresi_Addr addr, char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;
@@ -629,7 +621,7 @@ int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
 	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
  
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:0x%lx:%d:", 
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:", 
 	   LIBKERNSH_VIRTM_WRITE_MEM, 
 	   (addr - libkernshworld.kernel_start),
 	   len);
@@ -661,7 +653,7 @@ int kernsh_kvirtm_writemem_proc_linux(unsigned long addr, char *buffer, int len)
 /**
  * @brief Task pid\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
+ * LIBKERNSH_CONFIG_VIRTM
  * @param pid The process id
  * @param h The list
  * @return 0 on success, -1 on error
@@ -681,7 +673,7 @@ int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
   printf("kernsh_kvirtm_task_pid\n");
 #endif
 
-  get = (int)config_get_data(LIBKERNSH_VMCONFIG_VIRTM);
+  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMTASKPID);
   dim[0] = libkernshworld.os;
@@ -697,7 +689,7 @@ int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
 /**
  * @brief Task pid thought /proc\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
+ * LIBKERNSH_CONFIG_VIRTM
  * @param pid The process id
  * @param h The list
  * @return 0 on success, -1 on error
@@ -801,7 +793,7 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
 /**
  * @brief Task pid thought syscall\n
  * Configure :\n
- * LIBKERNSH_VMCONFIG_VIRTM
+ * LIBKERNSH_CONFIG_VIRTM
  * @param pid The process id
  * @param h The list
  * @return 0 on success, -1 on error

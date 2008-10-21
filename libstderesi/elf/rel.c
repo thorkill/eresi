@@ -128,7 +128,7 @@ int		cmd_rel()
       revm_output(logbuf);
 
       /* Iterate on the .rel entries array for each .rel section */
-      data = elfsh_get_raw(sect);
+      data = elfsh_readmem(sect);
       for (index = 0; index < size; index++)
 	{
 

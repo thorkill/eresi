@@ -93,7 +93,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to get an anonymous section", -1);
   
-  base = elfsh_get_raw(text);
+  base = elfsh_readmem(text);
   len = text->shdr->sh_size;
 
   /* Get the virtual address */
@@ -209,7 +209,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to get an anonymous section", -1);
   
-  base = elfsh_get_raw(text);
+  base = elfsh_readmem(text);
   len = text->shdr->sh_size;
 
   /* Get the virtual address */

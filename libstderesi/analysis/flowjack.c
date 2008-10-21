@@ -94,7 +94,7 @@ int			cmd_flowjack(void)
       foff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, cal->vaddr);
 
       XREALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, buffer, size, -1);
-      elfsh_raw_read(world.curjob->curfile, foff, buffer, size);
+      elfsh_readmemf(world.curjob->curfile, foff, buffer, size);
       asm_read_instr(&ins, (u_char *) buffer, size, &world.proc);
       
       puts(" [*] would patch -> ");
@@ -120,7 +120,7 @@ int			cmd_flowjack(void)
       /* display for debug */
       puts(" * patched ->");
       revm_instr_display(-1, 0, cal->vaddr, 0, size, name, off, buffer);
-      elfsh_raw_write(world.curjob->curfile, foff, buffer, size);
+      elfsh_writememf(world.curjob->curfile, foff, buffer, size);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));

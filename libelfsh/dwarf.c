@@ -68,7 +68,7 @@ void			*elfsh_get_dwarf_info(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_INFO]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_INFO]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -114,7 +114,7 @@ void			*elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_ABBREV]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_ABBREV]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -160,7 +160,7 @@ void		*elfsh_get_dwarf_aranges(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_ARANGES]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_ARANGES]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -206,7 +206,7 @@ void		*elfsh_get_dwarf_frame(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_FRAME]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_FRAME]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -252,7 +252,7 @@ void		*elfsh_get_dwarf_line(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_LINE]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_LINE]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -298,7 +298,7 @@ void		*elfsh_get_dwarf_macinfo(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_MACINFO]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_MACINFO]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -344,7 +344,7 @@ void		*elfsh_get_dwarf_pubnames(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_PUBNAMES]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_PUBNAMES]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -390,7 +390,7 @@ void		*elfsh_get_dwarf_str(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_STR]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_STR]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -436,7 +436,7 @@ void		*elfsh_get_dwarf_loc(elfshobj_t *file, int *num)
   if (num)
     *num = nbr;
 
-  ret = elfsh_get_raw(file->secthash[ELFSH_SECTION_DW2_LOC]);
+  ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_LOC]);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

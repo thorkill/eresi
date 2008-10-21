@@ -185,7 +185,6 @@ int	       revm_context_restore(int		savedfd,
   u_int		idx;
   char		**keys;
   int		keynbr;
-  void		*data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -216,25 +215,6 @@ int	       revm_context_restore(int		savedfd,
 
     }
   hash_free_keys(keys);
-
-  /* Destroy current labels */
-  /* ALREADY FREED SOMEWHERE ELSE */
-  /*
-  keys = hash_get_keys(&world.curjob->recur[world.curjob->curscope].labels, &keynbr);
-  for (idx = 0; idx < keynbr; idx++)
-    {
-      data = hash_get(&world.curjob->recur[world.curjob->curscope].labels, keys[idx]);
-      if (keys[idx] && data)
-	{
-#if 1 //__DEBUG_EXPRS__
-	  fprintf(stderr, " [D] Label key %s WILL be destroyed from ending scope \n", keys[idx]);
-#endif
-	  
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
-	}
-    }
-  hash_free_keys(keys);
-  */
 
   /* Destroy frame */
   hash_destroy(&world.curjob->recur[world.curjob->curscope].labels);

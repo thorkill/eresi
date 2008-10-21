@@ -15,37 +15,34 @@
 /**
  * @brief Get the buffered address from the real virtual address 
  */
-void		*elfsh_get_raw_by_addr(elfshobj_t *current, void *addr)
+void		*elfsh_get_raw_by_addr(elfshobj_t *current, eresi_Addr addr, void *buf, u_int size)
 {
   elfshsect_t	*sect;
   elfsh_SAddr	offset;
-#if defined(KERNSH)
-  void		*dataptr;
-#endif
-
-  sect = elfsh_get_parent_section(current, (eresi_Addr) addr, &offset);
-
-#if defined(KERNSH)
-  dataptr = kernsh_get_raw_by_addr(addr);
-  if (dataptr != NULL)
-    return dataptr;
-#endif
 
   /* This happens when the object is a ERESI variable */
+  sect = elfsh_get_parent_section(current, (eresi_Addr) addr, &offset);
   if (!sect)
-    return (addr);
+    return ((void *) addr);
 
+  /* In debug mode, we return a pointer on the runtime data */
   if (elfsh_is_debug_mode())
     {
       if (!elfsh_section_is_runtime(sect))
-	return ((void *) (sect->parent->rhdr.base + sect->shdr->sh_addr + offset));
+	return ((void *) sect->parent->rhdr.base + sect->shdr->sh_addr + offset);
       else if (!sect->shdr->sh_addr)
-	return ((void *) (char *) sect->data + offset);
+	return ((void *) sect->data + offset);
       else
-	return ((void *) (sect->shdr->sh_addr + offset));
+	return ((void *) sect->shdr->sh_addr + offset);
     }
+
+  /* Else we return a pointer on the cache data, doing a copy if requested */
   else
-    return ((void *) (char *) sect->data + offset);
+    {
+      if (buf && size)
+	memcpy(buf, (char *) sect->data + offset, size);
+      return ((void *) sect->data + offset);
+    }
   
 }
 
@@ -59,14 +56,7 @@ void			*elfsh_get_raw(elfshsect_t *sect)
 {
   void			*dataptr = 0;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(KERNSH)
-  dataptr = kernsh_get_raw(sect);
-  if (dataptr != NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dataptr);
-#endif
-  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   if (elfsh_is_debug_mode())
     {
 
@@ -109,13 +99,6 @@ int		elfsh_raw_write(elfshobj_t	*file,
   int		prot;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(KERNSH)
-  if (kernsh_raw_write(file, foffset, src_buff, len) == len)
-    {
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);
-    }
-#endif
 
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)
@@ -161,14 +144,6 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
   int		sect_off;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-#if defined(KERNSH)
-  if (kernsh_raw_read(file, foffset, dest_buff, len) == len)
-    {
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);
-    }
-#endif
-
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

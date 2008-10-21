@@ -216,7 +216,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
   else
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
-      memcpy(prologdata, elfsh_get_raw(plt), sz);
+      memcpy(prologdata, elfsh_readmem(plt), sz);
       name = ELFSH_SECTION_NAME_ALTPLT;
     }
   enew = elfsh_create_section(name);
@@ -245,7 +245,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 			      0, 0, sz, 0, 0, 0, sizeof(eresi_Addr));
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, sz, -1);
-      memcpy(prologdata, elfsh_get_raw(got), got->shdr->sh_size);
+      memcpy(prologdata, elfsh_readmem(got), got->shdr->sh_size);
       
       if (elfsh_insert_mapped_section(file, altgot, hdr, prologdata, 
 				      ELFSH_DATA_INJECTION, mod) < 0)
@@ -259,7 +259,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 			  ".alt.got insertion failed", -1);
       file->secthash[ELFSH_SECTION_ALTGOT] = altgot;
       altgot->curend = got->shdr->sh_size;
-      memset(elfsh_get_raw(altgot) + got->shdr->sh_size, 0x00, got->shdr->sh_size);
+      memset(elfsh_readmem(altgot) + got->shdr->sh_size, 0x00, got->shdr->sh_size);
       altgot->shdr->sh_entsize = sizeof(eresi_Addr);
     }
   
@@ -273,7 +273,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 			      0, 0, extplt_size, 0, 0, 0, 0);
 
       XALLOC(__FILE__, __FUNCTION__, __LINE__, prologdata, plt->shdr->sh_size, -1);
-      memcpy(prologdata, elfsh_get_raw(plt), plt->shdr->sh_size);
+      memcpy(prologdata, elfsh_readmem(plt), plt->shdr->sh_size);
 
       if (elfsh_insert_mapped_section(file, extplt, hdr, prologdata, 
 				      mode, mod) < 0)
@@ -308,7 +308,7 @@ int		elfsh_relink_plt(elfshobj_t *file, u_int mod)
 	continue;
       
       /* Get the existing symbol name for this plt entry ... */
-      sym = elfsh_get_sym_by_value(elfsh_get_raw(dynsym),
+      sym = elfsh_get_sym_by_value(elfsh_readmem(dynsym),
 				   dynsym->shdr->sh_size / sizeof(elfsh_Sym),
 				   plt->shdr->sh_addr + off, 
 				   NULL, ELFSH_EXACTSYM);
@@ -465,7 +465,7 @@ int		elfsh_build_plt(elfshobj_t *file)
   ** that delimit the beginning and the end of plt. This is MIPS specific
   ** since only MIPS needs this.
   */
-  tdata = elfsh_get_raw(text);
+  tdata = elfsh_readmem(text);
   for (off = 0; off < text->shdr->sh_size; off += 4)
     if (!memcmp(tdata + off, buff, sizeof(buff)))
       {
