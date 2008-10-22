@@ -266,8 +266,6 @@ int		cmd_load()
   revm_output("\n");
   ret = revm_file_load(str, 0, NULL);
   revm_output("\n");
-
-  fprintf(stderr, "the mode is: %d", dbgworld.mode);
   
   /* Restore dynamic mode */
   if (was_dynamic)
@@ -284,8 +282,6 @@ int		cmd_load()
   /* Everything was OK */
   world.state.revm_shared = 0;
   revm_expr_destroy(expr->label);
-
-  fprintf(stderr, "the mode is: %d", dbgworld.mode);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

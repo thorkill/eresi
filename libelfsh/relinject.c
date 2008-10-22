@@ -407,10 +407,8 @@ int		elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
 	}
     }
 
-  if (!found)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Cannot find any relocation table", -1);
-
+  /* Note that we might have done no relocation if no table was available */
+  /* This can happen on very simple .o files */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
