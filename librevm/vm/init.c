@@ -81,10 +81,10 @@ int		revm_setup(int ac, char **av,
   else if (mode == REVM_STATE_TRACER)
     {
       elfsh_set_static_mode();
-
       world.state.revm_mode = mode;
       world.state.revm_side = side;
     }
+
   /* Set REVM in static mode */
   else
     {

@@ -210,7 +210,6 @@ void		revm_callback_handler_install(char *prompt, void (*fct)(char *str))
 }
 
 
-
 void		revm_prompt_log()
 {
 #if defined (USE_READLN)

@@ -539,7 +539,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
       break;
 
     case ASPECT_TYPE_LONG:
-      if (sizeof(u_long) == 4)
+      if (sizeof(u_long) == 4 && o1->set_obj == revm_long_setobj)
 	{
 	  o1->set_obj = revm_int_setobj;
 	  goto intcopy;

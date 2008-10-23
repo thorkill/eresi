@@ -73,6 +73,8 @@ int		revm_system(char *cmd)
 void	revm_exit(int err)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  revm_callback_handler_remove();
+  revm_cleanup();
   _exit(err);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
