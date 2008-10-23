@@ -298,7 +298,11 @@ int		elfsh_store_obj(elfshobj_t *file, char *name)
        NULL != (actual = elfsh_get_reloc(file, index, NULL)); 
        index++)
     elfsh_endianize_relocs(actual);
-  
+ 
+  /* Strip the file if requested */
+  if (file->strip)
+    elfsh_strip(file);
+
   /* Strip the SHT if requested ... */
   if (file->shtrm)
     {
@@ -313,10 +317,6 @@ int		elfsh_store_obj(elfshobj_t *file, char *name)
       actual = elfsh_get_tail_section(file);
       file->hdr->e_shoff = actual->shdr->sh_offset + actual->shdr->sh_size;
     }
-  
-  /* Strip the file if requested */
-  if (file->strip)
-    elfsh_strip(file);
   
   /* Write the ELF header making sure removed shdr are not written */
   memcpy(&header, file->hdr, file->hdr->e_ehsize);
