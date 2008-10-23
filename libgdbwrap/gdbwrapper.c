@@ -302,16 +302,23 @@ static void         gdbwrap_populate_reg(char *packet,
 }
 
 
+static void          gdbwrap_check_ack(gdbwrap_t *desc)
+{
+  int                rval;
+  rval = recv(desc->fd, desc->packet, 1, 0);
+  /* The result of the previous recv must be a "+". */
+  ASSERT(rval != -1  && !strncmp(desc->packet, GDBWRAP_COR_CHECKSUM, 1));
+}
+
+
 static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 {
   int                rval;
   char               checksum[3];
 
   ASSERT(desc != NULL);
-  
-  rval = recv(desc->fd, desc->packet, 1, 0);
-  /* The result of the previous recv must be a "+". */
-  ASSERT(rval != -1  && !strncmp(desc->packet, GDBWRAP_COR_CHECKSUM, 1));
+
+  gdbwrap_check_ack(desc);
   rval = recv(desc->fd, desc->packet, desc->max_packet_size, 0);
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval) {
@@ -331,7 +338,8 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 					 desc->max_packet_size);
       }
     else ASSERT(FALSE);
-  } else desc->is_active = FALSE;
+  }
+  else desc->is_active = FALSE;
   
   return NULL;
 }
@@ -347,7 +355,6 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
   if (gdbwrap_is_active(desc))
     {
       mes  = gdbwrap_make_message(query, desc);
-
       rval = send(desc->fd, mes, strlen(mes), 0);
       ASSERT(rval != -1);
       mes  = gdbwrap_get_packet(desc);
@@ -510,17 +517,39 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
 }
 
 
-char                 *gdbwrap_memorycontent(gdbwrap_t *desc, la32 linaddr,
-					    uint8_t bytes)
+char                 *gdbwrap_readmemory(la32 linaddr, uint8_t bytes,
+					 gdbwrap_t *desc)
 {
   char               *rec;
   char               packet[50];
-  
+
   snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes);
+  
+
   rec = gdbwrap_send_data(packet, desc);
 /*   gdbwrap_errorhandler(rec); */
 
+  return rec;
+}
+
+
+void                 *gdbwrap_writememory(la32 linaddr, void *value,
+					  uint8_t bytes, gdbwrap_t *desc)
+{
+  char               packet[50];
+  uint8_t            packetsize;
+  char               *rec;
+
+  snprintf(packet, sizeof(packet), "%s%x%s%x%s", GDBWRAP_MEMWRITE,
+	   linaddr, GDBWRAP_SEP_COMMA, bytes, GDBWRAP_SEP_COLON);
+  packetsize = strlen(packet);
+  /* GDB protocol expects the value we send to be a "Binary value", ie
+     not converted to a char. */
+  memcpy(packet + packetsize, value, bytes);
+  packet[packetsize + bytes] = GDBWRAP_NULL_CHAR;
+
+  rec = gdbwrap_send_data(packet, desc);
   return rec;
 }
 
@@ -599,14 +628,23 @@ void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
 
   gdbwrap_hello(desc);
   gdbwrap_reason_halted(desc);
-  rec = gdbwrap_memorycontent(desc, desc->reg32.eip, QWORD_IN_BYTE);
+  rec = gdbwrap_readmemory(desc->reg32.eip, QWORD_IN_BYTE, desc);
 }
 
 
 void                 gdbwrap_test(gdbwrap_t *desc)
 {
-  gdbwrap_memorycontent(desc, 0xb7fc99a0 , QWORD_IN_BYTE);
-  gdbwrap_writereg(0x183838, 0xff1234, desc);
+/*   gdbwrap_memorycontent(0xb7fc99a0 , QWORD_IN_BYTE, desc); */
+/*   gdbwrap_writereg(0x183838, 0xff1234, desc); */
+  char               *rec;
+
+  unsigned           u = 0xffffffff;
+  gdbwrap_writememory(0xb7f959a0, &u, QWORD_IN_BYTE, desc);
+  printf("Hiha, Reading the data\n");
+  fflush(stdout);
+  rec = gdbwrap_readmemory(0xb7f959a0, QWORD_IN_BYTE, desc);
+  printf("Hiha, received: %s\n", rec);
+    fflush(stdout);
   /* gdbwrap_signal(01, desc); */
 }
 

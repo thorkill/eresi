@@ -130,6 +130,14 @@ int main( int argc, char **argv )
 	gdbwrap_stepi(desc);
       else if(!strncmp("signal", buffer, 5))
 	gdbwrap_signal(0x1, desc);
+      else if(!strncmp("mem", buffer, 3))
+	{
+	  char *c;
+	  char u = 0xff;
+	  c = gdbwrap_writememory(0xb7fe49a0, &u, 0x1, desc);
+	  printf("Returned from memorycontent: %s\n", c);
+	  fflush(stdout);
+	}
       else if(!strncmp("own", buffer,  3))
 	{
 	  while (strncmp("quitown", buffer, 7))

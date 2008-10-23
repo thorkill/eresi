@@ -99,6 +99,7 @@
 #define ASSERT(_x)      assert(_x)
 #define NOT_REACHED()   ASSERT(FALSE)
 #endif
+#define NOT_USED(_x)    _x = _x
 
 #ifndef swap32
 #define swap32(x)						\

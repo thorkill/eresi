@@ -135,10 +135,9 @@ static void	e2dbg_stack_get(e2dbgthread_t *cur)
 
 /**
  * Only called when running a monothread program 
- * @param start
  * @return
  */
-int		e2dbg_curthread_init(void *start)
+int		e2dbg_curthread_init(void)
 {
   e2dbgthread_t	*new;
   char		*key;

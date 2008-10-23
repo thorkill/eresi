@@ -10,6 +10,9 @@ CFLAGS32  += -Wpointer-arith -Wextra -fPIC -g3 -Wall				 \
 			-I../libaspect/include/				      	 \
 			-I../librevm/include/				      	 \
 			-I../libelfsh/include/				      	 \
+			-I../libe2dbg/include/				      	 \
+			-I../libstderesi/include/			      	 \
+			-I../libetrace/include/			      	 \
 			-I../libedfmt/include/				      	 \
 			-I../libasm/include/				      	 \
 			-I../libui/include/					 \

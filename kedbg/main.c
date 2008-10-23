@@ -15,9 +15,12 @@ void            kedbg_register_command(void)
 /**************** Vector initialization ****************/
 void           kedbg_register_vector(void)
 {
-/*   e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_PROC,  */
-/* 			   ELFSH_OS_FREEBSD, e2dbg_get_regvars_ia32_bsd); */
-
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
+			   ELFSH_OS_LINUX, kedbg_bt_ia32);
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, 
+			   ELFSH_OS_LINUX, kedbg_getfp_ia32);
+/*   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER,  */
+/* 			   ELFSH_OS_FREEBSD, e2dbg_set_regvars_sparc32_bsd); */
 }
 
 
@@ -42,6 +45,39 @@ void		kedbg_create_prompt(char *buf, unsigned int size)
 
 
 /**
+ * Only called when running a monothread program 
+ * @return
+ */
+int		kedbg_curthread_init(void)
+{
+  e2dbgthread_t	*new;
+  char		*key;
+
+#if __DEBUG_THREADS__
+  char		logbuf[BUFSIZ];
+  int		ret;
+#endif
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
+  snprintf(key, 15, "%u", (unsigned int) getpid());
+  new->tid     = 0;
+  new->entry   = (void *) e2dbgworld.real_main;
+  new->initial = 1;
+  time(&new->stime);
+  hash_add(&e2dbgworld.threads, key, new);
+  e2dbgworld.curthread = new;
+  e2dbgworld.threadnbr = 1;
+  //  e2dbg_stack_get(new);
+  /* Let's put the stack @ 0 for now... */
+  new->stackaddr = 0;
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/**
  * Shell related stuff.
  */
 int             kedbg_main(int argc, char **argv)
@@ -55,15 +91,20 @@ int             kedbg_main(int argc, char **argv)
 
   e2dbg_register_command();
   /* Overwrite of some commands. */
-  kedbg_register_command();
-  
 
+  kedbg_register_command();
+  hash_init(&e2dbgworld.threads, "threads", 5, ASPECT_TYPE_UNKNOW);
+  kedbg_curthread_init();	
+
+  e2dbg_setup_hooks();
+  kedbg_register_vector();
   ret = revm_file_load(argv[3], 0, NULL);
   ASSERT(!ret);
   elfsh_set_debug_mode();
+  world.curjob->curfile->hostype = E2DBG_HOST_GDB;
+  world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
   revm_run(argc, argv);
-  fprintf(stderr, "Double mouche");
-  fflush(stderr);
+
   return 0;
 }
 
@@ -90,7 +131,6 @@ int             main(int argc, char **argv)
   gdbwrap_current_set(gdbwrap_init(fd));
   /* Let's say hello to the server, gdbstyle 8) */
   gdbwrap_hello(gdbwrap_current_get());
-  
   
   kedbg_main(argc, argv);
   return 0;

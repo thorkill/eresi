@@ -79,7 +79,7 @@ int		e2dbg_default_breakhandler(elfshobj_t   *null,
 
 /* Register a next frame-pointer handler */
 int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype, 
-					  u_char ostype, void (*fct)(void *frame))
+					  u_char ostype, void *fct)
 {
   vector_t	*nextfp;
   u_int		*dim;
@@ -729,6 +729,8 @@ void		e2dbg_setup_hooks()
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
   e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);
+
+  /* For remote debugging. */
   
   done = 1;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -1010,9 +1012,6 @@ eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
 		      "GetRet handler failed", (-1));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 
 
 /**

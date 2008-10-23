@@ -446,7 +446,7 @@ int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_setstephook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void (*fct)(void *frame));
+int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *fct);
 int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
 
@@ -508,7 +508,7 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 void		e2dbg_threads_print();
 int		e2dbg_thread_stopall(int signum);
 void		e2dbg_thread_contall();
-int		e2dbg_curthread_init();
+int		e2dbg_curthread_init(void);
 
 #if !defined(sun)
 int		pthread_attr_getstack(__const pthread_attr_t *__restrict __attr,
