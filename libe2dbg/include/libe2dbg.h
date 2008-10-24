@@ -55,6 +55,7 @@ extern char **environ;
 #define		E2DBG_HOOK_NEXTFP	"hook_nextfp"
 #define		E2DBG_HOOK_GETRET	"hook_getret"
 #define		E2DBG_HOOK_BREAK	"hook_setbreak"
+#define		E2DBG_HOOK_DELBREAK	"hook_delbreak"
 
 /* Kernel related defines */
 #define		E2DBG_VSYSCALL_RETADDR	(0xFFFFE420)
@@ -375,6 +376,7 @@ void            e2dbg_default_setregs();
 eresi_Addr*     e2dbg_default_getpc();
 void            e2dbg_default_setstep();
 void            e2dbg_default_resetstep();
+int		e2dbg_default_deletebreak_handler(elfshbp_t *bp);
 void            e2dbg_setup_hooks();
 
 /* libe2dbg.hooks */
@@ -387,6 +389,7 @@ eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr);
 eresi_Addr	e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr);
 eresi_Addr*     e2dbg_getfp();
 int		e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp);
+int		e2dbg_deletebreak(elfshbp_t *bp);
 
 /* Backend for ia32 */
 void            e2dbg_get_regvars_ia32_bsd();
@@ -404,6 +407,7 @@ eresi_Addr*	e2dbg_getfp_bsd_ia32();
 void            *e2dbg_bt_ia32(void *frame);
 void            *e2dbg_getret_ia32(void *frame);
 int             e2dbg_break_ia32(elfshobj_t *f, elfshbp_t *bp);
+int		e2dbg_delbreak_user(elfshbp_t *bp);
 
 /* Backend for AMD64 */
 void            e2dbg_get_regvars_amd64_bsd();
@@ -446,9 +450,10 @@ int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_setstephook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);
-int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *fct);
+int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *(*fct)(void *frame));
 int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
+int		e2dbg_register_delbreakhook(u_char hosttype, void *fct);
 
 /* More e2dbg API */
 char            *e2dbg_get_string(char **params);

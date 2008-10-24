@@ -11,6 +11,15 @@
 #include "libe2dbg.h"
 
 
+/* Vector handler for userland breakpoint deletion */
+int		e2dbg_delbreak_user(elfshbp_t *bp)
+{
+  *(u_char *) bp->addr = bp->savedinstr[0];
+  return (0);
+}
+
+
+
 /**
  * Delete a breakpoint 
  * @return
@@ -35,7 +44,7 @@ int		cmd_delete()
   
   /* Delete the breakpoint */
   prot = elfsh_munprotect(bp->obj, addr,  1);
-  *(u_char *) addr = bp->savedinstr[0];
+  e2dbg_deletebreak(bp);
   elfsh_mprotect(addr, 1, prot);
 
   name = revm_resolve(bp->obj, addr, &off);

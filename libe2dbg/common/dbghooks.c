@@ -75,11 +75,19 @@ int		e2dbg_default_breakhandler(elfshobj_t   *null,
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
+int		e2dbg_default_deletebreak_handler(elfshbp_t *bp)
+
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		    "Unsupported Arch, ELF type, or OS", -1);
+}
+
 
 
 /* Register a next frame-pointer handler */
 int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype, 
-					  u_char ostype, void *fct)
+					  u_char ostype, void *(*fct)(void *frame))
 {
   vector_t	*nextfp;
   u_int		*dim;
@@ -329,7 +337,27 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
   dim[0] = archtype;
   dim[1] = hosttype;
   dim[2] = ostype;
-  aspect_vectors_insert(breakp, dim, (unsigned long) fct);
+  aspect_vectors_insert(breakp, dim, (u_long) fct);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/**
+ * Register a breakpoint deletion handler 
+ */
+int		e2dbg_register_delbreakhook(u_char hosttype, void *fct)
+{
+  vector_t	*breakp;
+  u_int		dim[2];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  breakp = aspect_vector_get(E2DBG_HOOK_DELBREAK);
+
+  if (hosttype >= E2DBG_HOST_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Host type", -1);
+  dim[0] = hosttype;
+  aspect_vectors_insert(breakp, dim, (u_long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -341,6 +369,8 @@ static int	e2dbg_register_vectors()
 {
   u_int		*dims;
   char		**strdims;
+  u_int		*adims;
+  char		**astrdims;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -353,6 +383,12 @@ static int	e2dbg_register_vectors()
   strdims[0] = "ARCHTYPE";
   strdims[1] = "HOSTYPE";
   strdims[2] = "OSTYPE";
+  
+  /* Except the breakpoint deletion hook */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, adims   , 2 * sizeof(u_int) , -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, astrdims, 2 * sizeof(char *), -1);
+  adims[0]    = E2DBG_HOST_NUM;
+  astrdims[0] = "HOSTYPE";
 
   /* Initialize debugger vectors */
   aspect_register_vector(E2DBG_HOOK_GETREGS, 
@@ -382,6 +418,9 @@ static int	e2dbg_register_vectors()
   aspect_register_vector(E2DBG_HOOK_BREAK, 
 			 e2dbg_default_breakhandler, 
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
+  aspect_register_vector(E2DBG_HOOK_DELBREAK, 
+			 e2dbg_default_deletebreak_handler, 
+			 adims, astrdims, 1, ASPECT_TYPE_CADDR);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -728,9 +767,9 @@ void		e2dbg_setup_hooks()
   e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
   e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
-			   ELFSH_OS_SOLARIS, e2dbg_break_sparc32);
 
-  /* For remote debugging. */
+  /* Now delete break hook */
+  e2dbg_register_delbreakhook(E2DBG_HOST_USER, e2dbg_delbreak_user);
   
   done = 1;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -1048,5 +1087,36 @@ int		  e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp)
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Breakpoint handler failed", (-1));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/**
+ * Call the breakpoint deletion hook 
+ */
+int		  e2dbg_deletebreak(elfshbp_t *bp)
+{
+  vector_t	*breakh;
+  u_char        hosttype;
+  int		ret;
+  int		(*fct)(elfshbp_t *bp);
+  u_int		dim[1];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  breakh = aspect_vector_get(E2DBG_HOOK_DELBREAK);
+
+  /* Fingerprint binary */
+  hosttype = elfsh_get_hosttype(bp->obj);
+  if (hosttype == E2DBG_HOST_ERROR)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "DELBREAK handler unexistant for this ARCH/OS", -1);
+  
+  dim[0] = hosttype;
+  fct    = aspect_vectors_select(breakh, dim);
+  ret  = fct(bp);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Breakpoint deletion handler failed", (-1));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

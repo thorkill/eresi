@@ -72,15 +72,6 @@ int	        cmd_cont()
 
   /* Restart the debuggee */
   e2dbg_start_proc();
-
-  /*
-  if (!e2dbgworld.curthread->step)
-    {
-      e2dbg_start_proc();
-      e2dbg_start_proc();
-    }
-  */
-
   e2dbg_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
 }
