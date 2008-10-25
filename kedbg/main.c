@@ -2,7 +2,7 @@
 
 
 /**************** Command registration ****************/
-void            kedbg_register_command(void)
+static void     kedbg_register_command(void)
 {
   revm_command_add(COM1,          cmd_com1, revm_getvarparams, 0, HELPCOM1);
   /* These commands are overwritten. */
@@ -13,7 +13,7 @@ void            kedbg_register_command(void)
 
 
 /**************** Vector initialization ****************/
-void           kedbg_register_vector(void)
+static void     kedbg_register_vector(void)
 {
   e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_bt_ia32);
@@ -25,7 +25,7 @@ void           kedbg_register_vector(void)
 
 
 /**************** Main stuff ****************/
-void		kedbg_create_prompt(char *buf, unsigned int size)
+static void	kedbg_create_prompt(char *buf, unsigned int size)
 {
   snprintf(buf, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
@@ -48,7 +48,7 @@ void		kedbg_create_prompt(char *buf, unsigned int size)
  * Only called when running a monothread program 
  * @return
  */
-int		kedbg_curthread_init(void)
+static int	kedbg_curthread_init(void)
 {
   e2dbgthread_t	*new;
   char		*key;
@@ -80,7 +80,7 @@ int		kedbg_curthread_init(void)
 /**
  * Shell related stuff.
  */
-int             kedbg_main(int argc, char **argv)
+static int      kedbg_main(int argc, char **argv)
 {
   int           ret;
 

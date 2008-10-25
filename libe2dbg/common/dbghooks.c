@@ -767,7 +767,8 @@ void		e2dbg_setup_hooks()
   e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
 			   ELFSH_OS_OPENBSD, e2dbg_break_sparc32);  
   e2dbg_register_breakhook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,   
-
+			   ELFSH_OS_SOLARIS, e2dbg_break_ia32);
+  
   /* Now delete break hook */
   e2dbg_register_delbreakhook(E2DBG_HOST_USER, e2dbg_delbreak_user);
   
