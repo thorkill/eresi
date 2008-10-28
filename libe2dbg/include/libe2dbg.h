@@ -379,6 +379,9 @@ void            e2dbg_default_resetstep();
 int		e2dbg_default_deletebreak_handler(elfshbp_t *bp);
 void            e2dbg_setup_hooks();
 
+/* User hook handlers */
+int             e2dbg_user_hooks_install(void);
+
 /* libe2dbg.hooks */
 int		e2dbg_getregs();
 int		e2dbg_setregs();
@@ -454,6 +457,8 @@ int		e2dbg_register_nextfphook(u_char at, u_char ht, u_char ost, void *(*fct)(vo
 int		e2dbg_register_getrethook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_breakhook(u_char a, u_char o, u_char os, void *fct);
 int		e2dbg_register_delbreakhook(u_char hosttype, void *fct);
+int             e2dbg_register_getfphook(u_char archtype, u_char hosttype,
+					 u_char ostype, eresi_Addr *(*fct)(void));
 
 /* More e2dbg API */
 char            *e2dbg_get_string(char **params);

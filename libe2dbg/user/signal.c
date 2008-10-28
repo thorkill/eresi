@@ -100,7 +100,7 @@ void            e2dbg_sigint_handler(int signum, siginfo_t *info, void *pcontext
   /* Set all registers as variables and get PC */
   //e2dbgworld.context = (ucontext_t *) pcontext;
 
-  e2dbg_setup_hooks();
+  e2dbg_user_hooks_install();
   e2dbg_getregs();
   argv[0] = E2DBG_ARGV0;
   argv[1] = NULL;
@@ -142,7 +142,7 @@ void            e2dbg_sigstop_handler(int signum, siginfo_t *info, void *pcontex
   /* Set all registers as variables and get PC */
   //e2dbgworld.context = (ucontext_t *) pcontext;
 
-  e2dbg_setup_hooks();
+  e2dbg_user_hooks_install();
   e2dbg_getregs();
   argv[0] = E2DBG_ARGV0;
   argv[1] = NULL;
@@ -290,7 +290,7 @@ void			e2dbg_do_breakpoint()
   /* Set all registers as variables and get PC */
   argv[0] = "e2dbg";
   argv[1] = NULL;
-  e2dbg_setup_hooks();
+  e2dbg_user_hooks_install();
   e2dbg_getregs(); 
   pc = e2dbg_getpc();
 

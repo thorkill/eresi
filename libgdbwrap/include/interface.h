@@ -2,10 +2,6 @@
 #include "revm.h"
 /* #include "gdbwrapper.h" */
 int             gdbwrap_simpleconnect(char *host, int port);
-int             cmd_linkmap(void);
-int             e2dbg_linkmap_load(char *name);
-void            cmd_com1(void);
-void            cmd_kedbgcont(void);
 void            kedbg_resetstep_ia32(void);
 eresi_Addr	*kedbg_getfp_ia32(void);
 void            *kedbg_bt_ia32(void *frame);

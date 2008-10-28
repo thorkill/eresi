@@ -25,10 +25,10 @@ int		e2dbg_bt()
   /* Preliminary checks */
   if (!world.curjob)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No current workspace", -1);
+		 "No current workspace", -1);
   if (!world.curjob->curfile)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No current file", -1);
+		 "No current file", -1);
 
   /* Get the current frame by calling the hook */
   frame = (eresi_Addr) e2dbg_getfp();

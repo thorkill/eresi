@@ -29,7 +29,7 @@ CFLAGS32 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libe2dbg/include/ 					 \
 			-I../libstderesi/include				 \
 			-I../libetrace/include/ 				 \
-			-DERESI32
+			-DERESI32 -DJEDBG -DKEDBG
 
 LDFLAGS32               += -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32        \
                         -L../libetrace/ -letrace32 -L../libstderesi/ -lstderesi32   \
@@ -40,8 +40,7 @@ LDFLAGS32               += -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32    
                         -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)        \
                         $(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
                         ../libgdbwrap/libgdbwrap.o                               \
-                        ../libe2dbg/common/libe2dbg-common32.o                   \
-                        ../libe2dbg/user/libe2dbg-user-noinit32.o                \
+                        ../libe2dbg/common/libe2dbg-common32.o
 
 
 

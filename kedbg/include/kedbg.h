@@ -10,3 +10,7 @@
 #define  COM1              "youpla"
 #define  HELPCOM1          "Not much to say..."
 
+int             cmd_linkmap(void);
+int             e2dbg_linkmap_load(char *name);
+void            cmd_com1(void);
+void            cmd_kedbgcont(void);

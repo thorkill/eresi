@@ -39,7 +39,7 @@ int			e2dbg_linkmap_load(char *name)
   fprintf(stderr, "[e2dbg] Starting Loading LINKMAP !! \n");
 #endif
 
-  e2dbg_setup_hooks();
+  e2dbg_user_hooks_install();
   revm_config(E2DBG_CONFIG);
 
   /* Load debugged file */

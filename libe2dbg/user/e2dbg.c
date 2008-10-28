@@ -13,7 +13,7 @@
 
 
 /* The debugger world */
-e2dbgworld_t	e2dbgworld;
+/* e2dbgworld_t	e2dbgworld; */
 
 void            e2dbg_register_command(void)
 {
@@ -147,7 +147,7 @@ int			e2dbg_setup(char *name)
   fprintf(stderr, "[e2dbg_setup] Starting \n");
 #endif
 
-  e2dbg_setup_hooks();
+  e2dbg_user_hooks_install();
   revm_initio();
   revm_config(E2DBG_CONFIG);
   e2dbg_linkmap_load(name);

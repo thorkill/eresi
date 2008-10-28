@@ -28,7 +28,9 @@ LD      ?= ld
 AR	= ar rc
 RANLIB  = ranlib
 
-all:	$(OBJ)
+all  :  all32
+
+all32:	$(OBJ)
 	$(AR) $(NAME).a $(OBJ)
 	$(RANLIB) $(NAME).a
 	$(LD) -r $(OBJ) -o $(NAME).o 

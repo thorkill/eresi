@@ -1,14 +1,52 @@
 #include "kedbg.h"
 
 
+/**************** Command definition. ****************/
+
+
+/* Dummy function, for compatibility with e2dbg. */
+int             cmd_linkmap(void)
+{
+  return 0;
+}
+
+
+int             e2dbg_linkmap_load(char *name)
+{
+  NOT_USED(name);
+  return 0;
+}
+
+
+/* Debugging purpose. */
+void            cmd_com1(void)
+{
+  fprintf(stderr, "Value --: %d\n", world.curjob->curfile->hostype);
+  kedbg_get_regvars_ia32();
+  //  fprintf(stderr, "YOUPLA: %#x\n", *kedbg_getpc_ia32());
+}
+
+
+/* Continue command. */
+void            cmd_kedbgcont(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  if (!e2dbgworld.curthread->step)
+    gdbwrap_continue(loc);
+  else
+    gdbwrap_stepi(loc);
+}
+
+
 /**************** Command registration ****************/
 static void     kedbg_register_command(void)
 {
   revm_command_add(COM1,          cmd_com1, revm_getvarparams, 0, HELPCOM1);
   /* These commands are overwritten. */
   revm_command_add(CMD_START,     cmd_kedbgcont, NULL, 1, HLP_START);
-  revm_command_add(CMD_CONTINUE,  cmd_kedbgcont,  NULL, 1, HLP_CONTINUE);
-  revm_command_add(CMD_CONTINUE2, cmd_kedbgcont,  NULL, 1, HLP_CONTINUE);
+  revm_command_add(CMD_CONTINUE,  cmd_kedbgcont, NULL, 1, HLP_CONTINUE);
+  revm_command_add(CMD_CONTINUE2, cmd_kedbgcont, NULL, 1, HLP_CONTINUE);
 }
 
 
@@ -89,7 +127,7 @@ static int      kedbg_main(int argc, char **argv)
   revm_config(".kedbgrc");
   revm_set_prompt(kedbg_create_prompt);
 
-  e2dbg_register_command();
+  //  e2dbg_register_command();
   /* Overwrite of some commands. */
 
   kedbg_register_command();

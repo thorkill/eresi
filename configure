@@ -717,6 +717,16 @@ echo "	@cd evarista && \$(MAKE) \$(BUILD_TARGET)     	"       >> Makefile
 echo "	@echo 'Evarista has been built successfully.' 	"	>> Makefile
 echo ""								>> Makefile
 
+echo "	@echo 'Building libgdbwrap'			"	>> Makefile
+echo "	@cd libgdbwrap && \$(MAKE) \$(BUILD_TARGET)    	"       >> Makefile
+echo "	@echo 'libgdbwrap has been built successfully.'	"	>> Makefile
+echo ""								>> Makefile
+
+echo "	@echo 'Building Kedbg'			        "	>> Makefile
+echo "	@cd kedbg && \$(MAKE) \$(BUILD_TARGET)     	"       >> Makefile
+echo "	@echo 'Kedbg has been built successfully.' 	"	>> Makefile
+echo ""								>> Makefile
+
 if [ "$KERNSH" = "1" ]; then
 echo "	@echo 'Building kernsh...'                      "       >> Makefile
 echo "	@cd kernsh && \$(MAKE) \$(BUILD_TARGET)         "       >> Makefile
@@ -955,6 +965,8 @@ echo "	cd elfsh     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s clean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s clean "			>> Makefile
 echo "	cd evarista  && \$(MAKE) -s clean "			>> Makefile
+echo "	cd libgdbwrap  && \$(MAKE) -s clean "			>> Makefile
+echo "	cd kedbg  && \$(MAKE) -s clean "			>> Makefile
 if [ "$KERNSH" = "1" ]; then
 echo "	cd kernsh && \$(MAKE) -s clean"                         >> Makefile
 echo "	cd libkernsh && \$(MAKE) -s clean"                      >> Makefile
@@ -983,6 +995,7 @@ echo "	cd elfsh     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd e2dbg     && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd etrace    && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd evarista  && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd kedbg  && \$(MAKE) -s fclean "			>> Makefile
 if [ "$KERNSH" = "1" ]; then
 echo "	cd kernsh && \$(MAKE) -s fclean"                        >> Makefile
 echo "	cd libkernsh && \$(MAKE) -s fclean"                     >> Makefile
@@ -1000,6 +1013,7 @@ echo "	cd liballocproxy && \$(MAKE) -s fclean "	        >> Makefile
 echo "	cd libmjollnir && \$(MAKE) -s fclean "		        >> Makefile
 echo "	cd libdump   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd libui     && \$(MAKE) -s fclean "			>> Makefile
+echo "	cd libgdbwrap  && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd modules   && \$(MAKE) -s fclean "			>> Makefile
 echo "	cd testsuite && \$(MAKE) -s fclean "			>> Makefile   
 
@@ -1018,7 +1032,7 @@ echo "	@echo Doing tags ... "					>> Makefile
 if [ "$ETAGS" = "1" ]; then
 echo "	@\$(ETAGS) elfsh/*.c elfsh/include/*.h libelfsh/*.c \\"	>> Makefile
 echo "	libelfsh/include/*.h e2dbg/include/*.h \\"		>> Makefile
-echo "	libetrace/*.c libetrace/include/*.h \\"		>> Makefile
+echo "	libetrace/*.c libetrace/include/*.h \\"                 >> Makefile
 echo "	modules/*.c liballocproxy/*.c libdump/*.c e2dbg/*.c \\"	>> Makefile
 echo "	libasm/src/*.c liballocproxy/include/*.h \\"		>> Makefile
 echo "	libaspect/*.c libe2dbg/*/*.c libaspect/include/*.h \\"  >> Makefile
@@ -1029,6 +1043,11 @@ echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
 echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
 echo "  etrace/*.c evarista/*.c libstderesi/*/*.c \\"		>> Makefile
 echo "  libstderesi/include/*.h \\"                             >> Makefile
+echo "  libgdbwrap/include/*.h \\"                              >> Makefile
+echo "  libgdbwrap/*.c \\"                                      >> Makefile
+echo "  kedbg/include/*.h \\"                                   >> Makefile
+echo "  kedbg/*.c \\"                                           >> Makefile
+
 if [ "$KERNSH" = "1" ]; then
 echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
 echo "  libkernsh/*/*.c libkernsh/include/*.h \\"               >> Makefile
@@ -1057,6 +1076,11 @@ echo "  libstderesi/include/*.h libstderesi/*/*.c \\"		>> Makefile
 echo "  libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "  elfsh/*.c elfsh/include/*.h \\"				>> Makefile
 echo "  etrace/*.c etrace/include/*.h \\"			>> Makefile
+echo "  libgdbwrap/include/*.h \\"                              >> Makefile
+echo "  libgdbwrap/*.c \\"                                      >> Makefile
+echo "  kedbg/include/*.h \\"                                   >> Makefile
+echo "  kedbg/*.c \\"                                           >> Makefile
+
 if [ "$KERNSH" = "1" ]; then
 echo "  kernsh/*.c kernsh/include/*.h \\"                       >> Makefile
 echo "  libkernsh/*.c libkernsh/include/*.h \\"                 >> Makefile
