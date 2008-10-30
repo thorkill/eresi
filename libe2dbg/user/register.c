@@ -347,7 +347,13 @@ int             e2dbg_user_hooks_install(void)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  e2dbg_setup_hooks();
-  e2dbg_user_register_hooks();
+  static Bool   done;
+
+  if (!done)
+    {
+      e2dbg_setup_hooks();
+      e2dbg_user_register_hooks();
+    }
+  done = TRUE;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

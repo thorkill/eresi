@@ -11,8 +11,8 @@
 
 #include             <netdb.h>
 #include             "libaspect.h"
-#include             "gdbwrapper.h"
 #include             "gdbwrapper-internals.h"
+#include             "gdbwrapper.h"
 
 
 gdbwrapworld_t       gdbwrapworld;

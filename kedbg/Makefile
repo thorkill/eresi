@@ -7,7 +7,7 @@
 
 include ../config.h
 
-SRC			= main.c
+SRC			= main.c registration.c
 OBJ			= $(SRC:.c=.o)
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)

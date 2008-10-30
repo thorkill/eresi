@@ -19,7 +19,7 @@ int             e2dbg_linkmap_load(char *name)
 
 
 /* Debugging purpose. */
-void            cmd_com1(void)
+int             cmd_com1(void)
 {
   fprintf(stderr, "Value --: %d\n", world.curjob->curfile->hostype);
   kedbg_get_regvars_ia32();
@@ -28,7 +28,7 @@ void            cmd_com1(void)
 
 
 /* Continue command. */
-void            cmd_kedbgcont(void)
+int             cmd_kedbgcont(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -43,10 +43,33 @@ void            cmd_kedbgcont(void)
 static void     kedbg_register_command(void)
 {
   revm_command_add(COM1,          cmd_com1, revm_getvarparams, 0, HELPCOM1);
-  /* These commands are overwritten. */
   revm_command_add(CMD_START,     cmd_kedbgcont, NULL, 1, HLP_START);
   revm_command_add(CMD_CONTINUE,  cmd_kedbgcont, NULL, 1, HLP_CONTINUE);
   revm_command_add(CMD_CONTINUE2, cmd_kedbgcont, NULL, 1, HLP_CONTINUE);
+
+  /* Debugger only script commands */
+  revm_command_add(CMD_MODE, cmd_mode, revm_getvarparams, 0, HLP_MODE);
+  revm_command_add(CMD_BP,   cmd_bp,   revm_getvarparams, 1, HLP_BP);
+  revm_command_add(CMD_BP2,  cmd_bp,   revm_getvarparams, 1, HLP_BP);
+
+  /*   revm_command_add(CMD_STEP, cmd_step, NULL, 1, HLP_STEP); */
+  /*   revm_command_add(CMD_BT2      , (void *) cmd_bt       , NULL,            1, HLP_BT); */
+/*   revm_command_add(CMD_CONTINUE , (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE); */
+/*   revm_command_add(CMD_CONTINUE2, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE); */
+/*   revm_command_add(CMD_START    , (void *) cmd_start    , (void *) NULL,   1, HLP_START); */
+
+/*   revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH); */
+/*   revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK); */
+/*   revm_command_add(CMD_DBGSTACK , (void *) cmd_dbgstack , revm_getoption,    1, HLP_DBGSTACK); */
+/*   revm_command_add(CMD_DUMPREGS , (void *) cmd_dumpregs , NULL,            1, HLP_DUMPREGS); */
+/*   revm_command_add(CMD_DELETE   , (void *) cmd_delete   , revm_getoption,    1, HLP_DELETE); */
+
+/*   revm_command_add(CMD_DISPLAY  , (void *) cmd_display  , revm_getvarparams, 1, HLP_DISPLAY); */
+/*   revm_command_add(CMD_UNDISPLAY, (void *) cmd_undisplay, revm_getvarparams, 1, HLP_UNDISPLAY); */
+/*   revm_command_add(CMD_RSHT     , (void *) cmd_rsht     , revm_getregxoption, 1, HLP_RSHT); */
+/*   revm_command_add(CMD_RPHT     , (void *) cmd_rpht     , revm_getregxoption, 1, HLP_RPHT); */
+/*   revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS); */
+/*   revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE); */
 }
 
 
@@ -57,10 +80,19 @@ static void     kedbg_register_vector(void)
 			   ELFSH_OS_LINUX, kedbg_bt_ia32);
   e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, 
 			   ELFSH_OS_LINUX, kedbg_getfp_ia32);
+ 
+  elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_readmema);
+  elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
+  
 /*   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER,  */
 /* 			   ELFSH_OS_FREEBSD, e2dbg_set_regvars_sparc32_bsd); */
 }
 
+
+static void     kedbg_post_load_register_vector(void)
+{
+  elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_STATIC,  kedbg_readmem);
+}
 
 /**************** Main stuff ****************/
 static void	kedbg_create_prompt(char *buf, unsigned int size)
@@ -138,6 +170,7 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_register_vector();
   ret = revm_file_load(argv[3], 0, NULL);
   ASSERT(!ret);
+  kedbg_post_load_register_vector();
   elfsh_set_debug_mode();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;

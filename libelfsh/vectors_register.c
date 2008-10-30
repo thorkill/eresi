@@ -73,6 +73,7 @@ int		elfsh_register_readmem(u_int ostype, u_int devicetype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+
 int		elfsh_register_readmema(u_int ostype, u_int devicetype, void *fct)
 {
   vector_t	*mem;

@@ -2,7 +2,7 @@
 
 #include <sys/socket.h>
 #include <netdb.h>
-
+#include "revm.h"
 
 
 typedef struct  gdbwrap_gdbreg32

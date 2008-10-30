@@ -530,8 +530,8 @@ int		revm_convert2caddr(revmobj_t *obj);
 
 /* Command API */
 int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur);
-int		revm_command_add(char *cmd, void (*exec)(void), void *reg, 
-			  u_int needfile, char *help);
+int		revm_command_add(char *cmd, int (*exec)(void), void *reg, 
+				 u_int needfile, char *help);
 int		revm_command_del(char *cmd);
 
 /* Default grammar handlers */
