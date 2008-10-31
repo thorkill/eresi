@@ -60,8 +60,14 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 
   fprintf(stderr, "RASTA YO YO\n\n");
   fflush(stderr);
-  strncpy((char *)buf, gdbwrap_readmemory(addr, (uint8_t)size, loc), size);
 
+
+  
+  memcpy(buf, gdbwrap_readmemory(addr, (uint8_t)size, loc), size);
+
+  fprintf(stderr, "Received in %s:%s\n\n", __PRETTY_FUNCTION__, (char *)buf);
+  fflush(stderr);
+  
   /* returning a char is ok ? */
   return buf;
 }
@@ -84,9 +90,20 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
 
 void            *kedbg_readmem(elfshsect_t *sect)
 {
+  fprintf(stderr, "Can in %s\n", __PRETTY_FUNCTION__);
+  fflush(stderr);
+
+
   void *ptr = alloca(sect->shdr->sh_size);
 
+/*   int *u = (int *)elfsh_get_raw(sect); */
+/*   unsigned a; */
+/*   if (u != NULL) */
+/*     for (a = 0; a < sect->shdr->sh_size; a++) */
+/*       fprintf(stderr, "Value in %s, name: %x\n", __PRETTY_FUNCTION__, u[a]); */
+  
   kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr, sect->shdr->sh_size);
+  
   fprintf(stderr, "Can in %s, name: %s\n", __PRETTY_FUNCTION__, sect->name);
   fflush(stderr);
 

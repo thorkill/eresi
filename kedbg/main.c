@@ -21,7 +21,29 @@ int             e2dbg_linkmap_load(char *name)
 /* Debugging purpose. */
 int             cmd_com1(void)
 {
-  fprintf(stderr, "Value --: %d\n", world.curjob->curfile->hostype);
+
+  void          *(*fct)();
+  u_char        archtype;
+  u_char        iotype;
+  u_char        ostype;
+  u_int         dim[2];
+  vector_t      *mem;
+
+  elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
+  archtype = elfsh_get_archtype(world.curjob->curfile);
+  iotype = elfsh_get_iotype(world.curjob->curfile);
+  ostype = elfsh_get_ostype(world.curjob->curfile);
+  fprintf(stderr, "Value --: %d - %d - %d\n",archtype, iotype, ostype);
+  fflush(stderr);
+  mem = aspect_vector_get(ELFSH_HOOK_READMEM);
+  dim[0] = ostype;
+  dim[1] = iotype;
+  fprintf(stderr, "Value2 --: %d \n", mem->arraysz);
+  fflush(stderr);
+  
+  fct = aspect_vectors_select(mem, dim);
+  fct(NULL);
+  fprintf(stderr, "Value --: %d - %d\n", world.curjob->curfile->hostype, world.curjob->curfile->iotype);
   kedbg_get_regvars_ia32();
   //  fprintf(stderr, "YOUPLA: %#x\n", *kedbg_getpc_ia32());
 }
@@ -83,7 +105,7 @@ static void     kedbg_register_vector(void)
  
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_readmema);
   elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
-  
+  elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
 /*   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER,  */
 /* 			   ELFSH_OS_FREEBSD, e2dbg_set_regvars_sparc32_bsd); */
 }
@@ -91,7 +113,7 @@ static void     kedbg_register_vector(void)
 
 static void     kedbg_post_load_register_vector(void)
 {
-  elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_STATIC,  kedbg_readmem);
+  //elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT,  kedbg_readmem);
 }
 
 /**************** Main stuff ****************/

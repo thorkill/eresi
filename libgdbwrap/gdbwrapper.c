@@ -143,7 +143,7 @@ static la32          gdbwrap_little_endian(la32 addr)
 }
 
 
-static unsigned      gdbwrap_atoh(const char * str, unsigned size)
+unsigned      gdbwrap_atoh(const char * str, unsigned size)
 {
   unsigned           i;
   unsigned           hex;
@@ -522,13 +522,17 @@ char                 *gdbwrap_readmemory(la32 linaddr, uint8_t bytes,
 {
   char               *rec;
   char               packet[50];
-
+  unsigned           i;
+  
   snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes);
   
-
   rec = gdbwrap_send_data(packet, desc);
-/*   gdbwrap_errorhandler(rec); */
+  /* Transform it to a "binary" */
+  for (i = 0; rec[i] != '\0'; i++)
+    rec[i] = (char)gdbwrap_atoh(&rec[i], 1);
+
+  /*   gdbwrap_errorhandler(rec); */
 
   return rec;
 }
@@ -621,6 +625,15 @@ void                 gdbwrap_stepi(gdbwrap_t *desc)
     gdbwrap_errorhandler(GDBWRAP_DEAD, desc);
 }
 
+
+/* void                 gdbwrap_setbp(void) */
+/* { */
+/* } */
+
+
+/* void                 gdbwrap_rembp(void) */
+/* { */
+/* } */
 
 void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
 {

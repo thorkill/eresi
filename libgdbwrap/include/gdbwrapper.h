@@ -41,6 +41,7 @@ typedef struct
   gdbwrap_t *gdbwrapptr;
 } gdbwrapworld_t;
 
+unsigned         gdbwrap_atoh(const char * str, unsigned size);
 gdbwrapworld_t   gdbwrap_current_set(gdbwrap_t *world);
 gdbwrap_t        *gdbwrap_current_get(void);
 gdbwrap_t        *gdbwrap_init(int fd);

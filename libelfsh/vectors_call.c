@@ -379,7 +379,7 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
 void		*elfsh_readmem(elfshsect_t *sect)
 {
   void		*ret;
-  u_int         dim[4];
+  u_int         dim[2];
   vector_t      *mem;
   void          *(*fct)();
   u_char        archtype;
@@ -403,9 +403,8 @@ void		*elfsh_readmem(elfshsect_t *sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "READMEM handler inexistant for this ARCH/OS", NULL);
   mem = aspect_vector_get(ELFSH_HOOK_READMEM);
-  dim[0] = archtype;
-  dim[1] = ostype;
-  dim[2] = iotype;
+  dim[0] = ostype;
+  dim[1] = iotype;
   fct = aspect_vectors_select(mem, dim);
   ret = fct(sect);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
