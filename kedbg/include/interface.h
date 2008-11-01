@@ -8,9 +8,9 @@ eresi_Addr	*kedbg_getfp_ia32(void);
 void            *kedbg_bt_ia32(void *frame);
 void            *kedbg_getret_ia32(void *frame);
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
-				void *buf, u_int size);
+				void *buf, unsigned size);
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
-			       u_int size);
+			       unsigned size);
 void            *kedbg_readmem(elfshsect_t *base);
 eresi_Addr      *kedbg_getpc_ia32(void);
 void            kedbg_setstep_ia32(void);

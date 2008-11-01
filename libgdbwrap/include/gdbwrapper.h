@@ -53,10 +53,10 @@ char             *gdbwrap_own_command(char *command, gdbwrap_t *desc);
 void             gdbwrap_test(gdbwrap_t *desc);
 gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
-char             *gdbwrap_readmemory(la32 linaddr, uint8_t bytes,
+char             *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
 				     gdbwrap_t *desc);
 void             *gdbwrap_writememory(la32 linaddr, void *value,
-				      uint8_t bytes, gdbwrap_t *desc);
+				      unsigned bytes, gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
 void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);

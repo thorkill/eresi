@@ -148,14 +148,17 @@ unsigned      gdbwrap_atoh(const char * str, unsigned size)
   unsigned           i;
   unsigned           hex;
 
+  //  printf("Received size: %d\n", size);
   for (i = 0, hex = 0; i < size; i++)
     if (str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
     else if (str[i] >= '0' && str[i] <= '9')
       hex += (str[i] - 0x30) << 4 * (size - i - 1);
     else
-      ASSERT(FALSE); 
-
+      {
+	fprintf(stderr, "Wrong char: %c - %#x\n", str[i], str[i]);
+	ASSERT(FALSE); 
+      }
   return hex;
 }
 
@@ -222,8 +225,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
   uint8_t            numberoftimes;
   unsigned           iter;
   unsigned           strlenc;
-  unsigned           locmaxsize = 0;
-
+    
   ASSERT(dstpacket != NULL && srcpacket != NULL &&
 	 strncmp(srcpacket, GDBWRAP_START_ENCOD, 1));
   if (&*srcpacket != &*dstpacket)
@@ -234,8 +236,12 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       valuetocopy    = encodestr[-1];
       numberoftimes  = encodestr[1] - 29;
       strlenc        = strlen(encodestr);
-      locmaxsize    += strlenc + numberoftimes - 2;
-      ASSERT(locmaxsize < maxsize);
+/*       locmaxsize    += strlenc + numberoftimes - 2; */
+/*       ASSERT(locmaxsize < maxsize); */
+
+/*       printf("The localmax: %#x\n", locmaxsizecd ); */
+/*       fflush(stdout); */
+
       /* We move the string to the right, then set the bytes. We
 	 substract 2, because we have <number>*<char> where * and
 	 <char> are filled with the value of <number> (ie 2 chars). */
@@ -517,29 +523,22 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
 }
 
 
-char                 *gdbwrap_readmemory(la32 linaddr, uint8_t bytes,
+char                 *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
 					 gdbwrap_t *desc)
 {
   char               *rec;
   char               packet[50];
-  unsigned           i;
-  
+
   snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes);
-  
   rec = gdbwrap_send_data(packet, desc);
-  /* Transform it to a "binary" */
-  for (i = 0; rec[i] != '\0'; i++)
-    rec[i] = (char)gdbwrap_atoh(&rec[i], 1);
-
-  /*   gdbwrap_errorhandler(rec); */
 
   return rec;
 }
 
 
 void                 *gdbwrap_writememory(la32 linaddr, void *value,
-					  uint8_t bytes, gdbwrap_t *desc)
+					  unsigned bytes, gdbwrap_t *desc)
 {
   char               packet[50];
   uint8_t            packetsize;

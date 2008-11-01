@@ -406,6 +406,8 @@ void		*elfsh_readmem(elfshsect_t *sect)
   dim[0] = ostype;
   dim[1] = iotype;
   fct = aspect_vectors_select(mem, dim);
+/*   printf("dim[0]: %d, dim[1]: %d, fct: %p\n", dim[0], dim[1], fct); */
+/*   fflush(stdout); */
   ret = fct(sect);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

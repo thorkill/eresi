@@ -52,29 +52,60 @@ int             kedbg_break_ia32(elfshobj_t *f, elfshbp_t *bp)
 
 
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
-				void *buf, u_int size)
+				void *buf, unsigned size)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-
-  NOT_USED(file);
-
-  fprintf(stderr, "RASTA YO YO\n\n");
-  fflush(stderr);
-
-
+  char          *ret;
+  char          *charbuf = buf;
+  unsigned      i;
   
-  memcpy(buf, gdbwrap_readmemory(addr, (uint8_t)size, loc), size);
+  NOT_USED(file);
+  ret = gdbwrap_readmemory(addr, size, loc);
 
-  fprintf(stderr, "Received in %s:%s\n\n", __PRETTY_FUNCTION__, (char *)buf);
-  fflush(stderr);
+  /* gdbserver sends a string, we need to convert it. Note that 2
+     characters = 1 real Byte.*/
+  for (i = 0; i < size; i++) 
+    charbuf[i] = (u_char)gdbwrap_atoh(ret + 2 * i, 2);
   
   /* returning a char is ok ? */
-  return buf;
+  return charbuf;
+}
+
+
+void            *kedbg_readmem(elfshsect_t *sect)
+{
+  void *ptr;
+
+/*   int *u = (int *)elfsh_get_raw(sect); */
+/*   unsigned a; */
+/*   if (u != NULL) */
+/*     for (a = 0; a < sect->shdr->sh_size; a++) */
+/*       fprintf(stderr, "Value in %s, name: %x\n", __PRETTY_FUNCTION__, u[a]); */
+
+/*   fprintf(stderr, "\nGonna send in %s- %s, %#x, size: %d \n", __PRETTY_FUNCTION__, */
+/* 	  sect->name, sect->shdr->sh_addr, sect->shdr->sh_size); */
+/*   fflush(stderr); */
+  if(!elfsh_get_section_writableflag(sect->shdr))
+    ptr = sect->data;
+  else
+    {
+      ptr = malloc(sect->shdr->sh_size);
+      kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr, sect->shdr->sh_size);
+    }
+
+  fprintf(stderr, "Returning: %p\n", ptr);
+
+/*   unsigned i; */
+/*   for (i = 0; i < sect->shdr->sh_size; i++) */
+/*     printf("%#x ", ((char *)ptr)[i]); */
+/*   printf("\nfinished\n"); */
+/*   fflush(stdout); */
+  return ptr;
 }
 
 
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
-			       u_int size)
+			       unsigned size)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -85,29 +116,6 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
   gdbwrap_writememory(addr, data, size, loc);
 
   return 0;
-}
-
-
-void            *kedbg_readmem(elfshsect_t *sect)
-{
-  fprintf(stderr, "Can in %s\n", __PRETTY_FUNCTION__);
-  fflush(stderr);
-
-
-  void *ptr = alloca(sect->shdr->sh_size);
-
-/*   int *u = (int *)elfsh_get_raw(sect); */
-/*   unsigned a; */
-/*   if (u != NULL) */
-/*     for (a = 0; a < sect->shdr->sh_size; a++) */
-/*       fprintf(stderr, "Value in %s, name: %x\n", __PRETTY_FUNCTION__, u[a]); */
-  
-  kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr, sect->shdr->sh_size);
-  
-  fprintf(stderr, "Can in %s, name: %s\n", __PRETTY_FUNCTION__, sect->name);
-  fflush(stderr);
-
-  return ptr;
 }
 
 
