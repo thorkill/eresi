@@ -48,6 +48,7 @@ extern char **environ;
 #define		E2DBG_CONFIG		".e2dbgrc"
 #define		E2DBG_HOOK_GETREGS	"hook_getregs"
 #define		E2DBG_HOOK_SETREGS	"hook_setregs"
+#define		E2DBG_HOOK_PRINTREGS	"hook_printregs"
 #define		E2DBG_HOOK_GETPC	"hook_getpc"
 #define		E2DBG_HOOK_SETSTEP	"hook_setstep"
 #define		E2DBG_HOOK_RESETSTEP	"hook_resetstep"
@@ -371,6 +372,7 @@ extern e2dbgworld_t	e2dbgworld;
 #endif
 
 /* Default hook handler */
+void		e2dbg_default_printregs();
 void            e2dbg_default_getregs();
 void            e2dbg_default_setregs();
 eresi_Addr*     e2dbg_default_getpc();
@@ -385,6 +387,7 @@ int             e2dbg_user_hooks_install(void);
 /* libe2dbg.hooks */
 int		e2dbg_getregs();
 int		e2dbg_setregs();
+int		e2dbg_printregs();
 eresi_Addr*     e2dbg_getpc();
 int             e2dbg_setstep();
 int             e2dbg_resetstep();
@@ -411,6 +414,10 @@ void            *e2dbg_bt_ia32(void *frame);
 void            *e2dbg_getret_ia32(void *frame);
 int             e2dbg_break_ia32(elfshobj_t *f, elfshbp_t *bp);
 int		e2dbg_delbreak_user(elfshbp_t *bp);
+void		e2dbg_print_regvars_ia32_freebsd();
+void		e2dbg_print_regvars_ia32_netbsd();
+void		e2dbg_print_regvars_ia32_sysv();
+void		e2dbg_print_regvars_mips_irix();
 
 /* Backend for AMD64 */
 void            e2dbg_get_regvars_amd64_bsd();
@@ -450,6 +457,7 @@ int             e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp);
 /* e2dbg vector API for registration */
 int		e2dbg_register_sregshook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_gregshook(u_char at, u_char ht, u_char ost, void *f);
+int		e2dbg_register_pregshook(u_char archtype, u_char hosttype, u_char ostype, void *fct);
 int		e2dbg_register_getpchook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_setstephook(u_char at, u_char ht, u_char ost, void *f);
 int		e2dbg_register_resetstephook(u_char at, u_char ht, u_char ost, void *f);

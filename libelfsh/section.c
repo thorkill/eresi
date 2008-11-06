@@ -1134,8 +1134,10 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is too small", -1);
 
-  rdata = elfsh_readmem(sect);
-  memcpy(rdata + (off * sizelem), data, size);
+  //rdata = elfsh_readmem(sect);
+  elfsh_writemem(sect->parent, sect->shdr->sh_addr + (off * sizelem), data, size);
+  //memcpy(rdata + (off * sizelem), data, size);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

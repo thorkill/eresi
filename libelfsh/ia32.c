@@ -75,8 +75,11 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 
   /* 6 is the size of the first instruction of a .plt entry on x86 */
   gotent = extplt->shdr->sh_addr + extplt->curend + 6;
-  memcpy(elfsh_readmem(altgot) + altgot->curend, 
-	 (char *) &gotent, sizeof(gotent));
+
+  //memcpy(elfsh_readmem(altgot) + altgot->curend, (char *) &gotent, sizeof(gotent));
+  elfsh_writemem(altgot->parent, altgot->shdr->sh_addr + altgot->curend, 
+		 (char *) &gotent, sizeof(gotent));
+
   altgot->curend += sizeof(gotent);
  
 #if __DEBUG_EXTPLT__
@@ -99,7 +102,10 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
   relentsz = IS_REL(extplt) ? sizeof(elfsh_Rel) : sizeof(elfsh_Rela);
   r = elfsh_create_relent(R_386_JMP_SLOT, dynsym->curend / sizeof(elfsh_Sym), 
 			  altgot->shdr->sh_addr + altgot->curend - sizeof(eresi_Addr));
-  memcpy(elfsh_readmem(relplt) + relplt->curend, &r, relentsz);
+
+  //memcpy(elfsh_readmem(relplt) + relplt->curend, &r, relentsz);
+  elfsh_writemem(relplt->parent, relplt->shdr->sh_addr + relplt->curend, &r, relentsz);
+
   relplt->curend += relentsz;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

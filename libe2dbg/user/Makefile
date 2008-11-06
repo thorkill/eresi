@@ -11,7 +11,7 @@ LD			?= ld
 SRC			= init.c e2dbg.c signal.c linkmap.c continue.c \
 			alloc-proxy.c resolv.c threads.c entry.c e2dbg-misc.c \
 			dbg-ia32.c  dbg-sparc32.c dbg-amd64.c delbreak.c \
-			register.c step.c 
+			register.c step.c dbg-mips.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 OBJNAME32		= libe2dbg-user32

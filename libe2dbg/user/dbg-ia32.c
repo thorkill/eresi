@@ -8,14 +8,57 @@
 ** Vectors can also be accessed with 'vectors' cmd in any eresi interpreter 
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 jfv
-** $Id: dbg-ia32.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+** $Id
 */
 #include "libe2dbg.h"
 
 
+/* Printregs handlers for the IA32 architecture on FreeBSD */
+void		e2dbg_print_regvars_ia32_freebsd()
+{
+#if defined(__i386__) && defined(__FreeBSD__)
+  e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.mc_eax);
+  e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.mc_ebx);
+  e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.mc_ecx);
+  e2dbg_register_dump("EDX", e2dbgworld.curthread->context->uc_mcontext.mc_edx);
+  e2dbg_register_dump("ESI", e2dbgworld.curthread->context->uc_mcontext.mc_esi);
+  e2dbg_register_dump("EDI", e2dbgworld.curthread->context->uc_mcontext.mc_edi);
+  e2dbg_register_dump("ESP", e2dbgworld.curthread->context->uc_mcontext.mc_esp);
+  e2dbg_register_dump("EBP", e2dbgworld.curthread->context->uc_mcontext.mc_ebp);
+  e2dbg_register_dump("EIP", e2dbgworld.curthread->context->uc_mcontext.mc_eip);
+#endif
+}
 
-
-
+/* Printregs handlers for the IA32 architecture on NetBSD */
+void		e2dbg_print_regvars_ia32_netbsd()
+{
+#if defined(__i386__) && defined(__NetBSD__)
+  e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EAX]);
+  e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EBX]);
+  e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_ECX]);
+  e2dbg_register_dump("EDX", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EDX]);
+  e2dbg_register_dump("ESI", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_ESI]);
+  e2dbg_register_dump("EDI", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EDI]);
+  e2dbg_register_dump("ESP", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_ESP]);
+  e2dbg_register_dump("EBP", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EBP]);
+  e2dbg_register_dump("EIP", e2dbgworld.curthread->context->uc_mcontext.__gregs[_REG_EIP]);
+#endif
+}
+/* Printregs handlers for the IA32 architecture on NetBSD */
+void		e2dbg_print_regvars_ia32_sysv()
+{
+#if defined(__i386__) && (defined(__linux__) || defined(sun))
+  e2dbg_register_dump("EAX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EAX]);
+  e2dbg_register_dump("EBX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBX]);
+  e2dbg_register_dump("ECX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ECX]);
+  e2dbg_register_dump("EDX", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EDX]);
+  e2dbg_register_dump("ESI", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ESI]);
+  e2dbg_register_dump("EDI", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EDI]);
+  e2dbg_register_dump("ESP", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_ESP]);
+  e2dbg_register_dump("EBP", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EBP]);
+  e2dbg_register_dump("EIP", e2dbgworld.curthread->context->uc_mcontext.gregs[REG_EIP]);
+#endif
+}
 
 /* Regvars handler for the IA32 architecture on BSD */
 void		  e2dbg_get_regvars_ia32_bsd()

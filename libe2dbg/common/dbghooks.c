@@ -11,7 +11,7 @@
 #include "libe2dbg.h"
 
 
-/* Void handlers for the 2 hooks */
+/* Void handlers for the 3 register-related vectors */
 void		  e2dbg_default_getregs()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -23,6 +23,13 @@ void		  e2dbg_default_setregs()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__); 
 }
+
+void		   e2dbg_default_printregs()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__); 
+}
+
 
 /* Error handler by default for them */
 eresi_Addr*	  e2dbg_default_getpc()
@@ -105,7 +112,6 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
 
-  //hook_nextfp[archtype][hosttype][ostype] = fct;
   dim    = alloca(sizeof(u_int) * 4);
   dim[0] = archtype;
   dim[1] = hosttype;
@@ -159,7 +165,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
 		      "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid Object type", -1);
+		      "Invalid Host type", -1);
   if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Operating System type", -1);
@@ -187,7 +193,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
                       "Invalid Architecture type", -1);
   if (hosttype >= E2DBG_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Invalid Object type", -1);
+                      "Invalid Host type", -1);
   if (ostype >= ELFSH_OS_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Operating System type", -1);
@@ -197,6 +203,33 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   dim[1] = hosttype;
   dim[2] = ostype;
   aspect_vectors_insert(getregs, dim, (unsigned long) fct);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/* Register an PRINTREGS handler */
+int		e2dbg_register_pregshook(u_char archtype, u_char hosttype, u_char ostype, void *fct)
+{
+  vector_t	*printregs;
+  u_int		*dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  printregs = aspect_vector_get(E2DBG_HOOK_PRINTREGS);
+  
+  if (archtype >= ELFSH_ARCH_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Architecture type", -1);
+  if (hosttype >= E2DBG_HOST_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Host type", -1);
+  if (ostype >= ELFSH_OS_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Operating System type", -1);
+
+  dim    = alloca(sizeof(u_int) * 4);
+  dim[0] = archtype;
+  dim[1] = hosttype;
+  dim[2] = ostype;
+  aspect_vectors_insert(printregs, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -397,6 +430,9 @@ static int	e2dbg_register_vectors()
   aspect_register_vector(E2DBG_HOOK_SETREGS, 
 			 e2dbg_default_setregs,
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
+  aspect_register_vector(E2DBG_HOOK_PRINTREGS, 
+			 e2dbg_default_printregs,
+			 dims, strdims, 3, ASPECT_TYPE_CADDR);
   aspect_register_vector(E2DBG_HOOK_GETPC, 
 			 e2dbg_default_getpc,
 			 dims, strdims, 3, ASPECT_TYPE_CADDR);
@@ -437,8 +473,6 @@ void		e2dbg_setup_hooks()
     PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
   aspect_init();
   e2dbg_register_vectors();
-
-  
   done = TRUE;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -479,6 +513,8 @@ int		  e2dbg_getregs()
 }
 
 
+
+
 /* Call the setregs hook */
 int		  e2dbg_setregs()
 {
@@ -511,6 +547,42 @@ int		  e2dbg_setregs()
   fct();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
+
+/* Call the setregs hook */
+int		e2dbg_printregs()
+{
+  u_char        archtype;
+  u_char        hosttype;
+  u_char        ostype;
+  u_int		dim[3];
+  vector_t	*printregs;
+  void		(*fct)();
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  printregs = aspect_vector_get(E2DBG_HOOK_PRINTREGS);
+
+  /* Fingerprint binary */
+  archtype = elfsh_get_archtype(world.curjob->curfile);
+  hosttype = elfsh_get_hosttype(world.curjob->curfile);
+  ostype = elfsh_get_ostype(world.curjob->curfile);
+  if (archtype == ELFSH_ARCH_ERROR ||
+      hosttype == E2DBG_HOST_ERROR ||
+      ostype   == ELFSH_OS_ERROR)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "PRINTREGS handler unexistant for this ARCH/OS", -1);
+
+  dim[0] = archtype;
+  dim[1] = hosttype;
+  dim[2] = ostype;
+  fct    = aspect_vectors_select(printregs, dim);
+ 
+  /* This hook is non-fatal, we just wont have printed registers if it fails. */
+  fct();
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
 
 /* Call the getpc hook */
 eresi_Addr*     e2dbg_getpc()

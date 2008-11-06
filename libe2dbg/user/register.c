@@ -48,6 +48,18 @@ static void     e2dbg_user_register_hooks(void)
   e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_SOLARIS, e2dbg_set_regvars_ia32_sysv);
 
+  e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, ELFSH_OS_LINUX, 
+			   e2dbg_print_regvars_ia32_sysv);
+  e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, ELFSH_OS_SOLARIS, 
+			   e2dbg_print_regvars_ia32_sysv);
+  e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, ELFSH_OS_FREEBSD, 
+			   e2dbg_print_regvars_ia32_freebsd);
+  e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, ELFSH_OS_NETBSD, 
+			   e2dbg_print_regvars_ia32_netbsd);
+  e2dbg_register_pregshook(ELFSH_ARCH_MIPS32, E2DBG_HOST_USER, ELFSH_OS_IRIX, 
+			   e2dbg_print_regvars_mips_irix);
+  e2dbg_register_pregshook(ELFSH_ARCH_MIPS64, E2DBG_HOST_USER, ELFSH_OS_IRIX, 
+			   e2dbg_print_regvars_mips_irix);
 
   e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_USER, 
 			   ELFSH_OS_FREEBSD, e2dbg_getpc_bsd_ia32);

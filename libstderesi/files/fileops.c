@@ -20,10 +20,11 @@ int			cmd_write()
   revmobj_t		*o2;
   elfshsect_t		*cur;
   void			*dat;
-  void			*sdata;
+  //void			*sdata;
   int			size;
   char			logbuf[BUFSIZ];
   elfsh_SAddr		off;
+  eresi_Addr		addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -40,24 +41,28 @@ int			cmd_write()
   o1 = e1->value;
   o2 = e2->value;
   off = 0;
-  sdata = NULL;
+  //sdata = NULL;
+  addr = 0;
 
   /* If first parameter is an address */
-  if (o1->otype->type == ASPECT_TYPE_LONG)
+  if (o1->otype->type == ASPECT_TYPE_LONG || 
+      o1->otype->type == ASPECT_TYPE_CADDR || 
+      o1->otype->type == ASPECT_TYPE_DADDR)
     {
+      /*
       cur = elfsh_get_parent_section(world.curjob->curfile, o1->immed_val.ent, &off);
       if (cur)
 	{
 	  sdata  = elfsh_readmem(cur);
 	  sdata += off;
 	}
-
-      /* FIXME: Mapped test should be done */
       else if (e2dbg_presence_get())
 	sdata = (void *) o1->immed_val.ent; 
       else
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid destination address", -1);
+      */
+      addr = o1->immed_val.ent;
     }
 
   /* Type checking */
@@ -92,8 +97,13 @@ int			cmd_write()
 		      "Source offset too big", -1);
 
   /* Write raw ondisk or in memory */
-  if (sdata)
-    memcpy(sdata, dat, size);  
+  /* FIXME: Mapped test should be done */
+  if (addr)
+    {
+      //memcpy(sdata, dat, size);  
+      elfsh_writemem(world.curjob->curfile, addr, dat, size);
+    }
+
   /* Write in the destination section */
   else if (o1->set_data(o1->parent, o1->off, dat, size, o1->sizelem) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

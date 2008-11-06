@@ -118,7 +118,6 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
   return 0;
 }
 
-
 /* Get %IP */
 eresi_Addr      *kedbg_getpc_ia32(void)
 {
