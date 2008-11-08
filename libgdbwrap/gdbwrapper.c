@@ -536,11 +536,9 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
 {
   char               *rec;
 
-  rec = gdbwrap_send_data(GDBWRAP_CONTINUETHREAD0, desc);
-  if (gdbwrap_is_active(desc) && !strncmp(rec, GDBWRAP_ERROR,
-					  strlen(GDBWRAP_ERROR)))
+  if (gdbwrap_is_active(desc))
     rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
-    gdbwrap_populate_reg(rec, desc);
+  gdbwrap_populate_reg(rec, desc);
 }
 
 
@@ -556,19 +554,16 @@ void                 gdbwrap_setbp(la32 linaddr, void *datasaved, gdbwrap_t *des
   unsigned           atohresult;
 
   ret = gdbwrap_readmemory(linaddr, 1, desc);
-  printf("Received: %s\n", ret);
-  /* Fix: not clean. ATOH is not clean when returning an unsigned. */
+   /* Fix: not clean. ATOH is not clean when returning an unsigned. */
   atohresult = gdbwrap_atoh(ret, 2 * 1);
-  printf("We saved: %#x\n", atohresult);
-  memcpy(datasaved, &atohresult, 1);
+   memcpy(datasaved, &atohresult, 1);
   gdbwrap_writememory(linaddr, &bp, sizeof(u_char), desc);
 }
 
 
 void                 gdbwrap_delbp(la32 linaddr, void *datasaved, gdbwrap_t *desc)
 {
-  printf("Address: %#x -- data: %#x \n", linaddr, *(int *)datasaved);
-  gdbwrap_writememory(linaddr, datasaved, sizeof(u_char), desc);
+   gdbwrap_writememory(linaddr, datasaved, sizeof(u_char), desc);
 }
 
 

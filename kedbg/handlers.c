@@ -60,7 +60,6 @@ int             kedbg_delbp(elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
-  printf("ASDKJASDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
   gdbwrap_delbp(bp->addr, bp->savedinstr, loc);
   return 0;
 }

@@ -115,10 +115,9 @@ static void     find_linkmap(void)
   
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
   world.curjob->curfile->linkmap = e2dbgworld.syms.map;
-  
   kedbg_readmema(NULL, (eresi_Addr)e2dbgworld.syms.map,
 		 &linkmap_copy, sizeof(elfshlinkmap_t));
-  
+
   /* Let's take the first entry, by following the prev. */
   while(linkmap_copy.lprev != NULL)
     kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lprev,
@@ -130,7 +129,7 @@ static void     find_linkmap(void)
       kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lnext,
 		     &linkmap_copy, sizeof(elfshlinkmap_t));
       kedbg_getstr(linkmap_copy.lname, lmstring, sizeof(lmstring));
-
+      
       if (lmstring != NULL && lmstring[0] != '\0')
 	{
 	  actual =  hash_get(&world.curjob->loaded, lmstring);
@@ -154,7 +153,6 @@ static void     propagate_type(void)
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
-      printf("Key: %d  - keys[index]: %s\n", index, keys[index]);
       actual = hash_get(&world.curjob->loaded, keys[index]);
       actual->hostype = E2DBG_HOST_GDB;
       actual->iotype  = ELFSH_IOTYPE_GDBPROT;
@@ -225,7 +223,6 @@ static int      kedbg_main(int argc, char **argv)
   cmd_kedbgcont();
   kedbg_delbp(&bp);
 
-  printf("Ancienne value: %#x\n", *(int *)bp.savedinstr);
   find_linkmap();
   revm_run(argc, argv);
 
