@@ -56,6 +56,19 @@ static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
 }
 
 
+unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
+{
+  unsigned           ret = 0;
+
+  /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
+     next 2 characters reprensent the signal number. */
+  if (desc->packet != NULL && desc->packet[0] == GDBWRAP_SIGNAL_RECV)
+    ret = gdbwrap_atoh(desc->packet + 1, 2 * sizeof(char));
+
+  return ret;
+}
+
+
 static Bool          gdbwrap_is_active(gdbwrap_t *desc)
 {
   if (desc->is_active)
@@ -143,12 +156,11 @@ static la32          gdbwrap_little_endian(la32 addr)
 }
 
 
-unsigned      gdbwrap_atoh(const char * str, unsigned size)
+unsigned             gdbwrap_atoh(const char * str, unsigned size)
 {
   unsigned           i;
   unsigned           hex;
 
-  //  printf("Received size: %d\n", size);
   for (i = 0, hex = 0; i < size; i++)
     if (str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
@@ -250,7 +262,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       memset(encodestr, valuetocopy, numberoftimes);
       encodestr = strstr(NEXT_CHAR(encodestr), GDBWRAP_START_ENCOD);
     }
-  
+/*   printf("\nPacket:\n%s\n", dstpacket); */
   return dstpacket;
 }
 
@@ -276,6 +288,12 @@ static void         gdbwrap_populate_reg(char *packet,
   char              packetcolon[50];
   unsigned          packetoffset = 0;
 
+  /* If a signal is received, we populate the registers, starting
+     after the signal number (ie after Tnn, where nn is the
+     number). */
+  if (packet[0] == GDBWRAP_SIGNAL_RECV)
+    packetoffset = 3;
+  
   while ((nextpacket =
 	  gdbwrap_extract_from_packet(packet + packetoffset,
 				      packetsemicolon,
@@ -479,6 +497,8 @@ void                gdbwrap_reason_halted(gdbwrap_t *desc)
   char              *received;
 
   received = gdbwrap_send_data(GDBWRAP_WHY_HALTED, desc);
+  printf("\n\nReceived why halted: %s\n", received);
+  fflush(stdout);
   if (gdbwrap_is_active(desc))
     gdbwrap_populate_reg(received, desc);
   else
@@ -520,6 +540,35 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   if (gdbwrap_is_active(desc) && !strncmp(rec, GDBWRAP_ERROR,
 					  strlen(GDBWRAP_ERROR)))
     rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
+    gdbwrap_populate_reg(rec, desc);
+}
+
+
+/**
+ * Set a breakpoint. We read the value in memory, save it and write a
+ * 0xcc in replacement. The usual command to set a bp is not supported
+ * by the gdbserver.
+ */
+void                 gdbwrap_setbp(la32 linaddr, void *datasaved, gdbwrap_t *desc)
+{
+  u_char             bp = 0xcc;
+  char               *ret;
+  unsigned           atohresult;
+
+  ret = gdbwrap_readmemory(linaddr, 1, desc);
+  printf("Received: %s\n", ret);
+  /* Fix: not clean. ATOH is not clean when returning an unsigned. */
+  atohresult = gdbwrap_atoh(ret, 2 * 1);
+  printf("We saved: %#x\n", atohresult);
+  memcpy(datasaved, &atohresult, 1);
+  gdbwrap_writememory(linaddr, &bp, sizeof(u_char), desc);
+}
+
+
+void                 gdbwrap_delbp(la32 linaddr, void *datasaved, gdbwrap_t *desc)
+{
+  printf("Address: %#x -- data: %#x \n", linaddr, *(int *)datasaved);
+  gdbwrap_writememory(linaddr, datasaved, sizeof(u_char), desc);
 }
 
 
@@ -568,17 +617,6 @@ char                 *gdbwrap_own_command(char *command,
 }
 
 
-#if 0
-/* Set a memory breakpoint en go there. It assumes a continue. To see
-   how it's gonna work when merging with the rest.*/
-   
-void                 *gdbwrap_memorybp(gdbwrap_t *desc)
-{
-  
-}
-#endif
-
-
 /* --------------------- NOT TESTED ------------------------- */
 void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
 {
@@ -600,7 +638,7 @@ void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
  * (default behavior).
  */
  
- void                gdbwrap_signal(int signal, gdbwrap_t *desc)
+void                gdbwrap_signal(int signal, gdbwrap_t *desc)
  {
    char              *rec;
    char              signalpacket[50];
@@ -624,15 +662,6 @@ void                 gdbwrap_stepi(gdbwrap_t *desc)
     gdbwrap_errorhandler(GDBWRAP_DEAD, desc);
 }
 
-
-/* void                 gdbwrap_setbp(void) */
-/* { */
-/* } */
-
-
-/* void                 gdbwrap_rembp(void) */
-/* { */
-/* } */
 
 void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
 {

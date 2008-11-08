@@ -42,6 +42,7 @@ typedef struct
 } gdbwrapworld_t;
 
 unsigned         gdbwrap_atoh(const char * str, unsigned size);
+unsigned         gdbwrap_lastsignal(gdbwrap_t *desc);
 gdbwrapworld_t   gdbwrap_current_set(gdbwrap_t *world);
 gdbwrap_t        *gdbwrap_current_get(void);
 gdbwrap_t        *gdbwrap_init(int fd);
@@ -53,6 +54,8 @@ char             *gdbwrap_own_command(char *command, gdbwrap_t *desc);
 void             gdbwrap_test(gdbwrap_t *desc);
 gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
+void             gdbwrap_setbp(la32 linaddr, void *datasaved, gdbwrap_t *desc);
+void             gdbwrap_delbp(la32 linaddr, void *datasaved, gdbwrap_t *desc);
 char             *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
 				     gdbwrap_t *desc);
 void             *gdbwrap_writememory(la32 linaddr, void *value,

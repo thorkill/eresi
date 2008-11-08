@@ -96,6 +96,9 @@ u_char		elfsh_get_elftype(elfshobj_t *file)
  */
 u_char		elfsh_get_iotype(elfshobj_t *file)
 {
+/*   static int i; */
+/*   printf("%d ", i++); */
+/*   fflush(stdout); */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file->iotype);
 }

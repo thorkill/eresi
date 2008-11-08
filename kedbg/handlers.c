@@ -11,7 +11,7 @@ void            kedbg_resetstep_ia32(void)
 
 eresi_Addr	*kedbg_getfp_ia32(void)
 {
-  fprintf(stderr, "Ganja rasta root :) \n");
+  fprintf(stderr, "%s NOT IMPLEMENTED (YET) \n", __PRETTY_FUNCTION__);
   fflush(stdout);
   
   /*   gdbwrap_t     *loc = gdbwrap_current_get(); */
@@ -27,7 +27,7 @@ void            *kedbg_bt_ia32(void *frame)
 {
 
   NOT_USED(frame);
-  fprintf(stderr, "Ganja rasta root :) \n");
+  fprintf(stderr, "%s NOT IMPLEMENTED (YET) \n", __PRETTY_FUNCTION__);
   fflush(stdout);
   return NULL;
 }
@@ -41,15 +41,46 @@ void            *kedbg_getret_ia32(void *frame)
 }
 
 
-int             kedbg_break_ia32(elfshobj_t *f, elfshbp_t *bp)
+/**
+ * Set up a breakpoint. We have to change the memory on the server
+ * side, thus we need to save the value we change.
+ */
+int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 {
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  
   NOT_USED(f);
-  NOT_USED(bp);
-  fprintf(stderr, "Ganja rasta root :) \n");
-  fflush(stdout);
+  gdbwrap_setbp(bp->addr, bp->savedinstr, loc);
+  
   return 0;
 }
 
+
+int             kedbg_delbp(elfshbp_t *bp)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  printf("ASDKJASDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+  gdbwrap_delbp(bp->addr, bp->savedinstr, loc);
+  return 0;
+}
+
+
+void            kedbg_print_reg(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  
+  e2dbg_register_dump("EAX", loc->reg32.eax);
+  e2dbg_register_dump("EBX", loc->reg32.ebx);
+  e2dbg_register_dump("ECX", loc->reg32.ecx);
+  e2dbg_register_dump("EDX", loc->reg32.edx);
+  e2dbg_register_dump("ESI", loc->reg32.esi);
+  e2dbg_register_dump("EDI", loc->reg32.edi);
+  e2dbg_register_dump("ESP", loc->reg32.esp);
+  //E2DBG_SETREG(E2DBG_SSP_VAR, loc->reg32.eax);
+  e2dbg_register_dump("EBP", loc->reg32.ebp);
+  e2dbg_register_dump("EIP", loc->reg32.eip);
+}
 
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 				void *buf, unsigned size)
@@ -66,7 +97,8 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
      characters = 1 real Byte.*/
   for (i = 0; i < size; i++) 
     charbuf[i] = (u_char)gdbwrap_atoh(ret + 2 * i, 2);
-  
+
+  //  printf("Returning: %s\n", charbuf);
   /* returning a char is ok ? */
   return charbuf;
 }
@@ -76,15 +108,6 @@ void            *kedbg_readmem(elfshsect_t *sect)
 {
   void *ptr;
 
-/*   int *u = (int *)elfsh_get_raw(sect); */
-/*   unsigned a; */
-/*   if (u != NULL) */
-/*     for (a = 0; a < sect->shdr->sh_size; a++) */
-/*       fprintf(stderr, "Value in %s, name: %x\n", __PRETTY_FUNCTION__, u[a]); */
-
-/*   fprintf(stderr, "\nGonna send in %s- %s, %#x, size: %d \n", __PRETTY_FUNCTION__, */
-/* 	  sect->name, sect->shdr->sh_addr, sect->shdr->sh_size); */
-/*   fflush(stderr); */
   if(!elfsh_get_section_writableflag(sect->shdr))
     ptr = sect->data;
   else
@@ -93,13 +116,6 @@ void            *kedbg_readmem(elfshsect_t *sect)
       kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr, sect->shdr->sh_size);
     }
 
-  fprintf(stderr, "Returning: %p\n", ptr);
-
-/*   unsigned i; */
-/*   for (i = 0; i < sect->shdr->sh_size; i++) */
-/*     printf("%#x ", ((char *)ptr)[i]); */
-/*   printf("\nfinished\n"); */
-/*   fflush(stdout); */
   return ptr;
 }
 
@@ -109,14 +125,12 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
-  fprintf(stderr, "RASTA YO YO - 2\n\n");
-  fflush(stderr);
-  
   NOT_USED(file);
   gdbwrap_writememory(addr, data, size, loc);
 
   return 0;
 }
+
 
 /* Get %IP */
 eresi_Addr      *kedbg_getpc_ia32(void)

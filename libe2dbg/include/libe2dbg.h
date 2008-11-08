@@ -36,11 +36,11 @@ extern char **environ;
 #define __USE_GNU
 #include <sys/ucontext.h>
 
-#define		__DEBUG_E2DBG__	        0
-#define		__DEBUG_BP__		0
-#define		__DEBUG_EMALLOC__	0
-#define		__DEBUG_LINKMAP__	0
-#define		__DEBUG_THREADS__	0
+#define		__DEBUG_E2DBG__	        FALSE
+#define		__DEBUG_BP__		TRUE
+#define		__DEBUG_EMALLOC__	FALSE
+#define		__DEBUG_LINKMAP__	FALSE
+#define		__DEBUG_THREADS__	FALSE
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
 #define		E2DBG_PROFILER_BUFLEN	256
@@ -505,6 +505,7 @@ void		e2dbg_last_init(void) __attribute__ ((constructor));
 int		e2dbg_setup(char *name);
 int		e2dbg_entry(e2dbgparams_t *);
 void		e2dbg_register_command(void);
+void		e2dbg_register_dump(char *name, ureg32 reg);
 void		e2dbg_start_proc();
 int		e2dbg_output();
 

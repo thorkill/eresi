@@ -329,8 +329,10 @@ int		cmd_bp()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* build argc */
-  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
-  str = revm_lookup_string(world.curjob->curcmd->param[0]);
+  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
+    ;
+  str = revm_lookup_string(world.curjob->curcmd->param[0])
+    ;
 
   fprintf(stderr, "Putting breakpoint on %s \n", str);
 

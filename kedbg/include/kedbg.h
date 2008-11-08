@@ -10,6 +10,8 @@
 #define  COM1              "youpla"
 #define  HELPCOM1          "Not much to say..."
 
+#define  BPCODE            0xcc
+
 int             cmd_linkmap(void);
 int             e2dbg_linkmap_load(char *name);
 int             cmd_com1(void);

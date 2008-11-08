@@ -12,7 +12,7 @@
 
 
 /* Resolve a register */
-void		e2dbg_register_dump(char *name, uint32_t reg)
+void		e2dbg_register_dump(char *name, ureg32 reg)
 {
   elfsh_SAddr	off;
   char		*str;

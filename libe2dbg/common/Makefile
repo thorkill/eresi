@@ -9,7 +9,7 @@ include ../../config.h
 
 LD			?= ld
 SRC			= backtrace.c breakpoints.c display.c mode.c stack.c \
-			dumpregs.c dbghooks.c mutex.c common.c delete.c
+			dumpregs.c dbghooks.c mutex.c common.c delete.c linkmap.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJNAME32		= libe2dbg-common32
 OBJ64			= $(SRC:.c=.64.o)
