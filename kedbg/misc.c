@@ -25,11 +25,21 @@ elfshlinkmap_t   *kedbg_linkmap_getaddr(void)
 {
   elfshsect_t    *got;
   void           *data;
-
+  elfshlinkmap_t *lm;
   got           = elfsh_get_gotsct(world.curjob->curfile);
   data          = elfsh_readmem(got);
-  return        (elfshlinkmap_t *)(*elfsh_get_got_entry_by_index(data, 1));
+  lm            = (elfshlinkmap_t *)(*elfsh_get_got_entry_by_index(data, 1));
+  
+  DEBUGMSG(fprintf(stderr, "Found got[1]: %#x\n", (eresi_Addr)lm));
+  return        lm;
   //  kedbg_readmema(NULL, linkmap_entry, &linkmap_copy, sizeof(elfshlinkmap_t));
+}
+
+
+void             kedbg_continue(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  gdbwrap_continue(loc);
 }
 /* void            *kedbg_linkmap_lnext() */
 /* { */

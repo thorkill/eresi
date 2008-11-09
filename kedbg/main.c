@@ -129,12 +129,21 @@ static void     find_linkmap(void)
       kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lnext,
 		     &linkmap_copy, sizeof(elfshlinkmap_t));
       kedbg_getstr(linkmap_copy.lname, lmstring, sizeof(lmstring));
+
+      DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
+		       "lmstring: %s\n", linkmap_copy.lnext,
+		       linkmap_copy.laddr, lmstring));
       
       if (lmstring != NULL && lmstring[0] != '\0')
 	{
 	  actual =  hash_get(&world.curjob->loaded, lmstring);
 	  if (actual != NULL)
-	    actual->rhdr.base = linkmap_copy.laddr;
+	    {
+	      actual->rhdr.base = linkmap_copy.laddr;
+	      DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
+				"the base addr: %#x\n\n", actual->name,
+				actual->rhdr.base));
+	    }
 	}
     }
 }
@@ -183,6 +192,8 @@ static eresi_Addr find_entrypoint(elfshobj_t *file)
 /* 		       BUFSIZ, */
 /* 		       textsct->shdr->sh_addr, */
 /* 		       &dis); */
+
+  DEBUGMSG(fprintf(stderr, "Entry point found: %#x\n", addr));
   return addr;
 }
 
@@ -220,7 +231,7 @@ static int      kedbg_main(int argc, char **argv)
   bp.addr = find_entrypoint(world.curjob->curfile);
   /* Call the bp hook. */
   kedbg_setbp(world.curjob->curfile, &bp);
-  cmd_kedbgcont();
+  kedbg_continue();
   kedbg_delbp(&bp);
 
   find_linkmap();

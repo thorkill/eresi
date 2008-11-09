@@ -12,7 +12,22 @@
 
 #define  BPCODE            0xcc
 
+/* Debug flags */
+#define __DEBUG_KEDBG__	   TRUE
+
+#if __DEBUG_KEDBG__
+#define DEBUGMSG(_command)				\
+   do							\
+      {							\
+         _command;					\
+      } while(0)
+#else
+#define DEBUGMSG(_command)				
+#endif
+
+
 int             cmd_linkmap(void);
 int             e2dbg_linkmap_load(char *name);
 int             cmd_com1(void);
 int             cmd_kedbgcont(void);
+

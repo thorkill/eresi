@@ -27,7 +27,7 @@ void            kedbg_setstep_ia32(void);
 void            kedbg_set_regvars_ia32(void);
 void            kedbg_get_regvars_ia32(void);
 void            kedbg_print_reg(void);
-
+void            kedbg_continue(void);
 
 /* Miscellaneous functions. */
 char            *kedbg_getstr(void *addr, char *buf, unsigned maxsize);
