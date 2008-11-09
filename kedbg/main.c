@@ -107,7 +107,7 @@ static int	kedbg_curthread_init(void)
 }
 
 
-static void     find_linkmap(void)
+static void     kedbg_find_linkmap(void)
 {
   elfshlinkmap_t linkmap_copy;
   char          lmstring[300];
@@ -117,7 +117,8 @@ static void     find_linkmap(void)
   int           i;
   char		*base1;
   char		*base2;
-  
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
   world.curjob->curfile->linkmap = e2dbgworld.syms.map;
@@ -125,12 +126,12 @@ static void     find_linkmap(void)
 		 &linkmap_copy, sizeof(elfshlinkmap_t));
 
   /* Let's take the first entry, by following the prev. */
-  while(linkmap_copy.lprev != NULL)
+  while (linkmap_copy.lprev != NULL)
     kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lprev,
 		   &linkmap_copy, sizeof(elfshlinkmap_t)); 
   
   /* And now, we read all the entries from the first one. */
-  while(linkmap_copy.lnext != NULL)
+  while (linkmap_copy.lnext != NULL)
     {
       kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lnext,
 		     &linkmap_copy, sizeof(elfshlinkmap_t));
@@ -151,7 +152,11 @@ static void     find_linkmap(void)
 	      base2 = revm_basename(actual->name);
 	      if (!strcmp(base1, base2))
 		{
+		  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+			 actual->linkmap, sizeof(linkmap_copy), );
+		  memcpy(actual->linkmap, &linkmap_copy, sizeof(linkmap_copy));
 		  actual->rhdr.base = linkmap_copy.laddr;
+		  
 		  DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
 				   "the base addr: %#x\n\n", actual->name,
 				   actual->rhdr.base));
@@ -161,13 +166,14 @@ static void     find_linkmap(void)
 	}
     }
   hash_free_keys(keys);
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
 
 /**
  * Propagate the hostype and iotype to all loaded files. 
  */
-static void     propagate_type(void)
+static void     kedbg_propagate_type(void)
 {
   int           keynbr;
   char          **keys;
@@ -187,7 +193,7 @@ static void     propagate_type(void)
 }
 
 
-static eresi_Addr find_entrypoint(elfshobj_t *file)
+static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 {
   eresi_Addr    addr;
   asm_processor proc;
@@ -238,18 +244,18 @@ static int      kedbg_main(int argc, char **argv)
   ASSERT(!ret);
   kedbg_post_load_register_vector();
   elfsh_set_debug_mode();
+  e2dbg_presence_set();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
-  propagate_type();
+  kedbg_propagate_type();
 
   memset(bp.savedinstr, 0, 16);
-  bp.addr = find_entrypoint(world.curjob->curfile);
+  bp.addr = kedbg_find_entrypoint(world.curjob->curfile);
   /* Call the bp hook. */
   kedbg_setbp(world.curjob->curfile, &bp);
   kedbg_continue();
   kedbg_delbp(&bp);
-
-  find_linkmap();
+  kedbg_find_linkmap();
   revm_run(argc, argv);
 
   return 0;
