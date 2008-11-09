@@ -112,7 +112,11 @@ static void     find_linkmap(void)
   elfshlinkmap_t linkmap_copy;
   char          lmstring[300];
   elfshobj_t    *actual;
+  char          **keys;
+  int           keynbr;
+  int           i;
   
+  keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
   world.curjob->curfile->linkmap = e2dbgworld.syms.map;
   kedbg_readmema(NULL, (eresi_Addr)e2dbgworld.syms.map,
@@ -136,16 +140,21 @@ static void     find_linkmap(void)
       
       if (lmstring != NULL && lmstring[0] != '\0')
 	{
-	  actual =  hash_get(&world.curjob->loaded, lmstring);
-	  if (actual != NULL)
+	  for (i = 0; i < keynbr; i++)
 	    {
-	      actual->rhdr.base = linkmap_copy.laddr;
-	      DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
-				"the base addr: %#x\n\n", actual->name,
-				actual->rhdr.base));
+	      actual = hash_get(&world.curjob->loaded, keys[i]);
+	      if (actual != NULL && !strcmp(lmstring, actual->name))
+		{
+		  actual->rhdr.base = linkmap_copy.laddr;
+		  DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
+				   "the base addr: %#x\n\n", actual->name,
+				   actual->rhdr.base));
+		  break;
+		}
 	    }
 	}
     }
+  hash_free_keys(keys);
 }
 
 
