@@ -115,6 +115,8 @@ static void     find_linkmap(void)
   char          **keys;
   int           keynbr;
   int           i;
+  char		*base1;
+  char		*base2;
   
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
@@ -143,7 +145,11 @@ static void     find_linkmap(void)
 	  for (i = 0; i < keynbr; i++)
 	    {
 	      actual = hash_get(&world.curjob->loaded, keys[i]);
-	      if (actual != NULL && !strcmp(lmstring, actual->name))
+	      if (!actual)
+		continue;
+	      base1 = revm_basename(lmstring);
+	      base2 = revm_basename(actual->name);
+	      if (!strcmp(base1, base2))
 		{
 		  actual->rhdr.base = linkmap_copy.laddr;
 		  DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
