@@ -37,7 +37,7 @@ extern char **environ;
 #include <sys/ucontext.h>
 
 #define		__DEBUG_E2DBG__	        FALSE
-#define		__DEBUG_BP__		TRUE
+#define		__DEBUG_BP__		FALSE
 #define		__DEBUG_EMALLOC__	FALSE
 #define		__DEBUG_LINKMAP__	FALSE
 #define		__DEBUG_THREADS__	FALSE
@@ -191,8 +191,6 @@ do							\
  //sigaction(SIGSEGV, &ac, NULL);			
  //ac.sa_sigaction   = e2dbg_sigsegv_handler;		
  //sigaction(SIGBUS, &ac, NULL);		 
-
-
 
 // was in SETSIG -> commenting it make the core available
 // ac.sa_sigaction   = e2dbg_sigsegv_handler;      	

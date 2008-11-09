@@ -295,7 +295,8 @@ eresi_Addr	e2dbg_breakpoint_find_addr(char *str)
   if (elfsh_get_objtype(parent->hdr) == ET_DYN)
     {
 #if __DEBUG_BP__
-      printf(" [*] Adding base addr " XFMT "\n", parent->rhdr.base);
+      printf(" [*] Adding base addr " XFMT " of ET_DYN %s\n", 
+	     parent->rhdr.base, parent->name);
 #endif
       addr += parent->rhdr.base;
     }
@@ -329,12 +330,8 @@ int		cmd_bp()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* build argc */
-  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
-    ;
-  str = revm_lookup_string(world.curjob->curcmd->param[0])
-    ;
-
-  fprintf(stderr, "Putting breakpoint on %s \n", str);
+  for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++);
+  str = revm_lookup_string(world.curjob->curcmd->param[0]);
 
   /* Select subcommand */
   switch (idx)
