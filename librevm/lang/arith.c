@@ -18,39 +18,27 @@ static revmexpr_t	*revm_ename_get(char **str)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   bzero(name, BUFSIZ);
-  if (**str != '$')
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid expression name", NULL);
-  *name = **str;
-  (*str)++;
-  idx = 1;
-  while (**str)
-    {
-      switch (**str)
-	{
-	case REVM_VAR_PREFIX:
-	case ',':
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Invalid expression name", NULL);
-	case '+':
-	case '-':
-	case '/':
-	case '%':
-	case '*':
-	case '(':
-	case ')':
-	  (*str)--;
-	  goto end;
-	default:
-	  name[idx++] = **str;
-	}
-      (*str)++;
-    }
-
+  for (idx = 0; **str; (*str)++)
+    switch (**str)
+      {
+      case ',':
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid expression name", NULL);
+      case '+':
+      case '-':
+      case '/':
+      case '%':
+      case '*':
+      case '(':
+      case ')':
+	goto end;
+      default:
+	name[idx++] = **str;
+      }
+  
  end:
-  if (!**str)
-    (*str)--;
-  res = revm_expr_get(name);
+  (*str)--;
+  res = revm_lookup_param(name, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
@@ -75,6 +63,9 @@ static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res,
   quiet = world.state.revm_quiet;
   world.state.revm_quiet = 1;
   ofinal = revm_create_IMMED((*left)->type->type, 1, 0);
+  if (!ofinal)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid type for arithmetic variable", NULL);
   final = revm_expr_create_from_object(ofinal, revm_tmpvar_create(), 0);
   ret = revm_arithmetics(final, *left, res, *op);
   world.state.revm_quiet = quiet;
@@ -115,17 +106,6 @@ static revmexpr_t	*revm_compute_rec(char **str)
       case ')':
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 
-      case REVM_VAR_PREFIX:
-	res = revm_ename_get(str);
-	if (!res)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Unknown expression name", NULL);
-	res = revm_compute_intermediate(&left, res, &op);
-	if (!res)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Invalid arithmetic", NULL);
-	break;
-
 	/* Operation ! */
       case '+':
 	if (op != REVM_OP_UNKNOW || !left)
@@ -158,10 +138,17 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	op = REVM_OP_MOD;
 	break;
 
-	/* Other characters are invalid in numerical expressions */
+	/* Maybe we found the beginning of a variable/constant/etc name */
       default:
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Invalid expression : remove spaces ?", NULL);
+	res = revm_ename_get(str);
+	if (!res)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Unknown expression name", NULL);
+	res = revm_compute_intermediate(&left, res, &op);
+	if (!res)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid arithmetic", NULL);
+	break;
       }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }

@@ -778,6 +778,9 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
   void		*data;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!copyme)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid input parameter", NULL);
   if (force)
     {
       dest = revm_expr_get(name);
