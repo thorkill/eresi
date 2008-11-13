@@ -56,8 +56,7 @@ static revmexpr_t	*revm_ename_get(char **str)
 
 
 /** Compute an intermediate numerical result */
-static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t **right,
-						   revmexpr_t *res, u_char *op)
+static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res, u_char *op)
 {
   u_char		quiet;
   int			ret;
@@ -70,10 +69,6 @@ static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t **rig
       *left = res;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
     }
-  if (*right)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Missing arithmetics in expression", NULL);
-  *right = res;
   if (*op == REVM_OP_UNKNOW)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "No operation to do ?", NULL);
@@ -81,12 +76,11 @@ static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t **rig
   world.state.revm_quiet = 1;
   ofinal = revm_create_IMMED((*left)->type->type, 1, 0);
   final = revm_expr_create_from_object(ofinal, revm_tmpvar_create(), 0);
-  ret = revm_arithmetics(final, *left, *right, *op);
+  ret = revm_arithmetics(final, *left, res, *op);
   world.state.revm_quiet = quiet;
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to compute intermediate result", NULL);
-  *right = NULL;
   *left = final;
   *op = REVM_OP_UNKNOW;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final);
@@ -98,12 +92,11 @@ static revmexpr_t	*revm_compute_rec(char **str)
 {
   revmexpr_t		*res;
   revmexpr_t		*left;
-  revmexpr_t		*right;
   u_char		op;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   op = REVM_OP_UNKNOW;
-  for (left = right = res = NULL; **str; (*str)++)
+  for (left = res = NULL; **str; (*str)++)
     switch (**str)
       {
 
@@ -113,7 +106,7 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid subexpression : remove spaces ?", NULL);
-	res = revm_compute_intermediate(&left, &right, res, &op);
+	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic", NULL);
@@ -127,7 +120,7 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unknown expression name", NULL);
-	res = revm_compute_intermediate(&left, &right, res, &op);
+	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic", NULL);
@@ -182,27 +175,22 @@ revmexpr_t	*revm_compute(char *str)
   int		close;
   char		*back;
   revmexpr_t	*res;
-  u_char	last[BUFSIZ];
-  u_int		idx;
+  u_int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  bzero(last, BUFSIZ);
-  idx = open = close = 0;
+  nbr = open = close = 0;
   for (back = str; *back; back++)
     switch (*back)
       {
       case '(':
-	if (idx >= BUFSIZ - 1)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Too big expression", NULL);
-	last[idx++] = 1;
+	nbr++;
 	open++;
 	break;
       case ')':
-	if (!idx || last[idx - 1] != 1)
+	if (!nbr)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid closing parenthesis", NULL);
-	last[idx--] = 0;				
+	nbr--;
 	close++;
 	break;
       default:
