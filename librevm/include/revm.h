@@ -739,7 +739,7 @@ u_int		revm_dbgid_get();
 /* Atomic operations */
 int             revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2);
 int		revm_nextconds_atomics(revmexpr_t *o1, revmexpr_t *o2);
-int		revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op);
+int		revm_arithmetics(revmexpr_t *dst, revmexpr_t *e1, revmexpr_t *e2, u_char op);
 int		revm_hash_add(hash_t *h, revmexpr_t *e);
 int		revm_hash_del(hash_t *h, revmexpr_t *e);
 int		revm_elist_add(list_t *h, revmexpr_t *e);
@@ -803,6 +803,7 @@ int		revm_expr_destroy(char *ename);
 int		revm_expr_hide(char *ename);
 int		revm_expr_unlink(char *ename, u_char needfree);
 revmexpr_t	*revm_expr_lookup(u_int oid);
+revmexpr_t	*revm_compute(char *str);
 
 /* May not be defined */
 #ifndef __KERNEL__

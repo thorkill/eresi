@@ -1,12 +1,19 @@
 #include <stdio.h>
 
+void bar(void)
+{
+  printf("bar");
+}
+
 void foo(void)
 {
-  printf("foobar\n");
+  printf("foo");
+  bar();
 }
 
 int main(void)
 {
   foo();
+  puts("");
   return 0;
 }

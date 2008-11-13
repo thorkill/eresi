@@ -16,6 +16,7 @@ print
 
 load $1
 analyse
+exec sleep 120
 
 #graph
 #graph bloc main

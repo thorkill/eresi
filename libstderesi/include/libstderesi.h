@@ -110,6 +110,7 @@
 #define	CMD_LOG			"log"
 #define	CMD_EXPORT		"export"
 #define	CMD_EDIT		"edit"
+#define	CMD_EVAL		"eval"
 
 /* Type related commands */
 #define	CMD_INFORM		"inform"
@@ -327,6 +328,7 @@ int		cmd_quiet();
 int             cmd_force();
 int		cmd_verb();
 int		cmd_exec();
+int		cmd_eval();
 int		cmd_findrel();
 int		cmd_modload();
 int		cmd_modunload();

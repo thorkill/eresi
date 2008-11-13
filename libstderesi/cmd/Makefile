@@ -8,7 +8,8 @@ include ../../config.h
 
 SRC			= cat.c help.c prefixes.c profile.c source.c info.c      \
 			  net.c print.c quit.c script.c utils.c configure.c      \
-			  color.c log.c modules.c exec.c job.c define.c init.c
+			  color.c log.c modules.c exec.c job.c define.c init.c   \
+			  eval.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

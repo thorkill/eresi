@@ -128,6 +128,8 @@ int			cmd_print()
   for (idx = 0; world.curjob->curcmd->param[idx] != NULL; idx++)
     {
       expr = revm_expr_get(world.curjob->curcmd->param[idx]);
+      if (!expr)
+	expr = revm_compute(world.curjob->curcmd->param[idx]);
       if (expr && expr->value && !expr->value->perm)
 	{
 	  revm_object_print(expr->value);
@@ -136,7 +138,10 @@ int			cmd_print()
 	}
       else if (expr)
 	{
-	  revm_expr_print_by_name(world.curjob->curcmd->param[idx], 0);
+	  if (*expr->label == REVM_VAR_PREFIX)
+	    revm_expr_print_by_name(expr->label, 0);
+	  else
+	    revm_expr_print_by_name(world.curjob->curcmd->param[idx], 0);
 	  revm_output("\n\n");
 	  continue;
 	}

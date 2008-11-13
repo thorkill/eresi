@@ -549,7 +549,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 			  revm_colorwarn("["),
 			  revm_colornumber("%u", curtype->elemnbr[idx]),
 			  revm_colorwarn("]"));
-	  sz += sprintf(size + sz, "%s", revm_colorwarn(" = {...} "));
+	  sz += sprintf(size + sz, "%s", revm_colorwarn(" = "));
 	}
       else
 	{

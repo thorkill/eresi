@@ -197,6 +197,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_PRINT   , (void *) cmd_print   , (void *) revm_getvarparams , 0, HLP_PRINT);
   revm_command_add(CMD_EXEC    , (void *) cmd_exec    , (void *) revm_getvarparams , 0, HLP_EXEC);
   revm_command_add(CMD_EDIT    , (void *) cmd_edit    , (void *) revm_getoption    , 0, HLP_EDIT);
+  revm_command_add(CMD_EVAL    , (void *) cmd_eval    , (void *) revm_getoption    , 0, HLP_EVAL);
   revm_command_add(CMD_PHT     , (void *) cmd_pht     , (void *) revm_getregxoption, 1, HLP_PHT);
   revm_command_add(CMD_GOT     , (void *) cmd_got     , (void *) revm_getregxoption, 1, HLP_GOT);
   revm_command_add(CMD_CTORS   , (void *) cmd_ctors   , (void *) revm_getregxoption, 1, HLP_CTORS);

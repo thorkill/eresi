@@ -6,7 +6,7 @@
 include ../../config.h
 
 SRC		= access.c convert.c grammar.c lookup.c objects.c \
-		options.c parser.c scanner.c variables.c expressions.c
+		options.c parser.c scanner.c variables.c expressions.c arith.c
 OBJ32		= $(SRC:.c=.32.o)
 OBJ64		= $(SRC:.c=.64.o)
 CC		?= gcc

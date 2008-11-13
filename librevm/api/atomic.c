@@ -55,7 +55,7 @@ int                     revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2)
 
 /* Preconditions on arithmetic operations */
 /* Used by add, sub, mul, div, mod */
-int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
+int			revm_arithmetics(revmexpr_t *dest, revmexpr_t *e1, revmexpr_t *e2, u_char op)
 {
   eresi_Addr		src;
   eresi_Addr		dst;
@@ -77,9 +77,12 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
 		 "Incompatible parameter type", -1);
 
   /* First check if we write in a constant */
-  if (o1->immed && !o1->perm)
+  if (!dest && o1->immed && !o1->perm)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Destination parameter must not be a constant", -1);
+		 "Destination parameter must not be a constant", -1);
+  else if (dest && (!dest->value || !dest->value->perm))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid destination parameter", -1);
 
   /* Preliminary checks */
   oldtype = o1->otype->type;
@@ -131,11 +134,21 @@ int			revm_arithmetics(revmexpr_t *e1, revmexpr_t *e2, u_char op)
     }
 
   /* Store result */
-  if (o1->immed)
-    o1->immed_val.ent = dst;
+  if (!dest)
+    {
+      if (o1->immed)
+	o1->immed_val.ent = dst;
+      else
+	o1->set_obj(o1->parent, dst);
+    }
   else
-    o1->set_obj(o1->parent, dst);
-  
+    {
+      if (dest->value->immed)
+	dest->value->immed_val.ent = dst;
+      else
+	dest->value->set_obj(dest->value->parent, dst);
+    }
+
   /* Store last-result variable */
   if (o1->otype->type == ASPECT_TYPE_HASH ||
       o1->otype->type == ASPECT_TYPE_LIST)

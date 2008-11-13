@@ -81,7 +81,9 @@ int			cmd_set()
   /* Fix the source expression if unresolved */
   if (!e2)
     {
-      e2 = revm_lookup_param(world.curjob->curcmd->param[1], 0);
+      e2 = revm_compute(world.curjob->curcmd->param[1]);
+      if (!e2)
+	e2 = revm_lookup_param(world.curjob->curcmd->param[1], 0);
       if (!e2)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to create source object", (-1));
@@ -197,9 +199,17 @@ int			cmd_cmp()
     }
   
   if (!e2) 
-    e2 = revm_lookup_param(world.curjob->curcmd->param[1], 0);
+    {
+      e2 = revm_compute(world.curjob->curcmd->param[1]);
+      if (!e2)
+	e2 = revm_lookup_param(world.curjob->curcmd->param[1], 0);
+    }
   if (!e1)
-    e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0);
+    {
+      e1 = revm_compute(world.curjob->curcmd->param[0]);
+      if (!e1)
+	e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0);
+    }
   if (!e1 || !e2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to lookup parameters", -1);
@@ -334,7 +344,7 @@ int			cmd_add()
     }
 
   /* Perform computation */
-  if (revm_arithmetics(e1, e2, REVM_OP_ADD) < 0)
+  if (revm_arithmetics(NULL, e1, e2, REVM_OP_ADD) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
 	revm_expr_destroy(e2->label);
@@ -409,7 +419,7 @@ int			cmd_sub()
     }
   
   /* Perform computation */
-  if (revm_arithmetics(e1, e2, REVM_OP_SUB) < 0)
+  if (revm_arithmetics(NULL, e1, e2, REVM_OP_SUB) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
 	revm_expr_destroy(e2->label);
@@ -445,7 +455,7 @@ int			cmd_mul()
 		 "Unable to lookup parameters", -1);
 
   /* Perform computation */
-  if (revm_arithmetics(e1, e2, REVM_OP_MUL) < 0)
+  if (revm_arithmetics(NULL, e1, e2, REVM_OP_MUL) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
 	revm_expr_destroy(e2->label);
@@ -480,7 +490,7 @@ int			cmd_div()
 		 "Unable to lookup parameters", -1);
 
   /* Perform computation */
-  if (revm_arithmetics(e1, e2, REVM_OP_DIV) < 0)
+  if (revm_arithmetics(NULL, e1, e2, REVM_OP_DIV) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
 	revm_expr_destroy(e2->label);
@@ -515,7 +525,7 @@ int			cmd_mod()
 		 "Unable to lookup parameters", -1);
 
   /* Perform computation */
-  if (revm_arithmetics(e1, e2, REVM_OP_MOD) < 0)
+  if (revm_arithmetics(NULL, e1, e2, REVM_OP_MOD) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
 	revm_expr_destroy(e2->label);

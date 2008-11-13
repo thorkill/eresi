@@ -44,7 +44,7 @@ int			cmd_define()
 	if (!obj)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid input parameters", -1);
-	if (revm_arithmetics(orig, obj, REVM_OP_ADD) < 0)
+	if (revm_arithmetics(NULL, orig, obj, REVM_OP_ADD) < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to add values to be defined", -1);
 	revm_expr_destroy(obj->label);

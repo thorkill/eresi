@@ -1,9 +1,11 @@
 
 How to build the ERESI framework. This includes:
 
-- elfsh, e2dbg, and etrace 
+- elfsh, e2dbg, etrace, kernsh, evarista and kedbg.
 - the language interpreter and type system libraries : librevm and libaspect
-- analysis libraries : libelfsh, libe2dbg, libedfmt, libasm, and libmjollnir
+- analysis libraries : libelfsh, libedfmt, libasm, libkernsh, and libmjollnir
+- debugging libraries : libe2dbg and libgdbwrap
+- the standard eresi library : libstderesi
 - the interface library (readline based) : libui
 
 You will need openssl headers. Debian users should install openssl-dev.
@@ -18,10 +20,11 @@ build of 32-64 objects can take up to 800MB!
 
 If you want to test without installing, you need to do :
 
+1. ./configure --enable-testing [--otheropts]
+[...]
 5. source env.sh
 
 from the root directory of the project. This will change your
 LD_LIBRARY_PATH variable for using uninstalled libraries.
-
 
 Read each directory README file for more information.

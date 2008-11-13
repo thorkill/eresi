@@ -57,6 +57,7 @@
 #define	HLP_SET			"Set parameter object value"
 #define	HLP_PRINT		"Print list of resolved values of parameters"
 #define	HLP_EXEC		"Fork and execute parameter command (with args)"
+#define	HLP_EVAL		"Evaluate the arithmetic expression given in first parameter"
 #define	HLP_ADD			"Add the 2 parameters"
 #define	HLP_SUB			"Substract 2nd parameter to the first one"
 #define	HLP_MUL			"Multiply the 2 parameters"

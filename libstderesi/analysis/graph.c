@@ -151,6 +151,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   if (instrlist)
     {
       revm_print_block(fd, instrlist);
+      nocolor = revm_colors;
       PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
     }
 
