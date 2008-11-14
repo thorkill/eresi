@@ -337,6 +337,11 @@ typedef struct		s_e2dbgworld
   char			*displaycmd[E2DBG_STEPCMD_MAX];	/* Commands to be executed on step */
   u_short		displaynbr;			/* Number of global display cmd */
 
+  /* Data currently being traced */
+  eresi_Addr		tracedata[E2DBG_STEPCMD_MAX];	/* Address of traced variables */
+  char			*tracedstr[E2DBG_STEPCMD_MAX];	/* Strings for traced variables */
+  u_short		tdatanbr;			/* Number of traced variables */		
+
   /* Current debuggee threads information */ 
   elfshbp_t		*curbp;				/* Current breakpoint if any */
   e2dbgthread_t		*curthread;			/* Currently working thread */
@@ -481,11 +486,13 @@ elfshlinkmap_t*	e2dbg_linkmap_getaddr();
 /* breakpoint API */
 void		e2dbg_generic_breakpoint(int signum, siginfo_t *info, void *context);
 elfshbp_t	*e2dbg_breakpoint_from_id(uint32_t bpid);
-int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags);
+int		e2dbg_breakpoint_add(eresi_Addr addr);
 int		e2dbg_display(char **cmd, u_int nbr);
 int		e2dbg_is_watchpoint(elfshbp_t *b);
 elfshbp_t	*e2dbg_breakpoint_lookup(char *name);
 eresi_Addr	e2dbg_breakpoint_find_addr(char *str);
+int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
+			     char *resolv, eresi_Addr addr);
 
 /* Stack API */
 int		e2dbg_bt();

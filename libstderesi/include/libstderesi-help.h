@@ -271,7 +271,8 @@
 #define HLP_DBGSTACK		"Dump N words on debugger stack"
 #define	HLP_DUMPREGS		"Dump registers of debuggee at breakpoint or step"
 #define	HLP_STEP		"Enable stepping of debuggee program"
-#define	HLP_ITRACE		"Enable tracing of debuggee program until next event"
+#define	HLP_ITRACE		"Enable tracing of debuggee program until next event \n" \
+				"\t If given parameters, perform memory tracing of them"
 #define	HLP_START		"Start the debuggee program"
 #define	HLP_DELETE		"Delete breakpoint by symbol, addr, or ID"
 #define	HLP_CONTINUE		"Continue executing debuggee program after break"

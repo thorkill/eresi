@@ -9,19 +9,14 @@
 #include "libe2dbg.h"
 
 
-/* Simple shared flags for watch/breakpoints */
-static u_char	watchflag;
-
-
-
 /**
  * Add a breakpoint 
  */
 int		elfsh_bp_add(hash_t	*bps, 
 			     elfshobj_t *file, 
 			     char	*resolv, 
-			     eresi_Addr addr, 
-			     u_char	flags)
+			     eresi_Addr addr)
+
 {
   static int	lastbpid = 1;
   elfshbp_t	*bp;
@@ -41,8 +36,6 @@ int		elfsh_bp_add(hash_t	*bps,
   bp->type    = INSTR;
   bp->addr    = addr;
   bp->symname = strdup(resolv);
- 
-  bp->flags   = flags;
   snprintf(tmp, 32, XFMT, addr);   
   if (hash_get(bps, tmp))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -64,7 +57,7 @@ int		elfsh_bp_add(hash_t	*bps,
 
 
 /* Add a breakpoint without using a script command */
-int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags)
+int		e2dbg_breakpoint_add(eresi_Addr addr)
 {
   int		err;
   char		buf[BUFSIZ];
@@ -88,7 +81,7 @@ int		e2dbg_breakpoint_add(eresi_Addr addr, u_char flags)
     snprintf(buf, BUFSIZ, "<%s>", name);
 
   /* Really put the breakpoint */
-  err = elfsh_bp_add(&e2dbgworld.bp, file, buf, addr, flags);
+  err = elfsh_bp_add(&e2dbgworld.bp, file, buf, addr);
   if (err < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot add breakpoint", -1);
@@ -339,7 +332,7 @@ int		cmd_bp()
       
       /* List breakpoints */
       case 0:
-	e2dbg_output(" .:: Breakpoints & Watchpoints ::.\n\n");	      
+	e2dbg_output(" .:: Breakpoints ::.\n\n");	      
 	keys = hash_get_keys(&e2dbgworld.bp, &keynbr);
 	for (index = 0; index < keynbr; index++)
 	  {
@@ -389,7 +382,7 @@ int		cmd_bp()
 	  }
       
 	/* Add the breakpoint */
-	ret = e2dbg_breakpoint_add(addr, watchflag);
+	ret = e2dbg_breakpoint_add(addr);
 	if (ret < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Breakpoint insertion failed\n", (-1));
@@ -398,12 +391,11 @@ int		cmd_bp()
 	    name = revm_resolve(world.curjob->curfile, addr, &off);
 	    if (!off)
 	      snprintf(logbuf, BUFSIZ - 1, 
-		       " [*] %spoint added at <%s> (" XFMT ")\n\n", 
-		       (watchflag ? "Watch" : "Break"), name, addr);
+		       " [*] Breakpoint added at <%s> (" XFMT ")\n\n", name, addr);
 	    else
 	      snprintf(logbuf, BUFSIZ - 1, 
-		       " [*] %spoint added at <%s + " UFMT "> (" XFMT ")\n\n", 
-		       (watchflag ? "Watch" : "Break"), name, off, addr);
+		       " [*] Breakpoint added at <%s + " UFMT "> (" XFMT ")\n\n", 
+		       name, off, addr);
 	    e2dbg_output(logbuf);
 	  }
 	break;
@@ -419,18 +411,55 @@ int		cmd_bp()
 
 
 
-/* Watchpoint command -- FIXME: need to use debug registers ! */
+/* Watchpoint */
 int		cmd_watch()
 {
-  int		err;
+  int		idx;
+  revmexpr_t	*addr;
+  eresi_Addr	val;
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  watchflag = 1;
-  err = cmd_bp();
-  watchflag = 0;
-  if (err < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Failed to install watchpoint", -1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (err));
+
+  /* List watchpoints */
+  if (!world.curjob->curcmd->param[0])
+    {
+      e2dbg_output(" .:: Watchpoints ::.\n\n");
+      for (idx = 0; e2dbgworld.tracedata[idx]; idx++)
+	{
+	  snprintf(buff, BUFSIZ, " [%u] %-40s ("XFMT")\n", 
+		   idx, e2dbgworld.tracedstr[idx], e2dbgworld.tracedata[idx]);
+	  e2dbg_output(buff);
+	}
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Put a new watchpoint */
+  for (idx = 0; world.curjob->curcmd->param[idx]; idx++)
+    {
+      addr = revm_compute(world.curjob->curcmd->param[idx]);
+      if (!addr || !addr->type || !addr->value)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Invalid parameter", -1);
+      if (addr->type->type != ASPECT_TYPE_LONG &&
+	  addr->type->type != ASPECT_TYPE_CADDR &&
+	  addr->type->type != ASPECT_TYPE_DADDR)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Can watch only an address", -1);
+      if (e2dbgworld.tdatanbr >= E2DBG_STEPCMD_MAX)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Too many watch: cannot trace more", -1);
+      val = (addr->value->immed ? addr->value->immed_val.ent : 
+	     addr->value->get_obj(addr->value->parent));
+      e2dbgworld.tracedata[e2dbgworld.tdatanbr] = val;
+      e2dbgworld.tracedstr[e2dbgworld.tdatanbr] = strdup(world.curjob->curcmd->param[idx]);
+      snprintf(buff, BUFSIZ, " [%u] Added watchpoint on address "XFMT" - (from %s)\n", 
+	       e2dbgworld.tdatanbr, e2dbgworld.tracedata[e2dbgworld.tdatanbr], 
+	       e2dbgworld.tracedstr[e2dbgworld.tdatanbr]);
+      e2dbg_output(buff);
+      e2dbgworld.tdatanbr++;
+    }
+  
+  e2dbg_output("\n");
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

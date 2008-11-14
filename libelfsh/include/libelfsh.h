@@ -1750,10 +1750,5 @@ void		*elfsh_bt(void *frame);
 void		*elfsh_bt_get_frame(ucontext_t *);
 #endif
 
-/* bp.c */
-int		elfsh_bp_add(hash_t *bps, elfshobj_t *file, 
-			     char *resolv, eresi_Addr addr, 
-			     u_char flags);
-
 
 #endif /* __LIBELFSH_H_ */

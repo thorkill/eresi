@@ -12,6 +12,41 @@
 #include "libe2dbg.h"
 
 
+/** ARCH/OS dependent handler for checking values in registers */
+void		e2dbg_watch_check_ia32_sysv(u_int regidx, char *regstr)
+{
+  char		buff[BUFSIZ];
+  u_int		idx;
+
+  for (idx = 0; idx < E2DBG_STEPCMD_MAX && e2dbgworld.tracedata[idx]; idx++)
+    if (e2dbgworld.curthread->context->uc_mcontext.gregs[regidx] == e2dbgworld.tracedata[idx])
+      {
+	snprintf(buff, BUFSIZ, " [*] TRACED %s ("XFMT") found in register %s \n", 
+		 e2dbgworld.tracedstr[idx], e2dbgworld.tracedata[idx], regstr);
+	e2dbg_output(buff);
+
+	/* Disable stepping and tracing */
+	if (e2dbgworld.curthread->trace)
+	  e2dbg_step();
+	e2dbgworld.curthread->trace = 0;
+      }
+}
+
+/** Check if any traced variable is used in the current instruction */
+void		e2dbg_watch()
+{
+  e2dbg_watch_check_ia32_sysv(REG_EAX, "EAX");
+  e2dbg_watch_check_ia32_sysv(REG_EBX, "EBX");
+  e2dbg_watch_check_ia32_sysv(REG_ECX, "ECX");
+  e2dbg_watch_check_ia32_sysv(REG_EDX, "EDX");
+  e2dbg_watch_check_ia32_sysv(REG_ESI, "ESI");
+  e2dbg_watch_check_ia32_sysv(REG_EDI, "EDI");
+  e2dbg_watch_check_ia32_sysv(REG_ESP, "ESP");
+  e2dbg_watch_check_ia32_sysv(REG_EBP, "EBP");
+  e2dbg_watch_check_ia32_sysv(REG_EIP, "EIP");
+}
+
+
 
 /**
  * Signal handler for SIGSEGV 
@@ -349,6 +384,9 @@ void			e2dbg_do_breakpoint()
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 	  if (!e2dbgworld.stoppedthread->trace)
 	    e2dbg_entry(NULL);
+	  else
+	    e2dbg_watch();
+	  return;
 	}
 #if __DEBUG_BP__
       else

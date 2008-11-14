@@ -14,7 +14,6 @@
 
 /* The debugger world */
 /* e2dbgworld_t	e2dbgworld; */
-
 void            e2dbg_register_command(void)
 {
   /* Debugger only script commands */
@@ -38,7 +37,7 @@ void            e2dbg_register_command(void)
   revm_command_add(CMD_RSHT     , (void *) cmd_rsht     , revm_getregxoption, 1, HLP_RSHT);
   revm_command_add(CMD_RPHT     , (void *) cmd_rpht     , revm_getregxoption, 1, HLP_RPHT);
   revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS);
-  revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);
+  revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , revm_getvarparams, 1, HLP_ITRACE);
 }
 
 
