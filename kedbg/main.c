@@ -110,6 +110,7 @@ static int	kedbg_curthread_init(void)
 static void     kedbg_find_linkmap(void)
 {
   elfshlinkmap_t linkmap_copy;
+  elfshlinkmap_t *linkmap_addr;
   char          lmstring[300];
   elfshobj_t    *actual;
   char          **keys;
@@ -131,12 +132,9 @@ static void     kedbg_find_linkmap(void)
 		   &linkmap_copy, sizeof(elfshlinkmap_t)); 
   
   /* And now, we read all the entries from the first one. */
-  while (linkmap_copy.lnext != NULL)
+  do
     {
-      kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lnext,
-		     &linkmap_copy, sizeof(elfshlinkmap_t));
       kedbg_getstr(linkmap_copy.lname, lmstring, sizeof(lmstring));
-
       DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
 		       "lmstring: %s\n", linkmap_copy.lnext,
 		       linkmap_copy.laddr, lmstring));
@@ -164,7 +162,11 @@ static void     kedbg_find_linkmap(void)
 		}
 	    }
 	}
-    }
+      linkmap_addr = linkmap_copy.lnext;
+      kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lnext,
+		     &linkmap_copy, sizeof(elfshlinkmap_t));
+      
+    } while (linkmap_copy.lnext != NULL);
   hash_free_keys(keys);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

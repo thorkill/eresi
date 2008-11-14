@@ -537,8 +537,11 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   char               *rec;
 
   if (gdbwrap_is_active(desc))
-    rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
-  gdbwrap_populate_reg(rec, desc);
+    {
+      rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
+      printf("Message received from the cont: %s\n", rec);
+      gdbwrap_populate_reg(rec, desc);
+    }
 }
 
 

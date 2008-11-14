@@ -68,17 +68,19 @@ int             kedbg_delbp(elfshbp_t *bp)
 void            kedbg_print_reg(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
-  e2dbg_register_dump("EAX", loc->reg32.eax);
-  e2dbg_register_dump("EBX", loc->reg32.ebx);
-  e2dbg_register_dump("ECX", loc->reg32.ecx);
-  e2dbg_register_dump("EDX", loc->reg32.edx);
-  e2dbg_register_dump("ESI", loc->reg32.esi);
-  e2dbg_register_dump("EDI", loc->reg32.edi);
-  e2dbg_register_dump("ESP", loc->reg32.esp);
-  //E2DBG_SETREG(E2DBG_SSP_VAR, loc->reg32.eax);
-  e2dbg_register_dump("EBP", loc->reg32.ebp);
-  e2dbg_register_dump("EIP", loc->reg32.eip);
+  gdbwrap_gdbreg32 *reg;
+
+  reg =  gdbwrap_readgenreg(loc);
+  e2dbg_register_dump("EAX", reg->eax);
+  e2dbg_register_dump("EBX", reg->ebx);
+  e2dbg_register_dump("ECX", reg->ecx);
+  e2dbg_register_dump("EDX", reg->edx);
+  e2dbg_register_dump("ESI", reg->esi);
+  e2dbg_register_dump("EDI", reg->edi);
+  e2dbg_register_dump("ESP", reg->esp);
+  //E2DBG_SETREG(E2DBG_SSP_VAR, reg->eax);
+  e2dbg_register_dump("EBP", reg->ebp);
+  e2dbg_register_dump("EIP", reg->eip);
 }
 
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
@@ -152,22 +154,24 @@ void            kedbg_set_regvars_ia32(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   unsigned      i;
-  
-  E2DBG_SETREG(E2DBG_EAX_VAR, loc->reg32.eax);
-  E2DBG_SETREG(E2DBG_EBX_VAR, loc->reg32.ebx);
-  E2DBG_SETREG(E2DBG_ECX_VAR, loc->reg32.ecx);
-  E2DBG_SETREG(E2DBG_EDX_VAR, loc->reg32.edx);
-  E2DBG_SETREG(E2DBG_ESI_VAR, loc->reg32.esi);
-  E2DBG_SETREG(E2DBG_EDI_VAR, loc->reg32.edi);
-  E2DBG_SETREG(E2DBG_SP_VAR,  loc->reg32.esp);
-  //E2DBG_SETREG(E2DBG_SSP_VAR, loc->reg32.eax);
-  E2DBG_SETREG(E2DBG_FP_VAR,  loc->reg32.ebp);
-  E2DBG_SETREG(E2DBG_PC_VAR,  loc->reg32.eip);
+  gdbwrap_gdbreg32 *reg;
+
+  reg = gdbwrap_readgenreg(loc);
+  E2DBG_SETREG(E2DBG_EAX_VAR, reg->eax);
+  E2DBG_SETREG(E2DBG_EBX_VAR, reg->ebx);
+  E2DBG_SETREG(E2DBG_ECX_VAR, reg->ecx);
+  E2DBG_SETREG(E2DBG_EDX_VAR, reg->edx);
+  E2DBG_SETREG(E2DBG_ESI_VAR, reg->esi);
+  E2DBG_SETREG(E2DBG_EDI_VAR, reg->edi);
+  E2DBG_SETREG(E2DBG_SP_VAR,  reg->esp);
+  //E2DBG_SETREG(E2DBG_SSP_VAR, reg->eax);
+  E2DBG_SETREG(E2DBG_FP_VAR,  reg->ebp);
+  E2DBG_SETREG(E2DBG_PC_VAR,  reg->eip);
 
   /* We send the 9th first register to the server. */
   for (i = 0; i < 9; i++)
     {
-      gdbwrap_writereg(i, *(&loc->reg32.eax + i), loc);
+      gdbwrap_writereg(i, *(&reg->eax + i), loc);
     }
 }
 

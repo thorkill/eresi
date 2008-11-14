@@ -52,6 +52,7 @@ int             cmd_kedbgcont(void)
   elfshbp_t	*bp;
   char          c;
   char          addr[20];
+  int           off;
 
   if (!e2dbgworld.curthread->step)
     gdbwrap_continue(loc);
@@ -75,7 +76,11 @@ int             cmd_kedbgcont(void)
       else fprintf(stderr, "An error has occured when trying to find the bp.");
     }
   else
-    printf("The value returned was: %d- %#x \n", gdbwrap_lastsignal(loc), loc->reg32.eip);
+    printf("The value returned was: %d- %#x \n",
+	   gdbwrap_lastsignal(loc), loc->reg32.eip);
 
+  printf("eip: %#x (%s) ", loc->reg32.eip,
+	 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
+  printf("offset: %#x\n", off);
   return 0;
 }

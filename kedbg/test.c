@@ -3,11 +3,13 @@
 void bar(void)
 {
   printf("bar");
+  fflush(stdout);
 }
 
 void foo(void)
 {
   printf("foo");
+  fflush(stdout);
   bar();
 }
 
