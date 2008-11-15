@@ -78,6 +78,11 @@ Bool                 gdbwrap_is_active(gdbwrap_t *desc)
 }
 
 
+static char          *gdbwrap_lastmsg(gdbwrap_t *desc)
+{
+  return desc->packet;
+}
+
 /**
  * This function parses a string *strtoparse* starting at character
  * *begin* and ending at character *end*. The new parsed string is
@@ -625,6 +630,31 @@ void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
 }
 
 
+void                 gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc)
+{
+  char               *ret;
+  gdbwrap_gdbreg32   *reg;
+  unsigned           offset;
+  char               locreg[700];
+  
+
+  reg = gdbwrap_readgenreg(desc);
+  ret = gdbwrap_lastmsg(desc);
+  offset = 2 * regNum * sizeof(ureg32);
+  printf("Value received: %s - %#x - %d\n", ret, val, offset);
+
+  snprintf(locreg, sizeof(locreg), "%x", gdbwrap_little_endian(val));
+  memcpy(ret + offset, locreg, 2 * sizeof(ureg32));
+  printf("Ret has value: %s\n", ret);
+  snprintf(locreg, sizeof(locreg), "%s%s",
+	   GDBWRAP_WGENPURPREG, ret);
+  printf("locreg has value: %s\n", locreg);
+  gdbwrap_send_data(locreg, desc);
+  printf("Value received: %s - %#x \n", locreg, gdbwrap_little_endian(val - 1));
+  
+}
+
+
 /*
  * Here's the format of a signal:
  *
@@ -635,7 +665,7 @@ void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
  * (default behavior).
  */
  
-void                gdbwrap_signal(int signal, gdbwrap_t *desc)
+void                 gdbwrap_signal(int signal, gdbwrap_t *desc)
  {
    char              *rec;
    char              signalpacket[50];

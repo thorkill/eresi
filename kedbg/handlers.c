@@ -30,7 +30,6 @@ eresi_Addr	*kedbg_getfp_ia32(void)
 }
 
 
-
 void            *kedbg_bt_ia32(void *frame)
 {
 

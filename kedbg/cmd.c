@@ -69,7 +69,7 @@ int             cmd_kedbgcont(void)
 	      c = BPCODE;
 	      eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
 	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
-	      gdbwrap_writereg(eip_pos, loc->reg32.eip - 1, loc);
+	      gdbwrap_writereg2(eip_pos, loc->reg32.eip - 1, loc);
 	      gdbwrap_stepi(loc);
 	      kedbg_writemem(NULL, bp->addr, &c, 1);
 	    }

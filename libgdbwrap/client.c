@@ -130,6 +130,9 @@ int main( int argc, char **argv )
 	gdbwrap_stepi(desc);
       else if(!strncmp("signal", buffer, 5))
 	gdbwrap_signal(0x1, desc);
+      else if(!strncmp("muuu", buffer, 4))
+	gdbwrap_writereg2(8, 0x12345678, desc);
+	     
       else if(!strncmp("mem", buffer, 3))
 	{
 	  char *c;

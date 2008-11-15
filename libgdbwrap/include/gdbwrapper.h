@@ -65,6 +65,7 @@ void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
 void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+void             gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc);
 void             gdbwrap_vmwareinit(gdbwrap_t *desc);
 
 
