@@ -41,6 +41,8 @@ void             kedbg_continue(void)
   gdbwrap_t     *loc = gdbwrap_current_get();
   gdbwrap_continue(loc);
 }
+
+
 /* void            *kedbg_linkmap_lnext() */
 /* { */
 /* } */

@@ -43,6 +43,7 @@ typedef struct
 
 unsigned         gdbwrap_atoh(const char * str, unsigned size);
 unsigned         gdbwrap_lastsignal(gdbwrap_t *desc);
+Bool             gdbwrap_is_active(gdbwrap_t *desc);
 gdbwrapworld_t   gdbwrap_current_set(gdbwrap_t *world);
 gdbwrap_t        *gdbwrap_current_get(void);
 gdbwrap_t        *gdbwrap_init(int fd);

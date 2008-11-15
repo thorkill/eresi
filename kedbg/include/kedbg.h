@@ -30,4 +30,5 @@ int             cmd_linkmap(void);
 int             e2dbg_linkmap_load(char *name);
 int             cmd_com1(void);
 int             cmd_kedbgcont(void);
-
+int             cmd_kedbgstep(void);
+int             cmd_kedbgquit(void);

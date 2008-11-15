@@ -50,37 +50,76 @@ int             cmd_kedbgcont(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   elfshbp_t	*bp;
-  char          c;
+  uint8_t       c;
   char          addr[20];
   int           off;
+  uint8_t       eip_pos;
 
   if (!e2dbgworld.curthread->step)
-    gdbwrap_continue(loc);
-  else
+    {
+      gdbwrap_continue(loc);
+      if (gdbwrap_lastsignal(loc) == SIGTRAP)
+	{
+	  kedbg_readmema(NULL, loc->reg32.eip - 1, &c, 1);
+	  ASSERT(c == BPCODE);
+	  snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - 1);
+	  bp = e2dbg_breakpoint_lookup(addr);
+	  if (bp != NULL)
+	    {
+	      c = BPCODE;
+	      eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
+	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
+	      gdbwrap_writereg(eip_pos, loc->reg32.eip - 1, loc);
+	      gdbwrap_stepi(loc);
+	      kedbg_writemem(NULL, bp->addr, &c, 1);
+	    }
+	  else fprintf(stderr, "An error has occured when trying to find the bp.");
+	}
+      else
+	printf("The value returned was: %d- %#x \n",
+	       gdbwrap_lastsignal(loc), loc->reg32.eip);
+    }
+    else
     {
       gdbwrap_stepi(loc);
-      printf(" STEPPING ACTIVATED \n");
     }
-  if (gdbwrap_lastsignal(loc) == SIGTRAP)
-    {
-      kedbg_readmema(NULL, loc->reg32.eip - 1, &c, 1);
-      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - 1);
-      bp = e2dbg_breakpoint_lookup(addr);
-      if (bp != NULL)
-	{
-	  c = BPCODE;
-	  kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
-	  gdbwrap_stepi(loc);
-	  kedbg_writemem(NULL, bp->addr, &c, 1);
-	}
-      else fprintf(stderr, "An error has occured when trying to find the bp.");
-    }
-  else
-    printf("The value returned was: %d- %#x \n",
-	   gdbwrap_lastsignal(loc), loc->reg32.eip);
 
   printf("eip: %#x (%s) ", loc->reg32.eip,
 	 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
   printf("offset: %#x\n", off);
+
+  if (!gdbwrap_is_active(loc))
+    cmd_quit();
+      
+  return 0;
+}
+
+
+int             cmd_kedbgstep(void)
+{
+  static Bool   enable;
+
+  if (enable)
+    {
+      kedbg_resetstep_ia32();
+      revm_output("[*] Disabling stepping\n");
+    }
+  else
+    {
+      kedbg_setstep_ia32();
+      revm_output("[*] Enabling stepping\n");
+    }
+  enable = !enable;
+
+  return 0;
+}
+
+
+int             cmd_kedbgquit(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get(); 
+
+  gdbwrap_bye(loc);
+  cmd_quit();
   return 0;
 }

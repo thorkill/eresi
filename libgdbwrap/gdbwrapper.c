@@ -69,7 +69,7 @@ unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
 }
 
 
-static Bool          gdbwrap_is_active(gdbwrap_t *desc)
+Bool                 gdbwrap_is_active(gdbwrap_t *desc)
 {
   if (desc->is_active)
     return TRUE;
@@ -615,7 +615,6 @@ char                 *gdbwrap_own_command(char *command,
 }
 
 
-/* --------------------- NOT TESTED ------------------------- */
 void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
 {
   char               regpacket[50];

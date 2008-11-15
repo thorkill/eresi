@@ -121,7 +121,7 @@ int		cmd_bt()
   if (!elfsh_is_debug_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Not in dynamic or debugger mode", -1);
-  if (e2dbgworld.curthread == NULL || e2dbgworld.curthread->context == 0)
+  if (e2dbgworld.curthread == NULL || e2dbgworld.curthread->context == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No current thread context available", -1);    
   e2dbg_output(" .:: Backtrace ::. \n");

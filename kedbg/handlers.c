@@ -9,18 +9,26 @@ void            kedbg_resetstep_ia32(void)
 }
 
 
+void            kedbg_setstep_ia32(void)
+{
+  e2dbgworld.curthread->step = TRUE;
+}
+
+
 eresi_Addr	*kedbg_getfp_ia32(void)
 {
-  fprintf(stderr, "%s NOT IMPLEMENTED (YET) \n", __PRETTY_FUNCTION__);
-  fflush(stdout);
-  
-  /*   gdbwrap_t     *loc = gdbwrap_current_get(); */
+  gdbwrap_t     *loc = gdbwrap_current_get();
 
-/*   /\* First update all the reg. *\/ */
-/*   gdbwrap_readgenreg(loc); */
-/*   return (eresi_Addr *)loc->reg32.ebp; */
-  return NULL;
+  fprintf(stderr, "%s INTO \n", __PRETTY_FUNCTION__);
+  fflush(stdout);
+
+  /* First update all the reg. */
+  gdbwrap_readgenreg(loc);
+
+  printf("Returning: %#x\n", loc->reg32.ebp);
+  return (eresi_Addr *)loc->reg32.ebp;
 }
+
 
 
 void            *kedbg_bt_ia32(void *frame)
@@ -36,6 +44,9 @@ void            *kedbg_bt_ia32(void *frame)
 void            *kedbg_getret_ia32(void *frame)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
+  
+  fprintf(stderr, "%s INTO \n", __PRETTY_FUNCTION__);
+  fflush(stdout);
 
   return gdbwrap_readmemory(*(la32*)frame, DWORD_IN_BYTE, loc);
 }
@@ -141,12 +152,6 @@ eresi_Addr      *kedbg_getpc_ia32(void)
   /* First update all the reg. */
   gdbwrap_readgenreg(loc);
   return (eresi_Addr *)&loc->reg32.eip;
-}
-
-  
-void            kedbg_setstep_ia32(void)
-{
-  e2dbgworld.curthread->step = TRUE;
 }
 
 

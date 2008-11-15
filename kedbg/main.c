@@ -18,21 +18,26 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_GOT, cmd_got, revm_getvarparams, 1, HLP_BP);
   revm_command_add(CMD_DUMPREGS, cmd_kedbg_dump_regs,
 		   revm_getvarparams, 1, HLP_BP);
-
-  /*   revm_command_add(CMD_STEP, cmd_step, NULL, 1, HLP_STEP); */
-  /*   revm_command_add(CMD_BT2      , (void *) cmd_bt       , NULL,            1, HLP_BT); */
-
+  revm_command_add(CMD_STEP, cmd_kedbgstep, revm_getvarparams, 1, HLP_BP);
+  /* stackaddr is not set, ie does not work. */
+  revm_command_add(CMD_BT, cmd_bt, NULL, 1, HLP_BT);
+  revm_command_add(CMD_BT2, cmd_bt, NULL, 1, HLP_BT);
+  revm_command_add(CMD_DBGSTACK, cmd_dbgstack, revm_getoption,1, HLP_DBGSTACK);
+  revm_command_add(CMD_DISPLAY, cmd_display, revm_getvarparams, 1, HLP_DISPLAY);
+  revm_command_add(CMD_UNDISPLAY, cmd_undisplay, revm_getvarparams, 1,
+		   HLP_UNDISPLAY);
+  revm_command_add(CMD_RSHT, cmd_rsht, revm_getregxoption, 1, HLP_RSHT);
+  revm_command_add(CMD_RPHT, cmd_rpht, revm_getregxoption, 1, HLP_RPHT);
+  revm_command_add(CMD_RPHT, cmd_quit, revm_getregxoption, 1, HLP_RPHT);
+  revm_command_add(CMD_QUIT, cmd_kedbgquit, NULL, 0, HLP_QUIT);
+  revm_command_add(CMD_QUIT2, cmd_kedbgquit, NULL, 0, HLP_QUIT);
+/*   revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);   */
   /*   revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH); */
   /*   revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK); */
-  /*   revm_command_add(CMD_DBGSTACK , (void *) cmd_dbgstack , revm_getoption,    1, HLP_DBGSTACK); */
-  /*   revm_command_add(CMD_DUMPREGS , (void *) cmd_dumpregs , NULL,            1, HLP_DUMPREGS); */
 
-  /*   revm_command_add(CMD_DISPLAY  , (void *) cmd_display  , revm_getvarparams, 1, HLP_DISPLAY); */
-  /*   revm_command_add(CMD_UNDISPLAY, (void *) cmd_undisplay, revm_getvarparams, 1, HLP_UNDISPLAY); */
-  /*   revm_command_add(CMD_RSHT     , (void *) cmd_rsht     , revm_getregxoption, 1, HLP_RSHT); */
-  /*   revm_command_add(CMD_RPHT     , (void *) cmd_rpht     , revm_getregxoption, 1, HLP_RPHT); */
+
   /*   revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS); */
-  /*   revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE); */
+
 }
 
 
@@ -49,6 +54,11 @@ static void     kedbg_register_vector(void)
   elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
   e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_print_reg);
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+			   kedbg_getfp_ia32);
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+			    kedbg_getret_ia32);
+
 /*   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, E2DBG_HOST_USER,  */
 /* 			   ELFSH_OS_FREEBSD, e2dbg_set_regvars_sparc32_bsd); */
 }
@@ -87,7 +97,8 @@ static int	kedbg_curthread_init(void)
 {
   e2dbgthread_t	*new;
   char		*key;
-
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
@@ -95,6 +106,7 @@ static int	kedbg_curthread_init(void)
   new->tid     = 0;
   new->entry   = (void *) e2dbgworld.real_main;
   new->initial = 1;
+  new->context = (ucontext_t *)loc;
   time(&new->stime);
   hash_add(&e2dbgworld.threads, key, new);
   e2dbgworld.curthread = new;
@@ -219,6 +231,7 @@ static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
   DEBUGMSG(fprintf(stderr, "Entry point found: %#x\n", addr));
   return addr;
 }
+
 
 /**
  * Shell related stuff.
