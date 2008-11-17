@@ -1,21 +1,21 @@
 #include <stdio.h>
 
-void bar(void)
+void bar(int num)
 {
-  printf("bar");
   fflush(stdout);
+  printf("bar %u", num);
 }
 
-void foo(void)
+void foo(int num)
 {
-  printf("foo");
+  printf("foo %u ", num);
   fflush(stdout);
-  bar();
+  bar(num + 1);
 }
 
 int main(void)
 {
-  foo();
+  foo(rand());
   puts("");
   return 0;
 }

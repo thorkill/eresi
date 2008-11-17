@@ -18,7 +18,7 @@ print
 load $1
 analyse
 
-#graph
+graph
 #graph bloc main
 
 sym main
@@ -33,8 +33,6 @@ set $mainfunc $hash[functions:$mainaddr]
 #print $mainfunc.vaddr
 
 callgraph-walk $mainfunc.vaddr
-
-graph bloc main
 
 quiet
 print 

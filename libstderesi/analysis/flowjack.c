@@ -15,7 +15,7 @@
 /* Perform hijack of basic blocks */
 int			cmd_flowjack(void)
 {
-  container_t	*cntnr_to_hijack;
+  container_t		*cntnr_to_hijack;
   mjrblock_t		*to_hijack, *cal;
   mjrlink_t		*caller;
   unsigned long		addr;
@@ -23,18 +23,16 @@ int			cmd_flowjack(void)
   elfsh_Sym		*sym;
   char			*buffer;
   char			*name;
-  int			index;
   asm_instr		ins;
   elfsh_SAddr		off;
   unsigned long		new_addr;
   u_int			value;
   elfshobj_t		*file;
   char			*param;
-  unsigned int		size;
   unsigned int		foff;
-
   list_t		*linklist;
   listent_t		*listent;
+  int			len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -71,7 +69,7 @@ int			cmd_flowjack(void)
 		      "Unable to resolve second parameter", -1);
   
   /* Retreive bloc to be hijacked */
-  printf(" * patch blocks calling " XFMT " in %s \n", (int) addr, world.curjob->curfile->name);
+  printf(" [*] Patching blocks calling " XFMT " in %s \n", (int) addr, world.curjob->curfile->name);
   cntnr_to_hijack = mjr_block_get_by_vaddr(world.mjr_session.cur, addr, 0);
   if (!cntnr_to_hijack)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -90,37 +88,61 @@ int			cmd_flowjack(void)
       cntnr_to_hijack = mjr_block_get_by_vaddr(world.mjr_session.cur, cal->vaddr, 1);
       to_hijack = cntnr_to_hijack->data;
 
-      size = to_hijack->size - (cal->vaddr - to_hijack->vaddr);
+      //size = to_hijack->size - (cal->vaddr - to_hijack->vaddr);
+
       foff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, cal->vaddr);
-
-      XREALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, buffer, size, -1);
-      elfsh_readmemf(world.curjob->curfile, foff, buffer, size);
-      asm_read_instr(&ins, (u_char *) buffer, size, &world.proc);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, buffer, cal->size, -1);
+      elfsh_readmemf(world.curjob->curfile, foff, buffer, cal->size);
       
-      puts(" [*] would patch -> ");
+      puts(" [*] would patch block at -> ");
       name = elfsh_reverse_metasym(world.curjob->curfile, cal->vaddr, &off);
-
-      index = cal->vaddr - to_hijack->vaddr;      
-      revm_instr_display(-1, 0, cal->vaddr, 0, size, name, off, buffer);
+      revm_instr_display(-1, 0, cal->vaddr, 0, cal->size, name, off, buffer);
       
-      /* Patching instruction operand */
+      /* Understand what is the calling instruction */
+      switch (caller->type)
+	{
+	case MJR_LINK_FUNC_CALL:
+	  len = (world.proc.type == ASM_PROC_IA32 ? 5 : 4);
+	  asm_read_instr(&ins, (u_char *) buffer + cal->size - len, len, &world.proc);
+	  break;
+	case MJR_LINK_BLOCK_COND_TRUE:
+	case MJR_LINK_BLOCK_COND_FALSE:
+	case MJR_LINK_BLOCK_COND_ALWAYS:
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 2, 2, &world.proc);
+	  if (len == 2 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	    break;
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 3, 3, &world.proc);
+	  if (len == 3 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	    break;
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 4, 4, &world.proc);
+	  if (len == 4 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	    break;
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 5, 5, &world.proc);
+	  if (len == 5 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	    break;
+	default:
+	  revm_output(" [D] Unable to patch flow for non-immediate CALL/JMP transfers \n");
+	  continue;
+	}
+
+      /* Patch the immediate operand */
       asm_operand_get_immediate(&ins, 1, 0, &value);
       if (ins.op[0].type == ASM_OTYPE_JUMP)
 	{	
-	  value = cal->vaddr + asm_instr_len(&ins);
+	  value = cal->vaddr + cal->size;
 	  value = new_addr - value;
 	  asm_operand_set_immediate(&ins, 1, 0, &value);
 	} 
       else
 	{
-	  puts(" ! operand type not supported");
+	  fprintf(stderr, " ! operand type %u not supported \n", ins.op[0].type);
 	  continue;
 	}
 
       /* display for debug */
       puts(" * patched ->");
-      revm_instr_display(-1, 0, cal->vaddr, 0, size, name, off, buffer);
-      elfsh_writememf(world.curjob->curfile, foff, buffer, size);
+      revm_instr_display(-1, 0, cal->vaddr, 0, cal->size, name, off, buffer);
+      elfsh_writememf(world.curjob->curfile, foff, buffer, cal->size);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));

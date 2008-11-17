@@ -11,9 +11,9 @@
 */
 #include <stdio.h>
 
-void	subfunc(arg)
+void	subfunc(int arg)
 {
-  if (arg)
+  if (arg > 0)
     subfunc(arg - 1);
   printf("i = %i\n", arg)
 ;
