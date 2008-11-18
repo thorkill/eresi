@@ -194,17 +194,6 @@ int		revm_execscript()
 	    }
 	}
 
-      /* Test for e2dbg scripting */
-      if (!strcmp(cur->name, CMD_CONTINUE) || !strcmp(cur->name, CMD_CONTINUE2))
-	{
-	  next                    = cur->next;
-	  world.context.curcmd    = next;
-	  world.state.revm_sourcing = 1;
-	  fprintf(stderr, "Found -continue- in script, sourcing flag now -ON- \n");
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			REVM_SCRIPT_CONTINUE);
-	}
-
       /* Execute instruction */
       if (cur->cmd != NULL && cur->cmd->exec != NULL)
 	{
@@ -217,6 +206,18 @@ int		revm_execscript()
 	  if (status < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Command execution failed", -1);
+
+	  /* Test for (embedded or not) debugger scripting */
+	  if ((world.curjob->curfile && world.curjob->curfile->iotype != E2DBG_HOST_GDB) && 
+	      (!strcmp(cur->name, CMD_CONTINUE) || !strcmp(cur->name, CMD_CONTINUE2)))
+	    {
+	      next                    = cur->next;
+	      world.context.curcmd    = next;
+	      world.state.revm_sourcing = 1;
+	      fprintf(stderr, "Found -continue- in script, sourcing flag now -ON- \n");
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
+	    }
+
 	}
       else
 	 revm_error("Lazy evaluation failed for command", cur->param[0]);

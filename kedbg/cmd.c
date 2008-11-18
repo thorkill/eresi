@@ -91,7 +91,7 @@ int             cmd_kedbgcont(void)
   if (!gdbwrap_is_active(loc))
     cmd_quit();
       
-  return 0;
+  return 0; //REVM_SCRIPT_CONTINUE;
 }
 
 

@@ -1,20 +1,37 @@
-#!../../elfsh/elfsh32
+#!../../../elfsh/elfsh32
 
-load ../../a.out
-type example1 = sys:string[3]
-inform example1 toto array
+load a.out
 
-print 1.example1[toto].sys[0]
+type bint = sys:int[2][3]
 
-set $i 0
+inform bint toto biarray
 
-boucle:
+#print 1.bint[toto].sys[0][0]
+#print 1.bint[toto].sys[0][1]
+#print 1.bint[toto].sys[0][2]
+#print 1.bint[toto].sys[1][0]
+#print 1.bint[toto].sys[1][1]
+#print 1.bint[toto].sys[1][2]
+#OK
 
-cmp $i 3
-je end
-print INDEX $i = 1.example1[toto].sys[$i]
-add $i 1
-jmp boucle
+#foreach $i of 0 until 2
+#print 1.bint[toto].sys[$i][0]
+#print 1.bint[toto].sys[$i][1]
+#print 1.bint[toto].sys[$i][2]
+#forend
+#OK
 
-end:
+#foreach $j of 0 until 3
+# print 1.bint[toto].sys[0][$j]
+# print 1.bint[toto].sys[1][$j]
+#forend
+#OK
+
+foreach $j of 0 until 2
+foreach $k of 0 until 3
+ print Trying access on composants $j - $k
+ print 1.bint[toto].sys[$j][$k]
+forend
+forend
+
 print "Bye !"
