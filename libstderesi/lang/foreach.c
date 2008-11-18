@@ -140,8 +140,14 @@ static int	revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
   revmobj_t	*var;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  var = induction->value;
 
+  /* Do we have to open a new iteration scope ? */
+  if (world.curjob->iter[world.curjob->curiter].reclevel != world.curjob->curscope ||
+      world.curjob->iter[world.curjob->curiter].end != world.curjob->curcmd->endlabel)
+    world.curjob->curiter++;
+
+  /* Find lower and upper bounds for this iteration */
+  var = induction->value;
   if (world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT)
     {
       infbound = revm_lookup_index(world.curjob->curcmd->param[2]);
@@ -159,6 +165,8 @@ static int	revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
 	cmd_quit();
       world.curjob->iter[world.curjob->curiter].listidx = REVM_IDX_UNINIT;
       revm_move_pc(world.curjob->curcmd->endlabel);
+      if (world.curjob->curiter)
+	world.curjob->curiter--;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   

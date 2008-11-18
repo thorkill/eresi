@@ -1,37 +1,43 @@
 #!../../../elfsh/elfsh32
 
+quiet
+
 load a.out
 
 type bint = sys:int[2][3]
 
 inform bint toto biarray
 
-#print 1.bint[toto].sys[0][0]
-#print 1.bint[toto].sys[0][1]
-#print 1.bint[toto].sys[0][2]
-#print 1.bint[toto].sys[1][0]
-#print 1.bint[toto].sys[1][1]
-#print 1.bint[toto].sys[1][2]
-#OK
+print First test
 
-#foreach $i of 0 until 2
-#print 1.bint[toto].sys[$i][0]
-#print 1.bint[toto].sys[$i][1]
-#print 1.bint[toto].sys[$i][2]
-#forend
-#OK
+print 1.bint[toto].sys[0][0]
+print 1.bint[toto].sys[0][1]
+print 1.bint[toto].sys[0][2]
+print 1.bint[toto].sys[1][0]
+print 1.bint[toto].sys[1][1]
+print 1.bint[toto].sys[1][2]
 
-#foreach $j of 0 until 3
-# print 1.bint[toto].sys[0][$j]
-# print 1.bint[toto].sys[1][$j]
-#forend
-#OK
+print Second test
+
+foreach $i of 0 until 2
+print 1.bint[toto].sys[$i][0]
+print 1.bint[toto].sys[$i][1]
+print 1.bint[toto].sys[$i][2]
+forend
+
+print Third test
+
+foreach $j of 0 until 3
+ print 1.bint[toto].sys[0][$j]
+ print 1.bint[toto].sys[1][$j]
+forend
+
+print Fourth test
 
 foreach $j of 0 until 2
 foreach $k of 0 until 3
- print Trying access on composants $j - $k
  print 1.bint[toto].sys[$j][$k]
 forend
 forend
 
-print "Bye !"
+print Bye !
