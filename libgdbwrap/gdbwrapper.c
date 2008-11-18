@@ -562,9 +562,9 @@ void                 gdbwrap_setbp(la32 linaddr, void *datasaved, gdbwrap_t *des
   unsigned           atohresult;
 
   ret = gdbwrap_readmemory(linaddr, 1, desc);
-   /* Fix: not clean. ATOH is not clean when returning an unsigned. */
+  /* Fix: not clean. ATOH is not clean when returning an unsigned. */
   atohresult = gdbwrap_atoh(ret, 2 * 1);
-   memcpy(datasaved, &atohresult, 1);
+  memcpy(datasaved, &atohresult, 1);
   gdbwrap_writememory(linaddr, &bp, sizeof(u_char), desc);
 }
 
@@ -641,16 +641,12 @@ void                 gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc)
   reg = gdbwrap_readgenreg(desc);
   ret = gdbwrap_lastmsg(desc);
   offset = 2 * regNum * sizeof(ureg32);
-  printf("Value received: %s - %#x - %d\n", ret, val, offset);
 
-  snprintf(locreg, sizeof(locreg), "%x", gdbwrap_little_endian(val));
+  snprintf(locreg, sizeof(locreg), "%08x", gdbwrap_little_endian(val));
   memcpy(ret + offset, locreg, 2 * sizeof(ureg32));
-  printf("Ret has value: %s\n", ret);
   snprintf(locreg, sizeof(locreg), "%s%s",
 	   GDBWRAP_WGENPURPREG, ret);
-  printf("locreg has value: %s\n", locreg);
   gdbwrap_send_data(locreg, desc);
-  printf("Value received: %s - %#x \n", locreg, gdbwrap_little_endian(val - 1));
   
 }
 

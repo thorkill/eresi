@@ -55,11 +55,15 @@ int             cmd_kedbgcont(void)
   int           off;
   uint8_t       eip_pos;
 
+  // PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e2dbgworld.curthread->step)
     {
       gdbwrap_continue(loc);
       if (gdbwrap_lastsignal(loc) == SIGTRAP)
 	{
+
+	  /* All instances of readmema must be changed to elfsh_... */
+	  
 	  kedbg_readmema(NULL, loc->reg32.eip - 1, &c, 1);
 	  ASSERT(c == BPCODE);
 	  snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - 1);
@@ -68,10 +72,11 @@ int             cmd_kedbgcont(void)
 	    {
 	      c = BPCODE;
 	      eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
-	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
+	      //	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
+	      kedbg_delbp(bp);
 	      gdbwrap_writereg2(eip_pos, loc->reg32.eip - 1, loc);
 	      gdbwrap_stepi(loc);
-	      kedbg_writemem(NULL, bp->addr, &c, 1);
+	      kedbg_setbp(world.curjob->curfile, bp);
 	    }
 	  else fprintf(stderr, "An error has occured when trying to find the bp.");
 	}
@@ -90,8 +95,12 @@ int             cmd_kedbgcont(void)
 
   if (!gdbwrap_is_active(loc))
     cmd_quit();
-      
+
   return 0; //REVM_SCRIPT_CONTINUE;
+
+  /* Does not seem to be working */
+  
+  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
 }
 
 

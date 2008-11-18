@@ -207,29 +207,61 @@ static void     kedbg_propagate_type(void)
 }
 
 
+/**
+ * If the symbol __ksymtab is found in the file we are analyzing, then
+ * we are analyzing a kernel.
+ */
+static Bool       kedbg_file_is_kernel(elfshobj_t *file)
+{
+  elfshsect_t   *textsct;
+  
+  textsct = elfsh_get_section_by_name(file, "__ksymtab", NULL, NULL, NULL);
+
+  if (textsct != NULL)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+
 static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 {
   eresi_Addr    addr;
   asm_processor proc;
   elfshsect_t   *textsct;
-/*   u_char        buf[BUFSIZ]; */
-/*   unsigned      dis; */
 
   textsct = elfsh_get_section_by_name(file, ".text", NULL, NULL, NULL);
-
-/*   printf("Value of textsct: %p - %#x - archtype: %d\n", textsct, */
-/* 	 textsct->shdr->sh_addr, elfsh_get_archtype(file)); */
   asm_init_arch(&proc, elfsh_get_archtype(file));
   addr = textsct->shdr->sh_addr;
-  /*   addr = mjr_find_main(file, */
-/* 		       &proc, */
-/* 		       buf, */
-/* 		       BUFSIZ, */
-/* 		       textsct->shdr->sh_addr, */
-/* 		       &dis); */
 
   DEBUGMSG(fprintf(stderr, "Entry point found: %#x\n", addr));
+
   return addr;
+}
+
+
+/**
+ * The got[1] entry is filled in at runtime. The idea is to add a
+ * breakpoint on the entry point, then "start" and stop when getting
+ * the SIGTRAP. We don't use the cmd_bp to avoid extra messages that
+ * might seem suspicious.
+ */
+static void     kedbg_run_to_entrypoint(elfshobj_t *file)
+{
+
+  elfshbp_t     bp;
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  uint8_t       eip_pos;
+
+  memset(bp.savedinstr, 0, 16);
+  
+  bp.addr = kedbg_find_entrypoint(file);
+
+  kedbg_setbp(file, &bp);
+  kedbg_continue();
+  kedbg_delbp(&bp);
+  eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
+  gdbwrap_writereg2(eip_pos, bp.addr, loc);
 }
 
 
@@ -239,8 +271,7 @@ static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 static int      kedbg_main(int argc, char **argv)
 {
   int           ret;
-  elfshbp_t     bp;
-  
+   
   /* The "1" stands for interactive. */
   revm_setup(1, argv, REVM_STATE_CMDLINE, REVM_SIDE_CLIENT);
   revm_config(".kedbgrc");
@@ -264,13 +295,17 @@ static int      kedbg_main(int argc, char **argv)
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
   kedbg_propagate_type();
 
-  memset(bp.savedinstr, 0, 16);
-  bp.addr = kedbg_find_entrypoint(world.curjob->curfile);
-  /* Call the bp hook. */
-  kedbg_setbp(world.curjob->curfile, &bp);
-  kedbg_continue();
-  kedbg_delbp(&bp);
-  kedbg_find_linkmap();
+
+  if (!kedbg_file_is_kernel(world.curjob->curfile))
+    {
+      kedbg_run_to_entrypoint(world.curjob->curfile);
+      kedbg_find_linkmap();
+    }
+  else
+    {
+      world.curjob->curfile->rhdr.base = 0xc0000000;
+    }
+
   revm_run(argc, argv);
 
   return 0;
