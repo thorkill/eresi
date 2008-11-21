@@ -13,6 +13,7 @@
 
 
 /** ARCH/OS dependent handler for checking values in registers */
+#if defined(__linux__) && defined(__i386__)
 void		e2dbg_watch_check_ia32_sysv(u_int regidx, char *regstr)
 {
   char		buff[BUFSIZ];
@@ -31,10 +32,12 @@ void		e2dbg_watch_check_ia32_sysv(u_int regidx, char *regstr)
 	e2dbgworld.curthread->trace = 0;
       }
 }
+#endif
 
 /** Check if any traced variable is used in the current instruction */
 void		e2dbg_watch()
 {
+#if defined(__linux__) && defined(__i386__)
   e2dbg_watch_check_ia32_sysv(REG_EAX, "EAX");
   e2dbg_watch_check_ia32_sysv(REG_EBX, "EBX");
   e2dbg_watch_check_ia32_sysv(REG_ECX, "ECX");
@@ -44,6 +47,7 @@ void		e2dbg_watch()
   e2dbg_watch_check_ia32_sysv(REG_ESP, "ESP");
   e2dbg_watch_check_ia32_sysv(REG_EBP, "EBP");
   e2dbg_watch_check_ia32_sysv(REG_EIP, "EIP");
+#endif
 }
 
 
