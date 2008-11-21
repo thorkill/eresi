@@ -118,7 +118,7 @@ int		cmd_bt()
   int		ret;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!elfsh_is_debug_mode())
+  if (!elfsh_is_runtime_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Not in dynamic or debugger mode", -1);
   if (e2dbgworld.curthread == NULL || e2dbgworld.curthread->context == NULL)

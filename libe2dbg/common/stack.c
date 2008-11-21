@@ -57,7 +57,7 @@ int		cmd_stack()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
-  if (!elfsh_is_debug_mode())
+  if (!elfsh_is_runtime_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Command only available in e2dbg", (-1));
   param = world.curjob->curcmd->param[0];
@@ -96,7 +96,7 @@ int		cmd_dbgstack()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Preliminary checks */
-  if (!elfsh_is_debug_mode())
+  if (!elfsh_is_runtime_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Command only available in e2dbg", (-1));
   param = world.curjob->curcmd->param[0];

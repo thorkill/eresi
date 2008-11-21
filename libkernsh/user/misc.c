@@ -124,7 +124,7 @@ int kernsh_find_end(eresi_Addr addr)
   addrfinal = addr + sizemax;
   while (addrcur < addrfinal)
     {
-      if (elfsh_is_debug_mode())
+      if (elfsh_is_runtime_mode())
 	{
 	  elfsh_readmema(libkernshworld.root, addrcur, buff, sizeof(buff));
 	}

@@ -634,7 +634,7 @@ elfshobj_t	*elfsh_hash_getfile_def(elfshobj_t *file, char *name)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
 
   /* Debug mode use a different dependences technique for mapped files */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       filehash = hash_find("files");
 

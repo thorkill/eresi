@@ -224,7 +224,7 @@ char		*elfsh_reverse_symbol(elfshobj_t	*file,
 		      "Invalid NULL parameter", NULL);
 
   /* handle dynamic case */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     value -= file->rhdr.base;
 
   /* If there is no symtab, resolve using SHT */

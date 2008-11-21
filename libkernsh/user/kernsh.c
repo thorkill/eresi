@@ -290,7 +290,7 @@ void	*kernsh_get_raw(elfshsect_t *sect)
   printf("kernsh_get_raw\n");
 #endif
 
-  if (libkernshworld.open && elfsh_is_debug_mode() && libkernshworld.mmap)
+  if (libkernshworld.open && elfsh_is_runtime_mode() && libkernshworld.mmap)
     { 
       /* We use physical memory ? */
       if (libkernshworld.physical)
@@ -344,7 +344,7 @@ void	*kernsh_get_raw_by_addr(elfshobj_t *null, eresi_Addr addr, void *buf, u_int
   printf("kernsh_get_raw_by_addr\n");
 #endif
 
-  if (libkernshworld.open && elfsh_is_debug_mode() && libkernshworld.mmap)
+  if (libkernshworld.open && elfsh_is_runtime_mode() && libkernshworld.mmap)
     {
       /* We use physical memory ? */
       if (libkernshworld.physical)
@@ -513,7 +513,7 @@ void kernsh_unload_file(elfshobj_t *file)
 int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       elfsh_writemem(file, elfsh_get_vaddr_from_foffset(file, foffset), src_buff, len);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
@@ -532,7 +532,7 @@ int kernsh_raw_write(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       elfsh_readmema(file, elfsh_get_vaddr_from_foffset(file, foffset), dest_buff, len);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, len);

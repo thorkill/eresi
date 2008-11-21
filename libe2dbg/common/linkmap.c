@@ -67,7 +67,7 @@ int		cmd_linkmap()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       if (!world.curjob)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

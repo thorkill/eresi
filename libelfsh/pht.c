@@ -446,7 +446,7 @@ elfsh_Phdr	*elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *enew)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (actual + index));
 
   /* Fix the address we look for depending on the file type and context */
-  addr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(enew) ? 
+  addr = (elfsh_is_runtime_mode() && !elfsh_section_is_runtime(enew) ? 
 	  file->rhdr.base + enew->shdr->sh_addr : enew->shdr->sh_addr);
   
   /* Try to find in runtime pht */

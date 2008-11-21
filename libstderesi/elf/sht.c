@@ -82,7 +82,7 @@ int		revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
 
       /* Compute section address */
       /* Base for ET_EXEC is always 0 */
-      addr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(cur) ?
+      addr = (elfsh_is_runtime_mode() && !elfsh_section_is_runtime(cur) ?
 	      world.curjob->curfile->rhdr.base + elfsh_get_section_addr(shdr + index) :
 	      elfsh_get_section_addr(shdr + index));
 

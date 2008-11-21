@@ -206,7 +206,7 @@ int			e2dbg_linkmap_load(char *name)
 
   /* Everything was OK */
   e2dbg_output("\n");
-  //elfsh_set_debug_mode();
+  //elfsh_set_runtime_mode();
   revm_doswitch(1);
   done = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

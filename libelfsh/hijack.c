@@ -134,7 +134,7 @@ int		elfsh_hijack_function_by_name(elfshobj_t *file,
 			  "Unable to perform CFLOW redir", -1);
 
       /* Perform a second stage runtime relocation after injecting this new old symbol */
-      if (elfsh_is_debug_mode() && elfsh_save_relocate(file) < 0)
+      if (elfsh_is_runtime_mode() && elfsh_save_relocate(file) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Failed second stage runtime relocation", -1);
 

@@ -26,7 +26,7 @@ void		*elfsh_get_raw_by_addr(elfshobj_t *current, eresi_Addr addr, void *buf, u_
     return ((void *) addr);
 
   /* In debug mode, we return a pointer on the runtime data */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       if (!elfsh_section_is_runtime(sect))
 	return ((void *) sect->parent->rhdr.base + sect->shdr->sh_addr + offset);
@@ -57,7 +57,7 @@ void			*elfsh_get_raw(elfshsect_t *sect)
   void			*dataptr = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
 
       /* The address of the section */
@@ -114,7 +114,7 @@ int		elfsh_raw_write(elfshobj_t	*file,
   if (dst == NULL)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       prot = elfsh_munprotect(file, (eresi_Addr) dst + sect_off, len);
       memcpy(dst + sect_off, src_buff, len);

@@ -57,7 +57,7 @@ void	elfsh_set_static_mode()
 /**
  * @ brief check if we are running in debug mode
  */
-Bool	elfsh_is_debug_mode()
+Bool	elfsh_is_runtime_mode()
 {
  return (dbgworld.mode == LIBELFSH_MODE_RUNTIME);
 }
@@ -65,7 +65,7 @@ Bool	elfsh_is_debug_mode()
 /** 
  * @brief set debug mode
  */
-void	elfsh_set_debug_mode()
+void	elfsh_set_runtime_mode()
 {
   elfsh_set_mode(LIBELFSH_MODE_RUNTIME);
   dbgworld.indebug = 1;
@@ -105,10 +105,10 @@ u_char	elfsh_debugger_present()
 
 void	elfsh_toggle_mode()
 {
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     elfsh_set_static_mode();
   else
-    elfsh_set_debug_mode();
+    elfsh_set_runtime_mode();
 }
 
 /**

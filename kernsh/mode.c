@@ -33,7 +33,7 @@ int		cmd_kmode()
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Unable to switch to dynamic mode, please open the memory !", -1);
 	  
-	  elfsh_set_debug_mode();
+	  elfsh_set_runtime_mode();
 	  revm_output("[*] kernsh is now in DYNAMIC mode\n\n");
 	}
       
@@ -48,7 +48,7 @@ int		cmd_kmode()
       if (elfsh_is_static_mode())
 	param = "STATIC";
       
-      else if (elfsh_is_debug_mode())
+      else if (elfsh_is_runtime_mode())
 	param = "DYNAMIC";
       
       else

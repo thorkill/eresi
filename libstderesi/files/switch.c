@@ -32,7 +32,7 @@ int             cmd_doswitch()
   mjr_set_current_context(&world.mjr_session, cur->name);
   snprintf(logbuf, BUFSIZ, "\n [*] Switched on object %u (%s) \n\n", cur->id, cur->name);
   revm_output(logbuf);
-  if (elfsh_is_debug_mode() && !cur->linkmap)
+  if (elfsh_is_runtime_mode() && !cur->linkmap)
     revm_output("\n [!] Loaded file is not the linkmap, switching to STATIC mode\n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }

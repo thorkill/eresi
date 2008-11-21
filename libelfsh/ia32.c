@@ -757,7 +757,7 @@ static eresi_Addr elfsh_ac_foundcallto(elfshobj_t *file, eresi_Addr vaddr, eresi
   data = elfsh_readmem(text);
   len = text->shdr->sh_size;
 
-  base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
+  base_vaddr = (elfsh_is_runtime_mode() && !elfsh_section_is_runtime(text) ?
 		file->rhdr.base + elfsh_get_section_addr(text->shdr) :
 		elfsh_get_section_addr(text->shdr));
 

@@ -229,7 +229,7 @@ elfsh_Sym	*elfsh_get_metasym_by_value(elfshobj_t *file,
   dynsym = elfsh_get_dynsymtab(file, &dynum);
 
   /* ET_DYN objects have a relative addressing inside the ELF file */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     vaddr -= file->rhdr.base;
 
   res = elfsh_get_sym_by_value(dynsym, dynum, vaddr, off, mode);

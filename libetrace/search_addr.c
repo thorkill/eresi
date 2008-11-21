@@ -97,7 +97,7 @@ int			elfsh_addr_get_func_list(elfshobj_t *file, eresi_Addr **addr)
   len = text->shdr->sh_size;
 
   /* Get the virtual address */
-  base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
+  base_vaddr = (elfsh_is_runtime_mode() && !elfsh_section_is_runtime(text) ?
 		file->rhdr.base + elfsh_get_section_addr(text->shdr) :
 		elfsh_get_section_addr(text->shdr));
 
@@ -213,7 +213,7 @@ int			elfsh_addr_is_called(elfshobj_t *file, eresi_Addr addr)
   len = text->shdr->sh_size;
 
   /* Get the virtual address */
-  base_vaddr = (elfsh_is_debug_mode() && !elfsh_section_is_runtime(text) ?
+  base_vaddr = (elfsh_is_runtime_mode() && !elfsh_section_is_runtime(text) ?
 		file->rhdr.base + elfsh_get_section_addr(text->shdr) :
 		elfsh_get_section_addr(text->shdr));
 

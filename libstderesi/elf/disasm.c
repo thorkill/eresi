@@ -2,8 +2,6 @@
 ** @file disasm.c
 ** 
 ** Started on  Fri Nov  2 15:41:34 2001 jfv
-**
-**
 ** $Id: disasm.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
@@ -113,7 +111,7 @@ char		*revm_resolve(elfshobj_t *file, eresi_Addr addr,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to resolve best name", (NULL));
 
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       str = revm_basename(bestfile->name);
       snprintf(buf, BUFSIZ, "%s@%s", 
@@ -175,11 +173,6 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
 
 
 
-/*------------------ to clean !! ******/
-
-
-
-
 /** 
  * Display An instruction.
  * Runtime compatible 
@@ -192,15 +185,15 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
  * @param nindex
  * @param buff
  */
-u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr, 
-				 u_int foffset, u_int size, char *name, 
-				 u_int nindex, char *buff)
+int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr, 
+				   u_int foffset, u_int size, char *name, 
+				   u_int nindex, char *buff)
 			      
 {
   char		*s;
   char		buf[256];
   u_int		idx_bytes;
-  u_int		ret;
+  int		ret;
   asm_instr	ptr;
   char		base[16] = "0123456789ABCDEF";
   char		logbuf[BUFSIZ];
@@ -209,6 +202,7 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
   u_int		strsz;
   elfsh_Half	machine;
   u_int		delta;
+  int		err;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -250,9 +244,11 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
   ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + delta, 
 		       world.curjob->proc);
   if (ret == -1)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "asm_read_instruction faild (-1)", (ret));
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to read instruction", ret);
 
-  s = (!ret ? "(bad)" : asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
+  s = (!ret ? "(bad)" : 
+       asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
 
   /* Libasm test */
   if (fd == -1)
@@ -296,7 +292,7 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
 	ret++;
 
       if (!world.state.revm_quiet)
-	for (idx_bytes = 0; idx_bytes < ret; idx_bytes++)
+	for (idx_bytes = 0; idx_bytes < (u_int) ret; idx_bytes++)
 	  {
 	    c1[0] = base[(buff[index + idx_bytes] >> 4) & 0x0F];
 	    c2[0] = base[buff[index + idx_bytes] & 0x0F];
@@ -309,10 +305,12 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
       if (!world.curjob->curcmd || !world.curjob->curcmd->use_regx[1] || 
 	  !regexec(&second->name, logbuf, 0, 0, 0))
 	{
-	  revm_output(logbuf);
-	  revm_output("\n");
+	  snprintf(logbuf + size, sizeof(logbuf) - size, "\n");
+	  err = revm_output(logbuf);
 	}
       revm_endline();
+      if (err < 0)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
     }
   else
     write(fd, s, strlen(s));
@@ -335,8 +333,10 @@ u_int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
  * @param foffset The file offset where the object data stands at.
  * @return Always 0.
  */
-int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int index, 
-				  u_int size, u_int off, char *buff, u_int foffset)
+int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, 
+				  u_int index, u_int size, u_int off, char *buff, 
+				  u_int foffset)
+				  
 {
   eresi_Addr	vaddr2;
   u_int		curidx;
@@ -345,6 +345,7 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int 
   char		tmp[BUFSIZ];
   char		c1[2], c2[2];
   u_int		ret;
+  int		err;
   u_int		loff;  
   char		*pStr;
   char		base[16] = "0123456789ABCDEF";
@@ -388,14 +389,14 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int 
        for (loff = 0; loff < ret; loff++)
 	 {
 	   c1[0] = c2[0] = ' ';
-	      if (index + loff < size)
-		{
-		  c1[0] = base[(buff[curidx + loff] >> 4) & 0x0F];
-		  c2[0] = base[(buff[curidx + loff] >> 0) & 0x0F];
-		}
-	      snprintf(logbuf, BUFSIZ - 1, "%s%s ", c1, c2);
-	      if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
-		strcat(tmp, logbuf);
+	   if (index + loff < size)
+	     {
+	       c1[0] = base[(buff[curidx + loff] >> 4) & 0x0F];
+	       c2[0] = base[(buff[curidx + loff] >> 0) & 0x0F];
+	     }
+	   snprintf(logbuf, BUFSIZ - 1, "%s%s ", c1, c2);
+	   if (strlen(tmp) + strlen(logbuf) < BUFSIZ)
+	     strcat(tmp, logbuf);
 	 }
        
        revm_output(revm_colorfieldstr(tmp));
@@ -405,30 +406,27 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int 
        /* Print ascii */
        for (loff = 0; loff < ret; loff++)
 	 {
-	      c1[0] = buff[curidx + loff];
-	      pStr = (index + loff >= size ? " " : 
-		      (PRINTABLE(buff[curidx + loff]) ? c1 : "."));
-	      if (strlen(tmp) + 1 < BUFSIZ)
-		strcat(tmp, pStr);
+	   c1[0] = buff[curidx + loff];
+	   pStr = (index + loff >= size ? " " : 
+		   (PRINTABLE(buff[curidx + loff]) ? c1 : "."));
+	   if (strlen(tmp) + 1 < BUFSIZ)
+	     strcat(tmp, pStr);
 	 }
        
-       revm_output(revm_colorstr(tmp));
+       err = revm_output(revm_colorstr(tmp));
        revm_endline();
        revm_output("\n");
        index += ret;
        vaddr2 += ret;
        curidx += ret;
+       
+       /* If we have requested to stop the output */
+       if (err < 0)
+	 PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
      }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
-
 
 
 
@@ -443,8 +441,9 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int 
  * @param foffset The file offset of the array data in ELF
  * @return Always 0.
  */
-int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_Addr vaddr,
-				   char *name, u_int foffset)
+int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, 
+				   eresi_Addr vaddr, char *name, u_int foffset)
+				   
 {
   char		buf[256];
   char		str[256];
@@ -481,7 +480,7 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
 	}
       
 #if defined(KERNSH)
-      if (elfsh_is_debug_mode())
+      if (elfsh_is_runtime_mode())
 	parent->parent->rhdr.base = 0;
 #endif
       
@@ -490,7 +489,8 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
       vaddr2   = vaddr + index * sizeof(eresi_Addr);
       
       snprintf(buf, sizeof(buf), " " AFMT " [foff: %u] \t %s[%0*u] = " XFMT, 
-	       (elfsh_is_debug_mode() && parent ? parent->parent->rhdr.base + vaddr2 : vaddr2),
+	       (elfsh_is_runtime_mode() && parent ? 
+		parent->parent->rhdr.base + vaddr2 : vaddr2),
 	       foffset + index * sizeof(eresi_Addr), name,
 	       ((sym->st_size / sizeof(eresi_Addr)) < 100  ? 2 : 
 		(sym->st_size / sizeof(eresi_Addr)) < 1000 ? 3 : 4),
@@ -564,18 +564,19 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff, eresi_A
  * @return
  */
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
-				  u_int off, u_int foffset, eresi_Addr vaddr, 
-				  char *name, char otype)
+				    u_int off, u_int foffset, eresi_Addr vaddr, 
+				    char *name, char otype, u_char addbase)
 {
   char		*buff;
   u_int		index;
   elfsh_SAddr   idx_bytes;
   int		value;
   int		nbrinstr;
+  eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!parent && !elfsh_is_debug_mode())
+  if (!parent && elfsh_is_static_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "parent section is NULL", -1);
 
@@ -597,7 +598,10 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   if (parent)
     {
       buff  = elfsh_readmem(parent);
-      buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
+      if (elfsh_is_static_mode())
+	buff += (vaddr - parent->shdr->sh_addr);
+      else
+	buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
       index = off;
     }
   else
@@ -606,13 +610,13 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
       index = 0;
     }
 
-#if defined(KERNSH)  
-  if (elfsh_is_debug_mode())
+#if defined(KERNSH)
+  if (elfsh_is_runtime_mode())
       parent->parent->rhdr.base = 0;
 #endif  
 
   /* Filter requests on void sections (ex: bss when not inserted in file) */
-  if (!elfsh_is_debug_mode() && (!parent || !parent->data))
+  if (elfsh_is_static_mode() && (!parent || !parent->data))
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"No data at this address", -1);
   
@@ -634,19 +638,21 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
       /* We want assembly and hexa */
     case REVM_VIEW_DISASM:
 #if defined(KERNSH)
-      if (!kernsh_is_present() && elfsh_is_debug_mode())
+      if (!kernsh_is_present() && elfsh_is_runtime_mode() && addbase)
 	vaddr += parent->parent->rhdr.base;
 #else
-      if (elfsh_is_debug_mode() && parent)
+      if (elfsh_is_runtime_mode() && parent && addbase)
 	vaddr += parent->parent->rhdr.base;
 #endif
-      
-      idx_bytes = (sym && sym->st_value ? vaddr + index - sym->st_value : index);
+
+      base = (elfsh_is_runtime_mode() ? parent->parent->rhdr.base : 0);
+      idx_bytes = (parent && sym && sym->st_value ? 
+		   vaddr + index - sym->st_value - base : index);
+
       for (nbrinstr = 0; nbrinstr < size && size > 0; nbrinstr++)
 	{
-	  value = revm_instr_display(-1, index, vaddr, 
-				   foffset, size, name,
-				   idx_bytes, buff);
+	  value = revm_instr_display(-1, index, vaddr, foffset, size, name,
+				     idx_bytes, buff);
 	  if (value <= 0)
 	    break;
 	  index += value;
@@ -687,25 +693,27 @@ int		revm_section_display(elfshsect_t	*s,
   char		*symname;
   char		logbuf[BUFSIZ];
   int		err;
-  eresi_Addr	addr;
+  u_int		foff;
+  eresi_Addr	base;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   /* Hello message ;) */
-  snprintf(logbuf, BUFSIZ - 1, " [*] Analysing section %s [*] \n\n", name);
+  snprintf(logbuf, BUFSIZ - 1, "\n [*] Analysing section %s [*] \n\n", name);
   revm_output(logbuf);
   actual = elfsh_get_symtab(s->parent, &symtab_size);
   tot = 0;
   if (s && !elfsh_readmem(s))
     elfsh_get_anonymous_section(s->parent, s);
-  
   if (!actual)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section has no symbol associated", -1);
+  base = (elfsh_is_runtime_mode() ? s->parent->rhdr.base : 0);
 
   /* Display all symbols data pointing in the section */
   for (index = 0; index < symtab_size; index++)
-    if (elfsh_get_parent_section(s->parent, actual[index].st_value, &offset) == s)
+    if (elfsh_get_parent_section(s->parent, base + actual[index].st_value, 
+				 &offset) == s)
       {
 	if (re->size)
 	  size = ((re->size + re->off) > actual[index].st_size ? 
@@ -714,9 +722,10 @@ int		revm_section_display(elfshsect_t	*s,
 	  size = actual[index].st_size;
 	
 	symname = elfsh_get_symbol_name(s->parent, actual + index);
-	addr    = s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr;
-	err     = revm_object_display(s, actual + index, size, re->off, addr,
-				    actual[index].st_value, symname, re->otype);
+	foff    = s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr;
+	err     = revm_object_display(s, actual + index, size, re->off, foff,
+				      base + actual[index].st_value, symname, 
+				      re->otype, 0);
 	
 	if (err == -1)
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
@@ -733,7 +742,7 @@ int		revm_section_display(elfshsect_t	*s,
 	size = s->shdr->sh_size;
       actual = elfsh_get_symbol_by_name(s->parent, name);
       if (revm_object_display(s, actual, size, re->off, s->shdr->sh_offset, 
-			    s->shdr->sh_addr, name, re->otype) < 0)
+			      s->shdr->sh_addr, name, re->otype, 1) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to display section data", -1);
     }
@@ -753,7 +762,7 @@ int		revm_section_display(elfshsect_t	*s,
  * @param actual
  * @return
  */
-int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual)
+int		revm_match_sht(elfshsect_t *l, revmlist_t *actual)
 {
   elfshsect_t	*s;
   char		*name;
@@ -798,15 +807,16 @@ int		revm_match_sht(elfshobj_t *file, elfshsect_t *l, revmlist_t *actual)
  * @return
  */
 int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
-				revmlist_t *actual, int flag)
+				  revmlist_t *actual, int flag)
 {
   elfshsect_t	*s;
   char		*name;
   int		matchs = 0;
   u_int		saved_size;
   elfsh_Sym	*sym;
-  eresi_Addr	addr;
-  int		index;
+  u_int		foff;
+  u_int		index;
+  eresi_Addr	base;
 #if __DEBUG_DISASM__
   char		logbuf[BUFSIZ];
 #endif
@@ -852,17 +862,16 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
 	  elfsh_toggle_mode();
 	  sym = elfsh_readmem(symtab);
 	  elfsh_toggle_mode();
-	  s = elfsh_get_parent_section(file, 
-				       file->rhdr.base + sym[index].st_value,
-				       NULL);
 	}
-      else
-	s = elfsh_get_parent_section(file, sym[index].st_value, NULL);
+
+      base = (elfsh_is_runtime_mode() ? file->rhdr.base : 0);
+      s = elfsh_get_parent_section(file, base + sym[index].st_value, NULL);
 
       /* Display matched object */
-      addr = elfsh_get_foffset_from_vaddr(file, sym[index].st_value);
-      if (revm_object_display(s, sym + index, actual->size, actual->off, addr,
-			    sym[index].st_value, name, actual->otype) == -1)
+      foff = elfsh_get_foffset_from_vaddr(file, sym[index].st_value);
+      if (revm_object_display(s, sym + index, actual->size, actual->off, foff,
+			      base + sym[index].st_value, name, 
+			      actual->otype, 0) == -1)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Error while displaying matched object", -1);
       
@@ -890,10 +899,13 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
 				   revmlist_t *actual)
 {
   elfsh_Sym	*sym;
+  elfsh_Sym	*dynsym;
   char		*name;
   int		off;
+  int		doff;
   u_int		matchs;
   elfshsect_t	*s;
+  u_int		foff;
 
 #if __DEBUG_DISASM__
   char		logbuf[BUFSIZ];
@@ -907,21 +919,32 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
   revm_output(logbuf);
 #endif
   
-  if (file->hdr->e_type == ET_DYN && elfsh_is_debug_mode())
+  /* Find symbol for address */
+  if (file->hdr->e_type == ET_DYN && elfsh_is_runtime_mode())
     vaddr -= file->rhdr.base;
-  sym = elfsh_get_symbol_by_value(file, vaddr, &off, ELFSH_LOWSYM);
-  if (file->hdr->e_type == ET_DYN && elfsh_is_debug_mode())
+  sym    = elfsh_get_symbol_by_value(file, vaddr, &off, ELFSH_LOWSYM);
+  dynsym = elfsh_get_dynsymbol_by_value(file, vaddr, &doff, ELFSH_LOWSYM);
+  if (!sym || (dynsym && doff < off))
+    {
+      sym = dynsym;
+      off = doff;
+      name = elfsh_get_dynsymbol_name(file, sym);
+    }
+  else
+    name = elfsh_get_symbol_name(file, sym);    
+  foff = elfsh_get_foffset_from_vaddr(file, vaddr);
+  if (file->hdr->e_type == ET_DYN && elfsh_is_runtime_mode())
     vaddr += file->rhdr.base;
-  if (sym == NULL)
+  if (sym == NULL || name == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No matching symbol for offset", -1);
+
   actual->off += off;
   if (!actual->size)
     actual->size = elfsh_get_symbol_size(sym);
   else
     actual->size = ((actual->size + actual->off) > elfsh_get_symbol_size(sym) ?
 		    elfsh_get_symbol_size(sym) : actual->size + actual->off);
-  name = elfsh_get_symbol_name(file, sym);
   matchs++;
   
 #if __DEBUG_DISASM__
@@ -930,51 +953,45 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
   revm_output(logbuf);
 #endif
 
-  s = elfsh_get_parent_section(file, vaddr, NULL);
-  if (!s && !elfsh_is_debug_mode())
+  s = elfsh_get_parent_section(file, 
+			       (elfsh_is_runtime_mode() ? vaddr : 
+				vaddr - file->rhdr.base), NULL);
+  if (!s && !elfsh_is_runtime_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "No matching section for address", -1);
 
   if (!s)
-    {
-      actual->size = sizeof(unsigned long);
-      //actual->off = 0;
-    }
+    actual->size = sizeof(eresi_Addr);
   else if (!actual->size)
     actual->size = s->shdr->sh_size;
 
-  revm_object_display(s, sym, actual->size, actual->off,
-		      elfsh_get_foffset_from_vaddr(file, vaddr),
-		      vaddr, name, actual->otype);
+  revm_object_display(s, sym, actual->size, actual->off, foff,
+		      vaddr, name, actual->otype, 0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /**
- * Display ASM code for a given function, or every functions of a section 
+ * Find what to match in the file given in parameter
  */
-int             cmd_disasm()
+int		revm_match_find(elfshobj_t *file)
 {
   revmlist_t	*actual;
-  elfshobj_t	*file;
   revmexpr_t	*expr;
   int		matchs;
   eresi_Addr	vaddr;
-  char		logbuf[BUFSIZ];
+  int		err;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Make sure we get symtabs of current object */
-  elfsh_get_symtab(world.curjob->curfile, NULL);
-  elfsh_get_dynsymtab(world.curjob->curfile, NULL);
-  revm_output("\n");
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);\
   
   /* now walk the regex list for this option */
   actual = world.curjob->curcmd->disasm + 0;
   second = world.curjob->curcmd->disasm + 1;
+
+  elfsh_get_symtab(file, NULL);
+  elfsh_get_dynsymtab(file, NULL);
   matchs = vaddr = 0;
-  file = world.curjob->curfile;
 
   /* If the regex contains a vaddr instead of a symbol name */
   if (actual->rname)
@@ -985,16 +1002,25 @@ int             cmd_disasm()
 	  if (!expr || !expr->value || !expr->value->immed_val.ent)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Invalid requested address expression", -1);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			     revm_match_special(file, expr->value->immed_val.ent, actual));
+	  
+	  err = revm_match_special(file, expr->value->immed_val.ent, actual);
+	  if (err < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to match address in variable", -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
+
       else if (IS_VADDR(actual->rname))
 	{
 	  if (sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			 "Invalid virtual address requested", -1);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			revm_match_special(file, vaddr, actual));
+
+	  err = revm_match_special(file, vaddr, actual);
+	  if (err < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to match virtual address", -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
   
       /* else if it contains a file offset */
@@ -1004,16 +1030,18 @@ int             cmd_disasm()
 	  if (vaddr == 0xFFFFFFFF && 
 	      sscanf(actual->rname + 2, AFMT, &vaddr) != 1)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Invalid file offset requested",
-			      -1);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-			     revm_match_special(file, vaddr, actual));
+			 "Invalid requested file offset", -1);
+	  err = revm_match_special(file, vaddr, actual);
+	  if (err < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to match file offset", -1);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
     }
 
   /* Try to match in the sectlist and runtime sectlist */
-  matchs += revm_match_sht(file, file->sectlist, actual);
-  matchs += revm_match_sht(file, file->rsectlist, actual);
+  matchs += revm_match_sht(file->sectlist, actual);
+  matchs += revm_match_sht(file->rsectlist, actual);
   
   /* Now find matches in the symbol table .symtab */
   /* Last parameter says if we are in symtab or dynsymtab */
@@ -1021,12 +1049,46 @@ int             cmd_disasm()
   matchs += revm_match_symtab(file, file->secthash[ELFSH_SECTION_DYNSYM], actual, 1);
   
   /* Printing a warning message if we have no match */
-  if (!world.state.revm_quiet && !matchs)
+  if (!matchs)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No match within curfile", -1);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/**
+ * Display ASM code for a given function, or every functions of a section 
+ */
+int             cmd_disasm()
+{
+  int           keynbr;
+  char          **keys;
+  int           index;
+  elfshobj_t    *actual;
+  int		res;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  
+  /* First try to match in current file */
+  res = revm_match_find(world.curjob->curfile);
+  if (!res)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* Else try to find in other loaded objects */
+  keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+  for (index = 0; index < keynbr; index++)
     {
-      snprintf(logbuf, BUFSIZ - 1, " [E] No match for request %s\n\n", 
-	       actual->rname);
-      revm_output(logbuf);
+      actual = hash_get(&world.curjob->loaded, keys[index]);
+      res = revm_match_find(actual);
+      if (!res)
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
+  hash_free_keys(keys);
+
+  /* Else print a message */
+  revm_output(" [E] Unable to match within loaded files\n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

@@ -1722,8 +1722,8 @@ int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot);
 /* state.c */
 u_char		elfsh_is_static_mode(); 
 void		elfsh_set_static_mode();
-u_char		elfsh_is_debug_mode();
-void		elfsh_set_debug_mode();
+u_char		elfsh_is_runtime_mode();
+void		elfsh_set_runtime_mode();
 void		elfsh_set_mode(u_char mode);
 u_char		elfsh_get_mode();
 void		elfsh_toggle_mode();

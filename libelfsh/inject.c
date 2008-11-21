@@ -589,7 +589,7 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   /* -- replaced by a vector
 
 #if defined(KERNSH)
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       kernsh_writemem(phdr.p_vaddr, data, rsize);
     }

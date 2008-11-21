@@ -21,7 +21,7 @@ unsigned char *kernsh_hash_md5(unsigned long addr, int size)
   memset(buff, '\0', size);
   memset(digest, '\0', LIBKERNSH_HASH_MD5_SIZE);
 
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       elfsh_readmema(libkernshworld.root, addr, buff, size);
     }

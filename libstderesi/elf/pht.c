@@ -90,7 +90,7 @@ void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, eresi_Addr base)
 
       addr = phdr[index].p_vaddr;
       addr_end = phdr[index].p_vaddr + phdr[index].p_memsz;
-      if (elfsh_is_debug_mode())
+      if (elfsh_is_runtime_mode())
 	{
 	  addr_end += base;
 	  addr += base;

@@ -76,7 +76,7 @@ int		cmd_dolist()
 	    *nl = 0x00;
 	  c = (world.curjob->curfile == actual ? '*' : ' ');
 	  c2 = ((actual->linkmap || actual->rhdr.base) ? 'M' : ' ');
-	  if (elfsh_is_debug_mode())
+	  if (elfsh_is_runtime_mode())
 	    snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);
 	  else
 	    snprintf(optbuf, BUFSIZ, "%s", "");
@@ -115,7 +115,7 @@ int		cmd_dolist()
 	    *nl = 0x00;
 	  c = (world.curjob->curfile == actual ? '*' : ' ');
 	  c2 = (actual->linkmap ? 'L' : ' ');
-	  if (elfsh_is_debug_mode())
+	  if (elfsh_is_runtime_mode())
 	    snprintf(optbuf, BUFSIZ, "(" XFMT ")", actual->rhdr.base);
 	  else
 	    snprintf(optbuf, BUFSIZ, "%s", "");

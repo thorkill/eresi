@@ -289,7 +289,7 @@ static int      kedbg_main(int argc, char **argv)
   ret = revm_file_load(argv[3], 0, NULL);
   ASSERT(!ret);
   kedbg_post_load_register_vector();
-  elfsh_set_debug_mode();
+  elfsh_set_runtime_mode();
   e2dbg_presence_set();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;

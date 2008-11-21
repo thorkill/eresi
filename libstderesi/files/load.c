@@ -185,7 +185,7 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   
   /* We use a different dependences technique for mapped files 
      in the debugger. Just load dependences here for unmapped files */
-  if (!elfsh_is_debug_mode())
+  if (!elfsh_is_runtime_mode())
     revm_load_enumdep(new);
   
   /* Load EDFMT debug sections */
@@ -220,7 +220,7 @@ int		cmd_load()
 
   /* Make sure we are or not in the debugger */
   was_dynamic = 0;
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       was_dynamic = 1;
       elfsh_set_static_mode();
@@ -231,7 +231,7 @@ int		cmd_load()
   if (!expr || !expr->value)
     {
       if (was_dynamic)
-	elfsh_set_debug_mode();
+	elfsh_set_runtime_mode();
       world.state.revm_shared = 0;
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unknown file to load", (-1));
@@ -271,7 +271,7 @@ int		cmd_load()
   if (was_dynamic)
     {
       if (world.curjob->curfile && world.curjob->curfile->linkmap)
-	elfsh_set_debug_mode();
+	elfsh_set_runtime_mode();
       else 
 	revm_output("\n [!] Loaded file not present in linkmap"
 		  ", switching to STATIC mode\n\n");

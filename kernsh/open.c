@@ -121,7 +121,7 @@ int		cmd_openmem()
     }
   else 
     {
-      elfsh_set_debug_mode();
+      elfsh_set_runtime_mode();
     }
 
   /* Open memory */

@@ -254,7 +254,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
 			  "No parent section", NULL);
 
       /* handle dynamic case */
-      if (elfsh_is_debug_mode())
+      if (elfsh_is_runtime_mode())
 	value -= file->rhdr.base;
 
       if (offset)
@@ -286,7 +286,7 @@ char		*elfsh_reverse_dynsymbol(elfshobj_t	*file,
     }
 
   /* handle dynamic case */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     value -= file->rhdr.base;
 
   /* Else look in the table */

@@ -357,7 +357,7 @@ int		cmd_bp()
       
 	/* Supply a new breakpoint */
       case 1:
-	if (!elfsh_is_debug_mode())
+	if (!elfsh_is_runtime_mode())
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Not in dynamic or debugger mode", -1);
 	if (!str || !(*str))

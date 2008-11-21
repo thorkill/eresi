@@ -26,7 +26,7 @@ int		revm_doswitch(int nbr)
   world.curjob->curfile = actual;
   
   /* Switch to static mode if current file is not mapped */
-  if (elfsh_is_debug_mode() && !actual->linkmap)
+  if (elfsh_is_runtime_mode() && !actual->linkmap)
     elfsh_set_static_mode();
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

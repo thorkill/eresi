@@ -76,7 +76,7 @@ int		revm_setup(int ac, char **av,
       world.state.revm_side = side;
       revm_fifo_io(world.curjob);
       revm_buffer_reset(1);
-      elfsh_set_debug_mode();
+      elfsh_set_runtime_mode();
     }
   else if (mode == REVM_STATE_TRACER)
     {

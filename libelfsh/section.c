@@ -588,7 +588,7 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
 		      "Cannot get SHT", NULL);
 
   /* ET_DYN objects have a relative addressing inside the ELF file */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     value -= file->rhdr.base;
 
   /* Look in static sections */
@@ -602,7 +602,7 @@ elfshsect_t	*elfsh_get_parent_section(elfshobj_t	*file,
       }
 
   /* ... but if the sections are runtime injected, their address is absolute */
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     value += file->rhdr.base;
 
   /* Now look in runtime sections list */

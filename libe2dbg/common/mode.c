@@ -22,7 +22,7 @@ int		cmd_mode()
     {
       if (elfsh_is_static_mode())
 	param = "STATIC";
-      else if (elfsh_is_debug_mode())
+      else if (elfsh_is_runtime_mode())
 	param = "DYNAMIC";
       else
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -49,7 +49,7 @@ int		cmd_mode()
 				"Can't switch to dynamic"
 				" mode on not mapped file.", -1);
 	}
-      elfsh_set_debug_mode();
+      elfsh_set_runtime_mode();
       e2dbg_output(" [*] e2dbg is now in DYNAMIC mode\n\n"); 
     }
   else

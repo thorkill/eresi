@@ -41,7 +41,7 @@ eresi_Addr	 elfsh_runtime_map(elfsh_Phdr *segment)
 
 #if defined(KERNSH)
 
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       if (kernsh_alloc(segment->p_memsz, ((unsigned long *)&addr)) == -1)
 	{
@@ -171,14 +171,14 @@ int		elfsh_munprotect(elfshobj_t *file,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(KERNSH)
 
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
 #endif
 
-  if (!elfsh_is_debug_mode())
+  if (!elfsh_is_runtime_mode())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   sect = elfsh_get_parent_section(file, addr, NULL);
@@ -224,13 +224,13 @@ int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if defined(KERNSH)
   
-  if (elfsh_is_debug_mode())
+  if (elfsh_is_runtime_mode())
     {
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
 #endif
-  if (!elfsh_is_debug_mode())
+  if (!elfsh_is_runtime_mode())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   retval = mprotect((void *) (long) addr - (long) addr % getpagesize(), 
