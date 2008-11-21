@@ -283,10 +283,12 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_register_command();
   hash_init(&e2dbgworld.threads, "threads", 5, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp, "breakpoints", 51, ASPECT_TYPE_UNKNOW);
+  printf("HAAAAAAAAAAAAAAAAAAAA");
   kedbg_curthread_init();	
   e2dbg_setup_hooks();
   kedbg_register_vector();
   ret = revm_file_load(argv[3], 0, NULL);
+
   ASSERT(!ret);
   kedbg_post_load_register_vector();
   elfsh_set_runtime_mode();
@@ -296,6 +298,8 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_propagate_type();
 
 
+
+  
   if (!kedbg_file_is_kernel(world.curjob->curfile))
     {
       kedbg_run_to_entrypoint(world.curjob->curfile);
@@ -303,7 +307,26 @@ static int      kedbg_main(int argc, char **argv)
     }
   else
     {
+      elfshsect_t   *ksymtab;
+      elfshsect_t   *ksymtab_strings;
+      
+      ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab",
+					  NULL, NULL, NULL);
+      ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile,
+						  "__ksymtab_strings",
+						  NULL, NULL, NULL);
+      ASSERT(ksymtab_strings != NULL && ksymtab != NULL);
+      
+      elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM);
+      elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB);
+
+      elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index);
+      elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index);
+      
       world.curjob->curfile->rhdr.base = 0xc0000000;
+
+      fprintf(stderr, "DONNNNNNNNNNE ");
+      fflush(stderr);
     }
 
   revm_run(argc, argv);
@@ -337,7 +360,8 @@ int             main(int argc, char **argv)
   /* Why did it stop ? */
   gdbwrap_reason_halted(gdbwrap_current_get());
   kedbg_get_regvars_ia32();
-  
+
+
   kedbg_main(argc, argv);
   return 0;
 }
