@@ -131,11 +131,13 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			      "Unable to get DYNSYM by type", NULL);
 	}
-
-      newent->data = elfsh_load_section(file, newent->shdr);
-      if (newent->data == NULL) 
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to load DYNSYM", NULL);
+      if (newent->data == NULL)
+	{
+	  newent->data = elfsh_load_section(file, newent->shdr);
+	  if (newent->data == NULL) 
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to load DYNSYM", NULL);
+	}
       file->secthash[ELFSH_SECTION_DYNSYM] = newent;
       
       /* Endianize table */
@@ -146,12 +148,13 @@ void		*elfsh_get_dynsymtab(elfshobj_t *file, int *num)
       if (newent == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to get DYNSTR by index", NULL);
-
-      newent->data = elfsh_load_section(file, newent->shdr);
       if (newent->data == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to load DYNSTR", NULL);
-
+	{
+	  newent->data = elfsh_load_section(file, newent->shdr);
+	  if (newent->data == NULL)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Unable to load DYNSTR", NULL);
+	}
       file->secthash[ELFSH_SECTION_DYNSTR] = newent;
 
       /* Fixup the dynamic symbol table */
