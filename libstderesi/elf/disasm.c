@@ -980,6 +980,7 @@ int		revm_match_find(elfshobj_t *file)
   revmlist_t	*actual;
   revmexpr_t	*expr;
   int		matchs;
+  int		res;
   eresi_Addr	vaddr;
   int		err;
 
@@ -1040,13 +1041,21 @@ int		revm_match_find(elfshobj_t *file)
     }
 
   /* Try to match in the sectlist and runtime sectlist */
-  matchs += revm_match_sht(file->sectlist, actual);
-  matchs += revm_match_sht(file->rsectlist, actual);
-  
+  res = revm_match_sht(file->sectlist, actual);
+  if (res > 0)
+    matchs += res;
+  res = revm_match_sht(file->rsectlist, actual);
+  if (res > 0)
+    matchs += res;
+
   /* Now find matches in the symbol table .symtab */
   /* Last parameter says if we are in symtab or dynsymtab */
-  matchs += revm_match_symtab(file, file->secthash[ELFSH_SECTION_SYMTAB], actual, 0);
-  matchs += revm_match_symtab(file, file->secthash[ELFSH_SECTION_DYNSYM], actual, 1);
+  res = revm_match_symtab(file, file->secthash[ELFSH_SECTION_SYMTAB], actual, 0);
+  if (res > 0)
+    matchs += res;
+  res = revm_match_symtab(file, file->secthash[ELFSH_SECTION_DYNSYM], actual, 1);
+  if (res > 0)
+    matchs += res;
   
   /* Printing a warning message if we have no match */
   if (!matchs)

@@ -208,6 +208,20 @@ static void     kedbg_propagate_type(void)
 
 
 /**
+ * Load the BIOS map
+ */
+static void	kedbg_biosmap_load()
+{
+  elfshobj_t    *file;
+
+  file = elfsh_create_obj("BIOS", 0, 0x100000, EM_386, ET_EXEC, ELFDATA2LSB, ELFCLASS32);
+  world.curjob->curfile = file;
+  hash_add(&world.curjob->loaded, file->name, file);
+  file->loadtime = time(&file->loadtime);
+}
+
+
+/**
  * If the symbol __ksymtab is found in the file we are analyzing, then
  * we are analyzing a kernel.
  */
@@ -287,6 +301,7 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_curthread_init();	
   e2dbg_setup_hooks();
   kedbg_register_vector();
+
   ret = revm_file_load(argv[3], 0, NULL);
 
   ASSERT(!ret);
@@ -296,9 +311,6 @@ static int      kedbg_main(int argc, char **argv)
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
   kedbg_propagate_type();
-
-
-
   
   if (!kedbg_file_is_kernel(world.curjob->curfile))
     {
@@ -325,6 +337,9 @@ static int      kedbg_main(int argc, char **argv)
       
       world.curjob->curfile->rhdr.base = 0xc0000000;
 
+      // Load a map of the BIOS
+      kedbg_biosmap_load();
+
       fprintf(stderr, "DONNNNNNNNNNE ");
       fflush(stderr);
     }
@@ -339,14 +354,13 @@ int             main(int argc, char **argv)
 {
   int           fd;
 
+  /* Input checks */
   if (argc != 4)
     {
       printf(USAGE);
       return -1;
     }
-  
   fd = gdbwrap_simpleconnect(argv[1], atoi(argv[2]));
-
   if (fd == -1)
     {
       fprintf(stderr, ERROR_CONNECTION);
@@ -355,13 +369,13 @@ int             main(int argc, char **argv)
 
   /* Initialize and set the gdbwrap global variable. */
   gdbwrap_current_set(gdbwrap_init(fd));
+
   /* Let's say hello to the server, gdbstyle 8) */
   gdbwrap_hello(gdbwrap_current_get());
+
   /* Why did it stop ? */
   gdbwrap_reason_halted(gdbwrap_current_get());
   kedbg_get_regvars_ia32();
-
-
   kedbg_main(argc, argv);
   return 0;
 }

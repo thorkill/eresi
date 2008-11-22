@@ -75,6 +75,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   elfsh_set_encoding(hdr, enc);
   elfsh_set_class(hdr, clas);
   memcpy(hdr->e_ident, ELFMAG, strlen(ELFMAG));
+  file->hdr = hdr;
 
   /* Create sections table */
   maphdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC, 0, 
@@ -85,11 +86,11 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
 			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size, 
 			     symtabsz, 2, 0, 0, sizeof(elfsh_Sym));
 
-  strhdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_WRITE, 0, 
+  strhdr = elfsh_create_shdr(mapsz + symsz + 2, SHT_STRTAB, SHF_WRITE, 0, 
 			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz, 
 			     strsize, 1, 0, 0, 0);
 
-  shstrhdr = elfsh_create_shdr(0, SHT_STRTAB, SHF_WRITE, 0, 
+  shstrhdr = elfsh_create_shdr(mapsz + symsz + strsz + 3, SHT_STRTAB, SHF_WRITE, 0, 
 			       sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz + strsize, 
 			       strsize, 0, 0, 0, 0);
 
@@ -124,6 +125,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   symtab->prev = mapped;
   symtab->next = strtab;
   symtab->index = 1;
+  symtab->curend = sizeof(elfsh_Sym);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, symtab->data, sizeof(elfsh_Sym), NULL);
   mappedsym = elfsh_create_symbol(0, size, STT_SECTION, 0, 0, 0);
   memcpy(symtab->data, &mappedsym, sizeof(elfsh_Sym));
