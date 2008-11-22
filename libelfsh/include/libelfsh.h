@@ -1000,6 +1000,8 @@ elfshobj_t   	*elfsh_symbol_search(elfshobj_t *file, char *name);
 
 
 /* obj.c */
+elfshobj_t	*elfsh_create_obj(char *name, eresi_Addr start, u_int size, 
+				  elfsh_Half arch, elfsh_Half type, u_char enc, u_char clas);
 elfshobj_t	*elfsh_load_obj(char *name);
 void		elfsh_unload_obj(elfshobj_t *file);
 

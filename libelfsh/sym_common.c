@@ -331,7 +331,7 @@ elfsh_Sym	elfsh_create_symbol(eresi_Addr value, int size, int type,
   enew.st_info  = ELFSH_ST_INFO(binding, type);
   enew.st_other = vis;
   enew.st_shndx = sctidx;
-	enew.st_name  = NULL;
+  enew.st_name  = NULL;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
 

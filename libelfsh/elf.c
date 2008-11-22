@@ -552,7 +552,6 @@ int		elfsh_get_class(elfsh_Ehdr *hdr)
 int		elfsh_set_class(elfsh_Ehdr *hdr, eresi_Addr eclass)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!hdr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", -1);
@@ -626,21 +625,24 @@ int elfsh_check_hdr_type(elfshobj_t *file)
  * @param file
  * @return 
  */
+/*
 int elfsh_check_hdr_machine(elfshobj_t *file) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+   // /usr/include/elf.h e_machine may be > 18. 
+   // disabling this check for the moment.
 
-  /** /usr/include/elf.h e_machine may be > 18. 
-   *  disabling this check for the moment.
    if (file->hdr->e_machine > 16) {
    file->hdr->e_machine = ET_NONE;
    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
    "file->hdr->e_machine is not valid", NULL);
    }
-   */
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+*/
+
+
 
 /**
  * Sanity check of version value
@@ -653,11 +655,11 @@ int elfsh_check_hdr_version(elfshobj_t *file)
 
   if (file->hdr->e_version != EV_CURRENT) 
     {
-    file->hdr->e_version = EV_CURRENT;
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "file->hdr->e_version is not valid", NULL);
+      file->hdr->e_version = EV_CURRENT;
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "file->hdr->e_version is not valid", NULL);
     }
-
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -708,7 +710,7 @@ int		elfsh_check_hdr(elfshobj_t *file)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   elfsh_check_hdr_type(file);
-  elfsh_check_hdr_machine(file);
+  //elfsh_check_hdr_machine(file);
   elfsh_check_hdr_version(file);
   elfsh_check_hdr_phoff(file);
   elfsh_check_hdr_shoff(file);
@@ -812,10 +814,9 @@ int		elfsh_dynamic_file(elfshobj_t *file)
  * @param file
  * @return
  */
-int elfsh_get_core_notes(elfshobj_t *file)
+int		elfsh_get_core_notes(elfshobj_t *file)
 {
   elfsh_Nhdr  nhdr;
-
   int         i, offset, filesz, 
 	      j, namesz, descsz;
   int         pos;
