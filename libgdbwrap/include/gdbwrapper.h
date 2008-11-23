@@ -62,6 +62,7 @@ char             *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
 void             *gdbwrap_writememory(la32 linaddr, void *value,
 				      unsigned bytes, gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+void             gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);

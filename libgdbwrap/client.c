@@ -132,7 +132,8 @@ int main( int argc, char **argv )
 	gdbwrap_signal(0x1, desc);
       else if(!strncmp("muuu", buffer, 4))
 	gdbwrap_writereg2(6, 0x12345678, desc);
-	     
+      else if(!strncmp("ship", buffer, 4))
+	gdbwrap_shipallreg(desc);
       else if(!strncmp("mem", buffer, 3))
 	{
 	  char *c;

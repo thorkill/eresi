@@ -95,9 +95,12 @@
 
 #endif
 
-#ifndef __RELEASE
+#ifndef __RELEASE__
 #define ASSERT(_x)      assert(_x)
 #define NOT_REACHED()   ASSERT(FALSE)
+#else
+#define ASSERT(_x)      
+#define NOT_REACHED()   
 #endif
 #define NOT_USED(_x)    _x = _x
 

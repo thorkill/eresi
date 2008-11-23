@@ -268,6 +268,9 @@ do				\
 }				\
 while (0)
 
+#define PROFILER_INQ()				\
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__)
+
 #define	PROFILER_IN(file, fun, lin)		\
 int profileme = profiler_depth;			\
 do {						\
@@ -276,6 +279,9 @@ do {						\
   profiler_out(file, (char*) fun, lin);	        \
   profiler_incdepth();	  }			\
 } while (0)
+
+#define	PROFILER_OUTQ()				\
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__)
 
 #define	PROFILER_OUT(file, func, line)		\
 do {						\
@@ -294,6 +300,9 @@ do {						\
   profiler_out(file, (char*) func, line); }     \
   return;		  			\
 } while (0)
+
+#define	PROFILER_ROUTQ(ret)			\
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret)
 
 #define	PROFILER_ROUT(file, f, l, ret)		\
 do {						\

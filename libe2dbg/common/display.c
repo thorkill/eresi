@@ -128,7 +128,7 @@ int		cmd_display()
     {
       e2dbg_display_print();
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  }
+    }
   
   /* Add a global display */
   if (!revm_isnbr(world.curjob->curcmd->param[0]))

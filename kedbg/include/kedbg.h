@@ -13,7 +13,7 @@
 #define  BPCODE            0xcc
 
 /* Debug flags */
-#define __DEBUG_KEDBG__	   TRUE
+#define __DEBUG_KEDBG__	   FALSE
 
 #if __DEBUG_KEDBG__
 #define DEBUGMSG(_command)				\

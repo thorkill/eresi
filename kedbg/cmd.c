@@ -28,7 +28,8 @@ int             cmd_com1(void)
   fct(NULL);
   fprintf(stderr, "Value --: %d - %d\n", world.curjob->curfile->hostype,
 	  world.curjob->curfile->iotype);
-  kedbg_get_regvars_ia32();
+
+  /*   kedbg_get_regvars_ia32(); */
   //  fprintf(stderr, "YOUPLA: %#x\n", *kedbg_getpc_ia32());
   return 0;
 }
@@ -38,7 +39,8 @@ int             cmd_kedbg_dump_regs(void)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   e2dbg_output(" .:: Registers ::. \n\n");
-  e2dbg_setregs();
+  //  gdbwrap_readgenreg(loc);
+  kedbg_set_regvars_ia32();
   e2dbg_printregs();
   e2dbg_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
@@ -55,7 +57,12 @@ int             cmd_kedbgcont(void)
   int           off;
   uint8_t       eip_pos;
 
-  // PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  kedbg_set_regvars_ia32();
+  gdbwrap_shipallreg(loc);
+
+  revm_output("[*] Continuing process\n");
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e2dbgworld.curthread->step)
     {
       gdbwrap_continue(loc);
@@ -83,24 +90,24 @@ int             cmd_kedbgcont(void)
       else
 	printf("The value returned was: %d- %#x \n",
 	       gdbwrap_lastsignal(loc), loc->reg32.eip);
+      
+      printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip,
+	     revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
     }
     else
     {
       gdbwrap_stepi(loc);
+      // TODO
+      //      revm_instr_display(-1, 0, loc->reg32.eip, &off
     }
-
-  printf("eip: %#x (%s) ", loc->reg32.eip,
-	 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
-  printf("offset: %#x\n", off);
 
   if (!gdbwrap_is_active(loc))
     cmd_quit();
 
-  return 0; //REVM_SCRIPT_CONTINUE;
-
+  kedbg_get_regvars_ia32();
   /* Does not seem to be working */
   
-  //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
+  PROFILER_ROUTQ(0);//REVM_SCRIPT_CONTINUE);
 }
 
 

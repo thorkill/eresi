@@ -214,10 +214,16 @@ static char          *gdbwrap_make_message(const char *query,
   /* Sometimes C sucks... Basic source and destination checking. We do
      not check the overlapping tho.*/
   if (strlen(query) < max_query_size && &*query != &*desc->packet)
-    ASSERT(snprintf(desc->packet, desc->max_packet_size, "%s%s%s%.2x",
-		    GDBWRAP_BEGIN_PACKET, query, GDBWRAP_END_PACKET, checksum) > 0);
+    {
+      u_char ret;
+      ret = snprintf(desc->packet, desc->max_packet_size, "%s%s%s%.2x",
+		     GDBWRAP_BEGIN_PACKET, query, GDBWRAP_END_PACKET, checksum);
+      ASSERT(ret > 0);
+    }
   else
-    ASSERT(FALSE);
+    {
+      ASSERT(FALSE);
+    }
 
   return desc->packet;
 }
@@ -366,7 +372,10 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 	return gdbwrap_run_length_decode(desc->packet, desc->packet,
 					 desc->max_packet_size);
       }
-    else ASSERT(FALSE);
+    else
+      {
+	ASSERT(FALSE);
+      }
   }
   else desc->is_active = FALSE;
   
@@ -502,8 +511,6 @@ void                gdbwrap_reason_halted(gdbwrap_t *desc)
   char              *received;
 
   received = gdbwrap_send_data(GDBWRAP_WHY_HALTED, desc);
-  printf("\n\nReceived why halted: %s\n", received);
-  fflush(stdout);
   if (gdbwrap_is_active(desc))
     gdbwrap_populate_reg(received, desc);
   else
@@ -544,7 +551,6 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   if (gdbwrap_is_active(desc))
     {
       rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
-      printf("Message received from the cont: %s\n", rec);
       gdbwrap_populate_reg(rec, desc);
     }
 }
@@ -620,6 +626,10 @@ char                 *gdbwrap_own_command(char *command,
 }
 
 
+/**
+ * Write a specific register. This command seems not to be supported
+ * by the gdbserver. See gdbwrap_writereg2.
+ */
 void                 gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc)
 {
   char               regpacket[50];
@@ -636,7 +646,6 @@ void                 gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc)
   gdbwrap_gdbreg32   *reg;
   unsigned           offset;
   char               locreg[700];
-  
 
   reg = gdbwrap_readgenreg(desc);
   ret = gdbwrap_lastmsg(desc);
@@ -644,14 +653,40 @@ void                 gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc)
 
   snprintf(locreg, sizeof(locreg), "%08x", gdbwrap_little_endian(val));
   memcpy(ret + offset, locreg, 2 * sizeof(ureg32));
-  snprintf(locreg, sizeof(locreg), "%s%s",
-	   GDBWRAP_WGENPURPREG, ret);
+  snprintf(locreg, sizeof(locreg), "%s%s", GDBWRAP_WGENPURPREG, ret);
   gdbwrap_send_data(locreg, desc);
-  
 }
 
 
-/*
+/**
+ * Ship all the registers to the server in only 1 query. This is used
+ * when modifying multiple registers at once for example.
+ */
+void                 gdbwrap_shipallreg(gdbwrap_t *desc)
+{
+  gdbwrap_gdbreg32   savedregs;
+  char               *ret;
+  gdbwrap_gdbreg32   *reg;
+  char               locreg[700];
+  uint8_t            i;
+
+  memcpy(&savedregs, &desc->reg32, sizeof(gdbwrap_gdbreg32));
+
+  reg = gdbwrap_readgenreg(desc);
+  ret = gdbwrap_lastmsg(desc);
+
+  /* We modify the 9 GPR only and we copy the rest from the gpr
+     request. */
+  for (i = 0; i < 9; i++)
+    snprintf(locreg + i * 2 * sizeof(ureg32), 2 * sizeof(ureg32) + 1,
+	     "%08x", gdbwrap_little_endian(*(&savedregs.eax + i)));
+  memcpy(ret, locreg, strlen(locreg));
+  snprintf(locreg, sizeof(locreg), "%s%s", GDBWRAP_WGENPURPREG, ret);
+  gdbwrap_send_data(locreg, desc);
+}
+
+
+/**
  * Here's the format of a signal:
  *
  * $vCont;C<signum>[:process_pid]#<checksum>
@@ -660,7 +695,6 @@ void                 gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc)
  * process_pid is omited, then we apply to the current process
  * (default behavior).
  */
- 
 void                 gdbwrap_signal(int signal, gdbwrap_t *desc)
  {
    char              *rec;
