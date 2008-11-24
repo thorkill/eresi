@@ -346,9 +346,7 @@ char		*revm_basename(char *str)
   char		*ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  ret = NULL;
-  cur = str;
+  ret = cur = str;
   while ((cur = strchr(cur, '/')))
     if (!*(cur + 1))
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No basename", (NULL));
