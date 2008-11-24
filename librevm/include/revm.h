@@ -653,6 +653,7 @@ elfshobj_t	*revm_run(int ac, char **av);
 int		revm_config(char *config);
 void		revm_postexec(int retval);
 void		revm_cleanup();
+void		revm_clean();
 
 /* Scripting flow functions */
 int		revm_execscript();

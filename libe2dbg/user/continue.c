@@ -17,7 +17,7 @@ void		e2dbg_start_proc()
   if (e2dbgworld.curthread && 
       e2dbgworld.curthread->count == E2DBG_BREAK_FINISHED)
     e2dbg_thread_contall();
-
+  
 #if __DEBUG_THREADS_
   else if (!e2dbgworld.curthread)
     e2dbg_output(" [*] e2dbg_start_proc -NOT- doing CONTALL"

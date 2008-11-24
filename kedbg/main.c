@@ -111,6 +111,8 @@ static int	kedbg_curthread_init(void)
   hash_add(&e2dbgworld.threads, key, new);
   e2dbgworld.curthread = new;
   e2dbgworld.threadnbr = 1;
+  e2dbgworld.curthread->stacksize = 0xffffffff;
+  
   //  e2dbg_stack_get(new);
   /* Let's put the stack @ 0 for now... */
   new->stackaddr = 0;
@@ -334,8 +336,6 @@ static int      kedbg_main(int argc, char **argv)
       elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index);
       elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index);
       
-      world.curjob->curfile->rhdr.base = 0xc0000000;
-
       // Load a map of the BIOS
       kedbg_biosmap_load();
 
