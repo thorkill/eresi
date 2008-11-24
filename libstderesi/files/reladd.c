@@ -25,7 +25,7 @@ int		cmd_relinject()
   /* Check to avoid non-runtime (static) injection from e2bdg the debugger 
      that would desynchronize the memory perspective of the program. 
      The debugger is not supposed to do that, it is a job for elfsh */
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
       elfsh_is_static_mode())
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "E2dbg must inject in memory, switch to dynamic mode.", -1);

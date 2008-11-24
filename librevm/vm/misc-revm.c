@@ -34,7 +34,7 @@ void	revm_create_default_prompt(char *name, u_int size)
   snprintf(name, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
 	   revm_colorget("%s", "pspecial", "("),
-	   (world.state.revm_mode == REVM_STATE_DEBUGGER ?
+	   (world.state.revm_mode == REVM_STATE_EMBEDDED ?
 	    revm_colorget("%s", "psname" , E2DBG_ARGV0)    :
 	    revm_colorget("%s", "psname" , ELFSH_SNAME)),
 	   revm_colorget("%s", "pspecial", "-"),
@@ -55,7 +55,7 @@ void	revm_create_default_prompt(char *name, u_int size)
 char	*revm_get_prompt()
 {
   if (world.state.revm_mode == REVM_STATE_INTERACT ||
-      world.state.revm_mode == REVM_STATE_DEBUGGER)
+      world.state.revm_mode == REVM_STATE_EMBEDDED)
     {
       /* Setup prompt only once */
       if (prompt_token_setup == NULL)
@@ -86,7 +86,7 @@ char		*revm_modename_get()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED)
     mode = E2DBG_NAME;
   else
     mode = ELFSH_NAME;

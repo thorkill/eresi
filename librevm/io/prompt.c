@@ -35,7 +35,7 @@ void	revm_create_default_prompt(char *name, u_int size)
   snprintf(name, size - 1,
 	   "%s%s%s%s%s%s%s%s%s%s%s ",
 	   revm_colorget("%s", "pspecial", "("),
-	   (world.state.revm_mode == REVM_STATE_DEBUGGER ?
+	   (world.state.revm_mode == REVM_STATE_EMBEDDED ?
 	    revm_colorget("%s", "psname" , E2DBG_ARGV0)    :
 	    revm_colorget("%s", "psname" , REVM_NAME)),
 	   revm_colorget("%s", "pspecial", "-"),
@@ -57,7 +57,7 @@ void	revm_create_default_prompt(char *name, u_int size)
 char*	revm_get_prompt()
 {
   if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
-      world.state.revm_mode == REVM_STATE_DEBUGGER)
+      world.state.revm_mode == REVM_STATE_EMBEDDED)
     {
       /* Setup prompt only once */
       if (prompt_token_setup == NULL)
@@ -91,7 +91,7 @@ int		revm_display_prompt()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   buf = ((world.state.revm_mode == REVM_STATE_INTERACTIVE ||
-	  world.state.revm_mode == REVM_STATE_DEBUGGER ||
+	  world.state.revm_mode == REVM_STATE_EMBEDDED ||
 	  (world.state.revm_net && world.curjob->ws.io.type != REVM_IO_STD)) ?
 	 revm_get_prompt() : "");
   revm_output(buf);

@@ -39,7 +39,7 @@ int		revm_loop(int argc, char **argv)
 
 	    /* If the FIFO does not exist anymore, 
 	       the server has quit, so we quit too */
-	    if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+	    if (world.state.revm_mode == REVM_STATE_EMBEDDED && 
 		(access(REVM_FIFO_S2C, F_OK) < 0 || 
 		 access(REVM_FIFO_C2S, F_OK) < 0))
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);	      
@@ -48,7 +48,7 @@ int		revm_loop(int argc, char **argv)
 	/* Take a line, execute old command if void line */
 	argv = revm_input(&argc, NULL);
 	if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
-	    world.state.revm_mode == REVM_STATE_DEBUGGER    ||
+	    world.state.revm_mode == REVM_STATE_EMBEDDED    ||
 	    world.state.revm_mode == REVM_STATE_SCRIPT      ||
 	    world.state.revm_net)
 	  {
@@ -64,7 +64,7 @@ int		revm_loop(int argc, char **argv)
 	    revm_output("\n");
 
 	    /* when debugging -> back to main program */
-	    if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+	    if (world.state.revm_mode == REVM_STATE_EMBEDDED)
 	      {
 		revm_callback_handler_remove();
 		revm_cleanup();
@@ -89,7 +89,7 @@ int		revm_loop(int argc, char **argv)
 	  {
 	    XFREE(__FILE__, __FUNCTION__, __LINE__, argv);
 	    if (world.state.revm_mode != REVM_STATE_INTERACTIVE &&
-		world.state.revm_mode != REVM_STATE_DEBUGGER)
+		world.state.revm_mode != REVM_STATE_EMBEDDED)
 	      goto end;
 	  }
 	else if (!world.state.revm_net)
@@ -164,10 +164,6 @@ int		revm_execscript()
     {
       cur = world.context.curcmd;
       world.curjob->curcmd = cur;
-      
-      //fprintf(stderr, "Restored curcmd (%s) after CONTINUE \n", cur->name);
-      //sleep(1);
-
     }
   else
     cur = world.curjob->recur[world.curjob->curscope].script;
@@ -220,7 +216,7 @@ int		revm_execscript()
 
 	}
       else
-	 revm_error("Lazy evaluation failed for command", cur->param[0]);
+	 revm_error("Unable to find command", cur->param[0]);
 
       /* Current instruction modified the script control flow ? */
       if (cur == world.curjob->curcmd)
@@ -278,7 +274,6 @@ int		revm_execscript()
  */
 int		revm_execmd()
 {
-  //revmargv_t	*next;
   revmjob_t	*curjob;
   revmargv_t	*cur;
   int		err;

@@ -69,7 +69,7 @@ int		revm_setup(int ac, char **av,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Detect the mode we are running in */
-  if (mode == REVM_STATE_DEBUGGER)
+  if (mode == REVM_STATE_EMBEDDED)
     {
       /* Set the mode, side, and IO of the debugger */
       world.state.revm_mode = mode;
@@ -210,7 +210,7 @@ elfshobj_t	*revm_run(int ac, char **av)
 {
 
   /* Do not handle signals in debugger mode */
-  if (world.state.revm_mode != REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode != REVM_STATE_EMBEDDED)
     {
       signal(SIGQUIT, SIG_IGN);
       signal(SIGTERM, SIG_IGN);

@@ -76,7 +76,7 @@ int             revm_getmaxfd()
       break;
     }
 
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER && fd > ret)
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED && fd > ret)
     return (fd);
   return (ret);
 }
@@ -142,7 +142,7 @@ int		revm_prepare_select(fd_set *sel_sockets)
     }
 
   /* Also set the debugger fifo if we are in debugger mode */
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED)
     {
       if (world.state.revm_side == REVM_SIDE_CLIENT)
 	FD_SET(world.fifo_s2c, sel_sockets);
@@ -242,7 +242,7 @@ int			revm_preselect_prompt()
 	      /* Do not display the prompt for the client side 
 		 This part can't use any READLN stuff because
 		 we always be on server */
-	      if (!(world.state.revm_mode == REVM_STATE_DEBUGGER &&
+	      if (!(world.state.revm_mode == REVM_STATE_EMBEDDED &&
 		    world.state.revm_side == REVM_SIDE_CLIENT))
 		revm_display_prompt();
 	    }
@@ -338,7 +338,7 @@ int                     revm_select()
 	  
       /* If the event appeared on the debugger FIFO, 
 	 change the input file descriptor for it */
-      if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+      if (world.state.revm_mode == REVM_STATE_EMBEDDED)
 	{
 	  fifofd = (world.state.revm_side == REVM_SIDE_CLIENT ?
 		    world.fifo_s2c : world.fifo_c2s);
@@ -349,10 +349,10 @@ int                     revm_select()
 	      world.curjob->ws.io.input = revm_fifoinput;
 	      
 #if __DEBUG_NETWORK__
-	      if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+	      if (world.state.revm_mode == REVM_STATE_EMBEDDED && 
 		  world.state.revm_side == REVM_SIDE_CLIENT)
 		fprintf(stderr, "(client) Event appeared on fifo \n");
-	      else if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+	      else if (world.state.revm_mode == REVM_STATE_EMBEDDED && 
 		       world.state.revm_side == REVM_SIDE_SERVER)
 		fprintf(stderr, "(server) Event appeared on fifo \n");
 #endif

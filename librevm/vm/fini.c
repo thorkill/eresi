@@ -9,13 +9,18 @@
 #include "revm.h"
 
 
+/** Clean scripting context */
+void		revm_clean()
+{
+  world.curjob->recur[world.curjob->curscope].script = NULL;
+  world.curjob->recur[world.curjob->curscope].lstcmd = NULL;
+}
 
 /* Some REVM context cleanup when coming back from script to interactive mode */
 void		revm_cleanup()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  world.curjob->recur[world.curjob->curscope].script = NULL;
-  world.curjob->recur[world.curjob->curscope].lstcmd = NULL;
+  revm_clean();
   revm_conditional_rlquit();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

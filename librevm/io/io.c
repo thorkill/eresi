@@ -25,7 +25,7 @@ int		revm_flush()
 
   /* Cache output only in IMODE/DEBUGGER mode */
   if (world.state.revm_mode != REVM_STATE_INTERACTIVE &&
-      world.state.revm_mode != REVM_STATE_DEBUGGER)
+      world.state.revm_mode != REVM_STATE_EMBEDDED)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   revm_screen_getsize(&lines, &cols);

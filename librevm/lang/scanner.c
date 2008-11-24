@@ -298,7 +298,7 @@ char		**revm_input(int *argc, char *available_line)
 
   /* If we are in the client part of the debugger, 
      we have a special behavior */
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER && 
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED && 
       world.state.revm_side == REVM_SIDE_CLIENT)
     {
       write(world.fifo_c2s, buf, len);

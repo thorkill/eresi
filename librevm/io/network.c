@@ -1130,7 +1130,7 @@ int		revm_clean_jobs()
  */
 int		revm_getmaxfd() 
 { 
-  if (world.state.revm_mode != REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode != REVM_STATE_EMBEDDED)
     return (0);
   if (world.state.revm_side == REVM_SIDE_CLIENT)
     return (world.fifo_s2c); 

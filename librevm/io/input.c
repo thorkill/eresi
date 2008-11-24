@@ -43,7 +43,7 @@ char		*revm_getln()
 	  revm_log("\n");
 	  revm_buffer_free(buf); 
 	  if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
-	      world.state.revm_mode == REVM_STATE_DEBUGGER)
+	      world.state.revm_mode == REVM_STATE_EMBEDDED)
 	    NOPROFILER_ROUT((char*) REVM_INPUT_VOID);
 
           buf = NULL;
@@ -97,7 +97,7 @@ char		*revm_read_input()
 		wantmore = 0;
 		continue;
 	      }
-	    if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
+	    if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
 		world.state.revm_side == REVM_SIDE_CLIENT)
 	      tmpbuf[len + 1] = 0x00;
 	    else

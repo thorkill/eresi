@@ -76,7 +76,7 @@ int		revm_output(char *str)
 
   /* No -- more -- in some modes */
   if ((world.state.revm_mode != REVM_STATE_INTERACTIVE &&
-       world.state.revm_mode != REVM_STATE_DEBUGGER)
+       world.state.revm_mode != REVM_STATE_EMBEDDED)
       || world.curjob->ws.io.type == REVM_IO_DUMP
       || !world.curjob->ws.io.outcache.lines
       || world.curjob->curscope

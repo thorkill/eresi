@@ -149,7 +149,7 @@ void		readln_completion_install(char mode, char side)
   rl_attempted_completion_function = readln_completion;
 
   str = "";
-  if (mode != REVM_STATE_DEBUGGER && mode != REVM_STATE_CMDLINE 
+  if (mode != REVM_STATE_EMBEDDED && mode != REVM_STATE_CMDLINE 
       && mode != REVM_STATE_SCRIPT && mode != REVM_STATE_TRACER)
     str = revm_get_prompt();
 
@@ -157,7 +157,7 @@ void		readln_completion_install(char mode, char side)
 
   /* We setup prompt after installation because we
    don't want it directly */
-  if (mode == REVM_STATE_DEBUGGER && side == REVM_SIDE_CLIENT)
+  if (mode == REVM_STATE_EMBEDDED && side == REVM_SIDE_CLIENT)
     {
       rl_on_new_line_with_prompt();
       rl_prompt = revm_get_prompt();
@@ -536,7 +536,7 @@ void		readln_history_dump(char mode, char *history)
 {
   char buff[BUFSIZ];
 
-  if (mode == REVM_STATE_INTERACTIVE || mode == REVM_STATE_DEBUGGER)
+  if (mode == REVM_STATE_INTERACTIVE || mode == REVM_STATE_EMBEDDED)
     {
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff), "[*] Writting history (%s) \n", history);
@@ -552,7 +552,7 @@ void		readln_history_dump(char mode, char *history)
  */
 void		readln_terminal_prepare(char mode)
 {
-  if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)
+  if (mode == REVM_STATE_EMBEDDED || mode == REVM_STATE_INTERACTIVE)
     rl_prep_terminal(1);
 }
 
@@ -561,7 +561,7 @@ void		readln_terminal_prepare(char mode)
  */
 void		readln_terminal_unprepare(char mode)
 {
-  if (mode == REVM_STATE_DEBUGGER || mode == REVM_STATE_INTERACTIVE)
+  if (mode == REVM_STATE_EMBEDDED || mode == REVM_STATE_INTERACTIVE)
     rl_deprep_terminal();
 }
 

@@ -55,7 +55,7 @@ int		revm_source(char **params)
 
   /* Switch to debugger script mode when sourcing */
   /* This does not include execution of .eresirc in the debugger */
-  if (!strstr(str, REVM_CONFIG) && world.state.revm_mode == REVM_STATE_DEBUGGER)
+  if (!strstr(str, REVM_CONFIG) && world.state.revm_mode == REVM_STATE_EMBEDDED)
     world.state.revm_sourcing = 1;
 
   /* Open the script file and pass its parameters */

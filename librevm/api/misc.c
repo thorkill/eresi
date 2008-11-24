@@ -20,7 +20,7 @@ char		*revm_modename_get()
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER)
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED)
     mode = E2DBG_NAME;
   else
     mode = REVM_NAME;

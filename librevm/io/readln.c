@@ -221,7 +221,7 @@ void		revm_prompt_log()
 void		revm_conditional_rlquit()
 {
 #if defined(USE_READLN)
-  if (!(world.state.revm_mode == REVM_STATE_DEBUGGER
+  if (!(world.state.revm_mode == REVM_STATE_EMBEDDED
 	&& world.state.revm_side == REVM_SIDE_SERVER))
     readln_quit(world.state.revm_mode, (char *)config_get_data(ERESI_CONFIG_HISTORY));
 #endif
@@ -263,7 +263,7 @@ int		revm_is_stdinput()
 	{
 	  /* On the client side, we consider that the prompt is already
 	     returned by the server */
-	  if (world.state.revm_mode == REVM_STATE_DEBUGGER &&
+	  if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
 	      world.state.revm_side == REVM_SIDE_CLIENT)
 	    {
 	      rl_on_new_line_with_prompt();

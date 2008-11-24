@@ -90,7 +90,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
 #endif
 
   if (av && ac)
-    revm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
+    revm_setup(ac, av, REVM_STATE_EMBEDDED, REVM_SIDE_SERVER);
 
 #if __DEBUG_E2DBG__
   fprintf(stderr, "[e2dbg_entry] CHECKPOINT 4\n");
@@ -114,7 +114,7 @@ int		e2dbg_entry(e2dbgparams_t *params)
   fprintf(stderr, "[e2dbg_entry] CHECKPOINT 5\n");
 #endif
 
-  if (world.state.revm_mode == REVM_STATE_DEBUGGER && av && 
+  if (world.state.revm_mode == REVM_STATE_EMBEDDED && av && 
       e2dbg_setup(av[1]) < 0)
     {
       profiler_error();

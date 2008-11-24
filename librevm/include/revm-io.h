@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.82"
-#define	REVM_RELEASE	"a6"
+#define	REVM_RELEASE	"a7"
 #define REVM_EDITION	"dev"
 
 /* Unused, feel free to try it, its awesome */
@@ -239,7 +239,7 @@ typedef struct        s_state
 #define       REVM_STATE_CMDLINE	0
 #define       REVM_STATE_SCRIPT		1
 #define       REVM_STATE_INTERACTIVE    2
-#define       REVM_STATE_DEBUGGER	3
+#define       REVM_STATE_EMBEDDED	3
 #define	      REVM_STATE_TRACER		4
   char                revm_mode;        /*! Command line, scripting, interactive, debugger ? */
 #define	      REVM_SIDE_CLIENT		0

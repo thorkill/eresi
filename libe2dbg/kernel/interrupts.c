@@ -1513,7 +1513,7 @@ int ke2dbg_init(void)
   /* Initialize REVM interpreter */
   e2dbg_kpresence_set(1);
   revm_init();
-  revm_setup(0, NULL, REVM_STATE_DEBUGGER, REVM_SIDE_SERVER);
+  revm_setup(0, NULL, REVM_STATE_EMBEDDED, REVM_SIDE_SERVER);
   revm_config(KE2DBG_CONFIG);
   ke2dbg_commands_install();
   return (dwRetVal);

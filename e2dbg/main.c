@@ -173,7 +173,7 @@ int		e2dbg_main(int ac, char **av)
   pid_t		pid;
   int		status;
 
-  revm_setup(ac, av, REVM_STATE_DEBUGGER, REVM_SIDE_CLIENT);
+  revm_setup(ac, av, REVM_STATE_EMBEDDED, REVM_SIDE_CLIENT);
   revm_config(E2DBG_CONFIG);
   pid = fork();
   if (!pid)

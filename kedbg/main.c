@@ -288,7 +288,7 @@ static int      kedbg_main(int argc, char **argv)
   int           ret;
    
   /* The "1" stands for interactive. */
-  revm_setup(1, argv, REVM_STATE_CMDLINE, REVM_SIDE_CLIENT);
+  revm_setup(1, argv, REVM_STATE_INTERACTIVE, REVM_SIDE_CLIENT);
   revm_config(".kedbgrc");
   revm_set_prompt(kedbg_create_prompt);
 

@@ -77,6 +77,9 @@ int             cmd_kedbgcont(void)
 	  bp = e2dbg_breakpoint_lookup(addr);
 	  if (bp != NULL)
 	    {
+	      revm_clean();
+	      e2dbg_display(bp->cmd, bp->cmdnbr);
+
 	      c = BPCODE;
 	      eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
 	      //	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
@@ -96,18 +99,18 @@ int             cmd_kedbgcont(void)
     }
     else
     {
-      gdbwrap_stepi(loc);
+      gdbwrap_stepi(loc);      
+      revm_clean();
+      e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
       // TODO
-      //      revm_instr_display(-1, 0, loc->reg32.eip, &off
+      //revm_instr_display(-1, 0, loc->reg32.eip, &off
     }
 
   if (!gdbwrap_is_active(loc))
     cmd_quit();
 
   kedbg_get_regvars_ia32();
-  /* Does not seem to be working */
-  
-  PROFILER_ROUTQ(0);//REVM_SCRIPT_CONTINUE);
+  PROFILER_ROUTQ(0);
 }
 
 

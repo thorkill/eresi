@@ -81,16 +81,16 @@ int		e2dbg_display(char **cmd, u_int nbr)
   char		buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   for (idx = 0; idx < nbr; idx++)
     {
-      fprintf(stderr, "executing display entry %u \n", idx);      
       if (cmd[idx])
 	{
 	  
-	  snprintf(buf, BUFSIZ, 
-		   "\t .:: Display %u [%s] result ::. \n", 
-		   idx, cmd[idx]);
-	  e2dbg_output(buf);
+	  //snprintf(buf, BUFSIZ, 
+	  //   "\t .:: Display %u [%s] result ::. \n", 
+	  //   idx, cmd[idx]);
+	  //e2dbg_output(buf);
 	  
 	  /* Register displayed command in the script control flow */
 	  str = strdup(cmd[idx]);
