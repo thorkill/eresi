@@ -89,16 +89,19 @@ int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj)
 mjrcontext_t	*mjr_create_context(elfshobj_t *obj) 
 {
  mjrcontext_t	*ctx;
+ char           *lname;
 
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
- XALLOC(__FILE__, __FUNCTION__, __LINE__,ctx, sizeof(mjrcontext_t), NULL);
+ XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
  hash_init(&ctx->funchash , "functions", mjrHashVerySmall, ASPECT_TYPE_FUNC);
  hash_init(&ctx->blkhash  , "blocks"   , mjrHashMedium    , ASPECT_TYPE_BLOC);
  hash_init(&ctx->linkhash  , "links"    , mjrHashMedium    , ASPECT_TYPE_LINK);
  XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->func_stack, sizeof(list_t), NULL);
- elist_init(ctx->func_stack, "funcpath", ASPECT_TYPE_FUNC);
+ XALLOC(__FILE__, __FUNCTION__, __LINE__, lname, BSIZE_SMALL, NULL);
+ snprintf(lname, BSIZE_SMALL, "%s"AFMT, (char *) "funcpath_", obj->id);
+ elist_init(ctx->func_stack, lname, ASPECT_TYPE_FUNC);
  ctx->cntnrs_size = MJR_CNTNRS_INCREMENT;
  ctx->next_id = 1;
  ctx->block_btree = NULL;
