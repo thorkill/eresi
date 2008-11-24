@@ -419,8 +419,10 @@ void	free(void *a)
  */
 void	wait4exit(void *a)
 {
-  fprintf(stderr, "\n [*] Debuggee wait4exit called \n");
-  while (!e2dbgworld.exited)
+  int	idx;
+
+  //fprintf(stderr, "\n [*] Debuggee wait4exit called \n");
+  for (idx = 0; !e2dbgworld.exited && idx < 2; idx++)
     sleep(1);
   exit(0);
 }

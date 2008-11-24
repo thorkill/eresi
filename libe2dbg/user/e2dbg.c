@@ -27,7 +27,7 @@ void            e2dbg_register_command(void)
   revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK);
   revm_command_add(CMD_DBGSTACK , (void *) cmd_dbgstack , revm_getoption,    1, HLP_DBGSTACK);
   revm_command_add(CMD_DUMPREGS , (void *) cmd_dumpregs , NULL,            1, HLP_DUMPREGS);
-  revm_command_add(CMD_DELETE   , (void *) cmd_delete   , revm_getoption,    1, HLP_DELETE);
+  revm_command_add(CMD_DELETE   , (void *) cmd_delete   , revm_getvarparams,    1, HLP_DELETE);
   revm_command_add(CMD_CONTINUE , (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
   revm_command_add(CMD_CONTINUE2, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
   revm_command_add(CMD_START    , (void *) cmd_start    , (void *) NULL,   1, HLP_START);

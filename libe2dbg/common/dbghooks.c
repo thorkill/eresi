@@ -853,8 +853,6 @@ int	        e2dbg_deletebreak(elfshbp_t *bp)
 		 "DELBREAK handler unexistant for this ARCH/OS", -1);
   
   dim[0] = hosttype;
-
-  printf("Hostype is: %d\n", dim[0]);
   fct    = aspect_vectors_select(breakh, dim);
   ret  = fct(bp);
   if (ret < 0)
