@@ -105,16 +105,18 @@ int             cmd_kedbgcont(void)
     }
   else
     {
-      char    instr[30];
+      char    *instr;
 
       gdbwrap_stepi(loc);      
       revm_clean();
       e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
       parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
       name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
-      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip + off, instr, sizeof(instr));
 
-      revm_instr_display(-1, 0, loc->reg32.eip, off, 20, name, 0, instr);
+      instr = alloca(20 + off);
+      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip - off, instr, 20 + off);
+
+      revm_instr_display(-1, off, loc->reg32.eip, 0, 20, name, off, instr);
     }
 
   if (!gdbwrap_is_active(loc))
