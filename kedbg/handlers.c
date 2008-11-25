@@ -7,6 +7,7 @@ void            kedbg_resetstep_ia32(void)
 {
   PROFILER_INQ();
   e2dbgworld.curthread->step = FALSE;
+
   PROFILER_OUTQ();
 }
 
@@ -15,6 +16,7 @@ void            kedbg_setstep_ia32(void)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   e2dbgworld.curthread->step = TRUE;
+
   PROFILER_OUTQ();
 }
 
@@ -23,9 +25,8 @@ void		*kedbg_bt_ia32(void *frame)
   la32          ptr;
 
   PROFILER_INQ();
-  printf("Receiving value in %s: %p\n", __FUNCTION__, frame);
-  kedbg_writemem(NULL,(eresi_Addr)frame, &ptr, DWORD_IN_BYTE);
-  printf("Value is: %#x\n", ptr);
+  kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, DWORD_IN_BYTE);
+
   PROFILER_ROUTQ((void *)ptr);
 }
 
@@ -36,7 +37,7 @@ eresi_Addr	*kedbg_getfp_ia32(void)
   PROFILER_INQ();
   /* First update all the reg. */
   gdbwrap_readgenreg(loc);
-  printf("Entering: %#x\n", loc->reg32.ebp);
+
   PROFILER_ROUTQ((eresi_Addr *)loc->reg32.ebp);
 }
 
@@ -47,7 +48,7 @@ void            *kedbg_getret_ia32(void *frame)
 
   PROFILER_INQ();
   kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
-  printf("Returning: %#x for %#x\n", ptr, (la32)((la32 *)frame + 1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
 
@@ -63,7 +64,7 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
   PROFILER_INQ();
   NOT_USED(f);
   gdbwrap_setbp(bp->addr, bp->savedinstr, loc);
-  
+
   PROFILER_ROUTQ(0);
 }
 
