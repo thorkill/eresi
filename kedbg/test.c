@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void bar(int num)
 {
@@ -16,7 +17,9 @@ void foo(int num)
 
 int main(void)
 {
+  usleep(2000000);
   foo(rand());
   puts("");
+
   return 0;
 }

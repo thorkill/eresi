@@ -310,7 +310,10 @@ static int      kedbg_main(int argc, char **argv)
   
   if (!kedbg_file_is_kernel(world.curjob->curfile))
     {
-      kedbg_run_to_entrypoint(world.curjob->curfile);
+      /* The process might already be running. If the got[1] is
+	 filled, we don't run to the entry point. */
+      if (kedbg_linkmap_getaddr() == NULL)
+	kedbg_run_to_entrypoint(world.curjob->curfile);
       kedbg_find_linkmap();
     }
   else
