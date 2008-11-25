@@ -4,7 +4,6 @@
 /**************** Command registration ****************/
 static void     kedbg_register_command(void)
 {
-  revm_command_add(COM1,          cmd_com1, revm_getvarparams, 0, HELPCOM1);
   revm_command_add(CMD_START,     cmd_kedbgcont, NULL, 0, HLP_START);
   revm_command_add(CMD_CONTINUE,  cmd_kedbgcont, NULL, 0, HLP_CONTINUE);
   revm_command_add(CMD_CONTINUE2, cmd_kedbgcont, NULL, 0, HLP_CONTINUE);
@@ -30,7 +29,7 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_RPHT, cmd_rpht, revm_getregxoption, 1, HLP_RPHT);
   revm_command_add(CMD_QUIT, cmd_kedbgquit, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_QUIT2, cmd_kedbgquit, NULL, 0, HLP_QUIT);
-/*   revm_command_add(CMD_ITRACE   , (void *) cmd_itrace   , (void *) NULL  , 1, HLP_ITRACE);   */
+/*   revm_command_add(CMD_ITRACE, cmd_itrace, NULL, 0, HLP_ITRACE); */
   /*   revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH); */
   /*   revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK); */
 
@@ -61,13 +60,10 @@ static void     kedbg_register_vector(void)
 			   ELFSH_OS_LINUX, kedbg_set_regvars_ia32);
   e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_get_regvars_ia32);
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
+			   ELFSH_OS_LINUX, kedbg_getpc_ia32);
 }
 
-
-static void     kedbg_post_load_register_vector(void)
-{
-  //elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT,  kedbg_readmem);
-}
 
 /**************** Main stuff ****************/
 static void	kedbg_create_prompt(char *buf, unsigned int size)
@@ -115,7 +111,7 @@ static int	kedbg_curthread_init(void)
   
   //  e2dbg_stack_get(new);
   /* Let's put the stack @ 0 for now... */
-  new->stackaddr = 0;
+  //  new->stackaddr = 0;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -306,7 +302,6 @@ static int      kedbg_main(int argc, char **argv)
   ret = revm_file_load(argv[3], 0, NULL);
 
   ASSERT(!ret);
-  kedbg_post_load_register_vector();
   elfsh_set_runtime_mode();
   e2dbg_presence_set();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
@@ -336,11 +331,8 @@ static int      kedbg_main(int argc, char **argv)
       elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index);
       elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index);
       
-      // Load a map of the BIOS
+      /* Load a map of the BIOS */
       kedbg_biosmap_load();
-
-      fprintf(stderr, "DONNNNNNNNNNE ");
-      fflush(stderr);
     }
 
   revm_run(argc, argv);

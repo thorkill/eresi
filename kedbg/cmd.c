@@ -1,39 +1,6 @@
 #include "kedbg.h"
 #include "interface.h"
 
-/* Debugging purpose. */
-int             cmd_com1(void)
-{
-
-  void          *(*fct)();
-  u_char        archtype;
-  u_char        iotype;
-  u_char        ostype;
-  u_int         dim[2];
-  vector_t      *mem;
-
-  elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
-  archtype = elfsh_get_archtype(world.curjob->curfile);
-  iotype = elfsh_get_iotype(world.curjob->curfile);
-  ostype = elfsh_get_ostype(world.curjob->curfile);
-  fprintf(stderr, "Value --: %d - %d - %d\n",archtype, iotype, ostype);
-  fflush(stderr);
-  mem = aspect_vector_get(ELFSH_HOOK_READMEM);
-  dim[0] = ostype;
-  dim[1] = iotype;
-  fprintf(stderr, "Value2 --: %d \n", mem->arraysz);
-  fflush(stderr);
-  
-  fct = aspect_vectors_select(mem, dim);
-  fct(NULL);
-  fprintf(stderr, "Value --: %d - %d\n", world.curjob->curfile->hostype,
-	  world.curjob->curfile->iotype);
-
-  /*   kedbg_get_regvars_ia32(); */
-  //  fprintf(stderr, "YOUPLA: %#x\n", *kedbg_getpc_ia32());
-  return 0;
-}
-
 
 int             cmd_kedbg_dump_regs(void)
 {
@@ -91,16 +58,15 @@ int             cmd_kedbgcont(void)
 		  gdbwrap_writereg2(eip_pos, loc->reg32.eip - 1, loc);
 		  gdbwrap_stepi(loc);
 		  kedbg_setbp(world.curjob->curfile, bp);
+		  printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip,
+			 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
 		}
 	      else
 		fprintf(stderr, "An error has occured when trying to find the bp.");
 	    }
 	  else
-	    printf("The value returned was: %d- %#x \n",
-		   gdbwrap_lastsignal(loc), loc->reg32.eip);
-      
-	  printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip,
-		 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
+	    printf("Signal received: %s (IP: %#x) \n",
+		   get_signal(gdbwrap_lastsignal(loc)), loc->reg32.eip);
 	}
     }
   else

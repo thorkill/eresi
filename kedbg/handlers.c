@@ -24,37 +24,19 @@ eresi_Addr	*kedbg_getfp_ia32(void)
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  fprintf(stderr, "%s INTO \n", __PRETTY_FUNCTION__);
-  fflush(stdout);
-
   /* First update all the reg. */
   gdbwrap_readgenreg(loc);
-
-  printf("Returning: %#x\n", loc->reg32.ebp);
   PROFILER_ROUTQ((eresi_Addr *)loc->reg32.ebp);
-}
-
-
-void            *kedbg_bt_ia32(void *frame)
-{
-  PROFILER_INQ();
-  NOT_USED(frame);
-  fprintf(stderr, "%s NOT IMPLEMENTED (YET) \n", __PRETTY_FUNCTION__);
-  fflush(stdout);
-
-  PROFILER_ROUTQ(NULL);
 }
 
 
 void            *kedbg_getret_ia32(void *frame)
 {
-  gdbwrap_t     *loc = gdbwrap_current_get();
+  la32          ptr;
 
   PROFILER_INQ();
-  fprintf(stderr, "%s INTO \n", __PRETTY_FUNCTION__);
-  fflush(stdout);
-
-  PROFILER_ROUTQ(gdbwrap_readmemory(*(la32*)frame, DWORD_IN_BYTE, loc));
+  kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
 
 
@@ -155,7 +137,6 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
 }
 
 
-/* Get %IP */
 eresi_Addr      *kedbg_getpc_ia32(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -213,16 +194,3 @@ void            kedbg_get_regvars_ia32(void)
   PROFILER_OUTQ();
 }
 
-/* Todo:
-   - display
-   - set $eip 0x12345678 -> cont -> eip doit etre a 0x12... On l'appelera depuis le cont.
-   - voir avec bochs
-   - mettre commande not display + commande.
-   
-(kedbg-0.82-a4-dev@local) # ok good - donc je te propose ce programme:
-OK (kedbg-0.82-a4-dev@local) # - rajouter lappel a setregs
-(kedbg-0.82-a4-dev@local) # - rajouter lappel a display
-(kedbg-0.82-a4-dev@local) # - cleaner loutput pour que ce soit la meme chose que e2dbg  
-(kedbg-0.82-a4-dev@local) # - cleaner les messages derrors pour que ca utilise PROFILER_ERR() correctement et quon ait pas des msg incomprehensible de gdbwrap ou des assert
-
-*/
