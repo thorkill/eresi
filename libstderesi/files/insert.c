@@ -169,5 +169,5 @@ int		cmd_insert()
       snprintf(logbuf, BUFSIZ - 1, " [*] Object insertion succesfull\n\n");
       revm_output(logbuf);
     }
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
