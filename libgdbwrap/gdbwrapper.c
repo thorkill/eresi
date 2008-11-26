@@ -486,7 +486,7 @@ void                gdbwrap_hello(gdbwrap_t *desc)
 	  previousmax = desc->max_packet_size;
 	  desc->max_packet_size = gdbwrap_atoh(desc->packet, strlen(desc->packet));
 	  reallocptr = realloc(desc->packet, desc->max_packet_size + 1);
-	  if (realloc != NULL)
+	  if (reallocptr != NULL)
 	    desc->packet = reallocptr;
 	  else
 	    {
