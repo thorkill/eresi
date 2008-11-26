@@ -42,7 +42,7 @@ int             cmd_kedbgcont(void)
 /* 	      ASSERT(c == BPCODE); */
 	      u_char bpoff;
 
-	      kedbg_isvmrunning() ? (bpoff = 0) : (bpoff = 1);
+	      bpoff = kedbg_isvmrunning() ? 0 : 1;
 	      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - bpoff);
 	      bp = e2dbg_breakpoint_lookup(addr);
 	      if (bp != NULL)
@@ -79,7 +79,7 @@ int             cmd_kedbgcont(void)
 
       instr = alloca(20 + off);
       printf("Eip: %#x\n", loc->reg32.eip);
-      //      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip - off, instr, 20 + off);
+      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip - off, instr, 20 + off);
       revm_instr_display(-1, off, loc->reg32.eip, 0, 20, name, off, instr);
     }
 

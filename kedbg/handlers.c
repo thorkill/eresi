@@ -44,11 +44,11 @@ eresi_Addr	*kedbg_getfp_ia32(void)
 }
 
 
-void            kedbg_setvmrunning(void)
+void            kedbg_setvmrunning(Bool run)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
-  gdbwrap_setvmrunning(loc);
+  gdbwrap_setvmrunning(run, loc);
 }
 
 

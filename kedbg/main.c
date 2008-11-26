@@ -309,6 +309,7 @@ static int      kedbg_main(int argc, char **argv)
   
   if (!kedbg_file_is_kernel(world.curjob->curfile))
     {
+      kedbg_setvmrunning(FALSE);
       e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
 			       kedbg_setbp);
       e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_delbp);
@@ -323,7 +324,7 @@ static int      kedbg_main(int argc, char **argv)
       elfshsect_t   *ksymtab;
       elfshsect_t   *ksymtab_strings;
       
-      kedbg_setvmrunning();
+      kedbg_setvmrunning(TRUE);
       e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
 			       kedbg_simplesetbp);
       e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_simpledelbp);

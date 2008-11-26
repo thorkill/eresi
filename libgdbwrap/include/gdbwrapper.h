@@ -42,7 +42,7 @@ typedef struct
   gdbwrap_t *gdbwrapptr;
 } gdbwrapworld_t;
 
-void             gdbwrap_setvmrunning(gdbwrap_t *desc);
+void             gdbwrap_setvmrunning(Bool run, gdbwrap_t *desc);
 Bool             gdbwrap_isvmrunning(gdbwrap_t *desc);
 unsigned         gdbwrap_atoh(const char * str, unsigned size);
 unsigned         gdbwrap_lastsignal(gdbwrap_t *desc);

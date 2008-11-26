@@ -11,7 +11,7 @@ int             cmd_kedbg_dump_regs(void);
 
 /* #include "gdbwrapper.h" */
 Bool            kedbg_isvmrunning(void);
-void            kedbg_setvmrunning(void);
+void            kedbg_setvmrunning(Bool run);
 int             gdbwrap_simpleconnect(char *host, int port);
 void            kedbg_resetstep_ia32(void);
 eresi_Addr	*kedbg_getfp_ia32(void);

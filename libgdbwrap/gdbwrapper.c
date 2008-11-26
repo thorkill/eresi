@@ -161,9 +161,9 @@ static la32          gdbwrap_little_endian(la32 addr)
 }
 
 
-void                 gdbwrap_setvmrunning(gdbwrap_t *desc)
+void                 gdbwrap_setvmrunning(Bool run, gdbwrap_t *desc)
 {
-  desc->vm_running = TRUE;
+  desc->vm_running = run;
 }
 
 
@@ -171,6 +171,7 @@ Bool                 gdbwrap_isvmrunning(gdbwrap_t *desc)
 {
   return desc->vm_running;
 }
+
 
 unsigned             gdbwrap_atoh(const char * str, unsigned size)
 {
