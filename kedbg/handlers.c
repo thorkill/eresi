@@ -20,6 +20,7 @@ void            kedbg_setstep_ia32(void)
   PROFILER_OUTQ();
 }
 
+
 void		*kedbg_bt_ia32(void *frame)
 {
   la32          ptr;
@@ -29,6 +30,7 @@ void		*kedbg_bt_ia32(void *frame)
 
   PROFILER_ROUTQ((void *)ptr);
 }
+
 
 eresi_Addr	*kedbg_getfp_ia32(void)
 {
@@ -41,6 +43,21 @@ eresi_Addr	*kedbg_getfp_ia32(void)
   PROFILER_ROUTQ((eresi_Addr *)loc->reg32.ebp);
 }
 
+
+void            kedbg_setvmrunning(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  gdbwrap_setvmrunning(loc);
+}
+
+
+Bool            kedbg_isvmrunning(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  return gdbwrap_isvmrunning(loc);
+}
 
 void            *kedbg_getret_ia32(void *frame)
 {
@@ -69,12 +86,35 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 }
 
 
+int             kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  PROFILER_INQ();
+  NOT_USED(f);
+  gdbwrap_simplesetbp(bp->addr, loc);
+
+  PROFILER_ROUTQ(0);
+}
+
+
 int             kedbg_delbp(elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
   gdbwrap_delbp(bp->addr, bp->savedinstr, loc);
+
+  PROFILER_ROUTQ(0);
+}
+
+
+int             kedbg_simpledelbp(elfshbp_t *bp)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  PROFILER_INQ();
+  gdbwrap_simpledelbp(bp->addr, loc);
 
   PROFILER_ROUTQ(0);
 }

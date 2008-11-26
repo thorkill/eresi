@@ -26,12 +26,11 @@ int             cmd_kedbgcont(void)
   uint8_t       eip_pos;
   elfshobj_t    *parent;
 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   kedbg_set_regvars_ia32();
   gdbwrap_shipallreg(loc);
-
   revm_output("[*] Continuing process\n");
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e2dbgworld.curthread->step)
     {
       gdbwrap_continue(loc);
@@ -39,30 +38,29 @@ int             cmd_kedbgcont(void)
 	{
 	  if (gdbwrap_lastsignal(loc) == SIGTRAP)
 	    {
+/* 	      kedbg_readmema(NULL, loc->reg32.eip - 1, &c, 1); */
+/* 	      ASSERT(c == BPCODE); */
+	      u_char bpoff;
 
-	      /* All instances of readmema must be changed to elfsh_... */
-	  
-	      kedbg_readmema(NULL, loc->reg32.eip - 1, &c, 1);
-	      ASSERT(c == BPCODE);
-	      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - 1);
+	      kedbg_isvmrunning() ? (bpoff = 0) : (bpoff = 1);
+	      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - bpoff);
 	      bp = e2dbg_breakpoint_lookup(addr);
 	      if (bp != NULL)
 		{
 		  revm_clean();
 		  e2dbg_display(bp->cmd, bp->cmdnbr);
 
+		  printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip,
+			 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
+
 		  c = BPCODE;
 		  eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
 		  //	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
-		  kedbg_delbp(bp);
-		  gdbwrap_writereg2(eip_pos, loc->reg32.eip - 1, loc);
+		  e2dbg_deletebreak(bp);
+		  gdbwrap_writereg2(eip_pos, loc->reg32.eip - bpoff, loc);
 		  gdbwrap_stepi(loc);
-		  kedbg_setbp(world.curjob->curfile, bp);
-		  printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip,
-			 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
+		  e2dbg_setbreak(world.curjob->curfile, bp);
 		}
-	      else
-		fprintf(stderr, "An error has occured when trying to find the bp.");
 	    }
 	  else
 	    printf("Signal received: %s (IP: %#x) \n",
@@ -80,8 +78,8 @@ int             cmd_kedbgcont(void)
       name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
 
       instr = alloca(20 + off);
-      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip - off, instr, 20 + off);
-
+      printf("Eip: %#x\n", loc->reg32.eip);
+      //      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip - off, instr, 20 + off);
       revm_instr_display(-1, off, loc->reg32.eip, 0, 20, name, off, instr);
     }
 

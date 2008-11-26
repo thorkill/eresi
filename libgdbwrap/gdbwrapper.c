@@ -35,7 +35,7 @@ static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
     fprintf(stdout, "The server seems to be dead. Message not sent.\n");
 
   if (error[0] == GDBWRAP_REPLAY_ERROR)
-    fprintf(stdout, "Error: %s\n", error);
+    fprintf(stdout, "Error received from the server: %s\n", error);
   
   if (error[0] == GDBWRAP_EXIT_W_STATUS)
     {
@@ -161,6 +161,17 @@ static la32          gdbwrap_little_endian(la32 addr)
 }
 
 
+void                 gdbwrap_setvmrunning(gdbwrap_t *desc)
+{
+  desc->vm_running = TRUE;
+}
+
+
+Bool                 gdbwrap_isvmrunning(gdbwrap_t *desc)
+{
+  return desc->vm_running;
+}
+
 unsigned             gdbwrap_atoh(const char * str, unsigned size)
 {
   unsigned           i;
@@ -172,10 +183,7 @@ unsigned             gdbwrap_atoh(const char * str, unsigned size)
     else if (str[i] >= '0' && str[i] <= '9')
       hex += (str[i] - 0x30) << 4 * (size - i - 1);
     else
-      {
-	fprintf(stderr, "Wrong char: %c - %#x\n", str[i], str[i]);
-	ASSERT(FALSE); 
-      }
+      return 0;
   return hex;
 }
 
@@ -259,12 +267,6 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       valuetocopy    = encodestr[-1];
       numberoftimes  = encodestr[1] - 29;
       strlenc        = strlen(encodestr);
-/*       locmaxsize    += strlenc + numberoftimes - 2; */
-/*       ASSERT(locmaxsize < maxsize); */
-
-/*       printf("The localmax: %#x\n", locmaxsizecd ); */
-/*       fflush(stdout); */
-
       /* We move the string to the right, then set the bytes. We
 	 substract 2, because we have <number>*<char> where * and
 	 <char> are filled with the value of <number> (ie 2 chars). */
@@ -273,7 +275,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       memset(encodestr, valuetocopy, numberoftimes);
       encodestr = strstr(NEXT_CHAR(encodestr), GDBWRAP_START_ENCOD);
     }
-/*   printf("\nPacket:\n%s\n", dstpacket); */
+
   return dstpacket;
 }
 
@@ -425,7 +427,7 @@ gdbwrap_t            *gdbwrap_current_get(void)
 
 
 /**
- * Initialize the descriptor. We provide a default value of 600B for
+ * Initialize the descriptor. We provide a default value of 1000B for
  * the string that get the replies from server.
  *
  */
@@ -434,7 +436,7 @@ gdbwrap_t            *gdbwrap_init(int fd)
   gdbwrap_t          *desc = malloc(sizeof(gdbwrap_t));
       
   ASSERT(fd && desc != NULL);
-  desc->max_packet_size   = 600;
+  desc->max_packet_size   = 1000;
   desc->packet            = malloc((desc->max_packet_size + 1) * sizeof(char));
   desc->fd                = fd;
   desc->is_active         = TRUE;
@@ -552,6 +554,7 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
     {
       rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
       gdbwrap_populate_reg(rec, desc);
+      printf("The value of eip: %#x\n", desc->reg32.eip);
     }
 }
 
@@ -575,9 +578,29 @@ void                 gdbwrap_setbp(la32 linaddr, void *datasaved, gdbwrap_t *des
 }
 
 
+void                 gdbwrap_simplesetbp(la32 linaddr, gdbwrap_t *desc)
+{
+  char               packet[50];
+
+  snprintf(packet, sizeof(packet), "%s%s%x%s%x", GDBWRAP_INSERTBP,
+	   GDBWRAP_SEP_COMMA, linaddr, GDBWRAP_SEP_COMMA, 0x1);
+  gdbwrap_send_data(packet, desc);
+}
+
+
 void                 gdbwrap_delbp(la32 linaddr, void *datasaved, gdbwrap_t *desc)
 {
    gdbwrap_writememory(linaddr, datasaved, sizeof(u_char), desc);
+}
+
+
+void                 gdbwrap_simpledelbp(la32 linaddr, gdbwrap_t *desc)
+{
+  char               packet[50];
+  
+  snprintf(packet, sizeof(packet), "%s%s%x%s%x", GDBWRAP_REMOVEBP,
+	   GDBWRAP_SEP_COMMA, linaddr, GDBWRAP_SEP_COMMA, 0x1);
+  gdbwrap_send_data(packet, desc);
 }
 
 
@@ -612,17 +635,6 @@ void                 *gdbwrap_writememory(la32 linaddr, void *value,
 
   rec = gdbwrap_send_data(packet, desc);
   return rec;
-}
-
-
-char                 *gdbwrap_own_command(char *command,
-					  gdbwrap_t *desc)
-{
-  printf("Received command in %s: %s - size: %d\n", __PRETTY_FUNCTION__,
-	 command, strlen(command));
-  /* This is hacky. I'll remove this shit. */
-  command[strlen(command) - 1] = GDBWRAP_NULL_CHAR;
-  return gdbwrap_send_data(command, desc);
 }
 
 
@@ -727,23 +739,6 @@ void                 gdbwrap_vmwareinit(gdbwrap_t *desc)
   gdbwrap_hello(desc);
   gdbwrap_reason_halted(desc);
   rec = gdbwrap_readmemory(desc->reg32.eip, QWORD_IN_BYTE, desc);
-}
-
-
-void                 gdbwrap_test(gdbwrap_t *desc)
-{
-/*   gdbwrap_memorycontent(0xb7fc99a0 , QWORD_IN_BYTE, desc); */
-/*   gdbwrap_writereg(0x183838, 0xff1234, desc); */
-  char               *rec;
-
-  unsigned           u = 0xffffffff;
-  gdbwrap_writememory(0xb7f959a0, &u, QWORD_IN_BYTE, desc);
-  printf("Hiha, Reading the data\n");
-  fflush(stdout);
-  rec = gdbwrap_readmemory(0xb7f959a0, QWORD_IN_BYTE, desc);
-  printf("Hiha, received: %s\n", rec);
-    fflush(stdout);
-  /* gdbwrap_signal(01, desc); */
 }
 
 

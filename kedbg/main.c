@@ -42,9 +42,6 @@ static void     kedbg_register_command(void)
 /**************** Vector initialization ****************/
 static void     kedbg_register_vector(void)
 {
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
-			   kedbg_setbp);
-  e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_delbp);
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_readmema);
   elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
   elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
@@ -312,6 +309,9 @@ static int      kedbg_main(int argc, char **argv)
   
   if (!kedbg_file_is_kernel(world.curjob->curfile))
     {
+      e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+			       kedbg_setbp);
+      e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_delbp);
       /* The process might already be running. If the got[1] is
 	 filled, we don't run to the entry point. */
       if (kedbg_linkmap_getaddr() == NULL)
@@ -323,6 +323,11 @@ static int      kedbg_main(int argc, char **argv)
       elfshsect_t   *ksymtab;
       elfshsect_t   *ksymtab_strings;
       
+      kedbg_setvmrunning();
+      e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+			       kedbg_simplesetbp);
+      e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_simpledelbp);
+
       ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab",
 					  NULL, NULL, NULL);
       ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile,

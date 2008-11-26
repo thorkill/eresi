@@ -269,6 +269,7 @@ void		*e2dbg_bt_ia32(void *frame)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   if (!frame)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+  fprintf(stderr, "Value we want to read: %p\n", frame);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		((void *) *(long*) frame));
 }
@@ -281,6 +282,7 @@ void		*e2dbg_getret_ia32(void *frame)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   if (!frame)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
+  printf("Ret found at %p - %#x\n", ((long *) frame + 1), *((long *) frame + 1));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		(void *) (*((long *) frame + 1)));
 }

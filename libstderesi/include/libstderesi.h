@@ -429,6 +429,7 @@ int		cmd_delete();
 int		cmd_step();
 int		cmd_display();
 int		cmd_undisplay();
+char            *get_signal(int sig);
 
 /* Debug format functions */
 int		cmd_debug();
