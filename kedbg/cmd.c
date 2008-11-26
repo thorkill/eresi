@@ -38,8 +38,6 @@ int             cmd_kedbgcont(void)
 	{
 	  if (gdbwrap_lastsignal(loc) == SIGTRAP)
 	    {
-/* 	      kedbg_readmema(NULL, loc->reg32.eip - 1, &c, 1); */
-/* 	      ASSERT(c == BPCODE); */
 	      u_char bpoff;
 
 	      bpoff = kedbg_isvmrunning() ? 0 : 1;
@@ -50,12 +48,14 @@ int             cmd_kedbgcont(void)
 		  revm_clean();
 		  e2dbg_display(bp->cmd, bp->cmdnbr);
 
-		  printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip,
-			 revm_resolve(world.curjob->curfile, loc->reg32.eip, &off));
+		  name = revm_resolve(world.curjob->curfile, loc->reg32.eip, &off);
+		  if (!off)
+		    printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip, name);
+		  else
+		    printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip, name, off);			   
 
 		  c = BPCODE;
 		  eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
-		  //	      kedbg_writemem(NULL, bp->addr, bp->savedinstr, 1);
 		  e2dbg_deletebreak(bp);
 		  gdbwrap_writereg2(eip_pos, loc->reg32.eip - bpoff, loc);
 		  gdbwrap_stepi(loc);
@@ -76,18 +76,14 @@ int             cmd_kedbgcont(void)
       e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
       parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
       name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
-
-      instr = alloca(20 + off);
-      printf("Eip: %#x\n", loc->reg32.eip);
-      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip - off, instr, 20 + off);
-      revm_instr_display(-1, off, loc->reg32.eip, 0, 20, name, off, instr);
+      instr = alloca(20);
+      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
+      revm_instr_display(-1, 0, loc->reg32.eip, 0, 20, name, off, instr);
     }
 
   if (!gdbwrap_is_active(loc))
     cmd_quit();
-
   kedbg_get_regvars_ia32();
-  
   PROFILER_ROUTQ(0);
 }
 
