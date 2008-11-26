@@ -276,6 +276,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       memset(encodestr, valuetocopy, numberoftimes);
       encodestr = strstr(NEXT_CHAR(encodestr), GDBWRAP_START_ENCOD);
     }
+  DEBUGMSG(printf("Decoded packet received: %s\n", dstpacket));
 
   return dstpacket;
 }
@@ -371,7 +372,6 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 	rval = send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM),
 		    0x0);
 	gdbwrap_errorhandler(desc->packet, desc);
-
 	return gdbwrap_run_length_decode(desc->packet, desc->packet,
 					 desc->max_packet_size);
       }
@@ -392,6 +392,8 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
   char               *mes;
 
   ASSERT(desc != NULL && query != NULL);
+
+  DEBUGMSG(printf("Sending: %s\n", query));
 
   if (gdbwrap_is_active(desc))
     {
@@ -417,6 +419,7 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
 gdbwrapworld_t       gdbwrap_current_set(gdbwrap_t *world)
 {
   gdbwrapworld.gdbwrapptr = world;
+  
   return gdbwrapworld;
 }
 

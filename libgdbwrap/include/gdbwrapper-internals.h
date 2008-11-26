@@ -4,9 +4,19 @@
 #define     GDBWRAP_PACKET_NO_BEGIN(_tocmp, _ptr)               \
               assert(_tocmp);                                   \
               _ptr = (strstr(_tocmp, GDBWRAP_BEGIN_PACKET) + 1)
-#define     LOG(_x)                                             \
-              printf(_x);                                       \
-              fflush(stdout);
+
+#define __DEBUG_GDBWRAP__   TRUE
+
+#if __DEBUG_GDBWRAP__
+#define DEBUGMSG(_command)				\
+   do							\
+      {							\
+         _command;					\
+      } while(0)
+#else
+#define DEBUGMSG(_command)				
+#endif
+
 #define     CONSTSTRDEC(_name, _value)  const char * const  _name = _value
 #define     CONSTCHRDEC(_name, _value)  const char          _name = _value
 CONSTSTRDEC(GDBWRAP_BEGIN_PACKET,    "$");

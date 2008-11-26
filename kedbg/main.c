@@ -290,7 +290,6 @@ static int      kedbg_main(int argc, char **argv)
   revm_set_prompt(kedbg_create_prompt);
 
   /* Overwrite of some commands. */
-
   kedbg_register_command();
   hash_init(&e2dbgworld.threads, "threads", 5, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp, "breakpoints", 51, ASPECT_TYPE_UNKNOW);
@@ -306,7 +305,8 @@ static int      kedbg_main(int argc, char **argv)
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
   kedbg_propagate_type();
-  
+
+
   if (!kedbg_file_is_kernel(world.curjob->curfile))
     {
       kedbg_setvmrunning(FALSE);
@@ -355,6 +355,7 @@ static int      kedbg_main(int argc, char **argv)
 int             main(int argc, char **argv)
 {
   int           fd;
+
 
   /* Input checks */
   if (argc != 4)
