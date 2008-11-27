@@ -15,10 +15,12 @@
  * @brief Create container lists
  * @param container Container holding the lists
  * @param linktype CONTAINER_LINK_IN or CONTAINER_LINK_OUT for input or output links list
+ * @param uniqid Unique ID to be put into name
  * @return -1 on error and 0 on success
  */
 int		container_linklists_create(container_t *container,
-					   u_int	linktype)
+					   u_int	linktype,
+					   u_int	uniqid)
 {
   aspectype_t  *type;
   char		bufname[BUFSIZ];
@@ -26,6 +28,11 @@ int		container_linklists_create(container_t *container,
   list_t	*newlist;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  if (uniqid == NULL)
+    {
+      uniqid = 0;
+    }
 
   /* Check for prefix (XXX: change to lookup user-configured prefixes ?) */
   switch (container->type)
@@ -48,8 +55,8 @@ int		container_linklists_create(container_t *container,
   switch (linktype)
     {
     case CONTAINER_LINK_IN:
-      snprintf(bufname, BUFSIZ, "%s_"AFMT"_%s", 
-	       prefix, *(eresi_Addr *) container->data, "inputs");
+      snprintf(bufname, BUFSIZ, "%d_%s_"AFMT"_%s", 
+	       uniqid, prefix, *(eresi_Addr *) container->data, "inputs");
       newlist = elist_find(bufname);
       if (newlist)
 	container->inlinks = newlist;
@@ -61,8 +68,8 @@ int		container_linklists_create(container_t *container,
 
       break;
     case CONTAINER_LINK_OUT:
-      snprintf(bufname, BUFSIZ, "%s_"AFMT"_%s", 
-	       prefix, *(eresi_Addr *) container->data, "outputs");
+      snprintf(bufname, BUFSIZ, "%d_%s_"AFMT"_%s", 
+	       uniqid, prefix, *(eresi_Addr *) container->data, "outputs");
       newlist = elist_find(bufname);
       if (newlist)
 	container->outlinks = newlist;
@@ -86,10 +93,11 @@ int		container_linklists_create(container_t *container,
  * @param type Type of element inside container
  * @param data Data pointer for contained element
  * @param inlist Input links list if any (else it will be created empty)
- * @Param outlist Output links list if any (else it will be created empty)
+ * @param outlist Output links list if any (else it will be created empty)
+ * @param uniqid Unique ID to be put into name
  * @return Container newly created
  */
-container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *outlist)
+container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *outlist, u_int uniqid)
 {
   container_t	*newcntnr;
   aspectype_t	*rtype;
@@ -114,12 +122,12 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
   if (inlist)
     newcntnr->inlinks = elist_copy(inlist);
   else
-    container_linklists_create(newcntnr, CONTAINER_LINK_IN);
+    container_linklists_create(newcntnr, CONTAINER_LINK_IN, uniqid);
   if (outlist)
     newcntnr->outlinks = elist_copy(outlist);
   else
-    container_linklists_create(newcntnr, CONTAINER_LINK_OUT);
-  
+    container_linklists_create(newcntnr, CONTAINER_LINK_OUT, uniqid);
+
   /* Make sure the container and contained data are contiguous */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
