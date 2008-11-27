@@ -105,12 +105,12 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
     case CONTAINER_LINK_IN:
       off    = (u_int) container->inlinks;
       tmpnbr = container->nbrinlinks;
-      container_linklists_create(container, CONTAINER_LINK_IN);
+      container_linklists_create(container, CONTAINER_LINK_IN, ctxt->obj->id);
       break;
     case CONTAINER_LINK_OUT:
       off   = (u_int) container->outlinks;
       tmpnbr = container->nbroutlinks;
-      container_linklists_create(container, CONTAINER_LINK_OUT);
+      container_linklists_create(container, CONTAINER_LINK_OUT, ctxt->obj->id);
       break;
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

@@ -120,7 +120,7 @@ int			mjr_trace_control(mjrcontext_t *context,
       if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
 	{
 
-#if 1 //__DEBUG_FLOW__
+#if __DEBUG_FLOW__
 	  fprintf(D_DESC,"[W] *** %s: unusual retaddr found - expected ret: "
 		  XFMT" section end: "XFMT" ***\n",
 		  __FUNCTION__, curvaddr + ilen + addend, 
@@ -148,7 +148,7 @@ int			mjr_trace_control(mjrcontext_t *context,
 	context->curfunc = elist_pop(context->func_stack);
 
 #if __DEBUG_FLOW__
-      fprintf(stderr, " *********** CURFUNC RET @ " XFMT " : to %s ******** \n",
+      fprintf(D_DESC, " *********** CURFUNC RET @ " XFMT " : to %s ******** \n",
 	      curvaddr, (context->curfunc && context->curfunc->data ? 
 			 ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
 #endif

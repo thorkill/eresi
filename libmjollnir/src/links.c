@@ -198,22 +198,22 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
     }
 
   mjr_block_symbol(ctxt, csrc);
-
+  
   /* Now split destination blocks */
   cdst = mjr_block_split(ctxt, dst, MJR_LINK_BLOCK_COND_ALWAYS);
   if (!cdst)
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-                 "Could not split destination block",0);
+		 "Could not split destination block",0);
   if (ret != MJR_BLOCK_INVALID)
     {
       cret = mjr_block_split(ctxt, ret, MJR_LINK_BLOCK_COND_ALWAYS);
       if (!cret)
-        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-                     "Could not split return block",0);
+	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+		     "Could not split return block",0);
     }
   else
     cret = NULL;
-
+  
   mjr_container_add_link(ctxt, csrc, cdst->id,
                          MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
   mjr_container_add_link(ctxt, cdst, csrc->id,
@@ -344,3 +344,4 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dstend));
 }
+

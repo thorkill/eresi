@@ -333,7 +333,6 @@ typedef struct	s_container
   void		*data;		  /* !< @brief Pointer to the contained object */
 }		container_t;
 
-
 /**
  * @brief Input and Output links for containers
  */
@@ -471,9 +470,14 @@ int		aspect_register_vector(char *, void*,
 				       unsigned int);
 
 /* Container related functions */
-container_t	*container_create(u_int type, void *data, list_t *in, list_t *out);
+container_t	*container_create(u_int		type, 
+				  void		*data, 
+				  list_t	*in, 
+				  list_t	*out, 
+				  u_int		uniqid);
 int		container_linklists_create(container_t *container,
-					   u_int	linktype);
+					   u_int	linktype,
+					   u_int	uniqid);
 
 /* Type related functions */
 int		aspect_type_simple(int typeid);

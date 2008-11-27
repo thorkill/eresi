@@ -262,7 +262,7 @@ container_t	*mjr_create_block_container(mjrcontext_t	*ctx,
   newblock->vaddr  = vaddr;
   newblock->size   = size;
   newblock->seen   = seen;
-  newcntnr         = container_create(ASPECT_TYPE_BLOC, newblock, NULL, NULL);
+  newcntnr         = container_create(ASPECT_TYPE_BLOC, newblock, NULL, NULL, ctx->obj->id);
   if (!newcntnr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to create block container", NULL);  
@@ -321,7 +321,7 @@ container_t	*mjr_create_function_container(mjrcontext_t	*ctx,
 	  __FUNCTION__, vaddr, name, size, md5);
 #endif
 
-  newcntnr = container_create(ASPECT_TYPE_FUNC, newfunction, NULL, NULL);
+  newcntnr = container_create(ASPECT_TYPE_FUNC, newfunction, NULL, NULL, ctx->obj->id);
   if (!newcntnr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Unable to create function container", NULL);  

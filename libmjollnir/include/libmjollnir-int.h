@@ -1,6 +1,7 @@
 /**
  * @file libmjollnir-int.h
  * (C) 2006-2008 Asgard Labs, thorolf
+ *     2008      ERESI Team
  *
  */
 
