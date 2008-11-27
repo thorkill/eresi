@@ -109,7 +109,7 @@ int		cmd_reflect()
 	}
 
       /* Also add the instruction to the current reflected list for this block */
-      instrcontainer = container_create(curtype->type, (void *) &cur, NULL, NULL, NULL);
+      instrcontainer = container_create(curtype->type, (void *) &cur, NULL, NULL, 0);
       snprintf(logbuf, sizeof (logbuf), "$instr-"XFMT, curblock->vaddr + off); 
       addr = (eresi_Addr) instrcontainer;
       expr = revm_inform_type_addr(curtype->name, strdup(logbuf), addr, NULL, 0, 1);

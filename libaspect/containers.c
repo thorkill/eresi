@@ -29,11 +29,6 @@ int		container_linklists_create(container_t *container,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (uniqid == NULL)
-    {
-      uniqid = 0;
-    }
-
   /* Check for prefix (XXX: change to lookup user-configured prefixes ?) */
   switch (container->type)
     {
