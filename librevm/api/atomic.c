@@ -228,7 +228,7 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
    
   /* Add it to the hash table */
   elem = (eresi_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
-  hash_add(h, (char *) key, (void *) elem);
+  hash_add(h, strdup((char *) key), (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
