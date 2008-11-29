@@ -64,7 +64,7 @@ int			revm_arithmetics(revmexpr_t *dest, revmexpr_t *e1, revmexpr_t *e2, u_char 
   revmobj_t		*o1;
   revmobj_t		*o2;
   revmexpr_t		*last;
-  int			oldtype;
+  u_int			oldtype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!e1 || !e2)
@@ -228,6 +228,8 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
    
   /* Add it to the hash table */
   elem = (eresi_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  if (o->otype->type == ASPECT_TYPE_STR)
+    elem = (eresi_Addr) strdup((char *) elem);
   hash_add(h, strdup((char *) key), (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -291,6 +293,8 @@ int			revm_elist_add(list_t *h, revmexpr_t *e)
    
   /* Add it to the hash table */
   elem = (eresi_Addr) (o->immed ? o->immed_val.ent : o->get_obj(o->parent));
+  if (o->otype->type == ASPECT_TYPE_STR)
+    elem = (eresi_Addr) strdup((char *) elem);
   elist_add(h, key, (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
