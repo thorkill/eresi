@@ -5,7 +5,7 @@
               assert(_tocmp);                                   \
               _ptr = (strstr(_tocmp, GDBWRAP_BEGIN_PACKET) + 1)
 
-#define __DEBUG_GDBWRAP__   TRUE
+#define __DEBUG_GDBWRAP__   FALSE
 
 #if __DEBUG_GDBWRAP__
 #define DEBUGMSG(_command)				\
@@ -19,6 +19,7 @@
 
 #define     CONSTSTRDEC(_name, _value)  const char * const  _name = _value
 #define     CONSTCHRDEC(_name, _value)  const char          _name = _value
+#define     CTRL_C                  0x3
 CONSTSTRDEC(GDBWRAP_BEGIN_PACKET,    "$");
 CONSTSTRDEC(GDBWRAP_END_PACKET,      "#");
 CONSTSTRDEC(GDBWRAP_QSUPPORTED,      "qSupported");

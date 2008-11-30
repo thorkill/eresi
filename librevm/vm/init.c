@@ -203,20 +203,8 @@ int		revm_config(char *config)
 
 
 
-/** 
- * Interface initialisation && loop entry point 
- */
-elfshobj_t	*revm_run(int ac, char **av)
+static elfshobj_t *revm_run_main(int ac, char **av)
 {
-
-  /* Do not handle signals in debugger mode */
-  if (world.state.revm_mode != REVM_STATE_EMBEDDED)
-    {
-      signal(SIGQUIT, SIG_IGN);
-      signal(SIGTERM, SIG_IGN);
-      signal(SIGINT, sigint_handler);
-    }
-
 #if __DEBUG_SIGHANDLER__
   revm_output("[elfsh:main] started !\n");
 #endif
@@ -231,4 +219,30 @@ elfshobj_t	*revm_run(int ac, char **av)
 
   /* Always return the current working object */
   return (world.curjob->curfile);
+}
+
+
+
+elfshobj_t	*revm_run_no_handler(int ac, char **av)
+{
+  return revm_run_main(ac, av);
+}
+
+
+
+/** 
+ * Interface initialisation && loop entry point 
+ */
+elfshobj_t	*revm_run(int ac, char **av)
+{
+
+  /* Do not handle signals in debugger mode */
+  if (world.state.revm_mode != REVM_STATE_EMBEDDED)
+    {
+      signal(SIGQUIT, SIG_IGN);
+      signal(SIGTERM, SIG_IGN);
+      signal(SIGINT, sigint_handler);
+    }
+
+  return revm_run_main(ac, av);
 }

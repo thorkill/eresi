@@ -34,6 +34,7 @@ typedef struct gdbwrap_t
   gdbwrap_gdbreg32 reg32;
   Bool             is_active;
   Bool             vm_running;
+  Bool             interrupted;
 } gdbwrap_t;
 
 
@@ -68,6 +69,7 @@ void             *gdbwrap_writememory(la32 linaddr, void *value,
 				      unsigned bytes, gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
 void             gdbwrap_shipallreg(gdbwrap_t *desc);
+void             gdbwrap_ctrl_c(gdbwrap_t *desc);
 void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);

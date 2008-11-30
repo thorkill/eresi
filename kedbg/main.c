@@ -1,6 +1,7 @@
 #include "kedbg.h"
 
 
+
 /**************** Command registration ****************/
 static void     kedbg_register_command(void)
 {
@@ -141,7 +142,8 @@ static void     kedbg_find_linkmap(void)
   /* And now, we read all the entries from the first one. */
   do
     {
-      kedbg_getstr(linkmap_copy.lname, lmstring, sizeof(lmstring));
+      /* We read 40B at a time. It'll accelerate the boot. */
+      kedbg_readmema(NULL, (eresi_Addr) linkmap_copy.lname, lmstring, 40);
       DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
 		       "lmstring: %s\n", linkmap_copy.lnext,
 		       linkmap_copy.laddr, lmstring));
@@ -284,6 +286,7 @@ static int      kedbg_main(int argc, char **argv)
 {
   int           ret;
    
+
   /* The "1" stands for interactive. */
   revm_setup(1, argv, REVM_STATE_INTERACTIVE, REVM_SIDE_CLIENT);
   revm_config(".kedbgrc");
@@ -346,7 +349,11 @@ static int      kedbg_main(int argc, char **argv)
       kedbg_biosmap_load();
     }
 
-  revm_run(argc, argv);
+
+  /* Signal handler */
+  signal(2, kedbg_sigint);
+  
+  revm_run_no_handler(argc, argv);
 
   return 0;
 }

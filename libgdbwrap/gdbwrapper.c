@@ -22,6 +22,8 @@ static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
 {
   ASSERT(error != NULL);
 
+  DEBUGMSG(printf("Treating error (encoded): %s\n", error));
+
   if (!strncmp(GDBWRAP_REPLAY_OK, error, strlen(GDBWRAP_REPLAY_OK)))
     return FALSE;
 
@@ -75,6 +77,12 @@ Bool                 gdbwrap_is_active(gdbwrap_t *desc)
     return TRUE;
   else
     return FALSE;
+}
+
+
+static Bool         gdbwrap_isinterrupted(gdbwrap_t *desc)
+{
+  return desc->interrupted;
 }
 
 
@@ -276,7 +284,6 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
       memset(encodestr, valuetocopy, numberoftimes);
       encodestr = strstr(NEXT_CHAR(encodestr), GDBWRAP_START_ENCOD);
     }
-  DEBUGMSG(printf("Decoded packet received: %s\n", dstpacket));
 
   return dstpacket;
 }
@@ -377,7 +384,15 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
       }
     else
       {
-	ASSERT(FALSE);
+	if (gdbwrap_isinterrupted(desc))
+	  {
+	    desc->interrupted = FALSE;
+	    gdbwrap_errorhandler(desc->packet, desc);
+	    return gdbwrap_run_length_decode(desc->packet, desc->packet,
+					     desc->max_packet_size);
+	  }
+	else
+	  ASSERT(FALSE);
       }
   }
   else desc->is_active = FALSE;
@@ -401,6 +416,7 @@ static char          *gdbwrap_send_data(const char *query, gdbwrap_t *desc)
       rval = send(desc->fd, mes, strlen(mes), 0);
       ASSERT(rval != -1);
       mes  = gdbwrap_get_packet(desc);
+      DEBUGMSG(printf("Received: %s\n", mes));
     }
   else
     {
@@ -444,6 +460,7 @@ gdbwrap_t            *gdbwrap_init(int fd)
   desc->packet            = malloc((desc->max_packet_size + 1) * sizeof(char));
   desc->fd                = fd;
   desc->is_active         = TRUE;
+  desc->interrupted       = FALSE;
   ASSERT(desc->packet != NULL);
 
   return desc;
@@ -557,8 +574,8 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   if (gdbwrap_is_active(desc))
     {
       rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
-      gdbwrap_populate_reg(rec, desc);
-      printf("The value of eip: %#x\n", desc->reg32.eip);
+      if (rec != NULL)
+	gdbwrap_populate_reg(rec, desc);
     }
 }
 
@@ -699,6 +716,21 @@ void                 gdbwrap_shipallreg(gdbwrap_t *desc)
   memcpy(ret, locreg, strlen(locreg));
   snprintf(locreg, sizeof(locreg), "%s%s", GDBWRAP_WGENPURPREG, ret);
   gdbwrap_send_data(locreg, desc);
+}
+
+
+void                gdbwrap_ctrl_c(gdbwrap_t *desc)
+{
+  u_char            sended = CTRL_C;
+  int               rval;
+  
+  desc->interrupted = TRUE;
+  send(desc->fd, &sended, sizeof(u_char), 0);
+  rval = recv(desc->fd, desc->packet, desc->max_packet_size, 0);
+  gdbwrap_populate_reg(desc->packet, desc);
+  rval = send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM),
+	      0x0);
+  ASSERT(rval);
 }
 
 

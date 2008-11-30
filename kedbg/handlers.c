@@ -124,7 +124,7 @@ void            kedbg_print_reg(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   gdbwrap_gdbreg32 *reg;
-
+    
   PROFILER_INQ();
   reg = &loc->reg32;
   e2dbg_register_dump("EAX", reg->eax);
@@ -136,8 +136,21 @@ void            kedbg_print_reg(void)
   e2dbg_register_dump("ESP", reg->esp);
   e2dbg_register_dump("EBP", reg->ebp);
   e2dbg_register_dump("EIP", reg->eip);
+
   PROFILER_OUTQ();
 }
+
+
+void            kedbg_sigint(int sig)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  fprintf(stderr,
+	  "HIHAAAAAAAAAA: %d", sig);
+  fflush(stderr);
+  gdbwrap_ctrl_c(loc);
+}
+
 
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 				void *buf, unsigned size)
