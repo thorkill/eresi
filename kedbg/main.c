@@ -1,7 +1,6 @@
 #include "kedbg.h"
 
 
-
 /**************** Command registration ****************/
 static void     kedbg_register_command(void)
 {
@@ -351,7 +350,7 @@ static int      kedbg_main(int argc, char **argv)
 
 
   /* Signal handler */
-  signal(2, kedbg_sigint);
+  signal(SIGINT, kedbg_sigint);
   
   revm_run_no_handler(argc, argv);
 

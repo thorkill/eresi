@@ -59,6 +59,7 @@ Bool            kedbg_isvmrunning(void)
   return gdbwrap_isvmrunning(loc);
 }
 
+
 void            *kedbg_getret_ia32(void *frame)
 {
   la32          ptr;
@@ -144,11 +145,11 @@ void            kedbg_print_reg(void)
 void            kedbg_sigint(int sig)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-
-  fprintf(stderr,
-	  "HIHAAAAAAAAAA: %d", sig);
-  fflush(stderr);
+  
+  PROFILER_INQ();
+  NOT_USED(sig);
   gdbwrap_ctrl_c(loc);
+  PROFILER_OUTQ();
 }
 
 
