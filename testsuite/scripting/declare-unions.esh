@@ -15,7 +15,7 @@ union1 myunion1 = (field3(field1:42, field2:43), field4:44, field5(field1:45, fi
 print $myunion1
 
 tables expressions
-profile enable warn
+#profile enable warn
 set $myunion1.field4 42
 
 print $myunion1

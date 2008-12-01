@@ -184,6 +184,7 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
   u_char		*key;
   hash_t		*src;
   revmobj_t		*o;
+  revmobj_t		*copy;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !e)
@@ -205,10 +206,13 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
   /* Some checks */
   if (!o->kname && !o->hname && !o->get_name)
     {
+      copy = revm_copy_object(o);
       if (revm_convert_object(e, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
-      key = (u_char *) (h->type != o->otype->type ? strdup(o->immed_val.str) : o->immed_val.str);
+      key = o->immed_val.str;
+      revm_destroy_object(e->value, 0);
+      o = e->value = copy;
     }
   else
     key = (u_char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
@@ -269,8 +273,8 @@ int			revm_elist_add(list_t *h, revmexpr_t *e)
       if (revm_convert_object(e, ASPECT_TYPE_STR) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unknown key for source object", -1);
-      key = strdup(e->value->immed_val.str);
-      revm_destroy_object(e->value);
+      key = e->value->immed_val.str;
+      revm_destroy_object(e->value, 0);
       o = e->value = copy;
     }
   else

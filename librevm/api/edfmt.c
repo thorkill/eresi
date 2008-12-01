@@ -227,7 +227,7 @@ static int		revm_edfmt_inform(edfmtvar_t *var)
   else
     str = var->type->name;
 
-  revm_inform_type(str, buf, buf, NULL, 0, 0);
+  revm_inform_toplevel(str, buf, buf, NULL, 0, 0);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

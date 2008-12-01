@@ -79,12 +79,16 @@ static revmexpr_t	*revm_induction_get(char *name)
   else
     {
       revm_expr_print(world.curjob->iter[world.curjob->curiter].curind, 0);
+
+#if __DEBUG_FOREACH__
       fprintf(stderr, "name = %s curind->label = %s reclevel = %u curscope = %u "
 	      "end = %s endlabel = %s \n",
 	      name, world.curjob->iter[world.curjob->curiter].curind->label,
 	      world.curjob->iter[world.curjob->curiter].reclevel,
 	      world.curjob->curscope, world.curjob->iter[world.curjob->curiter].end,
 	      world.curjob->curcmd->endlabel);
+#endif
+
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Inconsistent foreach induction variable", NULL);	   
     }
@@ -150,13 +154,13 @@ static int	revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
   var = induction->value;
   if (world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT)
     {
-      infbound = revm_lookup_index(world.curjob->curcmd->param[2]);
+      infbound = revm_lookup_index(infstr);
       world.curjob->iter[world.curjob->curiter].listidx = infbound + 1;
     }
   else
     infbound = world.curjob->iter[world.curjob->curiter].listidx++;
   
-  upbound  = revm_lookup_index(world.curjob->curcmd->param[4]);
+  upbound  = revm_lookup_index(supstr);
   
   /* Bound check */
   if (infbound >= upbound)
@@ -308,7 +312,7 @@ static void	revm_iterator_free(hash_t *table, list_t *list, char *indname)
   else if (list)
     elist_linearity_set(list, 0);
 
-  revm_expr_destroy(indname);
+  revm_expr_clean(indname);
   
   /* Decrease iteration depth */
   bzero(&world.curjob->iter[world.curjob->curiter], sizeof(revmiter_t));
@@ -343,14 +347,14 @@ static int	revm_induction_process(hash_t *table, list_t *list, char *curkey,
     }
   
 #if __DEBUG_FOREACH__
-  printf("INDUCTION_PROCESS: Got elem = %p for key = %s \n", elem, curkey);
+  printf("INDUCTION_PROCESS: Got elem = %p (%s) for key = %s \n", elem, elem, curkey);
 #endif
 
   /* If the element is already an expression, copy it to the induction variable */
   if (typeid == ASPECT_TYPE_EXPR)
     {
       indname = strdup(induction->label);
-      revm_expr_hide(induction->label);
+      revm_expr_clean(induction->label);
       induction = revm_expr_copy((revmexpr_t *) elem, indname, 0);
       world.curjob->iter[world.curjob->curiter].curind = induction;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -368,14 +372,14 @@ static int	revm_induction_process(hash_t *table, list_t *list, char *curkey,
     {
       induction->value->immed = 1;
       induction->value->immed_val.ent = (eresi_Addr) elem;
-#if defined(__DEBUG_FOREACH__)
+#if __DEBUG_FOREACH__
       fprintf(stderr, "Setting indvar->immed_val.ent = %X \n", (eresi_Addr) elem);
 #endif
     }
   else 
     {
       typename = induction->type->name;
-      revm_expr_hide(paramname);
+      revm_expr_clean(paramname);
       induction = revm_inform_type_addr(typename, paramname, (eresi_Addr) elem, NULL, 0, 1);
       if (!induction)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

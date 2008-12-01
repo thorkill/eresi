@@ -1,4 +1,4 @@
-#!/usr/local/bin/elfsh
+#!../../elfsh/elfsh32
 #
 # Second regression test script
 #

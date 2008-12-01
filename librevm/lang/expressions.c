@@ -465,7 +465,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
   char		*size;
   char		*typename;
   char		offset[128];
-  int		idx;
+  u_int		idx;
   int		sz;
   char		*pad, *pad2;
   int		newtaboff;
@@ -541,6 +541,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
       // FIXME-XXX: Print up 10 elements of array ...
       else if (curtype->dimnbr && curtype->elemnbr)
 	{
+	  /*
 	  for (sz = idx = 0; idx < curtype->dimnbr; idx++)
 	    sz += 40;
 	  size = alloca(sz + 50);
@@ -549,7 +550,9 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 			  revm_colorwarn("["),
 			  revm_colornumber("%u", curtype->elemnbr[idx]),
 			  revm_colorwarn("]"));
-	  sz += sprintf(size + sz, "%s", revm_colorwarn(" = "));
+	  */
+	  size = alloca(50);
+	  sprintf(size, "%s", revm_colorwarn(" = "));
 	}
       else
 	{
@@ -831,8 +834,10 @@ int		revm_expr_print(revmexpr_t *expr, u_char quiet)
   int		ret;
   char		buf[BUFSIZ];
   int		iter;
+  int		uniq;
   aspectype_t	*type;
-
+  char		*name;
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!expr || !expr->type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -840,29 +845,32 @@ int		revm_expr_print(revmexpr_t *expr, u_char quiet)
 
   /* Make sure we only print the subrecord if requested */
   type = expr->type;
+  name = expr->label;
+  uniq = 0;
   if (expr->childs)
     {
       expr = expr->childs;
       iter = 1;
+      uniq = 1;
     }
   else
     iter = (aspect_type_simple(expr->type->type) ? 0 : 1);
 
   /* If we are printing a simple type or a subtype expression, we need to print a top level */
-  if (type->next || (type->childs && type->childs->next))
+  if (uniq || type->next || (type->childs && type->childs->next))
     {
       if (!quiet)
 	snprintf(buf, BUFSIZ, " %s %s \t %s", 
 		 revm_colorfunction(type->name),
-		 revm_colorfunction(expr->label), revm_colorwarn("= {"));
+		 revm_colorfunction(name), revm_colorwarn("= {"));
       else
 	snprintf(buf, BUFSIZ, " %s(", 
 		 revm_colorfunction(type->name));
       revm_output(buf);
       revm_endline();
     }
-  revm_expr_printrec(expr, (!iter || !expr->next ? strlen(expr->label) + 6 : 1), 0, iter, quiet);
-  if (!quiet && (type->next || (type->childs && type->childs->next)))
+  revm_expr_printrec(expr, (!iter || !expr->next ? strlen(name) + 6 : 1), 0, iter, quiet);
+  if (!quiet && (uniq || type->next || (type->childs && type->childs->next)))
     revm_output(revm_colorwarn("}"));
   else if (quiet)
     revm_output(")\\l");
@@ -1249,7 +1257,7 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
 }
 
 /* Destroy an expression and remove it from the hash table */
-int		revm_expr_unlink(char *e, u_char needfree)
+static int	revm_expr_unlink(char *e, u_char exprfree, u_char datafree)
 {
   revmexpr_t	*expr;
   revmexpr_t	*prevexpr;
@@ -1308,23 +1316,23 @@ int		revm_expr_unlink(char *e, u_char needfree)
     }
 
   /* Free the object */
-  if (expr->value && needfree)
-    revm_destroy_object(expr->value);
+  if (expr->value)
+    revm_destroy_object(expr->value, datafree);
 
   for (child = expr->childs; child; child = next)
     {
       next = child->next;
       snprintf(newname, sizeof(newname), "%s.%s", e, child->label);
-      if (revm_expr_unlink(newname, needfree) < 0)
+      if (revm_expr_unlink(newname, exprfree, datafree) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to destroy child expression", -1);
     }
 
-  if (needfree)
+  if (exprfree)
     {
       
 #if __DEBUG_EXPRS__
-      fprintf(stderr, "\n [D] UNLINK EXPR %s (needfree = %hhu) \n", e, needfree);
+      fprintf(stderr, "\n [D] UNLINK EXPR %s (exprfree = %hhu) \n", e, exprfree);
 #endif
       
       XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
@@ -1343,14 +1351,14 @@ int		revm_expr_destroy(char *ename)
   if (!ename || *ename != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
-  ret = revm_expr_unlink(ename, 1);
+  ret = revm_expr_unlink(ename, 1, 1);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to destroy expression", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** Destroy an expression and remove it from the hash table : front end function */
+/** Remove expression from the hash table without destruction : front end function */
 int		revm_expr_hide(char *ename)
 {
   int		ret;
@@ -1359,10 +1367,27 @@ int		revm_expr_hide(char *ename)
   if (!ename || *ename != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
-  ret = revm_expr_unlink(ename, 0);
+  ret = revm_expr_unlink(ename, 0, 0);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to hide expression", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/** Remove expression from the hash table without data destruction : front end function */
+int		revm_expr_clean(char *ename)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!ename || *ename != REVM_VAR_PREFIX)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", -1);
+  ret = revm_expr_unlink(ename, 1, 0);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to clean expression", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

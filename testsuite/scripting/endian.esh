@@ -1,16 +1,12 @@
-#!/usr/bin/elfsh
+#!../../elfsh/elfsh32
 
-load MISC/top64
-quiet
-p
-verb
+load /bin/ls
+
+got 00
 set 1.got[0] .plt
-save /tmp/top64new
-quiet
-p
-verb
-load /tmp/top64new
-quiet
-p
-verb
-quit
+got 00
+
+save ls.test
+load ls.test
+got 00
+

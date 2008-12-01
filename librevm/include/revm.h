@@ -94,6 +94,7 @@ extern asm_processor	proc;
 #define __DEBUG_ARG_COUNT__	0
 #define	__DEBUG_EXPRS__		0
 #define	__DEBUG_EXPRS_MORE__	0
+#define	__DEBUG_INFORM__	0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
@@ -503,7 +504,7 @@ char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, elfsh_SAddr *roff);
 /* General VM functions */
 revmexpr_t	*revm_lookup_param(char *param, u_char existing);
 revmobj_t	*revm_check_object(revmobj_t *pobj);
-void		revm_destroy_object(revmobj_t *pobj);
+void		revm_destroy_object(revmobj_t *pobj, u_char datafree);
 revmobj_t	 *revm_copy_object(revmobj_t *pobj);
 elfshobj_t	*revm_getfile(u_int index);
 revmmod_t	*revm_getmod(u_int index);
@@ -683,10 +684,9 @@ int		revm_type_hashcreate(char *name);
 int		revm_type_reflect(hash_t *hash, char *typename);
 
 /* Data access related functions */
-aspectype_t	*revm_fieldoff_get(aspectype_t *par, char *fld, u_int *off);
 revmobj_t	*revm_object_lookup_real(aspectype_t *type, char *objname, char *objpath, char trans);
 revmobj_t	*revm_object_lookup(char *str);
-revmobj_t	*revm_object_create(aspectype_t *type, void *data, char transaddr);
+revmobj_t	*revm_object_create(aspectype_t *type, void *data, char transaddr, u_char perm);
 
 /* Generic handlers for data accesses */
 char		*revm_generic_getname(void *type, void *data);
@@ -776,7 +776,10 @@ int		revm_edfmt_parse(elfshobj_t *file);
 int		revm_edfmt_uni_print(elfshobj_t *file);
 
 /* Type/Inform related functions */
-revmexpr_t	*revm_inform_type(char *type, char *name, char *addr, revmexpr_t *e, u_char p, u_char r);
+revmexpr_t	*revm_inform_type(char *type, char *name, eresi_Addr, revmexpr_t *e, u_char p, u_char r);
+revmexpr_t	*revm_inform_toplevel(char *type, char *varname, 
+				      char *straddr, revmexpr_t *expr,
+				      u_char print, u_char rec);
 revmexpr_t	*revm_inform_type_addr(char *t, char *n, eresi_Addr a, revmexpr_t *, u_char p, u_char r);
 int		revm_check_addr(elfshobj_t *obj, eresi_Addr add);
 int             revm_informed_print(char *name);
@@ -803,7 +806,7 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
 revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
 int		revm_expr_destroy(char *ename);
 int		revm_expr_hide(char *ename);
-int		revm_expr_unlink(char *ename, u_char needfree);
+int		revm_expr_clean(char *ename);
 revmexpr_t	*revm_expr_lookup(u_int oid);
 revmexpr_t	*revm_compute(char *str);
 

@@ -43,7 +43,7 @@ int		revm_convert2str(revmobj_t *obj)
     {
     case ASPECT_TYPE_BYTE:
       val8 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%02hhu", val8);
+      snprintf(tmp, sizeof(tmp), "%hhu", val8);
       obj->immed_val.byte = 0;
       obj->immed_val.str = strdup(tmp);
  
@@ -54,7 +54,7 @@ int		revm_convert2str(revmobj_t *obj)
       break;
     case ASPECT_TYPE_SHORT:
       val16 = (obj->immed ? obj->immed_val.half : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%04hu", val16);
+      snprintf(tmp, sizeof(tmp), "%hu", val16);
       obj->immed_val.half = 0;
       obj->immed_val.str = strdup(tmp);
  
@@ -65,7 +65,7 @@ int		revm_convert2str(revmobj_t *obj)
       break;
     case ASPECT_TYPE_INT:
       val32 = (obj->immed ? obj->immed_val.word : obj->get_obj(obj->parent));
-      snprintf(tmp, sizeof(tmp), "%08u", val32);
+      snprintf(tmp, sizeof(tmp), "%u", val32);
       obj->immed_val.word = 0;
       obj->immed_val.str = strdup(tmp);
  

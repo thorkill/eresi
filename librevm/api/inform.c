@@ -39,7 +39,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
   /* We are at the first iteration : create root expression */
   pathsize = snprintf(pathbuf, sizeof(pathbuf), "%s", curpath);
   
-#if __DEBUG_EXPRS__
+#if __DEBUG_INFORM__
   fprintf(stderr, " [I] Current expr path before loop (%s) \n", pathbuf);
 #endif
 
@@ -58,11 +58,11 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
 	{
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, ".%s", curtype->fieldname);
 
-#if __DEBUG_EXPRS__
+#if __DEBUG_INFORM__
 	  fprintf(stderr, " [I] Curchild expr path will be informed recursively (%s) \n", pathbuf);
 #endif
 	  
-	  revm_inform_type_addr(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
+	  revm_inform_type(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
 	  pathsize += len;
 	  revm_inform_subtype(pathbuf, newexpr, curtype, childaddr, translateaddr);
 	  pathsize -= len;
@@ -73,7 +73,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
       else
 	{
 
-#if __DEBUG_EXPRS__
+#if __DEBUG_INFORM__
 	  fprintf(stderr, " [I] Current TERMINAL path inside loop (%s::%s) \n", 
 		  pathbuf, curtype->fieldname);
 #endif
@@ -83,7 +83,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Failed to lookup terminal object", NULL);
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, ".%s", curtype->fieldname);
-	  revm_inform_type_addr(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
+	  revm_inform_type(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
 	  bzero(pathbuf + pathsize, len);
 	}
       
@@ -179,7 +179,7 @@ int		revm_check_addr(elfshobj_t *obj, eresi_Addr addr)
 }
 
 
-/* Add an elemnt to the inform table for a given type, by real address */
+/** Add an element to the inform table for a given type, by real address */
 revmexpr_t	*revm_inform_type_addr(char		*type, 
 				       char		*varname, 
 				       eresi_Addr	addr, 
@@ -193,7 +193,7 @@ revmexpr_t	*revm_inform_type_addr(char		*type,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, addrbuf, 20, NULL);
   snprintf(addrbuf, 20, XFMT, (eresi_Addr) addr);
-  ret = revm_inform_type(type, varname, addrbuf, expr, print, rec);
+  ret = revm_inform_toplevel(type, varname, addrbuf, expr, print, rec);
   if (ret)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -204,36 +204,23 @@ revmexpr_t	*revm_inform_type_addr(char		*type,
 /**
  * @brief Add an element to the inform table for a given type 
  */
-revmexpr_t	*revm_inform_type(char *type, char *varname, 
-				  char *straddr, revmexpr_t *expr,
-				  u_char print, u_char rec)
+revmexpr_t	*revm_inform_toplevel(char *type, char *varname, 
+				      char *straddr, revmexpr_t *expr,
+				      u_char print, u_char rec)
 {
-  hash_t	*hash;
-  char		buf[BUFSIZ];
-  eresi_Addr	addr;
   eresi_Addr	oaddr;
   char		*realname;
   char		*symname;
-  revmannot_t	*annot;
   elfsh_SAddr	off;
-  aspectype_t	*rtype;
-  
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* Add element in the good hash table */
-  rtype = aspect_type_get_by_name(type);
-  snprintf(buf, sizeof(buf), "type_%s", type);
-  hash = hash_find(buf);
-  if (!hash || !rtype)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unknown requested type", NULL);
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* The address is not precised, to to find it from the varname */
   if (!straddr)
     straddr = varname;
 
-#if __DEBUG_EXPRS__
-  fprintf(stderr, "\n [D] Variable %40s LOOKED UP\n", varname);
+#if __DEBUG_INFORM__
+  fprintf(stderr, "\n [D] Variable %40s TOPLEVEL INFORM ENTER \n", varname);
 #endif
 
   /* The address is given, look it up */
@@ -244,9 +231,9 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   oaddr    = revm_lookup_addr(straddr);
 
   /* Adding expression and its type to hash tables */
-#if __DEBUG_EXPRS__
+#if __DEBUG_INFORM__
   fprintf(stderr, " [D] Variable %40s TO BE added to local exprs table with type %s \n", 
-	  realname, rtype->name);
+	  realname, type);
 #endif
 
   /* Only check for addr range if print flag (manual inform) is on */
@@ -260,21 +247,57 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
   /* If just the address was given, lookup or create a name for the variable */
   if (IS_VADDR(realname))
     {
-      sscanf(realname + 2, AFMT, &addr);
-      symname = elfsh_reverse_symbol(world.curjob->curfile, addr, &off);
+      sscanf(realname + 2, AFMT, &oaddr);
+      symname = elfsh_reverse_symbol(world.curjob->curfile, oaddr, &off);
       if (symname && !off)
 	realname = strdup(symname);
       else
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, realname, strlen(type) + 20, NULL);
-	  snprintf(realname, sizeof(realname), "%s_"AFMT, type, addr);
+	  snprintf(realname, sizeof(realname), "%s_"AFMT, type, oaddr);
 	}
     }
-  addr = oaddr;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, annot, sizeof(revmannot_t), NULL);
+  /* It can happens that the realname lacks a variable prefix, in that case add it now */
+  if (*realname != REVM_VAR_PREFIX)
+    {
+      varname = alloca(strlen(realname) + 2);
+      *varname = REVM_VAR_PREFIX;
+      strcpy(varname + 1, realname);
+      realname = varname;
+    }
+
+  /* Now do the real job */
+  expr = revm_inform_type(type, realname, oaddr, expr, print, rec);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to inform type", NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
+}
+
+
+/** Add type information for a memory address */
+revmexpr_t	*revm_inform_type(char *type, char *realname, 
+				  eresi_Addr addr, revmexpr_t *expr,
+				  u_char print, u_char rec)
+{
+  hash_t	*hash;
+  char		buf[BUFSIZ];
+  revmannot_t	*annot;
+  aspectype_t	*rtype;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* Add element in the good hash table */
+  rtype = aspect_type_get_by_name(type);
+  snprintf(buf, sizeof(buf), "type_%s", type);
+  hash = hash_find(buf);
+  if (!hash || !rtype)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unknown requested type", NULL);
 
   /* Setup current string table offset, type, scope, and representation */
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, annot, sizeof(revmannot_t), NULL);
   annot->nameoff = revm_strtable_add(realname);
   annot->typenum = rtype->type; 
   annot->scope = EDFMT_SCOPE_GLOBAL; 
@@ -293,11 +316,9 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, expr, sizeof(revmexpr_t), NULL);
 	  expr->strval = NULL;
-	  expr->label  = realname;
+	  expr->label  = strdup(realname);
 	  expr->type   = rtype;
-
-	  // XXX: changed NULL for expr (testing)
-	  expr->childs = revm_inform_subtype(realname, NULL, rtype, oaddr, print);
+	  expr->childs = revm_inform_subtype(realname, NULL, rtype, addr, print);
 	}
       else if (!rtype->childs)
 	expr = revm_simple_expr_create(rtype, realname, NULL);
@@ -305,17 +326,18 @@ revmexpr_t	*revm_inform_type(char *type, char *varname,
 
   /* Else if recursion is asked on an existing expression (set $expr $existingexpr) */
   else if (rec && rtype->childs)
-    revm_inform_subtype(realname, expr, rtype, oaddr, print);
+    revm_inform_subtype(realname, expr, rtype, addr, print);
   
   /* Register the expression */
   annot->expr = expr;
   if (expr)
     expr->annot = annot;
+
   hash_set(&world.curjob->recur[world.curjob->curscope].exprs, 
 	   (char *) strdup(realname), (void *) expr);
 
   /* Adding expression and its type to hash tables */
-#if __DEBUG_EXPRS__
+#if __DEBUG_INFORM__
   fprintf(stderr, " [D] Variable %40s ADDED to local exprs hash with type %s \n", 
 	  realname, rtype->name);
 #endif

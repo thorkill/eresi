@@ -426,7 +426,7 @@ elfshsect_t		*elfsh_get_section_by_index(elfshobj_t	*file,
 						    int		*num)
 {
   elfshsect_t		*section;
-  int			local;
+  u_int			local;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -469,7 +469,7 @@ elfshsect_t		*elfsh_get_rsection_by_index(elfshobj_t	*file,
 						    int		*num)
 {
   elfshsect_t		*section;
-  int			local;
+  u_int			local;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1120,7 +1120,8 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
 					 u_int			size,
 					 u_int			sizelem)
 {
-  void	*rdata;
+  void		*rdata;
+  u_char	iotype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1133,10 +1134,16 @@ int		elfsh_write_section_data(elfshsect_t		*sect,
   if ((off * sizelem) + size > sect->shdr->sh_size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Section is too small", -1);
+  iotype = sect->parent->iotype;
 
-  //rdata = elfsh_readmem(sect);
-  elfsh_writemem(sect->parent, sect->shdr->sh_addr + (off * sizelem), data, size);
-  //memcpy(rdata + (off * sizelem), data, size);
+  /* Vectors used differently depending on IO Type ! */
+  if (iotype == ELFSH_IOTYPE_STATIC || iotype == ELFSH_IOTYPE_EMBEDDED)
+    {
+      rdata = elfsh_readmem(sect);
+      memcpy(rdata + (off * sizelem), data, size);
+    }
+  else
+    elfsh_writemem(sect->parent, sect->shdr->sh_addr + (off * sizelem), data, size);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -11,14 +11,6 @@ add $hash[test2] AMD
 add $hash[test2] Pa-risc
 tables test2
 
-vlist
-type
-
-# We need a parameter
-cmp $# 1
-jne error
-
-beginning:
 print Starting first foreach
 
 foreach $elem of test2 matching Sparc
@@ -32,25 +24,6 @@ foreach $element of test2
   print Table contains element : $element
 forend
 
-load /usr/bin/ssh
-
-vlist
-set $entnbr 1.sht[.dynsym].size
-div $entnbr 1.sht[.dynsym].entsize
-vlist
-
-print Third loop until $entnbr :
-print
-
-foreach $idx of 0 until $entnbr
-  print Symbol $idx is 1.dynsym[$idx].name
-forend
-
-unload /usr/bin/ssh
-print Program finished
 empty test2
 tables test2
 quit
-
-error:
-print This script needs one parameter (a file name)

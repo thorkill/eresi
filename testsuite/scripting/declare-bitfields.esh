@@ -4,22 +4,14 @@
 
 print ************ Now declarations of bitfields types *****************
 
-type struct1 = field1:long field2:bit[7] field3:byte
-union union1 = field4:struct1 field5:long field6:struct1
+type struct1 = field1:long field2:bit[31] field3:byte
 type 
-type struct1
-type union1
 
 print ************ Now declarations of variables *****************
 
-union1 myunion1 = (field4(field1:42, field3:43), field5:44, field6(field1:45, field3:46))
-print $myunion1
+struct1 test1 = (field1:0x12345678, field2:0x00FF00FF, field3:A)
 
-set $myunion1.field5 42
-print $myunion1
-set $myunion1.field4.field1 31337
-print $myunion1
-set $myunion1.field6.field3 A
-print $myunion1
+print $test1
 
 quit
+

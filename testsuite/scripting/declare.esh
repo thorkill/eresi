@@ -1,6 +1,8 @@
-#!../../evarista/evarista64
+#!../../evarista/evarista32
 
 #profile enable warn
+verb
+nocolor
 
 print ************ Now declarations of record types *****************
 
@@ -70,7 +72,7 @@ print $mystruct2c
 
 print *********** Now testing basic whole-expression comparison ****************
 
-#profile enable warn
+profile enable warn
 
 cmp $mystruct0 $mystruct0
 cmp $mystruct0 $mystruct0b
@@ -79,6 +81,8 @@ cmp $mystruct1 $mystruct1b
 cmp $mystruct1b $mystruct1c
 cmp $mystruct2 $mystruct2b
 cmp $mystruct2b $mystruct2c
+
+quit
 
 print *********** Now testing field-order insensitive comparison ****************
 

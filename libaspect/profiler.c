@@ -110,7 +110,7 @@ void		profiler_alloc_warnprint(char *str, int fatal, int idx)
 
 
 /** 
- * @brief Warn if anything bad is happening 
+ * @brief Warn if anything bad is happening. Good when we cannot use valgrind.
  * @param warntype Either PROFILER_WARNING_LAST, PROFILER_WARNING_FIRST or PROFILER_WARNING_UNKNOW
  */
 void			profiler_alloc_warning(u_char warntype)
@@ -141,7 +141,7 @@ void			profiler_alloc_warning(u_char warntype)
       /* We do emit a warning if we encountered a double free */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_FREE &&
 	  ent2 && ent2 > ent)
-	profiler_alloc_warnprint(" [E] A pointer was freed"
+	profiler_alloc_warnprint(" [A] A pointer was freed"
 				 " but it is already free ", 
 				 1, profiler_adepth);
       
@@ -150,7 +150,7 @@ void			profiler_alloc_warning(u_char warntype)
 	   allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC)
 	  && ent 
 	  && ent->alloctype != allocentries[profiler_adepth].alloctype)
-	profiler_alloc_warnprint(" [E] A pointer was freed"
+	profiler_alloc_warnprint(" [A] A pointer was freed"
 				 " but it is was belonging "
 				 " to another allocator ", 
 				 1, profiler_adepth);
@@ -158,21 +158,21 @@ void			profiler_alloc_warning(u_char warntype)
       /* We emit a warning when we free without remembering the alloc */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC
 	  && !ent)
-	profiler_alloc_warnprint(" [!] A pointer was reallocated but its"
+	profiler_alloc_warnprint(" [A] A pointer was reallocated but its"
 				 " allocation was not found in history",
 				 0, profiler_adepth);
       
       /* We emit a warning when we realloc without remembering alloc */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC
 	  && !ent && !ent2)
-	profiler_alloc_warnprint(" [!] A pointer was reallocated but its"
+	profiler_alloc_warnprint(" [A] A pointer was reallocated but its"
 				 " allocation was not found in history",
 				 0, profiler_adepth);
 
       /* We emit a warning when we realloc something freed */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_REALLOC
 	  && ent2 && (ent2 > ent))
-	profiler_alloc_warnprint(" [E] A pointer was reallocated but it"
+	profiler_alloc_warnprint(" [A] A pointer was reallocated but it"
 				 " was in a freed state",
 				 1, profiler_adepth);
 
@@ -180,7 +180,7 @@ void			profiler_alloc_warning(u_char warntype)
 	 and this pointer was already allocated after beeing freed */
       if (allocentries[profiler_adepth].optype == PROFILER_OP_ALLOC &&
 	  ent && ((ent > ent2) || (ent > ent3)))
-	profiler_alloc_warnprint(" [E] A pointer was reallocated"
+	profiler_alloc_warnprint(" [A] A pointer was reallocated"
 				 " without beeing freed ", 
 				 1, profiler_adepth);
       
@@ -196,7 +196,7 @@ void			profiler_alloc_warning(u_char warntype)
 				allocentries[0].addr, 
 				PROFILER_OP_FREE);
       if (!ent)
-	profiler_alloc_warnprint(" [!] An allocation was removed"
+	profiler_alloc_warnprint(" [A] An allocation was removed"
 				 " from the history without beeing free", 
 				 0, 0);
       break;
@@ -205,7 +205,7 @@ void			profiler_alloc_warning(u_char warntype)
     default:
     case PROFILER_WARNING_UNKNOW: 
       if (aspectworld.profile)
-	aspectworld.profile(" [E] Unknown warning type requested to the "
+	aspectworld.profile(" [A] Unknown warning type requested to the "
 			    "allocator profiler\n");
       exit(-1);
       break;
@@ -265,17 +265,15 @@ int			profiler_alloc_update(char *file, char *func,
 					      u_int line, u_long addr, 
 					      u_char atype, u_char otype)
 {
-  //void			*profunc;
-  // XXX: remove this ?
-  //profunc             = aspectworld.profile;  
-  //aspectworld.profile = (void *) printf;
+  if (aspectworld.proflevel & PROFILE_ALLOC)
+    printf(" [A] %s@%s:%u %s ADDR %lX \n", func, file, line, 
+	   (atype == PROFILER_OP_FREE ? "FREE" : "(RE)ALLOC"), addr);
 
   /* Just happens an entry at the end. Check the last entry. */
   if (profiler_adepth + 1 != PROFILER_MAX_ALLOC)
     {
       profiler_alloc_add(file, func, line, addr, atype, otype);
       profiler_alloc_warning(PROFILER_WARNING_LAST);
-      //aspectworld.profile = profunc;
       return (0);
     }
 
@@ -285,7 +283,6 @@ int			profiler_alloc_update(char *file, char *func,
   profiler_alloc_add(file, func, line, addr, atype, otype);  
   profiler_alloc_warning(PROFILER_WARNING_LAST);
 
-  //aspectworld.profile = profunc;
   return (1);
 }
 

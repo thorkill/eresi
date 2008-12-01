@@ -1,7 +1,7 @@
 #!../../elfsh/elfsh32
 
 #profile enable warn
-#quiet
+quiet
 
 add $list[test] Intel
 add $list[test] Alpha
@@ -15,11 +15,11 @@ lists test2
 
 foreach $element of test
 
-  foreach $element3 of test2
-    print List2 contains element : $element3
-  forend
-
   print List contains element : $element
+
+  foreach $element2 of test2
+    print List2 contains element : $element2
+  forend
 
 forend
 

@@ -49,38 +49,72 @@ void			revm_filter_zero(char *buf)
 
 
 /* Replace \xNUM taking care of the \x00 in a string */
+/*
 char		*revm_filter_param(char *buf, char *ptr)
 {
   u_int		nbr;
   char		c;
   char		d;
+  u_int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* if string ends with '\x', its over for this entry */
+  //if string ends with '\x', its over for this entry
   if (*(ptr + 2) == 0x00)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
 
-  /* Do exception for \x00 which must not be resolved */
+  //Do exception for \x00 which must not be resolved
   c = *(ptr + 2);
   d = *(ptr + 3);
   if (c == '0' && !((d >= 'A' && d <= 'F') || (d >= '1' && d <= '9')))
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		       (buf + (d == '0' ? 4 : 3)));
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr + 4);
 
-  /* else read the hexadecimal value */
-  else
+  //else read the hexadecimal value
+  sscanf(ptr + 2, "%X", &nbr);
+  *ptr = (char) nbr;
+  buf = ptr + 4;
+  
+  //If we are ending the search buffer
+  if (*buf == 0x00)
     {
-      sscanf(ptr + 2, "%X", &nbr);
-      *ptr = (char) nbr;
-      buf = ptr + 4;
-
-      /* and copy the data, strcpy put NUL at the end */
-      strncpy(ptr + 1, buf, strlen(buf));
+      *(ptr + 1) = 0x00;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));
     }
 
-  assert(1);
+  //Copy the remaining data
+  len = strlen(buf);
+  memmove(ptr + 1, buf, len);
+  *(ptr + 1 + len) = 0x00;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));
+}
+*/
+
+char		*revm_filter_param(char *buf, char *ptr)
+{
+  u_int		nbr;
+  char		c;
+  char		d;
+  u_int		len;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //if string ends with '\x', its over for this entry
+  if (*(ptr + 2) == 0x00)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
+
+  //Do exception for \x00 which must not be resolved
+  c = *(ptr + 2);
+  d = *(ptr + 3);
+  if (c == '0' && !((d >= 'A' && d <= 'F') || (d >= '1' && d <= '9')))
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr + 4);
+
+  sscanf(ptr + 2, "%X", &nbr);
+  *ptr = (char) nbr;
+  buf = ptr + 4;
+  
+  /* and copy the data, strcpy put NUL at the end */
+  strcpy(ptr + 1, buf);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));
 }
 
 

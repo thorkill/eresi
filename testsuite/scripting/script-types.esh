@@ -1,7 +1,7 @@
 #!../../elfsh/elfsh32
 
 load ../../elfsh/elfsh32
-switch 107
+switch libstderesi
 
 # Just some examples of type that can be used to map internal framework structures 
 type context = savedfd:int savedmode:byte savedcmd:*long savedinput:*long savedargv:*long savedname:*long curcmd:*long
@@ -16,6 +16,8 @@ type archaddr  = types:long[55]
 inform archaddr  elfsh_arch_type
 
 inform archtypes
+print elfsh_arch_type
+exec sleep 30
 quiet
 
 print Now print Strings

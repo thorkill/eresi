@@ -110,14 +110,14 @@ revmobj_t	*parse_hash(char *param, char *fmt)
       ret = revm_copy_object(expr->value);	  
       if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
 	{
-	  revm_destroy_object(expr->value);
+	  revm_destroy_object(expr->value, 1);
 	  expr->value = ret;
 	  expr->type  = ret->otype;
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unknown key for source object", NULL);
 	}
-      hashname = strdup(expr->value->immed_val.str);
-      revm_destroy_object(expr->value);
+      hashname = expr->value->immed_val.str;
+      revm_destroy_object(expr->value, 0);
       expr->value = ret;
       expr->type  = ret->otype;
     }
@@ -136,14 +136,14 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 	  ret = revm_copy_object(expr->value);	  
 	  if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
 	    {
-	      revm_destroy_object(expr->value);
+	      revm_destroy_object(expr->value, 1);
 	      expr->value = ret;
 	      expr->type = ret->otype;
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			   "Unknown key for source object", NULL);
 	    }
-	  entryname = strdup(expr->value->immed_val.str);
-	  revm_destroy_object(expr->value);
+	  entryname = expr->value->immed_val.str;
+	  revm_destroy_object(expr->value, 0);
 	  expr->value = ret;
 	  expr->type  = ret->otype;
 	}

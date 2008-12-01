@@ -72,7 +72,7 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
   char		*endindex;
   int		offset;
   int		index;
-  int		iter;
+  u_int		iter;
   int		liter;
   u_int		*dimoff;
   char		*lfield;
@@ -134,7 +134,7 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
 /** 
  * @brief Return offset given field name 
  */
-aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
+aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off, u_char *array)
 {
   aspectype_t	*child;
   int		index;
@@ -147,7 +147,10 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
   memcpy(fieldname, field, sizeof(fieldname) - 1);
   str = strchr(fieldname, '[');
   if (str)
-    *str = 0x00;
+    {
+      *str = 0x00;
+      *array = 1;
+    }
 
   /* Find the child offset, augment it in case of array */
   for (child = parent->childs; child; child = child->next)
@@ -157,7 +160,7 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
 	
 	/* Get offset inside the array if we are accessing an array */
 	index = revm_arrayoff_get(field, child->size, 
-				child->dimnbr, child->elemnbr);
+				  child->dimnbr, child->elemnbr);
 	if (index < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			    "Invalid array access", NULL);
@@ -176,7 +179,7 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off)
  * @brief Recursive function to lookup data from its typed data flow path 
  */
 static aspectype_t	*revm_field_get(aspectype_t *type, char *param, 
-					void **data, char translateaddr)
+					void **data, char translateaddr, u_char *array)
 					
 {
   char			*str;
@@ -190,7 +193,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
   /* This is the leaf field */
   if (!str)
     {
-      child = revm_fieldoff_get(type, param, &off);
+      child = revm_fieldoff_get(type, param, &off, array);
       if (off == REVM_INVALID_FIELD)
 	{
 	  printf("Cannot find field %s in type %s\n", param, type->name);
@@ -206,7 +209,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
   *str = 0x00;
   next = str + 1;
 
-  child = revm_fieldoff_get(type, param, &off);
+  child = revm_fieldoff_get(type, param, &off, array);
   if (off == REVM_INVALID_FIELD)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find field", NULL);
@@ -215,16 +218,20 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
   /* Dereference pointer (struct.ptr->to.other.field) */
   if (child->isptr && *data)
     {
-      *data = (void *) *(u_long *) *data;
       if (translateaddr)
-	*data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) *data, NULL, 0);
+	{
+	  *data = (void *) *(eresi_Addr *) *data;
+	  *data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) *data, NULL, 0);
+	}
+      else
+	*data = (void *) *(u_long *) *data;
     }
 
   if (!*data)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find dereference NULL field", NULL);
 
-  child = revm_field_get(child, next, data, translateaddr);
+  child = revm_field_get(child, next, data, translateaddr, array);
   if (!child)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested field", NULL);
@@ -237,7 +244,7 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 /** 
  * @brief Create the REVM object that is to be returned 
  */
-revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
+revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr, u_char array)
 {
   revmobj_t	*path;
 
@@ -256,16 +263,19 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
     }
 
   /* Lookup again in the file if we are dealing with a pointer */
-  if (type->type == ASPECT_TYPE_STR || (type->isptr && *(u_long *) data))
+  /* Pointer dereferencing is done differently for internal exprs 
+     (translate = 0) and reflected exprs (translate = 1):
+     sizeof(eresi_Addr) might be different than sizeof(u_long) ! 
+  */
+  if (type->type == ASPECT_TYPE_STR || type->isptr)
     { 
-      /* Pointer dereferencing is done differently for internal exprs and reflected exprs */
-      if (translateaddr)
+      if (translateaddr && *(eresi_Addr *) data)
 	{
 	  data = (void *) *(eresi_Addr *) data;
 	  data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) data, NULL, 0);
 	}
-      else
-	data = (void *) *(eresi_Addr *) data;
+      else if (*(u_long *) data)
+	data = (void *) *(u_long *) data;
     }
   path->parent = (void *) data;
 
@@ -316,8 +326,8 @@ revmobj_t	*revm_object_create(aspectype_t *type, void *data, char translateaddr)
   
  end:
   path->otype = type;
-  path->immed = 0;		/* Value is not immediate */
-  path->perm  = 1;		/* Do not free after use  */
+  path->immed = 0;			/* Value is not immediate */
+  path->perm  = (array ? 0 : 1);	/* Free (or not) after use */
 
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
@@ -337,6 +347,7 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
   revmobj_t	*path;
   char		hashname[ERESI_MEANING];
   hash_t	*typehash;
+  u_char	array;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -362,14 +373,14 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
   /* If the objpath is empty, its a scalar that was requested */
   if (objpath && *objpath)
     {
-      type = revm_field_get(type, objpath, (void **) &data, translateaddr);
+      type = revm_field_get(type, objpath, (void **) &data, translateaddr, &array);
       if (!type)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to lookup object", NULL);
     }
 
   /* Create and return the object describing the field */
-  path = revm_object_create(type, data, translateaddr);
+  path = revm_object_create(type, data, translateaddr, array);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
@@ -379,32 +390,30 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
  */
 revmobj_t	*revm_object_lookup(char *str)
 {
-  char		filename[ERESI_MEANING];
-  char		typename[ERESI_MEANING];
   char		objectname[ERESI_MEANING];
   int		ret;
-  elfshobj_t	*obj;
   aspectype_t	*type;
+  revmexpr_t	*expr;
   revmobj_t	*path;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP"%41[^[][%41[^]]]"
+#define LOOKUP3_IDX "%41[^"REVM_SEP"]"REVM_SEP
 
-  ret = sscanf(str, LOOKUP3_IDX, filename, typename, objectname);
-  if (ret != 3)
+  ret = sscanf(str, LOOKUP3_IDX, objectname);
+  if (ret != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Unable to resolve manual type object", NULL);
-  str += strlen(filename) + strlen(typename) + strlen(objectname) + 3;
+
+  str += strlen(objectname);
   if (str[0] && str[1])
     str++;
 
-  /* Get parent objects */
-  obj = revm_lookup_file(filename);
-  if (obj == NULL)
+  expr = revm_expr_get(objectname);
+  if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested file object", NULL);
-  type = hash_get(&types_hash, typename);
+		      "Cannot find requested expr", NULL);
+  type = expr->type;
   if (!type)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Cannot find requested type", NULL);
@@ -412,8 +421,6 @@ revmobj_t	*revm_object_lookup(char *str)
   path = revm_object_lookup_real(type, objectname, str, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
-
-
 
 
 

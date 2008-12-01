@@ -30,8 +30,6 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
 
   if (h->type == ASPECT_TYPE_UNKNOW || !inside)
     {
-      fprintf(stderr, "H type = PTR\n");
-
       snprintf(logbuf, sizeof(logbuf), "  { %-40s = <"XFMT"> } \n", 
 	       key, (eresi_Addr) data);
       revm_output(logbuf);
@@ -46,7 +44,6 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
 
   if (newexpr)
     {
-      fprintf(stderr, "H type = EXPR\n");
       revm_output("\t");
       revm_expr_print_by_name(logbuf, 0);
       revm_output("\n");
@@ -56,13 +53,11 @@ int		revm_table_display_element(hash_t *h, char *key, u_char inside)
   revm_output("\t");
   if (h->type == ASPECT_TYPE_EXPR)
     {
-      fprintf(stderr, "H type = EXPR\n");
       newexpr = (revmexpr_t *) data;
       revm_expr_print_by_name(newexpr->label, 0);
     }
   else
     {
-      fprintf(stderr, "H type != EXPR\n");
       type = aspect_type_get_by_id(h->type);
       newexpr = revm_inform_type_addr(type->name, strdup(logbuf), (eresi_Addr) data, NULL, 0, 1);
       if (!newexpr)

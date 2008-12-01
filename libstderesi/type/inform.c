@@ -29,17 +29,18 @@ int		cmd_inform()
 
       /* inform type name */
     case 2:
-      if (revm_inform_type(world.curjob->curcmd->param[0],
-			   world.curjob->curcmd->param[1], NULL, NULL, 1, 1) < 0)
+      if (revm_inform_toplevel(world.curjob->curcmd->param[0],
+			       world.curjob->curcmd->param[1],
+			       NULL, NULL, 1, 1) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Invalid variable information", -1);
       break;
       
       /* inform type name address */
     case 3:
-      if (revm_inform_type(world.curjob->curcmd->param[0],
-			 world.curjob->curcmd->param[1],
-			 world.curjob->curcmd->param[2], NULL, 1, 1) < 0)
+      if (revm_inform_toplevel(world.curjob->curcmd->param[0], 
+			       world.curjob->curcmd->param[1], 
+			       world.curjob->curcmd->param[2], NULL, 1, 1) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Invalid variable information", -1);
       break;

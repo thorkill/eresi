@@ -82,8 +82,8 @@ int		elfsh_set_dynsymbol_name(elfshobj_t *file,
   new_len = strlen(name);
 
   /* Do not allocate new place if possible */
-  if (len >= new_len)
-    strncpy(str, name, new_len);
+  if (len > new_len)
+    strncpy(str, name, new_len + 1);
   /* Append the name to .strtab */
   else
     s->st_name = elfsh_insert_in_dynstr(file, name);

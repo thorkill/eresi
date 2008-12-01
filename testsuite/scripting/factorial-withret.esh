@@ -4,7 +4,7 @@ cmp $ESHLVL 0
 jne factstart
 sdir .
 #quiet
-profile enable warn
+#profile enable warn
 
 factstart:
 cmp $# 2
@@ -15,6 +15,7 @@ cmp $1 1
 je result
 
 factorial-withret $1 $2
+print $_
 set $2 $_
 
 result:

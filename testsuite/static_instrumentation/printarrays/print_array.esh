@@ -8,35 +8,52 @@ type bint = sys:int[2][3]
 
 inform bint toto biarray
 
-print First test
+print 1th test
+print $toto.sys[0][0]
+print $toto.sys[0][1]
+print $toto.sys[0][2]
+print $toto.sys[1][0]
+print $toto.sys[1][1]
+print $toto.sys[1][2]
 
-print 1.bint[toto].sys[0][0]
-print 1.bint[toto].sys[0][1]
-print 1.bint[toto].sys[0][2]
-print 1.bint[toto].sys[1][0]
-print 1.bint[toto].sys[1][1]
-print 1.bint[toto].sys[1][2]
+print 2th test
 
-print Second test
+set $idx 0
+set $idx2 0
+print $toto.sys[$idx][$idx2]
+
+add $idx2 1
+print $toto.sys[$idx][$idx2]
+add $idx2 1
+print $toto.sys[$idx][$idx2]
+set $idx 1
+set $idx2 0
+print $toto.sys[$idx][$idx2]
+add $idx2 1
+print $toto.sys[$idx][$idx2]
+add $idx2 1
+print $toto.sys[$idx][$idx2]
+
+print 3th test
 
 foreach $i of 0 until 2
-print 1.bint[toto].sys[$i][0]
-print 1.bint[toto].sys[$i][1]
-print 1.bint[toto].sys[$i][2]
+print $toto.sys[$i][0]
+print $toto.sys[$i][1]
+print $toto.sys[$i][2]
 forend
 
-print Third test
+print 4th test
 
 foreach $j of 0 until 3
- print 1.bint[toto].sys[0][$j]
- print 1.bint[toto].sys[1][$j]
+ print $toto.sys[0][$j]
+ print $toto.sys[1][$j]
 forend
 
-print Fourth test
+print 5th test
 
 foreach $j of 0 until 2
 foreach $k of 0 until 3
- print 1.bint[toto].sys[$j][$k]
+ print $toto.sys[$j][$k]
 forend
 forend
 
