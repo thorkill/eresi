@@ -20,8 +20,8 @@
  */
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
-  char	*ret;
-  void	*rdata;
+  volatile char	*ret;
+  volatile void	*rdata;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

@@ -46,7 +46,7 @@ static char*		elfsh_strstr(char *buffer, char *neddle, int n)
 static int		elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
 {
   elfshsect_t		*sect;
-  int			index;
+  u_int			index;
   int			res;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -340,8 +340,9 @@ int		elfsh_store_obj(elfshobj_t *file, char *name)
 #if __DEBUG_MAP__
   printf("[DEBUG_SAVE] Rebuild SHT flag is set: %d\n",file->shtrb);
 #endif
-  
-  if ((file->sectlist) && !file->shtrb)
+
+  /* If the first section is the null section */
+  if (file->sectlist && !file->shtrb && !file->sectlist->shdr->sh_name)
     file->sectlist->shdr->sh_size = 0;
   
   /* Write each sections in the destination file at their respective offset */

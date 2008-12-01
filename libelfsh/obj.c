@@ -55,7 +55,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   symsz = strlen(ELFSH_SECTION_NAME_SYMTAB);
   strsz = strlen(ELFSH_SECTION_NAME_STRTAB);
   shstrsz = strlen(ELFSH_SECTION_NAME_SHSTRTAB);
-  strsize = mapsz + symsz + strsz + shstrsz + 4;
+  strsize = 1 + mapsz + symsz + strsz + shstrsz + 4;
   symtabsz = sizeof(elfsh_Sym);
 
   /* Setup header */
@@ -78,19 +78,19 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   file->hdr = hdr;
 
   /* Create sections table */
-  maphdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_ALLOC, 0, 
+  maphdr = elfsh_create_shdr(1, SHT_PROGBITS, SHF_ALLOC, 0, 
 			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr), 
 			     size, 0, 0, sizeof(eresi_Addr), 0);
 
-  symhdr = elfsh_create_shdr(mapsz + 1, SHT_SYMTAB, SHF_WRITE, 0, 
+  symhdr = elfsh_create_shdr(mapsz + 2, SHT_SYMTAB, SHF_WRITE, 0, 
 			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size, 
 			     symtabsz, 2, 0, 0, sizeof(elfsh_Sym));
 
-  strhdr = elfsh_create_shdr(mapsz + symsz + 2, SHT_STRTAB, SHF_WRITE, 0, 
+  strhdr = elfsh_create_shdr(mapsz + symsz + 3, SHT_STRTAB, SHF_WRITE, 0, 
 			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz, 
 			     strsize, 1, 0, 0, 0);
 
-  shstrhdr = elfsh_create_shdr(mapsz + symsz + strsz + 3, SHT_STRTAB, SHF_WRITE, 0, 
+  shstrhdr = elfsh_create_shdr(mapsz + symsz + strsz + 4, SHT_STRTAB, SHF_WRITE, 0, 
 			       sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz + strsize, 
 			       strsize, 0, 0, 0, 0);
 
@@ -104,6 +104,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   elfsh_set_segment_type(pht, PT_LOAD);
   elfsh_set_segment_flags(pht, PF_X | PF_W | PF_R);
   elfsh_set_segment_memsz(pht, size);
+  elfsh_set_segment_filesz(pht, size);
   file->pht = pht;
 
   /* Allocate and fill section descriptors */
@@ -126,6 +127,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   symtab->next = strtab;
   symtab->index = 1;
   symtab->curend = sizeof(elfsh_Sym);
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, symtab->data, sizeof(elfsh_Sym), NULL);
   mappedsym = elfsh_create_symbol(0, size, STT_SECTION, 0, 0, 0);
   memcpy(symtab->data, &mappedsym, sizeof(elfsh_Sym));
@@ -145,10 +147,10 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   shstrtab->prev = strtab;
   shstrtab->index = 3;
   XALLOC(__FILE__, __FUNCTION__, __LINE__, shstrtab->data, strsize, NULL);
-  strcpy(shstrtab->data, ELFSH_SECTION_NAME_MAPPED);
-  strcpy(shstrtab->data + mapsz + 1, ELFSH_SECTION_NAME_SYMTAB);
-  strcpy(shstrtab->data + mapsz + symsz + 2, ELFSH_SECTION_NAME_STRTAB);
-  strcpy(shstrtab->data + mapsz + symsz + strsz + 3, ELFSH_SECTION_NAME_SHSTRTAB);
+  strcpy(shstrtab->data + 1, ELFSH_SECTION_NAME_MAPPED);
+  strcpy(shstrtab->data + mapsz + 2, ELFSH_SECTION_NAME_SYMTAB);
+  strcpy(shstrtab->data + mapsz + symsz + 3, ELFSH_SECTION_NAME_STRTAB);
+  strcpy(shstrtab->data + mapsz + symsz + strsz + 4, ELFSH_SECTION_NAME_SHSTRTAB);
 
   /* The final touch */
   file->sectlist = mapped;
