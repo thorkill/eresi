@@ -88,4 +88,22 @@ void asm_free_i386(asm_processor *proc)
   free(proc->instr_table);
 }
 
+/** 
+ * Switch 
+ * @param proc Pointer to asm processor structure.
+ * @param mode  INTEL_PROT or INTEL_REAL
+ */
+int asm_ia32_switch_mode(asm_processor *proc, int mode)
+{
+  struct s_asm_proc_i386 *inter;
+
+  inter = proc->internals;
+  inter->mode = mode;
+  /**
+   * inter->opsize and inter->addsize should be switched ?
+   * Must add testcode for this feature.
+   */
+  return (1);
+}
+
 #endif

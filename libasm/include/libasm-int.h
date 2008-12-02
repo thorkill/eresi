@@ -49,6 +49,7 @@ void    asm_resolve_immediate(asm_processor *proc, u_int val, char *buffer, u_in
 char	*asm_ia32_display_instr_att(asm_instr *ins, int addr);
 char	*asm_sparc_display_instr(asm_instr *, int addr);
 
+int	asm_ia32_switch_mode(asm_processor *proc, int mode);
 
 int		asm_proc_opsize(asm_processor *proc);
 int		asm_proc_addsize(asm_processor *proc);
