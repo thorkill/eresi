@@ -99,10 +99,18 @@ int asm_ia32_switch_mode(asm_processor *proc, int mode)
 
   inter = proc->internals;
   inter->mode = mode;
-  /**
-   * inter->opsize and inter->addsize should be switched ?
-   * Must add testcode for this feature.
-   */
+  if (mode == INTEL_PROT)
+    {
+      inter->opsize = inter->addsize = 0;
+    }
+  else
+    {
+      /**
+       * inter->opsize and inter->addsize values are perhaps not accurate.
+       * Must add testcode for this feature.
+       */
+      inter->opsize = inter->addsize = 1;
+    }
   return (1);
 }
 
