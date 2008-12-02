@@ -44,22 +44,6 @@ eresi_Addr	*kedbg_getfp_ia32(void)
 }
 
 
-void            kedbg_setvmrunning(Bool run)
-{
-  gdbwrap_t     *loc = gdbwrap_current_get();
-
-  gdbwrap_setvmrunning(run, loc);
-}
-
-
-Bool            kedbg_isvmrunning(void)
-{
-  gdbwrap_t     *loc = gdbwrap_current_get();
-
-  return gdbwrap_isvmrunning(loc);
-}
-
-
 void            *kedbg_getret_ia32(void *frame)
 {
   la32          ptr;
@@ -71,23 +55,7 @@ void            *kedbg_getret_ia32(void *frame)
 }
 
 
-/**
- * Set up a breakpoint. We have to change the memory on the server
- * side, thus we need to save the value we change.
- */
-int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
-{
-  gdbwrap_t     *loc = gdbwrap_current_get();
-
-  PROFILER_INQ();
-  NOT_USED(f);
-  gdbwrap_setbp(bp->addr, bp->savedinstr, loc);
-
-  PROFILER_ROUTQ(0);
-}
-
-
-int             kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
+static int      kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -99,7 +67,58 @@ int             kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
 }
 
 
-int             kedbg_delbp(elfshbp_t *bp)
+static int      kedbg_setbpwint3(elfshobj_t *f, elfshbp_t *bp)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  PROFILER_INQ();
+  NOT_USED(f);
+  gdbwrap_setbp(bp->addr, bp->savedinstr, loc);
+
+  PROFILER_ROUTQ(0);
+}
+
+
+/**
+ * Set up a breakpoint. We have to change the memory on the server
+ * side, thus we need to save the value we change.
+ */
+int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  static u_char choice = 0;
+
+  PROFILER_INQ();
+  do
+    {
+      switch (choice)
+	{
+	  case 0:
+	    kedbg_simplesetbp(f, bp);
+	    kedbgworld.offset = 0;
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  case 1:
+	    kedbg_setbpwint3(f, bp);
+	    kedbgworld.offset = 1;
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  default:
+	    /* We gonna loop, but should not occur */
+	    fprintf(stderr, "Bp not supported - Muh ?");
+	    break;
+	}
+    } while(gdbwrap_cmdnotsup(loc));
+
+  PROFILER_ROUTQ(0);
+}
+
+
+static int      kedbg_delbpwint3(elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -110,13 +129,29 @@ int             kedbg_delbp(elfshbp_t *bp)
 }
 
 
-int             kedbg_simpledelbp(elfshbp_t *bp)
+static int      kedbg_simpledelbp(elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
   gdbwrap_simpledelbp(bp->addr, loc);
 
+  PROFILER_ROUTQ(0);
+}
+
+
+
+int             kedbg_delbp(elfshbp_t *bp)
+{
+  PROFILER_INQ();
+
+  if (!kedbgworld.offset)
+    kedbg_simpledelbp(bp);
+  else if (kedbgworld.offset == 1)
+    kedbg_delbpwint3(bp);
+  else
+    ASSERT(FALSE);
+  
   PROFILER_ROUTQ(0);
 }
 
@@ -226,16 +261,19 @@ void            kedbg_set_regvars_ia32(void)
 
   PROFILER_INQ();
   reg =  gdbwrap_readgenreg(loc);
+  if (reg != NULL)
+    {
 
-  E2DBG_SETREG(E2DBG_EAX_VAR, reg->eax);
-  E2DBG_SETREG(E2DBG_EBX_VAR, reg->ebx);
-  E2DBG_SETREG(E2DBG_ECX_VAR, reg->ecx);
-  E2DBG_SETREG(E2DBG_EDX_VAR, reg->edx);
-  E2DBG_SETREG(E2DBG_ESI_VAR, reg->esi);
-  E2DBG_SETREG(E2DBG_EDI_VAR, reg->edi);
-  E2DBG_SETREG(E2DBG_SP_VAR,  reg->esp);
-  E2DBG_SETREG(E2DBG_FP_VAR,  reg->ebp);
-  E2DBG_SETREG(E2DBG_PC_VAR,  reg->eip);
+      E2DBG_SETREG(E2DBG_EAX_VAR, reg->eax);
+      E2DBG_SETREG(E2DBG_EBX_VAR, reg->ebx);
+      E2DBG_SETREG(E2DBG_ECX_VAR, reg->ecx);
+      E2DBG_SETREG(E2DBG_EDX_VAR, reg->edx);
+      E2DBG_SETREG(E2DBG_ESI_VAR, reg->esi);
+      E2DBG_SETREG(E2DBG_EDI_VAR, reg->edi);
+      E2DBG_SETREG(E2DBG_SP_VAR,  reg->esp);
+      E2DBG_SETREG(E2DBG_FP_VAR,  reg->ebp);
+      E2DBG_SETREG(E2DBG_PC_VAR,  reg->eip);
+    }
   PROFILER_OUTQ();
 }
 
@@ -261,3 +299,20 @@ void            kedbg_get_regvars_ia32(void)
   PROFILER_OUTQ();
 }
 
+
+void            kedbg_shipallreg(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  static Bool   activated  = TRUE;
+
+  if (activated)
+    {
+      gdbwrap_shipallreg(loc);
+      if (gdbwrap_erroroccured(loc))
+	{
+	  fprintf(stderr, "Desactivating the set registers"
+		  "(not supported by the server).\n");
+	  activated = FALSE;
+	}
+    }
+}

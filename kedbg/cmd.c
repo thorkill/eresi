@@ -28,7 +28,7 @@ int             cmd_kedbgcont(void)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   kedbg_set_regvars_ia32();
-  gdbwrap_shipallreg(loc);
+  kedbg_shipallreg();
   revm_output("[*] Continuing process\n");
 
   if (!e2dbgworld.curthread->step)
@@ -38,10 +38,7 @@ int             cmd_kedbgcont(void)
 	{
 	  if (gdbwrap_lastsignal(loc) == SIGTRAP)
 	    {
-	      u_char bpoff;
-
-	      bpoff = kedbg_isvmrunning() ? 0 : 1;
-	      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - bpoff);
+	      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - kedbgworld.offset);
 	      bp = e2dbg_breakpoint_lookup(addr);
 	      if (bp != NULL)
 		{
@@ -52,14 +49,18 @@ int             cmd_kedbgcont(void)
 		  if (!off)
 		    printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip, name);
 		  else
-		    printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip, name, off);			   
-
-		  c = BPCODE;
-		  eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
-		  e2dbg_deletebreak(bp);
-		  gdbwrap_writereg2(eip_pos, loc->reg32.eip - bpoff, loc);
-		  gdbwrap_stepi(loc);
-		  e2dbg_setbreak(world.curjob->curfile, bp);
+		    printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip,
+			   name, off);			   
+		  /* Only if we don't use the simple bp. */
+		  if (kedbgworld.offset)
+		    {
+		      c = BPCODE;
+		      eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
+		      e2dbg_deletebreak(bp);
+		      gdbwrap_writereg2(eip_pos, loc->reg32.eip - kedbgworld.offset, loc);
+		      gdbwrap_stepi(loc);
+		      e2dbg_setbreak(world.curjob->curfile, bp);
+		    }
 		}
 	    }
 	  else
@@ -76,7 +77,7 @@ int             cmd_kedbgcont(void)
       e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
       parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
       name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
-      instr = alloca(20);
+      instr  = alloca(20);
       kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
       revm_instr_display(-1, 0, loc->reg32.eip, 0, 20, name, off, instr);
     }

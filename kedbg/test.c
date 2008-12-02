@@ -15,9 +15,14 @@ void foo(int num)
   bar(num + 1);
 }
 
+void plop(void)
+{
+  __asm__ __volatile__("movl $0xff, %eax");
+}
+
 int main(void)
 {
-  usleep(2000000);
+  plop();
   foo(rand());
   puts("");
 

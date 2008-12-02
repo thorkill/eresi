@@ -1,5 +1,6 @@
 #include "kedbg.h"
 
+kedbgworld_t    kedbgworld;
 
 /**************** Command registration ****************/
 static void     kedbg_register_command(void)
@@ -12,12 +13,12 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_MODE, cmd_mode, revm_getvarparams, 0, HLP_MODE);
   revm_command_add(CMD_BP, cmd_bp, revm_getvarparams, 0, HLP_BP);
   revm_command_add(CMD_BP2, cmd_bp, revm_getvarparams, 0, HLP_BP);
-  revm_command_add(CMD_DELETE, cmd_delete, revm_getvarparams, 0, HLP_BP);
-  revm_command_add(CMD_LINKMAP, cmd_linkmap, revm_getvarparams, 1, HLP_BP);
-  revm_command_add(CMD_GOT, cmd_got, revm_getvarparams, 1, HLP_BP);
+  revm_command_add(CMD_DELETE, cmd_delete, revm_getvarparams, 0, HLP_DELETE);
+  revm_command_add(CMD_LINKMAP, cmd_linkmap, revm_getvarparams, 1, HLP_LINKMAP);
+  revm_command_add(CMD_GOT, cmd_got, revm_getvarparams, 1, HLP_GOT);
   revm_command_add(CMD_DUMPREGS, cmd_kedbg_dump_regs,
-		   revm_getvarparams, 0, HLP_BP);
-  revm_command_add(CMD_STEP, cmd_kedbgstep, revm_getvarparams, 0, HLP_BP);
+		   revm_getvarparams, 0, HLP_DUMPREGS);
+  revm_command_add(CMD_STEP, cmd_kedbgstep, revm_getvarparams, 0, HLP_STEP);
   /* stackaddr is not set, ie does not work. */
   revm_command_add(CMD_BT, cmd_bt, NULL, 0, HLP_BT);
   revm_command_add(CMD_BT2, cmd_bt, NULL, 0, HLP_BT);
@@ -59,7 +60,11 @@ static void     kedbg_register_vector(void)
 			   ELFSH_OS_LINUX, kedbg_get_regvars_ia32);
   e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_getpc_ia32);
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+			   kedbg_setbp);
+  e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_delbp);
 }
+
 
 
 /**************** Main stuff ****************/
@@ -316,7 +321,6 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_curthread_init();	
   e2dbg_setup_hooks();
   kedbg_register_vector();
-
   ret = revm_file_load(argv[3], 0, NULL);
 
   ASSERT(!ret);
@@ -324,15 +328,13 @@ static int      kedbg_main(int argc, char **argv)
   e2dbg_presence_set();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
+
+  
   kedbg_propagate_type();
 
   ret = kedbg_file_is_bios(world.curjob->curfile);
   if (!kedbg_file_is_kernel(world.curjob->curfile) && !ret)
     {
-      kedbg_setvmrunning(FALSE);
-      e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
-			       kedbg_setbp);
-      e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_delbp);
       /* The process might already be running. If the got[1] is
 	 filled, we don't run to the entry point. */
       if (kedbg_linkmap_getaddr() == NULL)
@@ -344,11 +346,6 @@ static int      kedbg_main(int argc, char **argv)
       elfshsect_t   *ksymtab;
       elfshsect_t   *ksymtab_strings;
       
-      kedbg_setvmrunning(TRUE);
-      e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
-			       kedbg_simplesetbp);
-      e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_simpledelbp);
-
       /* If we have not loaded the bios but the kernel */
       if (!ret)
 	{

@@ -25,7 +25,13 @@
 #define DEBUGMSG(_command)				
 #endif
 
+typedef struct 
+{
+  /* Offset for the bp (see cmd_kedbgcont). */
+  u_char offset;
+} kedbgworld_t;
 
+extern          kedbgworld_t kedbgworld;
 int             cmd_linkmap(void);
 int             e2dbg_linkmap_load(char *name);
 int             cmd_com1(void);

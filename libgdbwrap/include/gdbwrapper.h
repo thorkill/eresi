@@ -33,7 +33,7 @@ typedef struct gdbwrap_t
   unsigned         max_packet_size;
   gdbwrap_gdbreg32 reg32;
   Bool             is_active;
-  Bool             vm_running;
+  Bool             erroroccured;
   Bool             interrupted;
 } gdbwrap_t;
 
@@ -43,8 +43,8 @@ typedef struct
   gdbwrap_t *gdbwrapptr;
 } gdbwrapworld_t;
 
-void             gdbwrap_setvmrunning(Bool run, gdbwrap_t *desc);
-Bool             gdbwrap_isvmrunning(gdbwrap_t *desc);
+Bool             gdbwrap_erroroccured(gdbwrap_t *desc);
+Bool             gdbwrap_cmdnotsup(gdbwrap_t *desc);
 unsigned         gdbwrap_atoh(const char * str, unsigned size);
 unsigned         gdbwrap_lastsignal(gdbwrap_t *desc);
 Bool             gdbwrap_is_active(gdbwrap_t *desc);
@@ -68,7 +68,7 @@ char             *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
 void             *gdbwrap_writememory(la32 linaddr, void *value,
 				      unsigned bytes, gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
-void             gdbwrap_shipallreg(gdbwrap_t *desc);
+char             *gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_ctrl_c(gdbwrap_t *desc);
 void             gdbwrap_signal(int signal, gdbwrap_t *desc);
 void             gdbwrap_stepi(gdbwrap_t *desc);

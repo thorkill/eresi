@@ -1,6 +1,5 @@
 
-/*  First try of implementation of a gdb wrapper. 
- *
+/*  
  *  See gdb documentation, section D for more information on the
  *  remote serial protocol. To make it short, a packet looks like the following:
  *
@@ -18,6 +17,12 @@
 gdbwrapworld_t       gdbwrapworld;
 
 
+static char          *gdbwrap_lastmsg(gdbwrap_t *desc)
+{
+  return desc->packet;
+}
+
+
 static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
 {
   ASSERT(error != NULL);
@@ -25,7 +30,10 @@ static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
   DEBUGMSG(printf("Treating error (encoded): %s\n", error));
 
   if (!strncmp(GDBWRAP_REPLAY_OK, error, strlen(GDBWRAP_REPLAY_OK)))
-    return FALSE;
+    {
+      desc->erroroccured = FALSE;
+      return FALSE;
+    }
 
   if (!strncmp(GDBWRAP_NO_SPACE, error, strlen(GDBWRAP_NO_SPACE)))
     fprintf(stderr, "space was not updated.\n");
@@ -54,6 +62,7 @@ static Bool          gdbwrap_errorhandler(const char *error, gdbwrap_t *desc)
   if (error[0] == GDBWRAP_NULL_CHAR)
     fprintf(stdout, "Command not supported\n");
 
+  desc->erroroccured = TRUE;
   return TRUE;
 }
 
@@ -85,11 +94,6 @@ static Bool         gdbwrap_isinterrupted(gdbwrap_t *desc)
   return desc->interrupted;
 }
 
-
-static char          *gdbwrap_lastmsg(gdbwrap_t *desc)
-{
-  return desc->packet;
-}
 
 /**
  * This function parses a string *strtoparse* starting at character
@@ -169,17 +173,22 @@ static la32          gdbwrap_little_endian(la32 addr)
 }
 
 
-void                 gdbwrap_setvmrunning(Bool run, gdbwrap_t *desc)
+/* If the last command is not supported, we return TRUE. */
+Bool                 gdbwrap_cmdnotsup(gdbwrap_t *desc)
 {
-  desc->vm_running = run;
+  char               *lastmsg = gdbwrap_lastmsg(desc);
+
+  if (lastmsg[0] == GDBWRAP_NULL_CHAR)
+    return TRUE;
+  else
+    return FALSE;
 }
 
 
-Bool                 gdbwrap_isvmrunning(gdbwrap_t *desc)
+Bool                 gdbwrap_erroroccured(gdbwrap_t *desc)
 {
-  return desc->vm_running;
+  return desc->erroroccured;
 }
-
 
 unsigned             gdbwrap_atoh(const char * str, unsigned size)
 {
@@ -187,9 +196,9 @@ unsigned             gdbwrap_atoh(const char * str, unsigned size)
   unsigned           hex;
 
   for (i = 0, hex = 0; i < size; i++)
-    if (str[i] >= 'a' && str[i] <= 'f')
+    if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
-    else if (str[i] >= '0' && str[i] <= '9')
+    else if (str != NULL && str[i] >= '0' && str[i] <= '9')
       hex += (str[i] - 0x30) << 4 * (size - i - 1);
     else
       return 0;
@@ -351,11 +360,14 @@ static void         gdbwrap_populate_reg(char *packet,
 static void          gdbwrap_check_ack(gdbwrap_t *desc)
 {
   int                rval;
+
   rval = recv(desc->fd, desc->packet, 1, 0);
   /* The result of the previous recv must be a "+". */
   if (strncmp(desc->packet, GDBWRAP_COR_CHECKSUM, 1))
     fprintf(stderr, "The server has NOT sent any ACK."
-	    "It probably does not follow exactly the gdb protocol.");
+	    "It probably does not follow exactly the gdb protocol (%s - %d).\n",
+	    desc->packet, rval);
+
   ASSERT(rval != -1);
 }
 
@@ -395,11 +407,14 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 					     desc->max_packet_size);
 	  }
 	else
-	  ASSERT(FALSE);
+	  {
+	    fprintf(stderr, "Muh ?\n");
+	    return NULL;
+	  }
       }
   }
   else desc->is_active = FALSE;
-  
+
   return NULL;
 }
 
@@ -556,17 +571,20 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
   ureg32             regvalue;
   
   rec = gdbwrap_send_data(GDBWRAP_GENPURPREG, desc);
-
-  for (i = 0; i < sizeof(gdbwrap_gdbreg32) / sizeof(ureg32); i++)
+  if (gdbwrap_is_active(desc))
     {
-      /* 1B = 2 characters */
-       regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
-       regvalue = gdbwrap_little_endian(regvalue);
-       *(&desc->reg32.eax + i) = regvalue;
-       rec += 2 * DWORD_IN_BYTE;
+      for (i = 0; i < sizeof(gdbwrap_gdbreg32) / sizeof(ureg32); i++)
+	{
+	  /* 1B = 2 characters */
+	  regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
+	  regvalue = gdbwrap_little_endian(regvalue);
+	  *(&desc->reg32.eax + i) = regvalue;
+	  rec += 2 * DWORD_IN_BYTE;
+	}
+      return &desc->reg32;
     }
-  
-  return &desc->reg32;
+  else
+    return NULL;
 }
 
 
@@ -577,7 +595,7 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
   if (gdbwrap_is_active(desc))
     {
       rec = gdbwrap_send_data(GDBWRAP_CONTINUE, desc);
-      if (rec != NULL)
+      if (rec != NULL && gdbwrap_is_active(desc))
 	gdbwrap_populate_reg(rec, desc);
     }
 }
@@ -698,7 +716,7 @@ void                 gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc)
  * Ship all the registers to the server in only 1 query. This is used
  * when modifying multiple registers at once for example.
  */
-void                 gdbwrap_shipallreg(gdbwrap_t *desc)
+char                 *gdbwrap_shipallreg(gdbwrap_t *desc)
 {
   gdbwrap_gdbreg32   savedregs;
   char               *ret;
@@ -718,7 +736,8 @@ void                 gdbwrap_shipallreg(gdbwrap_t *desc)
 	     "%08x", gdbwrap_little_endian(*(&savedregs.eax + i)));
   memcpy(ret, locreg, strlen(locreg));
   snprintf(locreg, sizeof(locreg), "%s%s", GDBWRAP_WGENPURPREG, ret);
-  gdbwrap_send_data(locreg, desc);
+
+  return gdbwrap_send_data(locreg, desc);
 }
 
 
