@@ -75,7 +75,7 @@ int		cmd_hijack()
   /* Resolve destination parameter */
   dst = elfsh_get_metasym_by_name(world.curjob->curfile, 
 				  world.curjob->curcmd->param[1]);
-  if (!dst)
+  if (!dst && elfsh_is_runtime_mode())
     {
       elfsh_toggle_mode();
       dst = elfsh_get_metasym_by_name(world.curjob->curfile, 

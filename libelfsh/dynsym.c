@@ -4,8 +4,6 @@
 ** Dynsym.c for libelfsh
 ** 
 ** Started on  Mon Feb 26 04:13:29 2001 jfv
-** 
-**
 ** $Id: dynsym.c,v 1.21 2008-02-16 12:32:27 thor Exp $
 **
 */
@@ -15,16 +13,15 @@
 /**
  * Return the dynsymbol name giving its index in the dynamic symbol string table 
  * @param file
- * @param s
- * @return
+ * @param s 
+ * @return A pointer on the symbol name
  */
 char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
 {
-  volatile char	*ret;
-  volatile void	*rdata;
+  char		*ret;
+  void		*rdata;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!file || !s)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", NULL);
@@ -33,10 +30,9 @@ char		*elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
     if (NULL == elfsh_get_dynsymtab(file, NULL))
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to get DYNSYM", NULL);
-  
+
   rdata = elfsh_readmem(file->secthash[ELFSH_SECTION_DYNSTR]);
   ret = (char *) rdata + s->st_name;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
