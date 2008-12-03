@@ -4,13 +4,13 @@
 
 int             cmd_kedbg_dump_regs(void)
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_INQ();
   e2dbg_output(" .:: Registers ::. \n\n");
   //  gdbwrap_readgenreg(loc);
   kedbg_set_regvars_ia32();
   e2dbg_printregs();
   e2dbg_output("\n");
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
+  PROFILER_ROUTQ(0);
 }
 
 
@@ -26,7 +26,7 @@ int             cmd_kedbgcont(void)
   uint8_t       eip_pos;
   elfshobj_t    *parent;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_INQ();
   kedbg_set_regvars_ia32();
   kedbg_shipallreg();
   revm_output("[*] Continuing process\n");
@@ -93,6 +93,7 @@ int             cmd_kedbgstep(void)
 {
   static Bool   enable;
 
+  PROFILER_INQ();
   if (enable)
     {
       kedbg_resetstep_ia32();
@@ -105,7 +106,7 @@ int             cmd_kedbgstep(void)
     }
   enable = !enable;
 
-  return 0;
+  PROFILER_ROUTQ(0);
 }
 
 
@@ -113,7 +114,28 @@ int             cmd_kedbgquit(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get(); 
 
+  PROFILER_INQ();
   gdbwrap_bye(loc);
   cmd_quit();
-  return 0;
+
+  PROFILER_ROUTQ(0);
+}
+
+
+int              cmd_kedbgprintivt(void)
+{
+  uint32_t       ivt[256];
+  short          i;
+
+  PROFILER_INQ();
+  for (i = 0; i < 256; i += 32)
+    kedbg_readmema(NULL, i * sizeof(uint32_t), ivt + i, 32 * sizeof(uint32_t));
+  for (i = 0; i < 256; i++)
+    {    
+      if (!(i % 8))
+	printf("\n");
+      printf("0x%08x ", ivt[i]);
+    }
+  printf("\n");
+  PROFILER_ROUTQ(0);
 }

@@ -7,7 +7,7 @@
 int             cmd_com1(void);
 int             cmd_kedbgcont(void);
 int             cmd_kedbg_dump_regs(void);
-
+int             cmd_kedbgprintivt(void);
 
 /* #include "gdbwrapper.h" */
 int             gdbwrap_simpleconnect(char *host, int port);

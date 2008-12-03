@@ -30,7 +30,31 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_RPHT, cmd_rpht, revm_getregxoption, 1, HLP_RPHT);
   revm_command_add(CMD_QUIT, cmd_kedbgquit, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_QUIT2, cmd_kedbgquit, NULL, 0, HLP_QUIT);
-/*   revm_command_add(CMD_ITRACE, cmd_itrace, NULL, 0, HLP_ITRACE); */
+
+  revm_command_add(CMD_IVT, cmd_kedbgprintivt, NULL, 0, HLP_QUIT);
+
+  /* Type related commands */
+  revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
+  revm_command_add(CMD_UNION    , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
+  revm_command_add(CMD_TYPEDEF  , cmd_typedef         , revm_getvarparams, 0, HLP_TYPEDEF);
+  revm_command_add(CMD_INFORM   , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
+  revm_command_add(CMD_UNINFORM , cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
+  revm_command_add(CMD_INFORM2  , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
+  revm_command_add(CMD_UNINFORM2, cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
+
+  /* Flow analysis commands */
+  revm_command_add(CMD_ANALYSE    , cmd_analyse       , NULL,            1, HLP_ANALYSE);
+  revm_command_add(CMD_UNSTRIP    , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);
+  revm_command_add(CMD_GRAPH     , cmd_graph         , revm_getvarparams, 1, HLP_GRAPH);
+  revm_command_add(CMD_INSPECT   , cmd_inspect       , revm_getoption,    1, HLP_INSPECT);
+  revm_command_add(CMD_FLOWJACK  , cmd_flowjack      , revm_getoption2,   1, HLP_FLOWJACK);
+  revm_command_add(CMD_ADDGOTO   , cmd_addgoto       , revm_getoption2,   1, HLP_ADDGOTO);
+  revm_command_add(CMD_SETGVL    , cmd_setgvl        , revm_getoption,    1, HLP_SETGVL);
+  revm_command_add(CMD_RENAME     , cmd_rename        , revm_getoption2,   1, HLP_RENAME);  
+  revm_command_add(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
+
+
+  /*   revm_command_add(CMD_ITRACE, cmd_itrace, NULL, 0, HLP_ITRACE); */
   /*   revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH); */
   /*   revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK); */
 

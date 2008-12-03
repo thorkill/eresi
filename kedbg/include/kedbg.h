@@ -10,6 +10,8 @@
 #define  COM1              "youpla"
 #define  HELPCOM1          "Not much to say..."
 
+#define  CMD_IVT           "ivt"
+
 #define  BPCODE            0xcc
 
 /* Debug flags */

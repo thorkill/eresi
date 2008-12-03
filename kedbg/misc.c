@@ -38,7 +38,8 @@ elfshlinkmap_t   *kedbg_linkmap_getaddr(void)
 
 void             kedbg_continue(void)
 {
-  gdbwrap_t     *loc = gdbwrap_current_get();
+  gdbwrap_t      *loc = gdbwrap_current_get();
+  
   gdbwrap_continue(loc);
 }
 
