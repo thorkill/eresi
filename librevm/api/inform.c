@@ -172,7 +172,7 @@ int		revm_check_addr(elfshobj_t *obj, eresi_Addr addr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (index = 0, phdr = obj->pht; index < obj->hdr->e_phnum; index++)
     if (phdr[index].p_type == PT_LOAD && 
-	phdr[index].p_vaddr < addr &&
+	phdr[index].p_vaddr <= addr &&
 	addr < phdr[index].p_vaddr + phdr[index].p_memsz)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
