@@ -227,9 +227,9 @@ static aspectype_t	*revm_field_get(aspectype_t *type, char *param,
 	*data = (void *) *(u_long *) *data;
     }
 
-  if (!*data)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find dereference NULL field", NULL);
+  //if (!*data)
+  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  //	      "Cannot find dereference NULL field", NULL);
 
   child = revm_field_get(child, next, data, translateaddr, array);
   if (!child)

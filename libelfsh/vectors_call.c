@@ -430,7 +430,7 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   u_char        ostype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if (!file || !addr)
+  if (!file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid NULL parameter", NULL);
   
