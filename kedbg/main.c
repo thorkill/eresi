@@ -31,6 +31,7 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_QUIT, cmd_kedbgquit, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_QUIT2, cmd_kedbgquit, NULL, 0, HLP_QUIT);
 
+  revm_command_add(CMD_DISASM, cmd_disasm, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_IVT, cmd_kedbgprintivt, NULL, 0, HLP_QUIT);
 
   /* Type related commands */
@@ -242,8 +243,11 @@ static void	kedbg_biosmap_load()
   world.curjob->curfile = file;
   hash_add(&world.curjob->loaded, file->name, file);
   file->loadtime = time(&file->loadtime);
-  file->iotype = ELFSH_IOTYPE_GDBPROT;
-  file->hostype = E2DBG_HOST_GDB;
+  file->iotype   = ELFSH_IOTYPE_GDBPROT;
+  file->hostype  = E2DBG_HOST_GDB;
+
+  /* Set as 16b code. */
+  asm_ia32_switch_mode(&world.proc, INTEL_REAL);
 }
 
 

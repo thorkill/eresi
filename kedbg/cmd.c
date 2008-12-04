@@ -128,14 +128,14 @@ int              cmd_kedbgprintivt(void)
   short          i;
 
   PROFILER_INQ();
-  for (i = 0; i < 256; i += 32)
-    kedbg_readmema(NULL, i * sizeof(uint32_t), ivt + i, 32 * sizeof(uint32_t));
+  kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
+  e2dbg_output(" .:: IVT ::. \n\n");
   for (i = 0; i < 256; i++)
     {    
       if (!(i % 8))
 	printf("\n");
       printf("0x%08x ", ivt[i]);
     }
-  printf("\n");
+  printf("\n\n");
   PROFILER_ROUTQ(0);
 }

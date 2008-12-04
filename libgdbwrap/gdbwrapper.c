@@ -212,15 +212,15 @@ static uint8_t       gdbwrap_calc_checksum(const char *str, gdbwrap_t *desc)
   uint8_t            sum;
   char               *result;
 
-  
+
   result = gdbwrap_extract_from_packet(str, desc->packet, GDBWRAP_BEGIN_PACKET,
                                        GDBWRAP_END_PACKET,
 				       desc->max_packet_size);
+
   /* If result == NULL, it's not a packet. */
   if (result == NULL)
     result = gdbwrap_extract_from_packet(str, desc->packet, NULL, NULL,
 					 desc->max_packet_size);
-    
   for (i = 0, sum = 0; i < strlen(result); i++)
     sum += result[i];
 
@@ -375,15 +375,24 @@ static void          gdbwrap_check_ack(gdbwrap_t *desc)
 static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 {
   int                rval;
+  int                sumrval;
   char               checksum[3];
 
   ASSERT(desc != NULL);
 
   gdbwrap_check_ack(desc);
-  rval = recv(desc->fd, desc->packet, desc->max_packet_size, 0);
+  desc->packet[0] = GDBWRAP_NULL_CHAR;
+  rval = 0;
+  sumrval = 0;
+  while (strstr(desc->packet, GDBWRAP_END_PACKET) == NULL)
+    {
+      /* In case the packet is splitted into many others. */
+      rval = recv(desc->fd, desc->packet + sumrval, desc->max_packet_size, 0);
+      sumrval += rval;
+    }
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval) {
-    desc->packet[rval] = GDBWRAP_NULL_CHAR;
+    desc->packet[sumrval] = GDBWRAP_NULL_CHAR;
     gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET,
 				NULL, sizeof(checksum));
     /* If no error, we ack the packet. */
@@ -474,7 +483,7 @@ gdbwrap_t            *gdbwrap_init(int fd)
   gdbwrap_t          *desc = malloc(sizeof(gdbwrap_t));
       
   ASSERT(fd && desc != NULL);
-  desc->max_packet_size   = 1000;
+  desc->max_packet_size   = 2500;
   desc->packet            = malloc((desc->max_packet_size + 1) * sizeof(char));
   desc->fd                = fd;
   desc->is_active         = TRUE;

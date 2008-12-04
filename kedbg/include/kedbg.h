@@ -1,5 +1,6 @@
 #include "revm.h"
 #include "libe2dbg.h"
+#include "libasm-int.h"
 #include "gdbwrapper.h"
 #include "interface.h"
 
