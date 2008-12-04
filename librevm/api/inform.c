@@ -237,9 +237,9 @@ revmexpr_t	*revm_inform_toplevel(char *type, char *varname,
 #endif
 
   /* Only check for addr range if print flag (manual inform) is on */
-  if (print && (!oaddr || !revm_check_addr(world.curjob->curfile, oaddr)))
+  if (print && !revm_check_addr(world.curjob->curfile, oaddr))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid variable address", NULL);
+		 "Invalid variable address", NULL);
   if (!realname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid variable name", NULL);
