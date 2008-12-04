@@ -127,7 +127,14 @@ int			revm_arithmetics(revmexpr_t *dest, revmexpr_t *e1, revmexpr_t *e2, u_char 
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Cannot divide by 0", -1);
       dst %= src;
+      break;      
+    case REVM_OP_SHL:
+      dst = dst << src;
       break;
+    case REVM_OP_SHR:
+      dst = dst >> src;
+      break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unknown requested operation", -1);

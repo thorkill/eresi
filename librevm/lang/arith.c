@@ -31,6 +31,8 @@ static revmexpr_t	*revm_ename_get(char **str)
       case '*':
       case '(':
       case ')':
+      case '<':
+      case '>':
 	goto end;
       default:
 	name[idx++] = **str;
@@ -136,6 +138,18 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_MOD;
+	break;
+      case '<':
+	if (op != REVM_OP_UNKNOW || !left)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid arithmetic syntax", NULL);
+	op = REVM_OP_SHL;
+	break;
+      case '>':
+	if (op != REVM_OP_UNKNOW || !left)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid arithmetic syntax", NULL);
+	op = REVM_OP_SHR;
 	break;
 
 	/* Maybe we found the beginning of a variable/constant/etc name */
