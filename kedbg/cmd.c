@@ -133,7 +133,7 @@ int              cmd_kedbgprintivt(void)
   for (i = 0; i < 256; i++)
     {    
       if (!(i % 8))
-	printf("\n");
+	printf("\n0x%02x | ", i);
       printf("0x%08x ", ivt[i]);
     }
   printf("\n\n");

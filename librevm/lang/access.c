@@ -367,7 +367,8 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 		      "Cannot find requested data object", NULL);
   data = (void *) annot->addr;
   if (translateaddr)
-    data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) data, NULL, 0);
+    data = elfsh_readmema(world.curjob->curfile, (eresi_Addr) data,
+			  (void *)&data, sizeof(void *));
 
   /* Get recursively the leaf type and data pointer */
   /* If the objpath is empty, its a scalar that was requested */
