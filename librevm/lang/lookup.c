@@ -346,7 +346,7 @@ elfshobj_t		*revm_lookup_file(char *param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid NULL parameter", (NULL));
   expr = revm_lookup_var(param);
-  if (!expr || !expr->value)
+  if (!expr || !expr->value || !expr->type)
     idx = atoi(param);
   else
     {
