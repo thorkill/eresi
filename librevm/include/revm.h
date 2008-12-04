@@ -161,6 +161,8 @@ extern asm_processor	proc;
 #define	REVM_OP_CMP		7
 #define	REVM_OP_MATCH		8
 #define	REVM_OP_COPY		9
+#define	REVM_OP_SHL		10
+#define	REVM_OP_SHR		11
 
 /* Some useful macros */
 #define	CHOOSE_REGX(r, idx)  r = (world.curjob->curcmd->use_regx[idx] ?       \
