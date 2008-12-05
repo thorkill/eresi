@@ -78,7 +78,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   file->hdr = hdr;
 
   /* Create sections table */
-  maphdr = elfsh_create_shdr(1, SHT_PROGBITS, SHF_ALLOC, 0, 
+  maphdr = elfsh_create_shdr(1, SHT_PROGBITS, SHF_ALLOC | SHF_WRITE | SHF_EXECINSTR, 0, 
 			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr), 
 			     size, 0, 0, sizeof(eresi_Addr), 0);
 
