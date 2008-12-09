@@ -54,15 +54,16 @@ int	operand_rmb_ib(asm_instr *ins, u_char *opcode, int len,
 */ 
 
 
-int operand_rmb(asm_operand *op, u_char *opcode, u_int len, 
-				     asm_processor *proc) {
+int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *proc) 
+{
   struct s_modrm	*modrm;
   struct s_sidbyte	*sidbyte;
 
   modrm = (struct s_modrm *) (opcode);
   sidbyte = (struct s_sidbyte *) (opcode + 1);
   
-  switch(modrm->mod) {
+  switch(modrm->mod) 
+    {
   case 0:
     
     /**

@@ -27,12 +27,19 @@ int     asm_operand_fetch_offset(asm_operand *operand, u_char *opcode,
 				 int otype, asm_instr *ins)
 #endif
 {
+  u_int	len;
+
   operand->type = ASM_OTYPE_OFFSET;
   operand->content = ASM_OP_VALUE | ASM_OP_REFERENCE;
   operand->ptr = opcode;
   operand->imm = 0;
-  operand->len = 4;
-  memcpy(&operand->imm, opcode, 4);
+
+  //operand->len = 4;
+  //memcpy(&operand->imm, opcode, 4);
+  len = asm_proc_opsize(ins->proc) ? 2 : 4;
+  operand->len = len;
+  memcpy(&operand->imm, opcode, len);
+
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   return (4);
 }

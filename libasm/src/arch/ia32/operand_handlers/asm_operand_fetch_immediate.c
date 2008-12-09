@@ -34,6 +34,6 @@ int     asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode,
   operand->ptr = opcode;
   operand->imm = 0;
   operand->len = asm_proc_opsize(ins->proc) ? 2 : 4;
-  memcpy(&operand->imm, opcode, asm_proc_opsize(ins->proc) ? 2 : 4);
+  memcpy(&operand->imm, opcode, operand->len);
   return (operand->len);
 }
