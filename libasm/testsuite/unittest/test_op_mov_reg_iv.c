@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <libaspect.h>
 
-
-#define OPCODE_TO_TEST "\xE8\x00\x01\x00\x00"
+#define OPCODE_TO_TEST      "\xBE\x7F\x7D\xE8\x34"
 #define OPCODE_VADDR   0x0804000
 
 
