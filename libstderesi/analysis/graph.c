@@ -29,6 +29,7 @@ int		revm_system_nowait(char *cmd)
   switch (fork())
     {
     case 0:
+      setenv("LD_PRELOAD", "", 1);
       ret = execvp(argv[0], argv);
       printf("Failed to execute system(%s) without wait (line = %s) \n", 
 	     argv[0], cmd);
@@ -48,28 +49,28 @@ int		revm_system_nowait(char *cmd)
  * @param min
  * @param max
  */
-void		revm_graph_legend(int fd, char *fnc, u_int min, u_int max)
+void		revm_graph_legend(int fd, char *fnc)
 {
   char	buf[BUFSIZ];
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  snprintf(buf,BUFSIZ-1,"graph [label=<\n\
-		<table border=\"1\">\n\
-			<tr><td>Legend:</td><td>%s</td></tr>\
-			<tr><td>min: 0x%08X</td><td>max: 0x%08X</td></tr>\
-			<tr><td align=\"left\"><font color=%s>COND TRUE</font></td>\n\
-			    <td align=\"left\"><font color=%s>COND FALSE</font></td></tr>\n\
-			<tr><td align=\"left\"><font color=%s>CALL</font></td>\n\
-			    <td align=\"left\"><font color=%s>RET</font></td></tr>\n\
-			<tr><td align=\"left\"><font color=%s>DELAY</font></td><td></td></tr>\n\
-		</table>\n\
-	>]\n",fnc, min, max,
+  snprintf(buf,BUFSIZ-1,
+	   "graph [label=<\n\
+		<table border=\"1\">\n				\
+			<tr><td>Legend:</td><td>%s</td></tr>\\"
+	   "<tr><td align=\"left\"><font color=%s>COND TRUE</font></td>\n \
+			    <td align=\"left\"><font color=%s>COND FALSE</font></td></tr>\n \
+			<tr><td align=\"left\"><font color=%s>CALL</font></td>\n \
+			    <td align=\"left\"><font color=%s>RET</font></td></tr>\n \
+			<tr><td align=\"left\"><font color=%s>DELAY</font></td><td></td></tr>\n	\
+		</table>\n						\
+       >]\n", fnc,
 	   LNK_COLOR_TRUE,
 	   LNK_COLOR_FALSE,
 	   LNK_COLOR_CALL,
 	   LNK_COLOR_RET,
 	   LNK_COLOR_DELAY);
-
+  
   write(fd,buf,strlen(buf));
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -199,6 +200,7 @@ int	revm_graph_compile_graphic(char *dotfile)
   if ((int) config_get_data(ERESI_CONFIG_GRAPH_AUTOBUILD))
     {
       snprintf(buf,sizeof(buf),"dot -Tpng -o %s.png %s",dotfile,dotfile);
+      setenv("LD_PRELOAD", "", 1);
       system(buf);
 
       if ((int) config_get_data(ERESI_CONFIG_GRAPH_AUTOVIEW))
@@ -324,7 +326,7 @@ u_int		revm_get_vaddr(char *s)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Get parameters */
-  if ((sym = elfsh_get_metasym_by_name(world.curjob->curfile,s)))
+  if ((sym = elfsh_get_metasym_by_name(world.curjob->curfile, s)))
     min = sym->st_value;
   else
     min = strtoul(s, 0, 16);
@@ -332,32 +334,6 @@ u_int		revm_get_vaddr(char *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(min));
 }
 
-/**
- * Returns next function vaddress 
- */
-u_int		revm_get_next_function_vaddr(u_int min)
-{
-  container_t *cntnr;
-  u_int		max,tmp,ltmp;
-  char		**keys;
-  int		idx,fnbr;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  keys = hash_get_keys(&world.mjr_session.cur->funchash, &fnbr);
-  max = ltmp = min;
-
-  for (idx = 0; idx < fnbr; idx++)
-    {
-      cntnr = hash_get(&world.mjr_session.cur->funchash, keys[idx]);
-      tmp = ((mjrfunc_t *)cntnr->data)->vaddr;
-      
-      if (((max == min) || (tmp < max)) && (tmp > min))
-	max = tmp;
-    }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,(max));
-}
 
 /**
  * Get color name for string, it does check alert
@@ -366,7 +342,8 @@ u_int		revm_get_next_function_vaddr(u_int min)
 char		*revm_get_colored_str(char *str,int type)
 {
   color_t	*t;
-  int		idx,c,t2;
+  int		idx, c;
+  u_int		t2;
   char		**keys;
   char		*color;
   char		buf[BUFSIZ];
@@ -384,7 +361,7 @@ char		*revm_get_colored_str(char *str,int type)
       
       for (c = 0; c < idx; c++)
 	{
-	  t2 = (int) hash_get(&fg_color_hash, keys[c]);
+	  t2 = (u_int) hash_get(&fg_color_hash, keys[c]);
 	  if (t2 == t->fground)
 	    {
 	      snprintf(buf, sizeof(buf), "\"%s\"", keys[c]);
@@ -478,8 +455,6 @@ int		revm_write_endnode(int fd)
 /* A recursive function for graphing in dot format */
 int		revm_graph_blocks(container_t   *cntnr,
 				  int		 fd,
-				  eresi_Addr	min,
-				  eresi_Addr	max,
 				  int		dir,
 				  int		maxdepth,
 				  int		curdepth)
@@ -501,9 +476,9 @@ int		revm_graph_blocks(container_t   *cntnr,
 
   blk = (mjrblock_t *) cntnr->data;
 
-  vaddr_str =_vaddr2str(blk->vaddr);
+  vaddr_str = _vaddr2str(blk->vaddr);
 
-  if (hash_get(&dumped, vaddr_str) || curdepth == maxdepth)
+  if (hash_get(&dumped, vaddr_str) || (maxdepth > 0 && curdepth >= maxdepth))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   hash_add(&dumped, vaddr_str, cntnr);
@@ -582,8 +557,7 @@ int		revm_graph_blocks(container_t   *cntnr,
       nextcnt = mjr_lookup_container(world.mjr_session.cur, lnk->id);
       nextblk = (mjrblock_t *) nextcnt->data;
 
-      //if ((nextblk->vaddr >= min) && (nextblk->vaddr <= max))
-	revm_graph_blocks(nextcnt, fd, min, max, 0, 0, curdepth + 1);
+      revm_graph_blocks(nextcnt, fd, 0, 0, curdepth + 1);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -623,10 +597,10 @@ int		revm_graph_function(container_t		*cntnr,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "No container found", -1);
 
-  fnc = (mjrfunc_t *)cntnr->data;
-  vaddr_str =_vaddr2str(fnc->vaddr);
+  fnc = (mjrfunc_t *) cntnr->data;
+  vaddr_str = _vaddr2str(fnc->vaddr);
 
-  if (hash_get(&dumped, vaddr_str) || curdepth == maxdepth)
+  if (hash_get(&dumped, vaddr_str) || (maxdepth > 0 && curdepth >= maxdepth))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   hash_add(&dumped, vaddr_str, cntnr);
@@ -639,8 +613,7 @@ int		revm_graph_function(container_t		*cntnr,
       	   (n1 && !offset ? n1 : fnc->name), 
 	   revm_get_colored_str((n1) ? n1 : fnc->name, ftype));
   
-  write(fd,buf,strlen(buf));
-
+  write(fd, buf, strlen(buf));
   linklist = mjr_link_get_by_direction(cntnr,direction);
 
   /* Print all links of this function */
@@ -687,6 +660,7 @@ int		revm_graph_function(container_t		*cntnr,
       child = mjr_lookup_container(world.mjr_session.cur, curlnk->id);
       revm_graph_function(child, fd, direction, type, maxdepth, curdepth + 1);
     }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -712,19 +686,22 @@ int	revm_open_dot_file(char *dotfile, int *fd)
 
 
 
-u_int		revm_get_min_param(void)
+eresi_Addr	revm_get_min_param(void)
 {
   revmexpr_t	*expr;
   revmobj_t	*var;
-  u_int		min;
+  eresi_Addr	min;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   expr = revm_lookup_var(world.curjob->curcmd->param[1]);
   if (expr && expr->value)
     {
       var = expr->value;
-      min = revm_get_vaddr(var->immed ? var->immed_val.str : 
-			   var->get_name(var->root, var->parent));
+      if (var->otype->type == ASPECT_TYPE_STR)
+	min = revm_get_vaddr(var->immed ? var->immed_val.str : 
+			     var->get_name(var->root, var->parent));
+      else
+	min = (var->immed ? var->immed_val.ent : var->get_obj(var->parent));
     }
   else
     min = revm_get_vaddr(world.curjob->curcmd->param[1]);
@@ -738,118 +715,114 @@ int		cmd_graph(void)
   container_t	*cntnr;
   int		fd;
   char		buf[BUFSIZ];
-  u_int		min;
-  u_int		max;
+  eresi_Addr	min;
   char		*dotfile;
-  u_int		maxdepth;
+  int		maxdepth;
+  int		ret;
+  mjrfunc_t	*func;
+  char		*str;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   hash_init(&dumped, "dumped_containers", mjrHashVerySmall, ASPECT_TYPE_UNKNOW);
-  
-  /* Some preliminary checks */
-  if (!world.mjr_session.cur->analysed)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Control flow section not found"
-		 " : use analyse command", -1);
   
   /* Select use depending on number of arguments */
   switch (world.curjob->curcmd->argc)
     {
-    case 0:
-      
-      dotfile = revm_get_dotfile_name(NULL, "object");
-      
-      revm_open_dot_file(dotfile, &fd);
 
+      /* Requested a complete call graph */
+    case 0:
+      if (!mjr_analysed(&world.mjr_session, world.curjob->curfile->hdr->e_entry))
+	{
+	  maxdepth = (int) config_get_data(CONFIG_CFGDEPTH);
+	  ret = mjr_analyse(&world.mjr_session, world.curjob->curfile->hdr->e_entry, maxdepth, 0);
+	  if (ret)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Error during control flow analysis", -1);
+	}      
+
+      dotfile = revm_get_dotfile_name(NULL, "object");
+      revm_open_dot_file(dotfile, &fd);
       snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
-      write(fd,buf,strlen(buf));
-      
-      printf(" [*] Dumping %d functions\n\n", 
-	     world.mjr_session.cur->funchash.elmnbr);
-      
+      write(fd, buf, strlen(buf));
+      printf(" [*] Dumping %d functions\n\n", world.mjr_session.cur->funchash.elmnbr);
       cntnr = mjr_get_container_by_vaddr(world.mjr_session.cur, 
 					 world.mjr_session.cur->obj->hdr->e_entry, 
 					 ASPECT_TYPE_FUNC);
-
-      //revm_graph_function(cntnr,fd,CONTAINER_LINK_IN,0, 0, 1);
-      revm_graph_function(cntnr,fd,CONTAINER_LINK_OUT,0, 0, 1);
-      
-      write(fd,"}\n",2);
+      revm_graph_function(cntnr, fd, CONTAINER_LINK_OUT, 0, 0, 1);
+      write(fd, "}\n", 2);
       close(fd);
-
       revm_graph_compile_graphic(dotfile);
- 
       break;
 
+      /* Requested a partial call graph or a control flow graph of a single function */
     case 2:
 
-    	if (strcmp("func",world.curjob->curcmd->param[0]) == 0)
-  	  {
-	    /* resolve the block vaddr */
-  	    min = revm_get_min_param();
-	    cntnr = hash_get(&world.mjr_session.cur->funchash,
-			     _vaddr2str(min));
-	    if (!cntnr)
-	      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-			   "Function not found",-1);
-	    
-	    dotfile = revm_get_dotfile_name(_vaddr2str(min),"function");
-	    revm_open_dot_file(dotfile, &fd);
-	    
-  	    snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
-  	    write(fd,buf,strlen(buf));
-
-  	    revm_graph_function(cntnr,fd,CONTAINER_LINK_IN,1, 0, 1);
-  	    revm_graph_function(cntnr,fd,CONTAINER_LINK_OUT,1, 0, 1);
-
-  	    write(fd,"}\n",2);
-  	    close(fd);
-
-  	    revm_graph_compile_graphic(dotfile);
-
+      /* A partial call graph */
+      if (!strcmp("func", world.curjob->curcmd->param[0]))
+	{
+	  min = revm_get_min_param();
+	  maxdepth = (int) config_get_data(CONFIG_CFGDEPTH);
+	  if (!mjr_analysed(&world.mjr_session, min))
+	    {
+	      ret = mjr_analyse(&world.mjr_session, min, maxdepth, 0);
+	      if (ret)
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			     "Error during control flow analysis", -1);
 	    }
-    	else if (strcmp("bloc",world.curjob->curcmd->param[0]) == 0)
-  	  {
-	    min = revm_get_min_param();
-  	    max = revm_get_next_function_vaddr(min);
-	    
-	    cntnr = hash_get(&world.mjr_session.cur->blkhash,
-			     _vaddr2str(min));
-
-	    if (!cntnr)
-	      PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-			   "Function not found",-1);
-
-  	    printf(" [D] MIN:%x MAX:%x\n",min,max);
-
-	    dotfile = revm_get_dotfile_name(_vaddr2str(min),"block");
-	    revm_open_dot_file(dotfile, &fd);
-
-  	    snprintf(buf, sizeof(buf),"strict digraph prof {\n");
-  	    write(fd,buf,strlen(buf));
-
-	    revm_graph_legend(fd, "DEFAULT", min, max);
-
-	    /* FIXME: the function addr interval is not always well guessed
-	       which leads to truncated control flow graphs */
-	    revm_graph_blocks(cntnr,fd,min,max,0,0,1);
-
-	    write(fd,"}\n",2);
-	    close(fd);
-
-	    revm_graph_compile_graphic(dotfile);
-
-  	    revm_output(" [*] Dump function blocks\n\n");
-  	  }
-	else
-	  revm_output(" [!] Invalid syntax: help graph\n");
-	break;
-
-	/* FIXME: graph <func|bloc> <sym|func> <in|out> */
+	  cntnr = hash_get(&world.mjr_session.cur->funchash, _vaddr2str(min));
+	  if (!cntnr)
+	    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+			 "Function not found",-1);
+	  dotfile = revm_get_dotfile_name(_vaddr2str(min), "function");
+	  revm_open_dot_file(dotfile, &fd);
+	  snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
+	  write(fd,buf,strlen(buf));
+	  revm_graph_function(cntnr, fd, CONTAINER_LINK_IN,  1, maxdepth, 0);
+	  func = (mjrfunc_t *) cntnr->data;
+	  str = _vaddr2str(func->vaddr);
+	  hash_del(&dumped, str);
+	  XFREE(__FILE__, __FUNCTION__, __LINE__, str);
+	  revm_graph_function(cntnr, fd, CONTAINER_LINK_OUT, 1, maxdepth, 0);
+	  write(fd,"}\n",2);
+	  close(fd);
+	  revm_graph_compile_graphic(dotfile);
+	}
+      
+      /* A control flow graph of a single function */
+      else if (!strcmp("bloc",world.curjob->curcmd->param[0]))
+	{
+	  min = revm_get_min_param();
+	  if (!mjr_analysed(&world.mjr_session, min))
+	    {
+	      maxdepth = (int) config_get_data(CONFIG_CFGDEPTH);
+	      ret = mjr_analyse(&world.mjr_session, min, maxdepth, 0);
+	      if (ret)
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			     "Error during control flow analysis", -1);
+	    }
+	  cntnr = hash_get(&world.mjr_session.cur->blkhash,  _vaddr2str(min));
+	  if (!cntnr)
+	    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+			 "Block not found",-1);
+	  dotfile = revm_get_dotfile_name(_vaddr2str(min), "block");
+	  revm_open_dot_file(dotfile, &fd);
+	  snprintf(buf, sizeof(buf), "strict digraph prof {\n");
+	  write(fd, buf, strlen(buf));
+	  revm_graph_legend(fd, "DEFAULT");
+	  revm_graph_blocks(cntnr, fd, 0, 0, 1);
+	  write(fd,"}\n",2);
+	  close(fd);
+	  revm_graph_compile_graphic(dotfile);
+	  revm_output(" [*] Dump function blocks\n\n");
+	}
+      else
+	revm_output(" [!] Invalid syntax: help graph\n");
+      break;
+      
+      /* FIXME: graph <func|bloc> <sym|func> <in|out> */
     case 3:
       break;
-	
+      
       /* FIXME: graph <func|bloc> <sym|func> <in|out|all> <maxdepth> */
     case 4:
       break;
@@ -862,7 +835,6 @@ int		cmd_graph(void)
     
   }
 
-  hash_empty("dumped_containers");
-
+  hash_destroy(&dumped);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
