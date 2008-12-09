@@ -14,6 +14,17 @@ typedef struct s_asm_i386_table		asm_i386_table;
 void	asm_resolve_ia32(void *d, u_int, char *, u_int);
 
 /**
+ * 
+ */
+
+enum e_asm_proc_mode {
+  INTEL_REAL,
+  INTEL_PROT
+};
+
+
+
+/**
  * ia32 related functions.
  */
 

@@ -29,15 +29,6 @@ typedef struct s_sidbyte {
 
 } asm_sidbyte;
 
-/**
- * 
- */
-
-enum e_asm_proc_mode {
-  INTEL_REAL,
-  INTEL_PROT
-};
-
 
 int		asm_int_pow2(int);
 

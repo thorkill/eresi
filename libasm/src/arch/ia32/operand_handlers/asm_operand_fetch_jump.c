@@ -43,5 +43,5 @@ int     asm_operand_fetch_jump(asm_operand *operand, u_char *opcode,
   memcpy(&operand->imm, opcode, len);
 
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
-  return (4);
+  return (len);
 }
