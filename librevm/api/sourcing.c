@@ -32,6 +32,7 @@ int		revm_source(char **params)
   int		ret;
   revmobj_t	*new;
   revmexpr_t	*expr;
+  revmexpr_t	*eparam[10] = {NULL};
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -75,27 +76,31 @@ int		revm_source(char **params)
   hash_init(&world.curjob->recur[world.curjob->curscope].exprs, strdup(actual), 23, ASPECT_TYPE_EXPR);
   world.curjob->recur[world.curjob->curscope].funcname = str;
 
-  /* Create new parameters and store them in new scope */
+  /* Lookup script parameters */
   for (ac = 1; params[ac]; ac++)
     {
-
-      /* Get the parameter value. Can be a previous function parameter ($Num) itself 
-	 -> lookup has to be done before creating the new parameter */
       expr = revm_lookup_param(params[ac], 1);
-
-      /* Then save the previous $1...N variables */
-      argv[ac + 1] = params[ac]; 
-      snprintf(actual, sizeof(actual), "$%u", ac);
-
-#if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Parameter %s added with type = %s \n", 
-	  actual, (expr->type ? expr->type->name : "UNKNOWN TYPE"));
-#endif
-
-      expr = revm_expr_copy(expr, actual, 0);
+      if (!expr)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Invalid script parameter", -1);
+      eparam[ac - 1] = expr;
     }
-  argv[ac + 1] = NULL;
 
+  /* Create new parameters and store them in new scope */
+  for (ac = 0; eparam[ac]; ac++)
+    {
+      snprintf(actual, sizeof(actual), "$%u", ac + 1);
+
+#if 1 //__DEBUG_EXPRS__
+      fprintf(stderr, " [D] Parameter %s added with type = %s \n", 
+	      actual, (eparam[ac]->type ? eparam[ac]->type->name : "UNKNOWN TYPE"));
+#endif
+      
+      revm_expr_copy(eparam[ac], actual, 0);
+    }
+
+  /* Change ARGC variable */
+  argv[ac + 1] = NULL;
   new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
   revm_expr_create_from_object(new, REVM_VAR_ARGC, 0);
 
