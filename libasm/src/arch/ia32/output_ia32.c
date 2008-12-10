@@ -132,12 +132,15 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
 			 void *bufptr) 
 {
   char	resolved[256];
+  int	addr_mask;
   int	baser;
   int	indexr;
   int	scale;
   int	imm;
   asm_operand *op;
   char	*buffer;
+  
+  addr_mask = asm_proc_opsize(ins->proc) ? 0xffff : 0xffffffff;
 
   op = 0;
   buffer = bufptr;
@@ -173,10 +176,10 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
 					     imm, resolved, 256);
     else if (ASM_OP_VALUE & op->content)
       ins->proc->resolve_immediate(ins->proc->resolve_data, 
-					     imm + addr + ins->len, resolved, 256);
+					     (imm + addr + ins->len) & addr_mask, resolved, 256);
     else
       ins->proc->resolve_immediate(ins->proc->resolve_data, 
-					     imm + addr + ins->len, resolved, 256);
+					     (imm + addr + ins->len) & addr_mask, resolved, 256);
   } else
     ins->proc->resolve_immediate(ins->proc->resolve_data,
 					   imm, resolved, 256);
