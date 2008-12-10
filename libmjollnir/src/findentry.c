@@ -223,6 +223,7 @@ eresi_Addr	mjr_trace_start(mjrcontext_t	*context,
 	{
 	  bsym = elfsh_create_symbol(main_addr, 0, STT_FUNC, 0, 0, 0);
 	  elfsh_insert_symbol(context->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, "main");
+	  elfsh_sync_sorted_symtab(context->obj->secthash[ELFSH_SECTION_SYMTAB]);
 	}
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, main_addr);

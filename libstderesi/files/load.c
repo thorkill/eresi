@@ -144,6 +144,7 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   /* Add the object to the list of opened objects */
   new->id = ++world.state.lastid;
   world.curjob->curfile = new;
+  revm_proc_init();
   expr = revm_expr_get(REVM_VAR_LOAD);
   if (!expr || !expr->value)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -171,7 +172,7 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   
   /* Create libmjollnir context for this binary */
   mjr_create_context_as_current(&world.mjr_session, new);
-  mjr_setup_processor(&world.mjr_session);
+  mjr_setup_processor(&world.mjr_session, world.curjob->proc);
 
   /* Init search hash tables */
   elfsh_init_symbol_hashtables(new);
@@ -281,8 +282,6 @@ int		cmd_load()
 
   /* Everything was OK */
   world.state.revm_shared = 0;
-  revm_expr_destroy(expr->label);
-  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

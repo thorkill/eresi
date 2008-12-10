@@ -8,30 +8,22 @@
 #define LIBASM_I386_H_
 
 #include <libasm-ia32-hdl.h>
+
 typedef struct s_asm_i386_processor	asm_i386_processor;
 typedef struct s_asm_i386_table		asm_i386_table;
 
-void	asm_resolve_ia32(void *d, u_int, char *, u_int);
+void	asm_resolve_ia32(void *d, eresi_Addr, char *, u_int);
 
-/**
- * 
- */
-
-enum e_asm_proc_mode {
+/** Are we in protected mode or real mode ? */
+enum e_asm_proc_mode 
+{
   INTEL_REAL,
   INTEL_PROT
 };
 
-
-
-/**
- * ia32 related functions.
- */
-
-
+/** IA32 related functions */
 int	asm_content_pack(asm_operand *, int, int);
 int	asm_fixed_pack(int, int, int, int);
-
 
 /**
  * this structure is internal and may not be accessed by user
@@ -39,17 +31,14 @@ int	asm_fixed_pack(int, int, int, int);
  * refer to sandpile.org
  */
 
-struct s_asm_proc_i386 {
-  /* compatibility				*/
-  
-  int			mode;		/*!< processor state: opsize actived or not	*/
-  
-  int			vect_size;
-  int			addsize;	/*!< WIPcurrent state of the processor addsize prefix */
-  int			opsize;		/*!< WIPcurrent state of the processor addsize prefix */
-    
-  int			type;		/*!< WIPcurrent state of the processor addsize prefix */
-  //int			(*get_vect_size)(asm_processor *); /*!< Internal handler unused */
+struct		s_asm_proc_i386 
+{
+  int		mode;		/*!< processor state: opsize actived or not	*/  
+  int		vect_size;
+  int		addsize;	/*!< WIPcurrent state of the processor addsize prefix */
+  int		opsize;		/*!< WIPcurrent state of the processor addsize prefix */
+  int		type;		/*!< WIPcurrent state of the processor addsize prefix */
+  //int		(*get_vect_size)(asm_processor *); /*!< Internal handler unused */
 };
 
 

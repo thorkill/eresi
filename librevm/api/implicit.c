@@ -97,10 +97,10 @@ int				revm_workfiles_unload()
 /* Do all implicit operation when calling elfsh from a script */
 int		revm_implicit(revmcmd_t *actual)
 {
-
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the requested command does not need a current pointer */
+  revm_proc_init();
   if (actual && !actual->wflags)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
@@ -124,7 +124,7 @@ int		revm_implicit(revmcmd_t *actual)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No file loaded", -1);
 
   /* We need to set it here since the CURRENT object can change */
-  asm_set_resolve_handler(&world.proc, asm_do_resolve, world.curjob->curfile);
+  asm_set_resolve_handler(world.curjob->proc, asm_do_resolve, world.curjob->curfile);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

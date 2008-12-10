@@ -159,7 +159,7 @@ void sparc_convert_call(struct s_decode_call *, u_char *);
 void sparc_convert_format3(struct s_decode_format3 *, u_char *);
 void sparc_convert_format4(struct s_decode_format4 *, u_char *);
 
-void asm_resolve_sparc(void *, u_int, char *, u_int);
+void asm_resolve_sparc(void *, eresi_Addr, char *, u_int);
 
 /* Get operand name */
 char *asm_sparc_get_op_name (asm_operand *op);

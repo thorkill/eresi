@@ -390,7 +390,7 @@ typedef struct        s_job
   revmargv_t	      *curcmd;				/* Next command to be executed */
   hash_t              loaded;				/* List of loaded ELF objects */
   elfshobj_t          *curfile;				/* Current working ELF object */
-  asm_processor*      proc;				/* Processor structure */
+  asm_processor       *proc;				/* Processor structure */
 
   /* Job debugger context */
   hash_t              dbgloaded;			/* List of objects loaded into e2dbg */
@@ -409,9 +409,10 @@ typedef struct        s_world
   revmjob_t	      *curjob;        /* Current job */
   hash_t	      shared_hash;    /* Hash of shared descriptors */
   char                *scriptsdir;    /* Directory which contains script commands */
-  asm_processor       proc;           /* Libasm world */
+  asm_processor       proc_ia32;      /* Libasm Intel */
   asm_processor	      proc_sparc;     /* Libasm Sparc */
   asm_processor	      proc_mips;      /* Libasm Mips */
+  asm_processor	      proc_arm;	      /* Libasm ARM */
   mjrsession_t        mjr_session;    /* Session holding contexts for mjollnir */
   int		      fifo_s2c;	      /* Fd for the debugger IO FIFO */
   int		      fifo_c2s;	      /* Fd for the debugger IO FIFO */
@@ -515,7 +516,7 @@ char		*revm_reverse(elfshobj_t *file, u_int vaddr);
 /* Lookup functions */
 revmobj_t	*revm_lookup_immed(char *param, u_char existing);
 revmexpr_t	*revm_lookup_var(char *param);
-
+char		*revm_lookup_key(char *param);
 elfshobj_t	*revm_lookup_file(char *param);
 u_int		revm_lookup_index(char *param);
 char		*revm_lookup_string(char *param);
@@ -593,6 +594,7 @@ int             revm_hashbucket_print(int, int, int, char *, int, int, int);
 int             revm_hashchain_print(int i, int s, char *n, int r, int h);
 
 /* Internal functions */
+void		revm_proc_init();
 revmmod_t	*revm_modprobe();
 void		revm_tables_setup();
 int		revm_doerror(void (*fct)(char *str), char *str);

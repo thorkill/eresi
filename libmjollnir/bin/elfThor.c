@@ -78,7 +78,7 @@ int		main(int ac, char **av)
     }
   */
   
-  mjr_setup_processor(&sess);
+  mjr_setup_processor(&sess, NULL);
   
   if (opt_A) 
     {

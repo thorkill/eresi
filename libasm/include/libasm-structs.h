@@ -1,14 +1,8 @@
 /**
  * @file libasm-structs.h
  * 
- * Made by #!HATE#@!
- * Login   <hate@epita.fr>
- * 
- * Started on  Tue Jun 14 05:00:05 2005 #!HATE#@!
- * Last update Thu Jun 16 04:56:41 2005 #!HATE#@!
- *
+ * Started on  Tue Jun 14 05:00:05 2005 Sebastien Roy
  * $Id: libasm-structs.h,v 1.15 2007/10/29 11:26:44 heroine Exp $
- *
  */
 
 /**
@@ -16,8 +10,7 @@
  */
 struct s_asm_op 
 {  
-  /* pointer to processor structure. - to remove -	*/
-  //asm_processor *proc;
+
   /** operand length. (usefull on ia32 only).
    * operands expressed in R byte from ModRM byte have a null size.	*/
   u_int	len;			
@@ -31,8 +24,7 @@ struct s_asm_op
   u_int	size;
   /* Operand content flags */
   u_int	content;
-  /* register set: 8/16/32 bits general registers, segment registers ..
-   * (ia32 only) */
+  /* register set: 8/16/32 bits general registers, segment registers .. (IA32 only) */
   int regset;
   /* operand prefix (ia32 only)	*/
   int prefix;  
@@ -42,9 +34,9 @@ struct s_asm_op
   int baser;
   /* index register: auxiliary register */
   int indexr;
-  /* */
+  /* String for base register */
   char	*sbaser;
-  /* */
+  /* String for index register */
   char	*sindex;
   /* address space (sparc only) 
    * 
@@ -113,22 +105,26 @@ struct s_asm_instr
 struct s_asm_processor 
 {
   /* handler to resolving function */
-  void (*resolve_immediate)(void *, u_int, char *, u_int); 
+  void (*resolve_immediate)(void *, eresi_Addr, char *, u_int); 
+
   /* handler data pointer */
   void *resolve_data;
+
   /* processor type */
   int type;
+
   /* array to instruction memonic by instr field of asm_instr */
   char **instr_table;
+
   /* fetching instruction. points to processor fetching function. */
   LIBASM_HANDLER_FETCH(fetch);
-  //int (*fetch)(asm_instr *, u_char *, u_int, asm_processor *proc);
+
   /* output handler. print instruction in a readable string	*/
-  char *(*display_handle)(asm_instr *instr, int addr);
+  char *(*display_handle)(asm_instr *instr, eresi_Addr addr);
+
   /* pointer to an internal structure. */
   void *internals;
+
   /* Last operation error code */
   int	error_code;
-  
-  
 };

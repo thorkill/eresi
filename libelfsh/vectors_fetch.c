@@ -96,9 +96,6 @@ u_char		elfsh_get_elftype(elfshobj_t *file)
  */
 u_char		elfsh_get_iotype(elfshobj_t *file)
 {
-/*   static int i; */
-/*   printf("%d ", i++); */
-/*   fflush(stdout); */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file->iotype);
 }
@@ -125,6 +122,8 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_OPENBSD));
     case ELFOSABI_SOLARIS:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_SOLARIS));
+    case ELFOSABI_ARM:
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ELFSH_OS_ARM));
     case 0:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     default:
@@ -283,6 +282,7 @@ u_int       elfsh_get_breaksize(elfshobj_t *file)
     case ELFSH_ARCH_ALPHA64:
     case ELFSH_ARCH_PPC32:
     case ELFSH_ARCH_PPC64:
+    case ELFSH_ARCH_ARM:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 4);
     case ELFSH_ARCH_IA64:
     case ELFSH_ARCH_ERROR:

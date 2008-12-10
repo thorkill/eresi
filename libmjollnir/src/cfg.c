@@ -39,6 +39,7 @@ int			mjr_trace_control(mjrcontext_t *context,
   int			ilen;
   container_t		*bloc;
   u_int			addend;
+  elfshsect_t		*sect;
 
   /* Initialize stuffs */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -65,7 +66,7 @@ int			mjr_trace_control(mjrcontext_t *context,
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
-  mjr_asm_check_function_start(context);
+  //mjr_asm_check_function_start(context);
 
   /* Switch on instruction types provided by libasm */
   if (curins->type & ASM_TYPE_CONDBRANCH)
@@ -117,7 +118,8 @@ int			mjr_trace_control(mjrcontext_t *context,
       addend = (context->proc.type == ASM_PROC_SPARC || context->proc.type == ASM_PROC_MIPS ? 4 : 0);
       
       /* If call occured at the end of a section */
-      if (curvaddr + ilen + addend >= context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr)
+      sect = elfsh_get_parent_section(context->obj, curvaddr + ilen + addend, NULL);
+      if (!sect)
 	{
 
 #if __DEBUG_FLOW__
@@ -144,22 +146,36 @@ int			mjr_trace_control(mjrcontext_t *context,
     }
   else if (curins->type & ASM_TYPE_RETPROC)
     {
+
       if (context->func_stack->elmnbr > 1)
-	context->curfunc = elist_pop(context->func_stack);
+	{
+	  context->curfunc = elist_pop(context->func_stack);
 
 #if __DEBUG_FLOW__
       fprintf(D_DESC, " *********** CURFUNC RET @ " XFMT " : to %s ******** \n",
 	      curvaddr, (context->curfunc && context->curfunc->data ? 
 			 ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
 #endif
+
+	}
+
+#if __DEBUG_FLOW__
+      else
+	fprintf(D_DESC, " *********** RET @ " XFMT " : NO RET FROM %s ******** \n",
+		curvaddr, (context->curfunc && context->curfunc->data ? 
+			   ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
+#endif
+
     }
+
+#if __DEBUG_FLOW__
   else
     {
-#if __DEBUG_FLOW__
       fprintf(D_DESC,"[D] %s: CUR: %x DEFAULT %d\n", 
 	      __FUNCTION__, curvaddr, curins->type);
-#endif
     }
+#endif
+
 
   /* Return the delay slot size if any */
   addend = (context->proc.type == ASM_PROC_MIPS || 
@@ -250,7 +266,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
   /* So the keys for this hash tables are the vaddr of the instruction that does
      the complex function pointer call */
   
-  ret = (char *) hash_get(&goto_hash, tmp);
+  ret = (char *) hash_get(&context->goto_hash, tmp);
   if (!ret) 
     {
       printf(" [*] UNABLE to resolve function pointer called from 0x%08lx\n", 
@@ -280,11 +296,12 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
  * @brief Resolve the destination address of current call 
  * @param context mjorllnir context strucutre
  */
-eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
+eresi_Addr		mjr_get_call_destaddr(mjrcontext_t *context)
 {
-  int		ilen;
-  eresi_Addr	dest;
-  asm_instr	*ins;
+  int			 ilen;
+  eresi_Addr		 dest;
+  asm_instr		 *ins;
+  struct s_asm_proc_i386 *inter;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dest = 0;
@@ -339,7 +356,11 @@ eresi_Addr	mjr_get_call_destaddr(mjrcontext_t *context)
     }
   else
     dest = MJR_BLOCK_INVALID;
-  
+
+  /* Mainly to deal with real mode 20 bits addressing */
+  inter = context->proc.internals;
+  if (context->proc.type == ASM_PROC_IA32 && inter->mode == INTEL_REAL)
+    dest = dest & 0x000FFFFF;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
@@ -430,6 +451,7 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
  * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
  */
+/*
 int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char			*tmpstr;
@@ -438,15 +460,14 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  /* check function prologue */
-  /* FIXME: does not support function without frame pointer or without local variables,
-     - check func-without-fp signature
-     - check if history contains a call to us (to detect small functions)
-  */
+  //check function prologue
+  //FIXME: does not support function without frame pointer or without local variables,
+  //- check func-without-fp signature
+  //- check if history contains a call to us (to detect small functions)
   switch (ctxt->proc.type)
     {
       
-      /* IA32 architecture */
+      //IA32 architecture
     case ASM_PROC_IA32:
       if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_SUB &&
 	  ctxt->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV &&
@@ -458,7 +479,7 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 	}
       break;
   
-      /* SPARC architecture */
+      //SPARC architecture
     case ASM_PROC_SPARC:
       if (ctxt->hist[MJR_HISTORY_CUR].instr.instr == ASM_SP_SAVE &&
 	  ctxt->hist[MJR_HISTORY_CUR].instr.op[0].baser == ASM_REG_O6 &&
@@ -471,7 +492,7 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   	}
       break;
   
-  /* MIPS architecture */
+      //MIPS architecture
     case ASM_PROC_MIPS:
       if (ctxt->hist[MJR_HISTORY_CUR].instr.instr   == ASM_MIPS_SD &&
 	  ctxt->hist[MJR_HISTORY_PREV].instr.instr == ASM_MIPS_ADDIU &&
@@ -489,10 +510,10 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 		   "Unsupported architecture in libmjollnir", -1);
     }
   
-  /* Nothing to declare */
+  //Nothing to declare
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  /* We found a prolog */
+  //We found a prolog
  finish:
 
 #if __DEBUG_FLOW__
@@ -516,3 +537,4 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+*/

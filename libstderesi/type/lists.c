@@ -171,7 +171,7 @@ static int	revm_list_display_regx2(char *tableregx, char *elemregx)
   for (match = index = 0; index < keynbr; index++)
     if (!regexec(&rx, keys[index], 0, 0, 0))
       {
-	cur = hash_get(hash_hash, keys[index]);
+	cur = hash_get(hash_lists, keys[index]);
 	for (curent = cur->head; curent; curent = curent->next)
 	  if (!regexec(&ex, curent->key, 0, 0, 0))
 	    {
@@ -240,6 +240,9 @@ static int	revm_list_display_regx(char *regx)
  */
 int		cmd_lists()
 {
+  char		*hname;
+  char		*kname;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (world.curjob->curcmd->argc)
@@ -251,14 +254,16 @@ int		cmd_lists()
       
       /* Print a determined table with determined (or not) key entry */
     case 1:
-      if (revm_list_display_regx(world.curjob->curcmd->param[0]) < 0)
+      hname = revm_lookup_key(world.curjob->curcmd->param[0]);
+      if (revm_list_display_regx(hname) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to print matching lists", -1);
       break;
 
     case 2:
-      if (revm_list_display_regx2(world.curjob->curcmd->param[0],
-				 world.curjob->curcmd->param[1]) < 0)
+      hname = revm_lookup_key(world.curjob->curcmd->param[0]);
+      kname = revm_lookup_key(world.curjob->curcmd->param[1]);
+      if (revm_list_display_regx2(hname, kname) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to print matching list elements", -1);
       break;

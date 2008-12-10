@@ -101,6 +101,10 @@ int		elfsh_init_vectors()
   elfsh_register_readmem(ELFSH_OS_HPUX, ELFSH_IOTYPE_EMBEDDED   , elfsh_get_raw);
   elfsh_register_readmem(ELFSH_OS_HPUX, ELFSH_IOTYPE_STATIC     , elfsh_get_raw);
 
+  /* It appears that the OS field of some binary is set to 'ELF_OSABI_ARM' ... */
+  elfsh_register_readmem(ELFSH_OS_ARM, ELFSH_IOTYPE_EMBEDDED   , elfsh_get_raw);
+  elfsh_register_readmem(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_get_raw);
+
   /* Register handlers for READMEMA hook */
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_EMBEDDED  , elfsh_get_raw_by_addr);
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_STATIC    , elfsh_get_raw_by_addr);
@@ -118,6 +122,8 @@ int		elfsh_init_vectors()
   elfsh_register_readmema(ELFSH_OS_IRIX, ELFSH_IOTYPE_STATIC     , elfsh_get_raw_by_addr);
   elfsh_register_readmema(ELFSH_OS_HPUX, ELFSH_IOTYPE_EMBEDDED   , elfsh_get_raw_by_addr);
   elfsh_register_readmema(ELFSH_OS_HPUX, ELFSH_IOTYPE_STATIC     , elfsh_get_raw_by_addr);
+  elfsh_register_readmema(ELFSH_OS_ARM, ELFSH_IOTYPE_EMBEDDED   , elfsh_get_raw_by_addr);
+  elfsh_register_readmema(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_get_raw_by_addr);
 
   /* Register handlers for WRITEMEM hook */
   elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_EMBEDDED  , elfsh_memcpy);
@@ -136,6 +142,8 @@ int		elfsh_init_vectors()
   elfsh_register_writemem(ELFSH_OS_IRIX, ELFSH_IOTYPE_STATIC     , elfsh_memcpy);
   elfsh_register_writemem(ELFSH_OS_HPUX, ELFSH_IOTYPE_EMBEDDED   , elfsh_memcpy);
   elfsh_register_writemem(ELFSH_OS_HPUX, ELFSH_IOTYPE_STATIC     , elfsh_memcpy);
+  elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_EMBEDDED   , elfsh_memcpy);
+  elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_memcpy);
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, dims    , 3 * sizeof(u_int), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, strdims , 3 * sizeof(char *), -1);

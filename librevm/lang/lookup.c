@@ -328,6 +328,75 @@ char			*revm_lookup_string(char *param)
 
 
 
+/** @brief Lookup a hash or list key */
+char		*revm_lookup_key(char *param)
+{
+  revmexpr_t	*expr;
+  revmobj_t	*ret;
+  char		*key;
+  u_int		idx;
+  u_int		idxtmp;
+  char		tmpkey[BUFSIZ];
+  char		result[BUFSIZ] = {0x00};
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  idx = 0;
+  while (*param)
+    {
+
+      /* No special character */
+      while (*param != REVM_VAR_PREFIX && *param)
+	{
+	  if (idx >= BUFSIZ)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Too long key for source object", NULL);
+	  result[idx++] = *param;
+	  param++;
+	}
+      if (!(*param))
+	goto end;
+
+      /* Lookup the variable name found within the key */
+      for (idxtmp = 0; *param != '_' && *param; param++)
+	{
+	  if (idxtmp >= BUFSIZ)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			 "Too long key for source object", NULL);
+	  tmpkey[idxtmp++] = *param;
+	}
+      tmpkey[idxtmp] = 0x00;
+
+      /* Try to lookup the variable name */
+      expr = revm_expr_get(tmpkey);
+      if (!expr)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Invalid key", NULL);	
+      if (!expr->type || !expr->value)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Parser handling failed", NULL);
+      ret = revm_copy_object(expr->value);	  
+      if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
+	{
+	  revm_destroy_object(expr->value, 1);
+	  expr->value = ret;
+	  expr->type  = ret->otype;
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Unknown key for source object", NULL);
+	}
+      key = expr->value->immed_val.str;
+      revm_destroy_object(expr->value, 0);
+      expr->value = ret;
+      expr->type  = ret->otype;
+      idx += snprintf(result + idx, BUFSIZ - idx, "%s", key);
+    }
+
+ end:
+  key = strdup(result);
+  //printf("key = %s ! \n", key);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, key);
+}
+
+
 /** 
  * @brief Lookup the file pointed by name 
  */
@@ -382,7 +451,7 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
   int			keynbr;
   char			*parm;
   unsigned int		sepnbr;
-  unsigned int		index;
+  int			index;
   revmobj_t		*res;
   revmexpr_t		*expr;
   

@@ -42,6 +42,6 @@ int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode,
   operand->len = len;
   memcpy(&operand->imm, opcode, len);
   if (len == 2)
-    imm = imm & 0xFFFF;
+    operand->imm = operand->imm & 0xFFFF;
   return (len);
 }

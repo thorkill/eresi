@@ -1,13 +1,25 @@
 #!evarista/evarista32
 
 #quiet
+verb
 
 print ENTERED CFG-WALK
 
-cmp $# 1
+print $#
+
+cmp $# 2
 jne end
 
-set $block $hash[blocks:$1]
+print $1
+print $2
+#tables $2_blocks
+
+verb
+
+profile enable warn
+set $block $hash[$2_blocks:$1]
+profile disable warn
+
 #print $1
 set $hash[visitedblocks:$1] 1
 #print $block
@@ -53,7 +65,7 @@ ok:
 
 ok2:
 
-  cfg-walk $addr
+  cfg-walk $addr $2
 
   print Coming back from bloc at addr $addr
   #print $nextblock

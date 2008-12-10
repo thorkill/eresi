@@ -249,7 +249,7 @@ int	asm_instr_len(asm_instr *);
  * Return instruction length.
  *
  */
-int		asm_instruction_get_len(asm_instr *, int, void *);
+int	asm_instruction_get_len(asm_instr *, int, void *);
 
 /**
  * Return instruction mnemonic.
@@ -260,9 +260,7 @@ char	*asm_instr_get_memonic(asm_instr *, asm_processor *);
 /**
  * Return a pointer
  */
-
-char	*asm_display_instr_att(asm_instr *, int);
-
+char	*asm_display_instr_att(asm_instr *, eresi_Addr);
 void	asm_clear_instr(asm_instr *);
 
 /**
@@ -282,36 +280,33 @@ char*	asm_get_error_message();
  *
  */
 
-int		asm_operand_get_count(asm_instr *instr, int num, int, void *);
+int	asm_operand_get_count(asm_instr *instr, int num, int, void *);
 
 /**
  * Return operand content.
  */
 
-int		asm_operand_get_content(asm_instr *, int, int, void *);
+int	asm_operand_get_content(asm_instr *, int, int, void *);
 
 /******************
  *
  */
 
-void		*asm_opcode_fetch(const char *vector_name, int opcode);
+void	*asm_opcode_fetch(const char *vector_name, int opcode);
 
 /**
  * Return operand type.
  */
 
-int		asm_operand_get_type(asm_instr *, int, int, void *);
+int	asm_operand_get_type(asm_instr *, int, int, void *);
 
 /**
  * Return operand size
  */
-
-int		asm_operand_get_size(asm_instr *, int, int, void *);
-
-int		asm_operand_get_len(asm_instr *, int, int, void *);
-int		asm_operand_set_value(asm_instr *, int, int, void *);
-int		asm_operand_get_value(asm_instr *, int, int, void *);
-
+int	asm_operand_get_size(asm_instr *, int, int, void *);
+int	asm_operand_get_len(asm_instr *, int, int, void *);
+int	asm_operand_set_value(asm_instr *, int, int, void *);
+int	asm_operand_get_value(asm_instr *, int, int, void *);
 
 #ifndef __KERNEL__
 
@@ -383,7 +378,7 @@ int		asm_instruction_is_prefixed(asm_instr *ins, int prefix);
  * Set resolve handler used by asm_display_instr() to resolve immediate value.
  */
 void		asm_set_resolve_handler(asm_processor *,
-					void (*)(void *, u_int, char *, u_int), 
+					void (*)(void *, eresi_Addr, char *, u_int), 
 					void *);
 
 /**

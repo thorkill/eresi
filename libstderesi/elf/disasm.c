@@ -205,43 +205,13 @@ int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
   int		err;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!buff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", (-1));    
-
-  /* Init proc */			  
-  if (!world.curjob->proc) 
-    {
-      switch (machine = elfsh_get_arch(world.curjob->curfile->hdr))
-	{
-	case EM_386:
-	  world.curjob->proc = &world.proc;
-	  delta = 10;
-	  break;
-	case EM_SPARC:
-	case EM_SPARC32PLUS:
-	case EM_SPARCV9:
-	  world.curjob->proc = &world.proc_sparc;
-	  delta = 0;
-	  break;
-	case EM_MIPS:
-	case EM_MIPS_RS3_LE:
-	case EM_MIPS_X:
-	  world.curjob->proc = &world.proc_mips;
-	  delta = 0;
-	  break;
-	default:
-	  snprintf(logbuf, sizeof (logbuf) - 1, 
-		   "Architecture %s not supported. No disassembly available\n",
-		   elfsh_get_machine_string(machine));
-	  revm_output(logbuf);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-	}
-    }
+  revm_proc_init();
 
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, (u_char *)buff + index, size - index + delta, 
+  ret = asm_read_instr(&ptr, (u_char *) buff + index, size - index + delta, 
 		       world.curjob->proc);
   if (ret == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -703,7 +673,7 @@ int		revm_section_display(elfshsect_t	*s,
   revm_output(logbuf);
   actual = elfsh_get_symtab(s->parent, &symtab_size);
   tot = 0;
-  if (s && !elfsh_readmem(s))
+  if (s && !s->data)
     elfsh_get_anonymous_section(s->parent, s);
   if (!actual)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -830,6 +800,9 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
   
   /* Iterate on symbols */
   sym = (flag ? elfsh_readmem(symtab) : (elfsh_Sym *) symtab->altdata);
+  if (!sym)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Unable to read existing symtab", -1);
   for (index = 0; index < symtab->shdr->sh_size / sizeof(elfsh_Sym); index++)
     {
       

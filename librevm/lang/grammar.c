@@ -101,54 +101,18 @@ revmobj_t	*parse_hash(char *param, char *fmt)
     *entryname++ = 0x00;
 
   /* Resolve hash name without messing with variable type */
-  expr = revm_expr_get(index);
-  if (expr)
-    {
-      if (!expr->type || !expr->value)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Parser handling failed", NULL);
-      ret = revm_copy_object(expr->value);	  
-      if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
-	{
-	  revm_destroy_object(expr->value, 1);
-	  expr->value = ret;
-	  expr->type  = ret->otype;
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unknown key for source object", NULL);
-	}
-      hashname = expr->value->immed_val.str;
-      revm_destroy_object(expr->value, 0);
-      expr->value = ret;
-      expr->type  = ret->otype;
-    }
-  else
-    hashname = revm_lookup_string(index);
-  
+  hashname = revm_lookup_key(index);
+  if (!hashname)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unknown hash table", NULL);
+
   /* Resolve entry name without messing with variable type */
   if (entryname)
     {
-      expr = revm_expr_get(entryname);
-      if (expr)
-	{
-	  if (!expr->type || !expr->value)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Parser handling failed", NULL);
-	  ret = revm_copy_object(expr->value);	  
-	  if (revm_convert_object(expr, ASPECT_TYPE_STR) < 0)
-	    {
-	      revm_destroy_object(expr->value, 1);
-	      expr->value = ret;
-	      expr->type = ret->otype;
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Unknown key for source object", NULL);
-	    }
-	  entryname = expr->value->immed_val.str;
-	  revm_destroy_object(expr->value, 0);
-	  expr->value = ret;
-	  expr->type  = ret->otype;
-	}
-      else
-	entryname = revm_lookup_string(entryname);
+      entryname = revm_lookup_key(entryname);
+      if (!entryname)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unknown hash table entry", NULL);
     }
 
   /* In case the hash table does not exist, create it empty */
@@ -206,7 +170,19 @@ revmobj_t	*parse_list(char *param, char *fmt)
   entryname = strchr(index, ':');
   if (entryname)
     *entryname++ = 0x00;
-  listname  = strdup(index);
+  listname  = revm_lookup_key(index);
+  if (!listname)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unknown list", NULL);
+
+  /* Resolve entry name without messing with variable type */
+  if (entryname)
+    {
+      entryname = revm_lookup_key(entryname);
+      if (!entryname)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unknown list element", NULL);
+    }
 
   /* In case the hash table does not exist, create it empty */
   list = elist_find(listname);

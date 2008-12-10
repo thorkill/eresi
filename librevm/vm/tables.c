@@ -895,7 +895,6 @@ void		revm_tables_setup()
   hash_init(&inputdf          , "idflists"   , 51, ASPECT_TYPE_LIST);
   hash_init(&outputdf         , "odflists"   , 51, ASPECT_TYPE_LIST);
   hash_init(&parser_hash      , "parsers"    , 11, ASPECT_TYPE_CADDR);
-  //elist_init(&frames_list      , "frames"     , ASPECT_TYPE_LIST);
   
   if (world.cmd_init)
     (*world.cmd_init)();
@@ -910,9 +909,3 @@ void		revm_tables_setup()
   setup_grammar();
   aspect_init();
 }
-
-
-
-// XXX: frames list in source.c should not store element by 
-// function name -> will generate collisions for recursive functions
-// -> use "world.curjob->curscope" value

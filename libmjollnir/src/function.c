@@ -286,5 +286,6 @@ int			mjr_function_symbol(mjrcontext_t *ctxt, container_t *csrc)
   snprintf(buffer, sizeof(buffer), "%s"AFMT, prefix, func->vaddr);
   bsym = elfsh_create_symbol(func->vaddr, func->size, STT_FUNC, 0, 0, 0);
   elfsh_insert_symbol(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+  elfsh_sync_sorted_symtab(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

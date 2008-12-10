@@ -16,7 +16,7 @@ print
 #vlist
 
 load $1
-analyse
+analyse main
 
 graph
 #graph bloc main
@@ -25,14 +25,14 @@ sym main
 set $mainaddr main
 print Main-Function found at addr $mainaddr
 
-set $mainfunc $hash[functions:$mainaddr]
+set $mainfunc $hash[$1_functions:$mainaddr]
 
 #tables expressions
-#print $hash[functions:$mainaddr]
+#print $hash[$1_functions:$mainaddr]
 #print $mainfunc
 #print $mainfunc.vaddr
 
-callgraph-walk $mainfunc.vaddr
+callgraph-walk $mainfunc.vaddr $1
 
 quiet
 print 

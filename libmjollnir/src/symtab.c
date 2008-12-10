@@ -102,5 +102,6 @@ int		mjr_symbol_rename(mjrsession_t  *sess,
  
  mjr_symbol_add(sess, sm->st_value, new_name);
  mjr_symbol_delete_by_name(sess, old_name); 
+ elfsh_sync_sorted_symtab(sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB]);
  return 1;
 }

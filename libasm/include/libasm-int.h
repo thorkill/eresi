@@ -6,54 +6,42 @@
  * handlers and some internal functions prototypes.
  */
 #ifndef LIBASM_INT_H
-#define LIBASM_INT_H
+ #define LIBASM_INT_H
 
 /**
  * Structure describing the modrm byte.
  */
-
-typedef struct s_modrm {
+typedef struct s_modrm 
+{
   u_char        m:3;
   u_char        r:3;
   u_char        mod:2;
-} asm_modrm;
+}		asm_modrm;
 
 /**
  * Structure describing the sid byte.
  */
-
-typedef struct s_sidbyte {
+typedef struct	s_sidbyte 
+{
   u_char	base:3;
   u_char	index:3;
   u_char	sid:2;
+}		asm_sidbyte;
 
-} asm_sidbyte;
-
-
-int		asm_int_pow2(int);
-
-int		fetch_i386(asm_instr *, u_char *, u_int, asm_processor *);
-
-void    asm_resolve_immediate(asm_processor *proc, u_int val, char *buffer, u_int len);
-
-
-char	*asm_ia32_display_instr_att(asm_instr *ins, int addr);
-char	*asm_sparc_display_instr(asm_instr *, int addr);
-
+int	asm_int_pow2(int);
+int	fetch_i386(asm_instr *, u_char *, u_int, asm_processor *);
+void    asm_resolve_immediate(asm_processor *proc, eresi_Addr val, char *buffer, u_int len);
+char	*asm_ia32_display_instr_att(asm_instr *ins, eresi_Addr addr);
+char	*asm_sparc_display_instr(asm_instr *, eresi_Addr addr);
 int	asm_ia32_switch_mode(asm_processor *proc, int mode);
-
-int		asm_proc_opsize(asm_processor *proc);
-int		asm_proc_addsize(asm_processor *proc);
-int		asm_proc_vector_size(asm_processor *proc);
-int		asm_proc_vector_len(asm_processor *);
-int		asm_proc_is_protected(asm_processor *);
+int	asm_proc_opsize(asm_processor *proc);
+int	asm_proc_addsize(asm_processor *proc);
+int	asm_proc_vector_size(asm_processor *proc);
+int	asm_proc_vector_len(asm_processor *);
+int	asm_proc_is_protected(asm_processor *);
 
 /**
  * Internal functions to extract operands.
- *
- * 
- *
- *
  */
 
 int	operand_rmb_rb(asm_instr *, u_char *, int, asm_processor *);
@@ -61,15 +49,11 @@ int	operand_rmv_rv(asm_instr *, u_char *, int, asm_processor *);
 int	operand_rb_rmb(asm_instr *, u_char *, int, asm_processor *);
 int	operand_rv_rmv(asm_instr *, u_char *, int, asm_processor *);
 int	operand_rv_rmb(asm_instr *, u_char *, int, asm_processor *);
-
 int	operand_rmb_ib(asm_instr *, u_char *, int, asm_processor *);
 int	operand_rmv_iv(asm_instr *, u_char *, int, asm_processor *);
 int	operand_rmv_ib(asm_instr *, u_char *, int, asm_processor *);
-
 int	operand_rv_rm2(asm_instr *, u_char *, int, asm_processor *);
-
 int	operand_rv_m(asm_instr *, u_char *, int, asm_processor *);
-
 int	operand_rmv(asm_operand *, u_char *, u_int, asm_processor *);
 int	operand_rmb(asm_operand *, u_char *, u_int, asm_processor *);
 

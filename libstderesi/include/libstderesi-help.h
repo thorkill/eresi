@@ -164,6 +164,7 @@
 #define	HLP_CONTROL		"Print stored control flow information"
 #define HLP_UNSTRIP		"Unstrip the current working binary"
 #define HLP_RENAME		"Symbol rename: rename <old_symbol> <new_symol>"
+#define	HLP_ASTRIP		"Remove stored sections of control flow analysis results"
 
 /* Scripting only commands */
 #define HLP_CMP			"Compare 2 parameters (modify $_ variable)"

@@ -15,7 +15,7 @@ START_TEST (test_create)
  fail_unless(mjr_init_session(&sess) == 1,"mjrInitSession faild.");
  sess.obj = elfsh_map_obj(infile);
  fail_unless(sess.obj != NULL, "elfsh_map_obj faild.");
- fail_unless(mjr_setup_processor(&sess) == 1, "mjrSetupProcessor faild.");
+ fail_unless(mjr_setup_processor(&sess, NULL) == 1, "mjrSetupProcessor faild.");
 // fail_unless(mjrFindCalls(&sess,".abstractSection") != NULL, "mjrFindCalls on abstract section returned without error.");
  fail_unless(mjr_find_calls(&sess,".text") == NULL, "mjrFindCalls on .text section faild.");
  fail_unless(mjr_analize(&sess,NULL) == 1, "mjrAnalize faild.");

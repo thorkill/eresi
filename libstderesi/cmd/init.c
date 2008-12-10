@@ -323,15 +323,16 @@ void		eresi_commands_init()
 #endif
 
   /* Flow analysis commands */
-  revm_command_add(CMD_ANALYSE	  , cmd_analyse       , NULL,            1, HLP_ANALYSE);
-  revm_command_add(CMD_UNSTRIP	  , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);
+  revm_command_add(CMD_ANALYSE	  , cmd_analyse      , revm_getvarparams, 1, HLP_ANALYSE);
+  revm_command_add(CMD_UNSTRIP	  , cmd_unstrip       , NULL,             1, HLP_UNSTRIP);
   revm_command_add(CMD_GRAPH     , cmd_graph         , revm_getvarparams, 1, HLP_GRAPH);
   revm_command_add(CMD_INSPECT   , cmd_inspect       , revm_getoption,    1, HLP_INSPECT);
   revm_command_add(CMD_FLOWJACK  , cmd_flowjack      , revm_getoption2,   1, HLP_FLOWJACK);
   revm_command_add(CMD_ADDGOTO   , cmd_addgoto       , revm_getoption2,   1, HLP_ADDGOTO);
   revm_command_add(CMD_SETGVL    , cmd_setgvl        , revm_getoption,    1, HLP_SETGVL);
-  revm_command_add(CMD_RENAME	  , cmd_rename        , revm_getoption2,   1, HLP_RENAME);  
-  revm_command_add(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
+  revm_command_add(CMD_RENAME	  , cmd_rename        , revm_getoption2,  1, HLP_RENAME);  
+  revm_command_add(CMD_ASTRIP	 , cmd_astrip        , NULL,              1, HLP_ASTRIP);             
+  revm_command_add(CMD_CONTROL   , cmd_control       , NULL,              1, HLP_CONTROL);
 
   /* Setup all used sub functions */
   traces_addcmd("add"      , (void *) traces_add      , 2, 1);

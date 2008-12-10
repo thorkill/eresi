@@ -33,5 +33,6 @@ int             cmd_doswitch()
   revm_output(logbuf);
   if (elfsh_is_runtime_mode() && !cur->linkmap)
     revm_output("\n [!] Loaded file is not the linkmap, switching to STATIC mode\n\n");
+  revm_proc_init();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }

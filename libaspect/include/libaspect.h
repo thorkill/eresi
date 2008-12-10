@@ -356,7 +356,7 @@ typedef struct	s_container
  */
 #define		CONFIG_SAFEMODE_OFF	0
 #define		CONFIG_SAFEMODE_ON	1
-#define         CONFIG_CFGDEPTH_DEFAULT 30
+#define         CONFIG_CFGDEPTH_DEFAULT 1
 
 /**
  * @brief libasm related config 

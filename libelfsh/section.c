@@ -849,6 +849,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   elfsh_Sym		*sym;
   u_int			idx;
   u_int			size;
+  void			*tofree;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -881,7 +882,7 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
   obj->hdr->e_shnum--;
   XALLOC(__FILE__, __FUNCTION__, __LINE__,enew, obj->hdr->e_shnum * sizeof(elfsh_Shdr), -1);
   memcpy(enew, obj->sht, obj->hdr->e_shnum * sizeof(elfsh_Shdr));
-  XFREE(__FILE__, __FUNCTION__, __LINE__,obj->sht);
+  tofree = obj->sht;
   obj->sht = enew;
   elfsh_sync_sht(obj);
   elfsh_sync_sectnames(obj);
@@ -937,15 +938,16 @@ int			elfsh_remove_section(elfshobj_t *obj, char *name)
     }
 
   /* Free deleted section */
-  XFREE(__FILE__, __FUNCTION__, __LINE__,todel->name);
-  XFREE(__FILE__, __FUNCTION__, __LINE__,todel->data);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, todel->name);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, todel->data);
   if (todel->altdata)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,todel->altdata);
+    XFREE(__FILE__, __FUNCTION__, __LINE__, todel->altdata);
   if (todel->terdata)
     XFREE(__FILE__, __FUNCTION__, __LINE__,todel->terdata);
   if (todel->rel)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,todel->rel);
-  XFREE(__FILE__, __FUNCTION__, __LINE__,todel);
+    XFREE(__FILE__, __FUNCTION__, __LINE__, todel->rel);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, tofree);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

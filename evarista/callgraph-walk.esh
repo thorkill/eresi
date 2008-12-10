@@ -1,34 +1,38 @@
 #!evarista
 
+verb
 print ENTERED CALLGRAPH-WALK
 
-cmp $# 1
+cmp $# 2
 jne end
 
-#tables blocks
-#tables blocks 200*
+#tables $2_blocks
+#tables $2_blocks 200*
 #print NOW PRINTING FUNCTIONS
-#tables functions
-#tables functions 200*
+#tables $2_functions
+#tables $2_functions 200*
 #exec sleep 60
-#set $test $hash[functions:0000000000100D04]
+#set $test $hash[$2_functions:0000000000100D04]
 #print $test
 #exec sleep 5
 #set $index 0x100D04
-#set $test $hash[functions:$index]
+#set $test $hash[$2_functions:$index]
 #print $test
 #exec sleep 20
-
 #profile enable warn
 
-set $func $hash[functions:$1]
+verb
+print $1
+print $2
+
+set $func $hash[$2_functions:$1]
 set $hash[visitedfuncs:$1] 1
 print Entering FUNCTION: $func
 
 #verb
 #profile enable warn
 
-cfg-walk $func.vaddr
+cfg-walk $func.vaddr $2
 
 vlist TMP
 
@@ -43,7 +47,7 @@ foreach $link of $func.outlinks
   je next
 
   verb
-  #tables functions 100*
+  #tables $2_functions 100*
   #print $func
 
   #profile enable warn
@@ -56,8 +60,9 @@ foreach $link of $func.outlinks
   je next
 
   # Parse the CFG for this function then recurse on the next function
-  cfg-walk $addr  
-  callgraph-walk $addr
+  analyse $addr
+  cfg-walk $addr $2 
+  callgraph-walk $addr $2
 
   #profile enable warn
   print $nextfunc

@@ -19,7 +19,7 @@ revmjob_t	*revm_clone_job(char *newname, revmjob_t *job)
   static int	lastid = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmjob_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, new, sizeof(revmjob_t), NULL);
   memcpy(new, job, sizeof(revmjob_t));
   bzero(&new->loaded, sizeof(hash_t));
   bzero(&new->dbgloaded, sizeof(hash_t));

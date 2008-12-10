@@ -87,7 +87,8 @@ int     asm_int_pow2(int val) {
  */
 
 void	asm_set_resolve_handler(asm_processor *proc, 
-			        void (*fcn)(void *, u_int, char *, u_int), void *d) {
+			        void (*fcn)(void *, eresi_Addr, char *, u_int), void *d) 
+{
   proc->resolve_immediate = fcn;
   proc->resolve_data = d;
 }

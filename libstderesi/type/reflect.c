@@ -23,7 +23,7 @@ int		cmd_reflect()
   char		logbuf[BUFSIZ];
   char		logbuf2[BUFSIZ];
   eresi_Addr	addr;
-  int		off;
+  u_int		off;
   int		ret;
   aspectype_t	*curtype;
   void		*blocdata;
@@ -31,6 +31,7 @@ int		cmd_reflect()
   list_t	*instrlist;
   revmexpr_t	*expr;
   int		insnbr;
+  int		maxdepth;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   curtype  = aspect_type_get_by_name("instr");
@@ -38,22 +39,13 @@ int		cmd_reflect()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed reflection : unknown type instruction", -1);
 
-  /* Analyse the binary if not already done */
-  if (!world.mjr_session.cur->analysed)
-    {
-      ret = mjr_analyse(&world.mjr_session, 0, MJR_MAX_DEPTH, 0);
-      if (ret < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Failed analyzing current object", -1);
-    }
-
   /* Init proc */			  
   if (!world.curjob->proc) 
     {
       switch (machine = elfsh_get_arch(world.curjob->curfile->hdr))
 	{
 	case EM_386:
-	  world.curjob->proc = &world.proc;
+	  world.curjob->proc = &world.proc_ia32;
 	  break;
 	case EM_SPARC:
 	case EM_SPARC32PLUS:
@@ -74,6 +66,21 @@ int		cmd_reflect()
   if (!addr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to lookup parameter address", -1);
+
+  /* Analyse the binary if not already done */
+  /*
+  if (!world.mjr_session.cur->analysed)
+    {
+      maxdepth = (int) config_get_data(CONFIG_CFGDEPTH);
+      ret = mjr_analyse(&world.mjr_session, 
+			world.curjob->curfile->hdr->e_entry, 
+			maxdepth, 0);
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed analyzing current object", -1);
+    }
+  */
+
   container = mjr_block_get_by_vaddr(world.mjr_session.cur, addr, MJR_BLOCK_GET_STRICT);
   if (!container)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -84,7 +91,7 @@ int		cmd_reflect()
   blocdata = alloca(curblock->size);
   fileoff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, curblock->vaddr);
   if (elfsh_readmemf(world.curjob->curfile, fileoff, 
-		     blocdata, curblock->size) != curblock->size)
+		     blocdata, curblock->size) != (int) curblock->size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to read data from bloc", -1);
 

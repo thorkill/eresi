@@ -25,12 +25,16 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
 {
   container_t           *fun;
   char                  *tmpstr;
-  mjrfunc_t             *tmpfunc;
-  //char                  *md5;
   eresi_Addr            tmpaddr;
   elfshsect_t           *dstsect;
   u_char                scope;
   u_char		isnew;
+
+#if __DEBUG_FLOW__
+  mjrfunc_t             *tmpfunc;
+  mjrfunc_t             *tmpfunc2;
+  //char                  *md5;
+#endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -65,6 +69,12 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   /* Add links between functions */
   if (ctxt->curfunc)
     {
+#if __DEBUG_FLOW__
+      tmpfunc = (mjrfunc_t *) ctxt->curfunc->data;
+      tmpfunc2 = (mjrfunc_t *) fun->data;
+      fprintf(stderr, " [*] Linking function " XFMT " to func " XFMT "\n",
+	      tmpfunc->vaddr, tmpfunc2->vaddr);
+#endif
       mjr_container_add_link(ctxt, fun, ctxt->curfunc->id,
                              MJR_LINK_FUNC_RET, scope, CONTAINER_LINK_IN);
       mjr_container_add_link(ctxt, ctxt->curfunc, fun->id,
@@ -82,18 +92,25 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   if (md5)
     memcpy(tmpfunc->md5, md5, sizeof(tmpfunc->md5));
   */
-  
+
+#if __DEBUG_FLOW__
   tmpfunc = fun->data;
+#endif
+  
   if (scope == MJR_LINK_SCOPE_LOCAL && isnew)
     {
       elist_push(ctxt->func_stack, fun);
       ctxt->curfunc = fun;
-      fprintf(stderr, " ******** NOW NEW CURFUNC @ %s \n", tmpfunc->name);
+#if __DEBUG_FLOW__
+      fprintf(stderr, " [*] New CURFUNC @ %s \n", tmpfunc->name);
     }
   else if (!isnew)
     fprintf(stderr, " ******** ALREADY SEEN FUNCTION : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
   else
     fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
+#else
+    }
+#endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

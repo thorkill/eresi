@@ -47,7 +47,7 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_UNINFORM2, cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
 
   /* Flow analysis commands */
-  revm_command_add(CMD_ANALYSE    , cmd_analyse       , NULL,            1, HLP_ANALYSE);
+  revm_command_add(CMD_ANALYSE    , cmd_analyse       , revm_getvarparams, 1, HLP_ANALYSE);
   revm_command_add(CMD_UNSTRIP    , cmd_unstrip       , NULL,            1, HLP_UNSTRIP);
   revm_command_add(CMD_GRAPH     , cmd_graph         , revm_getvarparams, 1, HLP_GRAPH);
   revm_command_add(CMD_INSPECT   , cmd_inspect       , revm_getoption,    1, HLP_INSPECT);
@@ -250,7 +250,7 @@ static void	kedbg_biosmap_load()
   file->hostype  = E2DBG_HOST_GDB;
 
   /* Set as 16b code. */
-  asm_ia32_switch_mode(&world.proc, INTEL_REAL);
+  asm_ia32_switch_mode(&world.proc_ia32, INTEL_REAL);
 }
 
 
@@ -263,7 +263,6 @@ static Bool       kedbg_file_is_kernel(elfshobj_t *file)
   elfshsect_t   *textsct;
   
   textsct = elfsh_get_section_by_name(file, "__ksymtab", NULL, NULL, NULL);
-
   if (textsct != NULL)
     return TRUE;
   else
@@ -296,7 +295,8 @@ static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
   elfshsect_t   *textsct;
 
   textsct = elfsh_get_section_by_name(file, ".text", NULL, NULL, NULL);
-  asm_init_arch(&proc, elfsh_get_archtype(file));
+  //already initialized in librevm
+  //asm_init_arch(&proc, elfsh_get_archtype(file));
   addr = textsct->shdr->sh_addr;
 
   DEBUGMSG(fprintf(stderr, "Entry point found: %#x\n", addr));

@@ -23,7 +23,7 @@
 
 #define ASM_MIPS_REG_FPU ASM_CONFIG_MIPS_EXTENDED_REGISTERS
 
-char	*asm_mips_display_instr(asm_instr *, int);
+char	*asm_mips_display_instr(asm_instr *, eresi_Addr a);
 void    mips_convert_format_r(struct s_mips_decode_reg  *opcode, u_char *buf);
 void    mips_convert_format_i(struct s_mips_decode_imm  *opcode, u_char *buf);
 void    mips_convert_format_j(struct s_mips_decode_jump *opcode, u_char *buf);

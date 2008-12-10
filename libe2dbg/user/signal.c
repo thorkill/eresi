@@ -370,7 +370,7 @@ void			e2dbg_do_breakpoint()
 	  fprintf(stderr, "Single-stepping -IS- enabled \n");
 #endif
 
-	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, &world.proc);
+	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, world.curjob->proc);
 	  if (!ret)
 	    ret++;
 	  sect   = elfsh_get_parent_section(parent, (eresi_Addr) *pc, NULL);
@@ -492,6 +492,9 @@ void			e2dbg_do_breakpoint()
       else 
 	printf(" [*] %spoint found at " XFMT " <%s> in thread %u \n\n",   
 	       s, *pc - bpsz, name, (unsigned int) e2dbgworld.stoppedthread->tid);
+
+      revm_doswitch(parent->id);
+      mjr_set_current_context(&world.mjr_session, parent->name);
       
       *pc -= bpsz;
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);
@@ -554,6 +557,8 @@ void			e2dbg_generic_breakpoint(int		signum,
   /* Do not allow processing of 2 breakpoint at the same time */
   /* We update the current thread information */
   e2dbg_presence_set();
+  revm_proc_init();
+
   if (!e2dbgworld.curbp || e2dbgworld.curbp->tid != e2dbg_self())
     {
       e2dbg_mutex_lock(&e2dbgworld.dbgbp);

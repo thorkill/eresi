@@ -92,7 +92,6 @@ typedef struct		_mjrContext
   elfshobj_t		*obj;			/* !< @brief ELF binary object */
   asm_processor		proc;			/* !< @brief ASM processor */
 
-  elfshsect_t		*cursct;		/* !< @brief Current analysed section */
   container_t		*curblock;		/* !< @brief Current working block */
   container_t		*curfunc;		/* !< @brief Current working function */
   list_t		*func_stack;		/* !< @brief Stack of analyzed functions */
@@ -112,8 +111,9 @@ typedef struct		_mjrContext
   hash_t		funchash;		/* !< @brief functions hash table */
   hash_t		blkhash;		/* !< @brief blocks hash table for this obj */
   hash_t		linkhash;		/* !< @brief links hash table */
+  hash_t		goto_hash;		/* !< @brief manual gotos hash table */
 
-  unsigned char		analysed;		/* !< @brief do we analysed it */
+  //unsigned char		analysed;		/* !< @brief do we analysed it */
   u_int			calls_seen;		/* !< @brief how many CALL we have seen */
   u_int			calls_found;		/* !< @brief how many dest has beed resolved */
 }			mjrcontext_t;

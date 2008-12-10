@@ -1,6 +1,6 @@
 #!evarista/evarista32
 
-quiet
+#quiet
 
 cmp 1.hdr.machine EM_SPARC
 je sparc

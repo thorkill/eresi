@@ -32,6 +32,7 @@ int			cmd_set()
     e1 = revm_expr_get(world.curjob->curcmd->param[0]);
   else
     e1 = NULL;
+
   e2 = revm_expr_get(world.curjob->curcmd->param[1]);
 
   /* The $_ variable is updated as well */

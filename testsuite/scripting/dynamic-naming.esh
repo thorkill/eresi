@@ -1,0 +1,35 @@
+#!../../elfsh/elfsh32
+
+#quiet
+
+set $name test
+
+add $hash[$name_2] Intel
+add $hash[$name_2] Alpha
+add $hash[$name_2] Sparc32
+add $hash[$name_2] Mips
+
+set $name test_2
+
+add $hash[$name] Sparc64
+add $hash[$name] AMD
+add $hash[$name] Pa-risc
+
+tables test_2
+
+print Starting first foreach
+
+foreach $elem of test_2 matching Sparc
+  print Regex Matched $elem
+forend
+
+print Starting second foreach
+tables test_2
+
+foreach $element of test_2
+  print Table contains element : $element
+forend
+
+empty test_2
+tables test_2
+quit

@@ -46,6 +46,8 @@ int hash_init(hash_t *h, char *name, int size, u_int type)
 #endif
       NOPROFILER_ROUT(1);
     }
+
+  //printf("INIT HASH %s \n", name);
   
   /* Add a new element */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, 
@@ -125,9 +127,10 @@ hash_t    *hash_empty(char *name)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   hash = hash_find(name);
-
   if (!hash)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+
+  //printf("EMPTY HASH %s \n", name);
 
   size    = hash->size;
   type    = hash->type;
@@ -153,6 +156,8 @@ void		hash_destroy(hash_t *hash)
   int		keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //printf("DESTROY HASH %s \n", hash->name);
 
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(hash, &keynbr);
@@ -188,6 +193,8 @@ int		hash_add(hash_t *h, char *key, void *data)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
   
+  //printf("ADD %s in HASH %s \n", key, h->name);
+
   /* If the element already exist, make sure we erase the existing one */
   actual = hash_get(h, key);
   if (actual)
@@ -231,6 +238,8 @@ int		hash_del(hash_t *h, char *key)
   listent_t	*todel;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //printf("DEL %s in HASH %s \n", key, h->name);
 
   /* Check the first entry for this hash */
   actual = hash_get_head(h, key);

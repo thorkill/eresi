@@ -6,9 +6,6 @@
 */
 #include "libmjollnir.h"
 
-/* Goto hash */
-hash_t		goto_hash;
-
 
 /**
  * @brief Retreive control flow section content if any 
@@ -175,6 +172,7 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc)
       off = ctxt->obj->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size;
       bsym = elfsh_create_symbol(block->vaddr, block->size, STT_BLOCK, 0, 0, 0);
       elfsh_insert_symbol(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB], &bsym, buffer);
+      elfsh_sync_sorted_symtab(ctxt->obj->secthash[ELFSH_SECTION_SYMTAB]);
     }
 #if __DEBUG_BLOCKS__
   else

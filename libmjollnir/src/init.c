@@ -16,7 +16,6 @@ int		mjr_init_session(mjrsession_t *sess)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  hash_init(&goto_hash, "gotos"      , 100         , ASPECT_TYPE_STR);
   hash_init(&sess->ctx, "mjrcontexts", mjrHashSmall, ASPECT_TYPE_UNKNOW);
 
   /* register configurable parameters */
@@ -90,16 +89,26 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
 {
  mjrcontext_t	*ctx;
  char           *lname;
+ char		buff[BUFSIZ];
 
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
- hash_init(&ctx->funchash , "functions", mjrHashVerySmall, ASPECT_TYPE_FUNC);
- hash_init(&ctx->blkhash  , "blocks"   , mjrHashMedium    , ASPECT_TYPE_BLOC);
- hash_init(&ctx->linkhash  , "links"    , mjrHashMedium    , ASPECT_TYPE_LINK);
+
+ snprintf(buff, sizeof(buff), "%s_functions", obj->name);
+ hash_init(&ctx->funchash , strdup(buff), mjrHashVerySmall, ASPECT_TYPE_FUNC);
+ snprintf(buff, sizeof(buff), "%s_blocks", obj->name);
+ hash_init(&ctx->blkhash  , strdup(buff) , mjrHashMedium, ASPECT_TYPE_BLOC);
+ snprintf(buff, sizeof(buff), "%s_links", obj->name);
+ hash_init(&ctx->linkhash  , strdup(buff), mjrHashMedium, ASPECT_TYPE_LINK);
+
+ snprintf(buff, sizeof(buff), "%s_gotos", obj->name);
+ hash_init(&ctx->goto_hash, strdup(buff), mjrHashVerySmall, ASPECT_TYPE_STR);
+
  XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->func_stack, sizeof(list_t), NULL);
  XALLOC(__FILE__, __FUNCTION__, __LINE__, lname, BSIZE_SMALL, NULL);
+
  snprintf(lname, BSIZE_SMALL, "%s"AFMT, (char *) "funcpath_", obj->id);
  elist_init(ctx->func_stack, lname, ASPECT_TYPE_FUNC);
  ctx->cntnrs_size = MJR_CNTNRS_INCREMENT;
@@ -114,10 +123,15 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  * Virtualisation of the libasm initialization depending on the architecture 
  * @param sess Mjollnir session strucutre
  */
-int		mjr_setup_processor(mjrsession_t *sess) 
+int		mjr_setup_processor(mjrsession_t *sess, asm_processor *existing) 
 {
  u_int         arch;
 
+ if (existing)
+   {
+     memcpy(&sess->cur->proc, existing, sizeof(asm_processor));
+     return (1);
+   }
  arch =  elfsh_get_arch(sess->cur->obj->hdr);
  switch(arch)
    {
@@ -131,6 +145,9 @@ int		mjr_setup_processor(mjrsession_t *sess)
      break;
    case EM_MIPS:
      asm_init_arch(&sess->cur->proc, ASM_PROC_MIPS);
+     break;
+   case EM_ARM:
+     asm_init_arch(&sess->cur->proc, ASM_PROC_ARM);
      break;
    default:
      fprintf(D_DESC," [E] Libmjollnir unsupported architecture\n");

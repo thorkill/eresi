@@ -93,7 +93,7 @@
 #define		ELFSH_ARCH_MIPS64		9	/* No hooks yet */
 #define         ELFSH_ARCH_ARM                  10
 #define		ELFSH_ARCH_AMD64		11
-#define         ELFSH_ARCH_NUM                   12
+#define         ELFSH_ARCH_NUM                  12
 #define		ELFSH_ARCH_ERROR		0xFF
 
 /* ELFsh ELF types */
@@ -111,7 +111,8 @@
 #define		ELFSH_OS_BEOS			5
 #define		ELFSH_OS_IRIX			6
 #define		ELFSH_OS_HPUX			7
-#define		ELFSH_OS_NUM			8
+#define		ELFSH_OS_ARM			8
+#define		ELFSH_OS_NUM			9
 #define		ELFSH_OS_ERROR			0xFF
 
 /* KERNEL / USER memory hosting type */

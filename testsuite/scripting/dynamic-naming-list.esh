@@ -1,0 +1,35 @@
+#!../../elfsh/elfsh32
+
+#quiet
+
+set $name test
+
+add $list[$name_2] Intel
+add $list[$name_2] Alpha
+add $list[$name_2] Sparc32
+add $list[$name_2] Mips
+
+set $name test_2
+
+add $list[$name] Sparc64
+add $list[$name] AMD
+add $list[$name] Pa-risc
+
+lists test_2
+
+print Starting first foreach
+
+foreach $elem of test_2 matching Sparc
+  print Regex Matched $elem
+forend
+
+print Starting second foreach
+lists test_2
+
+foreach $element of test_2
+  print List contains element : $element
+forend
+
+empty test_2
+lists test_2
+quit

@@ -22,9 +22,9 @@
  * 
  */
 
-void	asm_resolve_ia32(void *d, u_int val, char *buf, u_int len)
+void	asm_resolve_ia32(void *d, eresi_Addr val, char *buf, u_int len)
 {
-  snprintf(buf, len, "0x%x",  val);
+  snprintf(buf, len, XFMT,  val);
 }
 
 /**
@@ -34,20 +34,26 @@ void	asm_resolve_ia32(void *d, u_int val, char *buf, u_int len)
  *
  */
 
-char	*asm_get_instr_name(asm_instr *i) {
+char	*asm_get_instr_name(asm_instr *i) 
+{
   return (i->proc->instr_table[i->instr]);
 }
 
-void	output_instr(asm_instr *instr) {
-  
+void	output_instr(asm_instr *instr) 
+{  
   printf("%10s  ", instr->proc->instr_table[instr->instr]);
-  if (instr->op[0].type) {
-    switch(instr->op[0].content) {
+  if (instr->op[0].type) 
+    {
+      switch(instr->op[0].content) 
+	{
+	  
+	}
+    } /* !instr->op1 */ 
+  else 
+    {
       
     }
-  } /* !instr->op1 */ else {
-    
-  }
+
   /*
   printf("\t;; len: %5u   ", instr->len);
   if (instr->type & IS_MEM_WRITE)
@@ -128,19 +134,18 @@ char *get_reg_intel(int r, int regset)
  * @bug 2007-06-16 : Raise a segfault when used lonely
  */
 
-void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
-			 void *bufptr) 
+void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
 {
-  char	resolved[256];
-  int	addr_mask;
-  int	baser;
-  int	indexr;
-  int	scale;
-  int	imm;
-  asm_operand *op;
-  char	*buffer;
+  char		resolved[256];
+  eresi_Addr	addr_mask;
+  int		baser;
+  int		indexr;
+  int		scale;
+  int		imm;
+  asm_operand	*op;
+  char		*buffer;
   
-  addr_mask = asm_proc_opsize(ins->proc) ? 0xffff : 0xffffffff;
+  addr_mask = asm_proc_opsize(ins->proc) ? 0x000fffff : 0xffffffff;
 
   op = 0;
   buffer = bufptr;
@@ -170,139 +175,142 @@ void	att_dump_operand(asm_instr *ins, int num, unsigned int addr,
     // if (op->content & ASM_OP_SCALE)
     asm_operand_get_scale(ins, num, addr, &scale);
   
-  if (ASM_OP_ADDRESS & op->content) {
-    if (ASM_OP_REFERENCE & op->content) 
-      ins->proc->resolve_immediate(ins->proc->resolve_data, 
-					     imm, resolved, 256);
-    else if (ASM_OP_VALUE & op->content)
-      ins->proc->resolve_immediate(ins->proc->resolve_data, 
-					     (imm + addr + ins->len) & addr_mask, resolved, 256);
-    else
-      ins->proc->resolve_immediate(ins->proc->resolve_data, 
-					     (imm + addr + ins->len) & addr_mask, resolved, 256);
-  } else
+  if (ASM_OP_ADDRESS & op->content) 
+    {
+      if (ASM_OP_REFERENCE & op->content) 
+	ins->proc->resolve_immediate(ins->proc->resolve_data, 
+				     imm, resolved, 256);
+      else if (ASM_OP_VALUE & op->content)
+	ins->proc->resolve_immediate(ins->proc->resolve_data, 
+				     (imm + addr + ins->len) & addr_mask, resolved, 256);
+      else
+	ins->proc->resolve_immediate(ins->proc->resolve_data, 
+				     (imm + addr + ins->len) & addr_mask, resolved, 256);
+    } 
+  else
     ins->proc->resolve_immediate(ins->proc->resolve_data,
-					   imm, resolved, 256);
+				 imm, resolved, 256);
   
-  switch(op->content & ~ASM_OP_FIXED) {
-  case ASM_OP_BASE|ASM_OP_ADDRESS:
-    sprintf(buffer, "*%%%s", 
-	    get_reg_intel(baser, op->regset));
-    break;
-  case ASM_OP_BASE:
-    sprintf(buffer, "%%%s", 
-	    get_reg_intel(baser, op->regset));
-    break;
-    /*
-      case OP_SUBREG: 
-      sprintf(buffer, "%%%s",  
-      get_subreg_intel(baser)); 
+  switch(op->content & ~ASM_OP_FIXED) 
+    {
+    case ASM_OP_BASE|ASM_OP_ADDRESS:
+      sprintf(buffer, "*%%%s", 
+	      get_reg_intel(baser, op->regset));
       break;
-      case OP_SEGREG:
+    case ASM_OP_BASE:
+      sprintf(buffer, "%%%s", 
+	      get_reg_intel(baser, op->regset));
       break;
-    */
-  case ASM_OP_VALUE:
-    sprintf(buffer, "$%s", 
-	    resolved);
-    break;
-  case ASM_OP_VALUE | ASM_OP_ADDRESS:
-    sprintf(buffer, "%s", 
-	    resolved);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_VALUE:
-    sprintf(buffer, "%s", 
-	    resolved);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_ADDRESS:
-    sprintf(buffer, "*%s", 
-	    resolved);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_BASE:
-    sprintf(buffer, "(%%%s)", 
-	    get_reg_intel(baser, op->regset));
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_ADDRESS:
-    sprintf(buffer, "*(%%%s)", 
-	    get_reg_intel(baser, op->regset));
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE:
-    sprintf(buffer, "%s(%%%s)", 
-	    resolved
-	    , get_reg_intel(baser, op->regset));
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_ADDRESS:
-    sprintf(buffer, "*%s(%%%s)", 
-	    resolved
-	    , get_reg_intel(baser, op->regset));
-    break;
-  case 
-    ASM_OP_REFERENCE | ASM_OP_ADDRESS | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
+      /*
+	case OP_SUBREG: 
+	sprintf(buffer, "%%%s",  
+	get_subreg_intel(baser)); 
+	break;
+	case OP_SEGREG:
+	break;
+      */
+    case ASM_OP_VALUE:
+      sprintf(buffer, "$%s", 
+	      resolved);
+      break;
+    case ASM_OP_VALUE | ASM_OP_ADDRESS:
+      sprintf(buffer, "%s", 
+	      resolved);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_VALUE:
+      sprintf(buffer, "%s", 
+	      resolved);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_ADDRESS:
+      sprintf(buffer, "*%s", 
+	      resolved);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_BASE:
+      sprintf(buffer, "(%%%s)", 
+	      get_reg_intel(baser, op->regset));
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_ADDRESS:
+      sprintf(buffer, "*(%%%s)", 
+	      get_reg_intel(baser, op->regset));
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE:
+      sprintf(buffer, "%s(%%%s)", 
+	      resolved
+	      , get_reg_intel(baser, op->regset));
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_ADDRESS:
+      sprintf(buffer, "*%s(%%%s)", 
+	      resolved
+	      , get_reg_intel(baser, op->regset));
+      break;
+    case 
+      ASM_OP_REFERENCE | ASM_OP_ADDRESS | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
       sprintf(buffer, "*(%%%s,%%%s,%d)",
 	      get_reg_intel(baser, op->regset),
 	      get_reg_intel(indexr, op->regset), 
 	      scale);
-  break;
-  case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_SCALE:
-    sprintf(buffer, "(%%%s,%d)", 
-	    get_reg_intel(baser, op->regset),
-	    scale);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
-    sprintf(buffer, "(%%%s,%%%s,%d)",
-	    get_reg_intel(baser, op->regset),
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_SCALE:
+      sprintf(buffer, "(%%%s,%d)", 
+	      get_reg_intel(baser, op->regset),
+	      scale);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
+      sprintf(buffer, "(%%%s,%%%s,%d)",
+	      get_reg_intel(baser, op->regset),
 	    get_reg_intel(indexr, op->regset), 
+	      scale);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE:
+      sprintf(buffer, "%s(%%%s,%d)",
+	      resolved,
+	      get_reg_intel(baser, op->regset),
+	      scale);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE | ASM_OP_VALUE:
+      sprintf(buffer, "%s(%%%s,%%%s,%d)", 
+	      resolved, 
+	      get_reg_intel(baser, op->regset), 
+	      get_reg_intel(indexr, op->regset), 
 	    scale);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE:
-    sprintf(buffer, "%s(%%%s,%d)",
-	    resolved,
-	    get_reg_intel(baser, op->regset),
-	    scale);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE | ASM_OP_VALUE:
-    sprintf(buffer, "%s(%%%s,%%%s,%d)", 
-	    resolved, 
-	    get_reg_intel(baser, op->regset), 
-	    get_reg_intel(indexr, op->regset), 
-	    scale);
-    break;
+      break;
     case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE | 
       ASM_OP_VALUE | ASM_OP_ADDRESS:
-	sprintf(buffer, "*%s(%%%s,%%%s,%d)", 
-		resolved, 
-		get_reg_intel(baser, op->regset), 
-		get_reg_intel(indexr, op->regset), 
-		scale);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_INDEX | ASM_OP_VALUE | ASM_OP_SCALE |ASM_OP_ADDRESS:
-    sprintf(buffer, "*%s(,%%%s,%d)",
-	    resolved,
-	    get_reg_intel(indexr, op->regset),
-	    scale);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_VALUE  | ASM_OP_INDEX | ASM_OP_SCALE:
-    sprintf(buffer, "%s(,%%%s,%d)",
-	    resolved,
-	    get_reg_intel(indexr, op->regset),
-	    scale);
-    break;
-  case ASM_OP_REFERENCE | ASM_OP_INDEX | ASM_OP_SCALE:
-    sprintf(buffer, "(,%%%s,%d)",
-	    get_reg_intel(indexr, op->regset),
-	    scale);
-    break;
-  case ASM_OP_FPU | ASM_OP_BASE:
-    strcat(buffer, "%st");
-    break;
-  case ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE:
-    sprintf(buffer, "%%st(%d)", scale);
-    break;
-    
-  case 0:
-    break;
-  default:
-    sprintf(buffer, "(...)");
-  }
+      sprintf(buffer, "*%s(%%%s,%%%s,%d)", 
+	      resolved, 
+	      get_reg_intel(baser, op->regset), 
+	      get_reg_intel(indexr, op->regset), 
+	      scale);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_INDEX | ASM_OP_VALUE | ASM_OP_SCALE |ASM_OP_ADDRESS:
+      sprintf(buffer, "*%s(,%%%s,%d)",
+	      resolved,
+	      get_reg_intel(indexr, op->regset),
+	      scale);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_VALUE  | ASM_OP_INDEX | ASM_OP_SCALE:
+      sprintf(buffer, "%s(,%%%s,%d)",
+	      resolved,
+	      get_reg_intel(indexr, op->regset),
+	      scale);
+      break;
+    case ASM_OP_REFERENCE | ASM_OP_INDEX | ASM_OP_SCALE:
+      sprintf(buffer, "(,%%%s,%d)",
+	      get_reg_intel(indexr, op->regset),
+	      scale);
+      break;
+    case ASM_OP_FPU | ASM_OP_BASE:
+      strcat(buffer, "%st");
+      break;
+    case ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE:
+      sprintf(buffer, "%%st(%d)", scale);
+      break;
+      
+    case 0:
+      break;
+    default:
+      sprintf(buffer, "(...)");
+    }
 }
 
 /**
@@ -328,7 +336,7 @@ int	asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
  */
 
 char	*asm_ia32_display_instr_att(asm_instr *instr, 
-				    int addr) 
+				    eresi_Addr addr) 
 {
   static char	buffer[1024];
   int		len;

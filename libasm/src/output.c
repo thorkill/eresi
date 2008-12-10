@@ -17,7 +17,7 @@
  * @param buf Pointer to store string
  * @param len Length of string
  */
-void	asm_resolve_immediate(asm_processor *proc, u_int val, 
+void	asm_resolve_immediate(asm_processor *proc, eresi_Addr val, 
 			      char *buf, u_int len) 
 {
   LIBASM_PROFILE_FIN();
@@ -32,10 +32,10 @@ void	asm_resolve_immediate(asm_processor *proc, u_int val,
  * @param addr Virtual address of instruction
  * @return Pointer to a static buffer containing current instruction string
  */
-char	*asm_display_instr_att(asm_instr *instr, 
-			       int addr) 
+char	*asm_display_instr_att(asm_instr *instr, eresi_Addr addr) 
 {
   char	*to_ret;
+
   LIBASM_PROFILE_FIN();
   to_ret = instr->proc->display_handle(instr, addr);
   LIBASM_PROFILE_ROUT(to_ret);

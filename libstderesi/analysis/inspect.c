@@ -55,10 +55,6 @@ int			cmd_inspect()
   /* Preliminary checks */
   cntnr = NULL;
   obj = world.curjob->curfile;
-  if (!world.mjr_session.cur->analysed)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Control flow section not found"
-		 " : use analyse command", -1);
   
   /* Try to find block by symbol or address */
   if ((sym = elfsh_get_metasym_by_name(world.curjob->curfile, 
@@ -66,6 +62,10 @@ int			cmd_inspect()
     vaddr = sym->st_value;
   else
     vaddr = strtoul(world.curjob->curcmd->param[0], 0, 16);  
+
+  if (!mjr_analysed(&world.mjr_session, vaddr))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Block not found: consider analyse $blockaddr command before", -1);
 
   /* Try to lookup by variable name */
   if (!vaddr)

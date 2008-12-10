@@ -14,9 +14,9 @@
 #include <libasm.h>
 #include <libasm-sparc.h>
 
-void asm_resolve_sparc(void *d, u_int val, char *buf, u_int len)
+void asm_resolve_sparc(void *d, eresi_Addr val, char *buf, u_int len)
 {
-  sprintf(buf, "0x%x", val);
+  sprintf(buf, XFMT, val);
 }
 
 char *get_sparc_register(int reg)
@@ -177,10 +177,10 @@ char *get_sparc_cc(int cc)
  */
 
 void	asm_sparc_dump_operand(asm_instr *ins, int num, 
-			       unsigned int addr, char *buf)
+			       eresi_Addr addr, char *buf)
 {
   asm_operand *op;
-  int address;
+  eresi_Addr address;
   /**
    *
    */
@@ -259,33 +259,38 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
  *
  *
  */
-char *asm_sparc_display_instr(asm_instr *instr, int addr)
+char *asm_sparc_display_instr(asm_instr *instr, eresi_Addr addr)
 {
   static char buffer[1024];  
+
   memset(buffer, 0, 1024);
   sprintf(buffer, "%s", instr->proc->instr_table[instr->instr]);  
   
-  switch (instr->type) {
-	case ASM_TYPE_CONDBRANCH:	  
-	  if (instr->annul)
-	    strcat(buffer, ",a");
-	  if (!instr->prediction)
-	    strcat(buffer, ",pn");
-  
+  switch (instr->type) 
+    {
+    case ASM_TYPE_CONDBRANCH:	  
+      if (instr->annul)
+	strcat(buffer, ",a");
+      if (!instr->prediction)
+	strcat(buffer, ",pn");
+      
     default:
-      if (instr->nb_op > 0) {
-	    strcat(buffer, " ");
-	    
-	  	if (instr->nb_op == 3) {
+      if (instr->nb_op > 0) 
+	{
+	  strcat(buffer, " ");
+	  
+	  if (instr->nb_op == 3) 
+	    {
 	      asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
 	      strcat(buffer, ", ");
 	    }
-	    if (instr->nb_op >= 2) {
+	  if (instr->nb_op >= 2) 
+	    {
 	      asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
 	      strcat(buffer, ", ");	    
 	    }
-	    asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
-	  }    
+	  asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
+	}    
   }
     
   return (buffer);    

@@ -322,8 +322,6 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
     }
 
   /* Prevent double analysis */
-  if (typeid == ASPECT_TYPE_BLOC)
-    ctxt->analysed = 1;
   cnt = hash_size(table);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 }

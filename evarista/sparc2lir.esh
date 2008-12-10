@@ -4,8 +4,8 @@
 
 #print Now SPARC2LIR at addr $curaddr
 
-quiet
-#verb
+#quiet
+verb
 
 set $curaddr $1
 set $begaddr $1

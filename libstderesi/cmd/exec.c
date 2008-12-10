@@ -24,6 +24,8 @@ int		cmd_exec()
       strncat (buf, " ", BUFSIZ); 
       strncat (buf, world.curjob->curcmd->param[i], BUFSIZ);
     }
+
+  setenv("LD_PRELOAD", "", 1);
   
   switch (status = revm_system (buf))
     {

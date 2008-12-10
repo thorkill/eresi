@@ -190,11 +190,8 @@ static int	revm_table_display_regx2(char *tableregx, char *elemregx)
   for (match = index = 0; index < keynbr; index++)
     if (!regexec(&rx, keys[index], 0, 0, 0))
       {
-
 	cur = hash_get(hash_hash, keys[index]);
-
-	fprintf(stderr, "MATCHED TABLE %s of %u elems \n", cur->name, cur->elmnbr);
-
+	//fprintf(stderr, "MATCHED TABLE %s of %u elems \n", cur->name, cur->elmnbr);
 	keys2 = hash_get_keys(cur, &keynbr2);
 	for (index2 = 0; index2 < keynbr2; index2++)
 	  if (!regexec(&ex, keys2[index2], 0, 0, 0))
@@ -237,16 +234,13 @@ static int	revm_table_display_regx(char *regx)
   /* Look for matching tables */
   keys = hash_get_keys(hash_hash, &keynbr);
   for (lastmatch = NULL, match = index = 0; index < keynbr; index++)
-    {
-      if (!regexec(&rx, keys[index], 0, 0, 0))
-	{
-
-	  cur = hash_get(hash_hash, keys[index]);
-	  revm_table_display(cur, keys[index]);
-	  match++;
-	  lastmatch = keys[index];
-	}
-    }
+    if (!regexec(&rx, keys[index], 0, 0, 0))
+      {
+	cur = hash_get(hash_hash, keys[index]);
+	revm_table_display(cur, keys[index]);
+	match++;
+	lastmatch = keys[index];
+      }
 
   /* Print the content of the table if we had a unique match */
   if (match == 1)
@@ -269,6 +263,9 @@ static int	revm_table_display_regx(char *regx)
  */
 int		cmd_tables()
 {
+  char		*hname;
+  char		*kname;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   
   switch (world.curjob->curcmd->argc)
@@ -280,15 +277,17 @@ int		cmd_tables()
       
       /* Print a determined table with determined (or not) key entry */
     case 1:
-      if (revm_table_display_regx(world.curjob->curcmd->param[0]) < 0)
+      hname = revm_lookup_key(world.curjob->curcmd->param[0]);
+      if (revm_table_display_regx(hname) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to print matching tables", -1);
       break;
 
       /* Print an element from a table */
     case 2:
-      if (revm_table_display_regx2(world.curjob->curcmd->param[0],
-				   world.curjob->curcmd->param[1]) < 0)
+      hname = revm_lookup_key(world.curjob->curcmd->param[0]);
+      kname = revm_lookup_key(world.curjob->curcmd->param[1]);
+      if (revm_table_display_regx2(hname, kname) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to print matching tables's elements", -1);
       break;
@@ -312,32 +311,31 @@ int		cmd_empty()
   hash_t	*hash;
   list_t	*list;
   int		index;
+  char		*name;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (index = 0; index < world.curjob->curcmd->argc; index++)
     {
-      hash = hash_find(world.curjob->curcmd->param[index]);
+      name = revm_lookup_key(world.curjob->curcmd->param[index]);
+      hash = hash_find(name);
       if (!hash)
 	{
-	  list = elist_find(world.curjob->curcmd->param[index]);
+	  list = elist_find(name);
 	  if (!list)
 	    {
-	      snprintf(buf, sizeof(buf), " [W] Unknown list or hash table %s \n\n",
-		       world.curjob->curcmd->param[index]);
+	      snprintf(buf, sizeof(buf), " [W] Unknown list or hash table %s \n\n", name);
 	      revm_output(buf);
 	      continue;
 	    }
-	  snprintf(buf, sizeof(buf), "   .:: Empty list %s \n\n",
-		   world.curjob->curcmd->param[index]);
+	  snprintf(buf, sizeof(buf), "   .:: Empty list %s \n\n", name);
 	  revm_output(buf);
-	  elist_empty(world.curjob->curcmd->param[index]);
+	  elist_empty(name);
 	}      
       else
 	{
-	  snprintf(buf, sizeof(buf), "   .:: Empty hash table %s \n\n",
-		   world.curjob->curcmd->param[index]);
+	  snprintf(buf, sizeof(buf), "   .:: Empty hash table %s \n\n", name);
 	  revm_output(buf);
-	  hash_empty(world.curjob->curcmd->param[index]);
+	  hash_empty(name);
 	}
     }
 

@@ -19,29 +19,30 @@
  * @param maxdepth depth limit of analysis (== MJR_MAX_DEPTH for limitless)
  * @return Success (0) or error (-1).
  */
-int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr, 
-				 unsigned int offset, eresi_Addr vaddr, int len, 
-				 int curdepth, int maxdepth)
+int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int maxdepth)
 {
   asm_instr     instr;
   unsigned int  curr;
   int		ilen;
-  eresi_Addr	dstaddr, retaddr;
+  eresi_Addr	trueaddr, falseaddr;
   container_t	*curblock;
   mjrblock_t	*block;
-  int		newoff;
   u_int		delayslotsize;
+  u_char	*ptr;
+  u_int		curlen;
+  u_int		restlen;
+  elfshsect_t	*sect;
+  elfsh_SAddr	off;
+  u_char	eos;
+  u_int		depthinc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if we have reached the limit bound */
-  if (curdepth == maxdepth)
+  if (maxdepth > 0 && curdepth >= maxdepth)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  //limit = (u_int) config_get_data(CONFIG_CFGDEPTH);
-  // Please use this config variable when doing CFG recursive analysis
-
-  dstaddr = retaddr = MJR_BLOCK_INVALID;
+  trueaddr = falseaddr = MJR_BLOCK_INVALID;
   delayslotsize = 0;
 
   /* Create a new block if current address is out of all existing ones */
@@ -66,22 +67,43 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   block->seen = 1;
 
-  /* Read all instructions of the section */
-  for (curr = 0; curr + offset < len; curr += ilen)
+  /* Read data at this block's addr */
+  sect = elfsh_get_parent_section(sess->cur->obj, vaddr, &off);
+  curlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
+  eos = (curlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, curlen, -1);
+  ptr = elfsh_readmema(sess->cur->obj, vaddr, ptr, curlen);
+
+  /* Read all instructions, making sure we never override section's boundaries */
+  for (curr = 0; vaddr + curr < sect->shdr->sh_addr + sect->shdr->sh_size; curr += ilen)
     {
-      ilen = asm_read_instr(&instr, ptr + offset + curr,
-                            len - curr - offset, &sess->cur->proc);
+
+      /* Reallocate the buffer if necessary */
+      if (!eos && curr + 20 >= curlen)
+	{
+	  sect = elfsh_get_parent_section(sess->cur->obj, vaddr + curr, &off);
+	  restlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
+	  eos = (restlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
+	  XREALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, ptr, curlen + restlen, -1);
+	  curlen += restlen;
+	  ptr = elfsh_readmema(sess->cur->obj, vaddr + curr, ptr + curr, curlen - curr);
+	  vaddr += curr;
+	  curlen -= curr;
+	  curr = 0;
+	}
+
+      /* Analyse current instruction */
+      ilen = asm_read_instr(&instr, ptr + curr, curlen - curr, &sess->cur->proc);
 
 #if __DEBUG_READ__
       fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d first byte=%02x\n", 
-	      __FUNCTION__, __FILE__, __LINE__, ilen, *(ptr+offset+curr));
+	      __FUNCTION__, __FILE__, __LINE__, ilen, *(ptr + curr));
 #endif
       
+      /* This is an error that should never happens, or we have a libasm bug */
       if (ilen <= 0) 
 	{
 	  printf(" [D] asm_read_instr returned -1 at address " XFMT "\n", vaddr + curr);
-	  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-	  //"asm_read_instr returned <= 0 lenght", -1);
 	  exit(-1);
 	}
 
@@ -95,34 +117,32 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 
       /* Increase block size for delay slot if any */
       delayslotsize = mjr_trace_control(sess->cur, curblock, sess->cur->obj, &instr, 
-					vaddr + curr, &dstaddr, &retaddr);
+					vaddr + curr, &trueaddr, &falseaddr);
 
 #if __DEBUG_READ__
-      fprintf(stderr, " [D] curaddr analyzed: "XFMT" (dstaddr = "XFMT", retaddr = "XFMT")\n",
-	      vaddr + curr, dstaddr, retaddr);
+      fprintf(stderr, " [D] curaddr analyzed: "XFMT" (trueaddr = "XFMT", falseaddr = "XFMT")\n",
+	      vaddr + curr, trueaddr, falseaddr);
 #endif
 
       /* If we have found a contiguous block, stop this recursion now */
-      if (dstaddr == MJR_BLOCK_EXIST)
+      if (trueaddr == MJR_BLOCK_EXIST)
 	{
 	  block->size -= ilen;
 	  break;
 	}
-      if (dstaddr != MJR_BLOCK_INVALID) 
+
+      /* Recurse on next blocks */
+      if (trueaddr != MJR_BLOCK_INVALID) 
 	{
-	  newoff = offset + (dstaddr - vaddr);
-	  mjr_analyse_code(sess, ptr, newoff, dstaddr, 
-			   len, curdepth + 1, maxdepth);
-	}	      
-      if (retaddr != MJR_BLOCK_INVALID) 
-	{
-	  newoff = offset + (retaddr - vaddr);
-	  mjr_analyse_code(sess, ptr, newoff, retaddr, 
-			   len, curdepth + 1, maxdepth);
+	  depthinc = (instr.type & ASM_TYPE_CALLPROC ? 1 : 0);
+	  mjr_analyse_rec(sess, trueaddr, curdepth + depthinc, maxdepth);
 	}
-      
+
+      if (falseaddr != MJR_BLOCK_INVALID) 
+	mjr_analyse_rec(sess, falseaddr, curdepth, maxdepth);
+
       /* If we have recursed, the current block is over */
-      if (retaddr != MJR_BLOCK_INVALID || dstaddr != MJR_BLOCK_INVALID || 
+      if (falseaddr != MJR_BLOCK_INVALID || trueaddr != MJR_BLOCK_INVALID || 
 	  (instr.type & ASM_TYPE_RETPROC) || (instr.type & ASM_TYPE_STOP))
 	{
 
@@ -130,8 +150,10 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
 	  fprintf(D_DESC, "[D] core.c:analyse_code: bloc at vaddr " XFMT " with delayslot size %u\n", 
 		  block->vaddr, delayslotsize);
 #endif
-
+	  
 	  block->size += delayslotsize;
+	  //only free in kernsh/kedbg in runtime mode
+	  //XFREE(__FILE__, __FUNCTION__, __LINE__, ptr);
 	  break;
 	}
     }
@@ -148,38 +170,72 @@ int		mjr_analyse_code(mjrsession_t *sess, unsigned char *ptr,
  * @param flags <FIXME:NotImplemented>
  * @return Success (0) or Error (-1).
  */
-int		mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
+int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
 {
   elfshsect_t   *parent;
   elfsh_SAddr   offset;
-  container_t   *block;
-  unsigned char *ptr;
-  unsigned long len;
-
+  eresi_Addr	e_entry;
+  eresi_Addr	main_addr;
+  u_char	*ptr;
+  container_t	*cont;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!addr || !sess)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid null parameters", -1);
 
-  if (!addr)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Failed to analyse control flow", -1);
-
+  /* Make sure the input address is mapped somewhere */
   parent = elfsh_get_parent_section(sess->cur->obj, addr, &offset);
   if (!parent)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find parent section", -1);
 
-  block = mjr_create_block_container(sess->cur, 0, addr, 0, 0);
-  if (!block)
+  /* Create a container for the starting block */
+  cont = mjr_create_block_container(sess->cur, 0, addr, 0, 0);
+  if (!cont)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Unable to create parent container", -1);
+		 "Can't create initial block", -1);
+  hash_add(&sess->cur->blkhash, _vaddr2str(addr), cont);
 
-  hash_add(&sess->cur->blkhash, _vaddr2str(addr), block);
+  /* Check if we are starting at the entry point -- if yes, special treatment is to be done */
+  e_entry = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
+  if (addr == e_entry)
+    {
+      printf(" [*] Entry point: " AFMT "\n", e_entry);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, MJR_MAX_BLOCK_SIZE * 2, -1);
+      elfsh_readmema(sess->cur->obj, addr, ptr, MJR_MAX_BLOCK_SIZE * 2);
+      main_addr = mjr_trace_start(sess->cur, ptr, MJR_MAX_BLOCK_SIZE * 2, e_entry);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, ptr);
+      printf(" [*] main located at " AFMT "\n", main_addr);
+    }
 
-  ptr      = elfsh_readmem(parent);
-  len      = parent->shdr->sh_size;
+  /* We are not analyzing the entry point */
+  else   
+    {
+      main_addr = 0;
+      sess->cur->func_stack = elist_empty(sess->cur->func_stack->name);
+      cont = mjr_create_function_container(sess->cur, addr, 0, _vaddr2str(addr), 0, NULL);
+      sess->cur->curfunc = cont;
+      mjr_function_register(sess->cur, addr, cont);
+      elist_push(sess->cur->func_stack, cont);
+    }
 
-  if (mjr_analyse_code(sess, ptr, offset, addr, len, 0, maxdepth) < 0)
+  /* Analyse recursively, starting at requested address */
+  if (mjr_analyse_rec(sess, addr, 0, maxdepth) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Error during code analysis", -1);
 
+  /* If requested address was the entry point, also analyse the infered main() address */
+  if (main_addr)
+    {
+      sess->cur->func_stack = elist_empty(sess->cur->func_stack->name);
+      cont = mjr_function_get_by_vaddr(sess->cur, main_addr);
+      sess->cur->curfunc = cont;
+      elist_push(sess->cur->func_stack, cont);
+      if (mjr_analyse_rec(sess, main_addr, 0, maxdepth) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Error during code analysis", -1);
+    }
+
+  /* Store analysis on disk */
   if (mjr_analyse_finished(sess) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Error during storage of analysis info", -1);
@@ -187,96 +243,7 @@ int		mjr_analyse_addr(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int fla
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/**
- * @brief This function will find calls including calls trought a pointer
- * @param sess Mjollnir session
- * @param section_name The name of the section we want to analyse
- */
-int             mjr_analyse_section(mjrsession_t *sess, char *section_name)
-{
-  container_t   *cntnr;
-  unsigned char *ptr;
-  unsigned long len;
-  eresi_Addr    e_point, vaddr;
-  eresi_Addr    main_addr;
-
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* load section */
-#if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[__DEBUG_MJOLLNIR__] %s: loading %s\n",
-          __FUNCTION__, section_name);
-#endif
-
-  /* We just started here so we can clear the current section in context */
-  sess->cur->cursct = NULL;
-
-  if (!section_name)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section name empty", -1);
-
-  sess->cur->cursct = elfsh_get_section_by_name(sess->cur->obj, section_name, NULL, NULL, NULL);
-  if (!sess->cur->cursct)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Section not found", -1);
-
-#if __DEBUG_CALLS__
-  fprintf(D_DESC, "[__DEBUG_CALLS__] %s: vaddr:%x size:%d foff:%d\n",
-          __FUNCTION__, sess->cur->cursct->shdr->sh_addr,
-          sess->cur->cursct->shdr->sh_size,
-          sess->cur->cursct->shdr->sh_offset);
-#endif
-
-  /* Setup initial conditions */
-  ptr      = elfsh_readmem(sess->cur->cursct);
-  len      = sess->cur->cursct->shdr->sh_size;
-  vaddr    = sess->cur->cursct->shdr->sh_addr;
-  e_point  = elfsh_get_entrypoint(elfsh_get_hdr(sess->cur->obj));
-
-  /* Create block pointing to this section */
-  if (sess->cur->cursct->shdr->sh_addr == e_point)
-    {
-      printf(" [*] Entry point: " AFMT "\n", e_point);
-      main_addr = mjr_trace_start(sess->cur, ptr, sess->cur->cursct->shdr->sh_size, e_point);
-      printf(" [*] main located at " AFMT "\n", main_addr);
-    }
-  else
-    {
-      cntnr = mjr_create_function_container(sess->cur, vaddr, 0, _vaddr2str(vaddr), 0, NULL);
-      sess->cur->curfunc = cntnr;
-      mjr_function_register(sess->cur,vaddr, cntnr);
-      main_addr = 0;
-    }
-
-  /* Read all instructions of the section */
-  if (mjr_analyse_code(sess, ptr, 0, vaddr, len, 0, MJR_MAX_DEPTH) < 0)
-     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		  "Error during section entry code analysis", -1);
-
-  /* FIXME: Check if we have found a control flow inconsistency yet */
-  /* XXX: see depth */
-
-  /* Also analyse the main code -- it is generally not directly linked with the entry point */
-  if (main_addr)
-    {
-
-      fprintf(stderr, " ******** NO EMPTYING FUNC STACK -- ANALYZING MAIN ****** \n");
-
-      sess->cur->func_stack = elist_empty(sess->cur->func_stack->name);
-      cntnr = mjr_function_get_by_vaddr(sess->cur, main_addr);
-      sess->cur->curfunc = cntnr;
-      elist_push(sess->cur->func_stack, cntnr);
-      mjr_analyse_code(sess, ptr, (main_addr - vaddr), main_addr, len, 0, MJR_MAX_DEPTH);
-    }
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "Error during main code analysis", -1);
-
-  /* FIXME: Check if we have found a control flow inconsistency yet */
-  /* XXX: see depth */
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-}
-
-
+/** Store control-flow analysis information on disk */
 int             mjr_analyse_finished(mjrsession_t *sess)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -292,161 +259,21 @@ int             mjr_analyse_finished(mjrsession_t *sess)
                  "Unable to store blocks in file", -1);
 
   /* Set the flag and return */
-  sess->cur->analysed = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
-/**
- * @brief Main analysis function
- * @param sess Mjollnir session strucutre
- * @param entry Address of starting point to analyze
- * @param maxdepth Maximum depth of the analysis in the CFG
- * @param flags <FIXME:NotImplemented>
- */
-int             mjr_analyse(mjrsession_t *sess, eresi_Addr entry, int maxdepth, int flags)
+/** Indicate if a given address has already been analyzed */
+int		mjr_analysed(mjrsession_t *sess, eresi_Addr addr)
 {
-  char          *shtName;
-  elfsh_Shdr    *shtlist, *shdr;
-  elfsh_Sym     *sym, *lastsym;
-  elfshsect_t   *sct;
-  container_t   *fcnt;
-  int           num_sht, idx_sht;
-  int           index, blocksize;
-  eresi_Addr    addr;
-  char          c;
-  int           ret;
+  int		analysed;
+  container_t	*cont;
+  char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Preliminary checks */
-  if ((NULL == sess) || (NULL == sess->cur))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Invalid NULL parameters", -1);
-
-  /* Get section table */
-  shtlist = elfsh_get_sht(sess->cur->obj, &num_sht);
-  if (!shtlist)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Failed to get SHT", -1);
-
-  /* Make sure we do what the user desires (remove previously stored analysis) */
-  /* FIXME: should go in libstderesi/cmd_analyse command and use revm_output */
-  if (sess->cur->analysed)
-    {
-      printf(" [*] %s section present ! \n"
-             "     Analysis will remove currently stored information. "
-             "continue ? [N/y]", ELFSH_SECTION_NAME_EDFMT_BLOCKS);
-
-      c = getchar();
-      puts("");
-
-      if (c != 'y')
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                     "Flow analysis aborted", 0);
-
-      elfsh_remove_section(sess->cur->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS);
-    }
-
-#if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC,"[__DEBUG__] mjr_analize: Found %d sections.\n",num_sht);
-#endif
-
-  /* In case we are provided an entry point */
-  if (entry)
-    {
-      ret = mjr_analyse_addr(sess, entry, maxdepth, flags);
-      if (ret < 0)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                     "Unable to analyse control flow by addr", -1);
-
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
-
-  /*
-  ** First run, create blocks starting at section vaddr
-  ** and in size of the section
-  */
-  for (idx_sht = 0; idx_sht < num_sht; idx_sht++)
-    {
-      shdr    = (shtlist + idx_sht);
-      sym     = elfsh_get_sym_from_shtentry(sess->cur->obj, shdr);
-
-      if (!elfsh_get_section_execflag(shdr) ||
-          !elfsh_get_section_allocflag(shdr) ||
-          !sym)
-        continue;
-
-      shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
-      sct = elfsh_get_section_by_name(sess->cur->obj, shtName, NULL, NULL, NULL);
-
-      if (!sct)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                     "Can't get section", -1);
-
-#if __DEBUG_MJOLLNIR__
-      fprintf(D_DESC, "[__DEBUG__] %s: 1st run - Executable section name=(%14s) "
-              "index=(%02i) vaddr=("XFMT") size=("DFMT")\n",
-              __FUNCTION__, shtName, idx_sht, sct->shdr->sh_addr, sct->shdr->sh_size);
-#endif
-
-      fcnt = mjr_create_block_container(sess->cur, 0, sct->shdr->sh_addr, 0, 0);
-      if (!fcnt)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                     "Can't create initial blocks", -1);
-
-      hash_add(&sess->cur->blkhash, _vaddr2str(sct->shdr->sh_addr), fcnt);
-    }
-
-
-  /* Analyse all executable sections */
-  for (idx_sht = 0; idx_sht < num_sht; idx_sht++)
-    {
-      shdr    = (shtlist + idx_sht);
-      sym     = elfsh_get_sym_from_shtentry(sess->cur->obj, shdr);
-      shtName = elfsh_get_symbol_name(sess->cur->obj, sym);
-
-      if (!elfsh_get_section_execflag(shdr) ||
-          !elfsh_get_section_allocflag(shdr))
-        continue;
-
-#if __DEBUG_MJOLLNIR__
-      fprintf(D_DESC, "[__DEBUG__] mjr_analize: Executable section name=(%14s) "
-              "index=(%02i)\n", shtName, idx_sht);
-#endif
-
-      mjr_analyse_section(sess, shtName);
-    }
-
-  /* Find all unseen blocks (may be dead code) */
-  for (lastsym = NULL, index = 0, sym = sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB]->altdata;
-       index < sess->cur->obj->secthash[ELFSH_SECTION_SYMTAB]->shdr->sh_size / sizeof(elfsh_Sym);
-       index++)
-    {
-      if (elfsh_get_symbol_type(sym + index) != STT_BLOCK)
-        continue;
-      if (!lastsym)
-        {
-          lastsym = sym;
-          continue;
-        }
-      if (lastsym->st_value + lastsym->st_size != sym->st_value)
-        {
-          addr = lastsym->st_value + lastsym->st_size;
-          blocksize = sym->st_value - addr;
-          mjr_create_block_container(sess->cur, 0, addr, blocksize, 0);
-          lastsym = sym;
-
-#if __DEBUG_MJOLLNIR__
-          fprintf(stderr, " [D] Adding UNLINKED block at " XFMT " ! \n", addr);
-#endif
-
-        }
-    }
-
-  if (mjr_analyse_finished(sess) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Error during storage of analysis info", -1);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  str = _vaddr2str(addr);
+  cont = (container_t *) hash_get(&sess->cur->blkhash, str);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, str);
+  analysed = (cont ? 1 : 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, analysed);
 }

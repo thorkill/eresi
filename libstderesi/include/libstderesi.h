@@ -186,6 +186,7 @@
 #define CMD_RENAME		"rename"
 #define	CMD_CONTROL		"control"
 #define CMD_ANALYSE		"analyse"
+#define	CMD_ASTRIP		"astrip"
 
 /* config commands */
 #define CMD_CONFIGURE		"configure"
@@ -412,6 +413,7 @@ int		cmd_analyse();
 int		cmd_unstrip();
 int 		cmd_rename();
 int		cmd_control();
+int		cmd_astrip();
 
 /* Workspaces commands */
 int		cmd_workspace();

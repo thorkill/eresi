@@ -33,17 +33,17 @@ int			cmd_flowjack(void)
   list_t		*linklist;
   listent_t		*listent;
   int			len;
+  char			logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   sect = elfsh_get_section_by_name(world.curjob->curfile, 
 				   ELFSH_SECTION_NAME_EDFMT_BLOCKS, 
 				   0, 0, 0);
-
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Control flow section not found"
 		 " : use analyse command", -1);
+  revm_proc_init();
 
   /* Lookup parameters */
   file  = world.curjob->curfile;
@@ -102,22 +102,22 @@ int			cmd_flowjack(void)
       switch (caller->type)
 	{
 	case MJR_LINK_FUNC_CALL:
-	  len = (world.proc.type == ASM_PROC_IA32 ? 5 : 4);
-	  asm_read_instr(&ins, (u_char *) buffer + cal->size - len, len, &world.proc);
+	  len = (world.curjob->proc->type == ASM_PROC_IA32 ? 5 : 4);
+	  asm_read_instr(&ins, (u_char *) buffer + cal->size - len, len, world.curjob->proc);
 	  break;
 	case MJR_LINK_BLOCK_COND_TRUE:
 	case MJR_LINK_BLOCK_COND_FALSE:
 	case MJR_LINK_BLOCK_COND_ALWAYS:
-	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 2, 2, &world.proc);
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 2, 2, world.curjob->proc);
 	  if (len == 2 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
 	    break;
-	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 3, 3, &world.proc);
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 3, 3, world.curjob->proc);
 	  if (len == 3 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
 	    break;
-	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 4, 4, &world.proc);
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 4, 4, world.curjob->proc);
 	  if (len == 4 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
 	    break;
-	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 5, 5, &world.proc);
+	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 5, 5, world.curjob->proc);
 	  if (len == 5 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
 	    break;
 	default:
