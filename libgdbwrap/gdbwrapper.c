@@ -384,12 +384,15 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
   desc->packet[0] = GDBWRAP_NULL_CHAR;
   rval = -1;
   sumrval = 0;
-  while (strstr(desc->packet, GDBWRAP_END_PACKET) == NULL && rval)
+  while (desc->packet[sumrval - 3] != GDBWRAP_END_PACKETC && rval)
     {
       /* In case the packet is splitted into many others. */
       rval = recv(desc->fd, desc->packet + sumrval, desc->max_packet_size, 0);
       sumrval += rval;
+      if (errno == EINTR)
+	  break;
     }
+  
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval) {
     desc->packet[sumrval] = GDBWRAP_NULL_CHAR;
