@@ -14,9 +14,13 @@
 #include <libasm.h>
 #include <libasm-sparc.h>
 
-void asm_resolve_sparc(void *d, eresi_Addr val, char *buf, u_int len)
+void		asm_resolve_sparc(void *d, eresi_Addr val, char *buf, u_int len)
 {
-  sprintf(buf, XFMT, val);
+  uint32_t	addr;
+  
+  /* Address are always 32bits long on sparc, even for the ultra-64 architecture */
+  addr = (uint32_t) val;
+  sprintf(buf, "0x%X", addr);
 }
 
 char *get_sparc_register(int reg)
@@ -181,17 +185,17 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
 {
   asm_operand *op;
   eresi_Addr address;
-  /**
-   *
-   */
-  switch(num) {
+
+  switch (num) 
+    {
     case 1: op = &ins->op[0]; break;
     case 2: op = &ins->op[1]; break;
     case 3: op = &ins->op[2]; break;
     default: return;
-  }
+    }
   
-  switch(op->content) {
+  switch (op->content) 
+    {
     case ASM_SP_OTYPE_REGISTER:
       sprintf(buf, "%s", get_sparc_register(op->baser));
       break;
@@ -228,25 +232,26 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
       ins->proc->resolve_immediate(ins->proc->resolve_data, address, buf, 42);
       break;
     case ASM_SP_OTYPE_IMM_ADDRESS:
-      sprintf(buf, "[ %s", get_sparc_register(op->baser));
+      sprintf(buf, "[%s", get_sparc_register(op->baser));
       if (op->imm)
-        sprintf(buf+strlen(buf), " + 0x%x", op->imm);
+        sprintf(buf + strlen(buf), " + 0x%x", op->imm);
         
-      sprintf(buf+strlen(buf), " ]");
+      sprintf(buf + strlen(buf), "]");
       
       if (op->address_space != ASM_SP_ASI_P)
-        sprintf(buf+strlen(buf), " %%asi");
+        sprintf(buf + strlen(buf), " %%asi");
 
       break;
     case ASM_SP_OTYPE_REG_ADDRESS:
       if (op->indexr > 0)
-        sprintf(buf, "[ %s + %s ]", get_sparc_register(op->baser),
+        sprintf(buf, "[%s + %s]", 
+		get_sparc_register(op->baser),
 		get_sparc_register(op->indexr));
       else
-	sprintf(buf, "[ %s ]", get_sparc_register(op->baser));
+	sprintf(buf, "[%s]", get_sparc_register(op->baser));
       
       if (op->address_space != ASM_SP_ASI_P)
-        sprintf(buf+strlen(buf), " 0x%x", op->address_space);								
+        sprintf(buf + strlen(buf), " 0x%x", op->address_space);								
       break;
       
     default:
@@ -259,9 +264,9 @@ void	asm_sparc_dump_operand(asm_instr *ins, int num,
  *
  *
  */
-char *asm_sparc_display_instr(asm_instr *instr, eresi_Addr addr)
+char		*asm_sparc_display_instr(asm_instr *instr, eresi_Addr addr)
 {
-  static char buffer[1024];  
+  static char	buffer[1024];  
 
   memset(buffer, 0, 1024);
   sprintf(buffer, "%s", instr->proc->instr_table[instr->instr]);  

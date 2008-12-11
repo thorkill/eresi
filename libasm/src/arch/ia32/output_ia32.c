@@ -179,7 +179,7 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     {
       if (ASM_OP_REFERENCE & op->content) 
 	ins->proc->resolve_immediate(ins->proc->resolve_data, 
-				     imm, resolved, 256);
+				     imm & addr_mask, resolved, 256);
       else if (ASM_OP_VALUE & op->content)
 	ins->proc->resolve_immediate(ins->proc->resolve_data, 
 				     (imm + addr + ins->len) & addr_mask, resolved, 256);
@@ -191,7 +191,7 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     ins->proc->resolve_immediate(ins->proc->resolve_data,
 				 imm, resolved, 256);
   
-  switch(op->content & ~ASM_OP_FIXED) 
+  switch (op->content & ~ASM_OP_FIXED) 
     {
     case ASM_OP_BASE|ASM_OP_ADDRESS:
       sprintf(buffer, "*%%%s", 
@@ -340,7 +340,8 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
 {
   static char	buffer[1024];
   int		len;
-  
+  int		margin;
+
   if (!instr)
     return (0);
 
@@ -366,32 +367,36 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
       return (buffer);
     }
 
-  if (instr->op[0].type) {
-    /* Add spaces */
-    len = strlen(buffer);
-    while(len++ < (int)config_get_data(CONFIG_ASM_ATT_MARGIN_FLAG))
-      strcat(buffer, " ");
-
-    if (instr->op[2].type) {
-      asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));
-      strcat(buffer, ",");
-    }
+  /* Add spaces */
+  if (instr->op[0].type) 
+    {
+      len = strlen(buffer);
+      margin = (int) config_get_data(CONFIG_ASM_ATT_MARGIN_FLAG);
+      while (len++ < margin)
+	strcat(buffer, " ");
+      
+      if (instr->op[2].type) 
+	{
+	  asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));
+	  strcat(buffer, ",");
+	}
  
-    if (instr->op[1].type) {
-      switch(instr->op[1].prefix & ASM_PREFIX_SEG) {
-      case ASM_PREFIX_ES:
-	strcat(buffer, "%es:");
-	break;
-      case ASM_PREFIX_DS:
-	strcat(buffer, "%ds:");
-	break;
-      }
-
-      asm_operand_get_att(instr, 2, addr, buffer + strlen(buffer));
-      strcat(buffer, ",");
+    if (instr->op[1].type) 
+      {
+	switch(instr->op[1].prefix & ASM_PREFIX_SEG) 
+	  {
+	  case ASM_PREFIX_ES:
+	    strcat(buffer, "%es:");
+	    break;
+	  case ASM_PREFIX_DS:
+	    strcat(buffer, "%ds:");
+	    break;
+	  }
+	asm_operand_get_att(instr, 2, addr, buffer + strlen(buffer));
+	strcat(buffer, ",");
     }
     
-    switch(instr->op[0].prefix & ASM_PREFIX_SEG) 
+    switch (instr->op[0].prefix & ASM_PREFIX_SEG) 
       {
       case ASM_PREFIX_ES:
 	strcat(buffer, "%es:");

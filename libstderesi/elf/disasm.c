@@ -142,6 +142,7 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
   elfsh_SAddr	off;
   int		len;
   char		*sep;
+  uint32_t	addr;
 
   /* Retreive the nearest symbol */
   file = data;
@@ -167,8 +168,13 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
 		 revm_colornumber("%u", (u_int) off),
 		 revm_colorfieldstr(">"));
     }
+
+  /* We currently only disassemble architecture with 32bits address space, even when 64b proc */
   else
-    snprintf(buf, maxlen - 1, AFMT, vaddr);
+    {
+      addr = (uint32_t) vaddr;
+      snprintf(buf, maxlen, "0x%X", addr);
+    }
 }
 
 
@@ -200,7 +206,6 @@ int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
   char		c1[2];
   char		c2[2];
   u_int		strsz;
-  elfsh_Half	machine;
   u_int		delta;
   int		err;
 
@@ -576,7 +581,7 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
     }
   else
     {
-      buff = (void *) vaddr;
+      buff = (char *) vaddr;
       index = 0;
     }
 
