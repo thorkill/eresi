@@ -1,7 +1,6 @@
 #!evarista/evarista32
 
-#quiet
-verb
+quiet
 
 print ENTERED CFG-WALK
 
@@ -10,34 +9,20 @@ print $#
 cmp $# 2
 jne end
 
-print $1
-print $2
-#tables $2_blocks
-
-verb
-
-profile enable warn
 set $block $hash[$2_blocks:$1]
-profile disable warn
-
-#print $1
 set $hash[visitedblocks:$1] 1
-#print $block
 
 print Now ASM to ELIR on block at $block.vaddr
-
-#print $hash[visitedblocks:$1]
 
 bin2lir $1
 
 #lir-dataflow $1
-#profile enable warn
 
 print Now walking CFG
 
-#profile enable warn
+profile enable warn
 foreach $link of $block.outlinks
-#profile disable warn
+profile disable warn
 
   set $nextblock $link.id
 

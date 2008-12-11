@@ -91,7 +91,7 @@ int		revm_source(char **params)
     {
       snprintf(actual, sizeof(actual), "$%u", ac + 1);
 
-#if 1 //__DEBUG_EXPRS__
+#if __DEBUG_EXPRS__
       fprintf(stderr, " [D] Parameter %s added with type = %s \n", 
 	      actual, (eparam[ac]->type ? eparam[ac]->type->name : "UNKNOWN TYPE"));
 #endif

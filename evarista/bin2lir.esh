@@ -29,7 +29,6 @@ quit
 sparc: 
 print Detected SPARC architecture
 sparc2lir $1
-verb
 return 0
 
 intel: 

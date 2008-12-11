@@ -46,7 +46,7 @@ foreach $link of $func.outlinks
   cmp $link.scope SCOPE_GLOBAL
   je next
 
-  verb
+  #verb
   #tables $2_functions 100*
   #print $func
 

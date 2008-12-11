@@ -489,11 +489,14 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
     }
 
   /* If still not found, try manually inserted types */
-  res = revm_object_lookup(param);
-  if (res)
+  if (existing)
     {
-      expr = revm_expr_create_from_object(res, param, existing);
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+      res = revm_object_lookup(param);
+      if (res)
+	{
+	  expr = revm_expr_create_from_object(res, param, existing);
+	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);  
+	}
     }
 
   /* If no good syntax is available, print error if we are not in probe mode */
