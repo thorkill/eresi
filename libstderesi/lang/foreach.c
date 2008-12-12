@@ -18,18 +18,18 @@ static revmexpr_t	*revm_induction_load(char *name)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We are starting a new foreach, induction variable cannot be initialized */
-  assert(world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT);
+  assert(world.curjob->iter[world.curjob->curloop].listidx == REVM_IDX_UNINIT);
 
   var = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 1, 0);
   induction = revm_expr_create_from_object(var, name, 1);
-  world.curjob->iter[world.curjob->curiter].curind   = induction;
+  world.curjob->iter[world.curjob->curloop].curind   = induction;
 
-  world.curjob->iter[world.curjob->curiter].reclevel = world.curjob->curscope;
-  world.curjob->iter[world.curjob->curiter].end      = world.curjob->curcmd->endlabel;
+  world.curjob->iter[world.curjob->curloop].reclevel = world.curjob->curscope;
+  world.curjob->iter[world.curjob->curloop].end      = world.curjob->curcmd->endlabel;
 
 #if __DEBUG_FOREACH__
   fprintf(stderr, "INDUCTION_LOAD: curcmd->end = %s and iter[cur].end = %s \n",
-	  world.curjob->curcmd->endlabel, world.curjob->iter[world.curjob->curiter].end);
+	  world.curjob->curcmd->endlabel, world.curjob->iter[world.curjob->curloop].end);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, induction);
@@ -45,47 +45,47 @@ static revmexpr_t	*revm_induction_get(char *name)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If the induction variable name has changed, we entered a new foreach construct */
-  if (!world.curjob->iter[world.curjob->curiter].curind)
+  if (!world.curjob->iter[world.curjob->curloop].curind)
     induction = revm_induction_load(name);
 
   /* If we are reusing the same name for the induction variable */
-  else if (!strcmp(name, world.curjob->iter[world.curjob->curiter].curind->label))
+  else if (!strcmp(name, world.curjob->iter[world.curjob->curloop].curind->label))
     {
-      if (world.curjob->curiter + 1 == REVM_MAXSRCNEST)
+      if (world.curjob->curloop + 1 == REVM_MAXSRCNEST)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Maximum foreach depth reached, increase REVM_MAXSRCNEST value !", NULL);
-      if (strcmp(world.curjob->iter[world.curjob->curiter].end,
+      if (strcmp(world.curjob->iter[world.curjob->curloop].end,
 		 world.curjob->curcmd->endlabel))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "An existing induction variable already has this name", NULL);
 
       /* We are executing a deeper instance of the same foreach structure */
-      if (world.curjob->iter[world.curjob->curiter].reclevel != world.curjob->curscope)
+      if (world.curjob->iter[world.curjob->curloop].reclevel != world.curjob->curscope)
 	{
-	  world.curjob->curiter++;
+	  world.curjob->curloop++;
 	  induction = revm_induction_load(name);
 	}
       else
-	induction = world.curjob->iter[world.curjob->curiter].curind;
+	induction = world.curjob->iter[world.curjob->curloop].curind;
     }
 
   /* If we are executing another foreach command in a current or deeper context */
-  else if (world.curjob->iter[world.curjob->curiter].reclevel != world.curjob->curscope ||
-	   world.curjob->iter[world.curjob->curiter].end != world.curjob->curcmd->endlabel)
+  else if (world.curjob->iter[world.curjob->curloop].reclevel != world.curjob->curscope ||
+	   world.curjob->iter[world.curjob->curloop].end != world.curjob->curcmd->endlabel)
     {
-      world.curjob->curiter++;
+      world.curjob->curloop++;
       induction = revm_induction_load(name);
     }
   else
     {
-      revm_expr_print(world.curjob->iter[world.curjob->curiter].curind, 0);
+      revm_expr_print(world.curjob->iter[world.curjob->curloop].curind, 0);
 
 #if __DEBUG_FOREACH__
       fprintf(stderr, "name = %s curind->label = %s reclevel = %u curscope = %u "
 	      "end = %s endlabel = %s \n",
-	      name, world.curjob->iter[world.curjob->curiter].curind->label,
-	      world.curjob->iter[world.curjob->curiter].reclevel,
-	      world.curjob->curscope, world.curjob->iter[world.curjob->curiter].end,
+	      name, world.curjob->iter[world.curjob->curloop].curind->label,
+	      world.curjob->iter[world.curjob->curloop].reclevel,
+	      world.curjob->curscope, world.curjob->iter[world.curjob->curloop].end,
 	      world.curjob->curcmd->endlabel);
 #endif
 
@@ -95,7 +95,7 @@ static revmexpr_t	*revm_induction_get(char *name)
 
 #if __DEBUG_FOREACH__
   fprintf(stderr, "INDUCTION_GET: Induction variable name = %s listidx = %u \n", name,
-	  world.curjob->iter[world.curjob->curiter].listidx);
+	  world.curjob->iter[world.curjob->curloop].listidx);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, induction);
@@ -126,7 +126,7 @@ static void	revm_induction_record(char flag, revmexpr_t *induction, char *curkey
 	    elist_set(list, curkey, (void *) lastvalue);
 
 #if __DEBUG_FOREACH__
-	  fprintf(stderr, "back-assignment into the list for element %s of value %X \n", 
+	  fprintf(stderr, "INDUCTION_RECORD: back-assignment in list for elem %s of value %X \n", 
 		  curkey, lastvalue);
 #endif
 
@@ -146,19 +146,19 @@ static int	revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Do we have to open a new iteration scope ? */
-  if (world.curjob->iter[world.curjob->curiter].reclevel != world.curjob->curscope ||
-      world.curjob->iter[world.curjob->curiter].end != world.curjob->curcmd->endlabel)
-    world.curjob->curiter++;
+  if (world.curjob->iter[world.curjob->curloop].reclevel != world.curjob->curscope ||
+      world.curjob->iter[world.curjob->curloop].end != world.curjob->curcmd->endlabel)
+    world.curjob->curloop++;
 
   /* Find lower and upper bounds for this iteration */
   var = induction->value;
-  if (world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT)
+  if (world.curjob->iter[world.curjob->curloop].listidx == REVM_IDX_UNINIT)
     {
       infbound = revm_lookup_index(infstr);
-      world.curjob->iter[world.curjob->curiter].listidx = infbound + 1;
+      world.curjob->iter[world.curjob->curloop].listidx = infbound + 1;
     }
   else
-    infbound = world.curjob->iter[world.curjob->curiter].listidx++;
+    infbound = world.curjob->iter[world.curjob->curloop].listidx++;
   
   upbound  = revm_lookup_index(supstr);
   
@@ -167,10 +167,10 @@ static int	revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
     {
       if (!world.curjob->curcmd->endlabel)
 	cmd_quit();
-      world.curjob->iter[world.curjob->curiter].listidx = REVM_IDX_UNINIT;
+      world.curjob->iter[world.curjob->curloop].listidx = REVM_IDX_UNINIT;
       revm_move_pc(world.curjob->curcmd->endlabel);
-      if (world.curjob->curiter)
-	world.curjob->curiter--;
+      if (world.curjob->curloop)
+	world.curjob->curloop--;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   
@@ -268,7 +268,7 @@ static void	*revm_iterator_get(char *itername, char ***keys, int *keynbr, char *
   /* See if the list or hash is already being iterated */
   if (list)
     {
-      if (world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT && 
+      if (world.curjob->iter[world.curjob->curloop].listidx == REVM_IDX_UNINIT && 
 	  elist_linearity_get(list))
 	{
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
@@ -277,13 +277,13 @@ static void	*revm_iterator_get(char *itername, char ***keys, int *keynbr, char *
 	}
       elist_linearity_set(list, 1);
       *keys = elist_get_keys(list, keynbr);
-      world.curjob->iter[world.curjob->curiter].list = (void *) list;
+      world.curjob->iter[world.curjob->curloop].list = (void *) list;
       *tableorlist = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);  
     }
   
   /* Else we know that we deal with a hash table */
-  if (world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT && 
+  if (world.curjob->iter[world.curjob->curloop].listidx == REVM_IDX_UNINIT && 
       hash_linearity_get(table))
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__, setname);
@@ -292,7 +292,7 @@ static void	*revm_iterator_get(char *itername, char ***keys, int *keynbr, char *
     }
   hash_linearity_set(table, 1);
   *keys = hash_get_keys(table, keynbr);
-  world.curjob->iter[world.curjob->curiter].list = (void *) table;
+  world.curjob->iter[world.curjob->curloop].list = (void *) table;
   *tableorlist = 1;
 
   // To test
@@ -312,13 +312,18 @@ static void	revm_iterator_free(hash_t *table, list_t *list, char *indname)
   else if (list)
     elist_linearity_set(list, 0);
 
-  revm_expr_clean(indname);
+#if __DEBUG_FOREACH__
+  fprintf(stderr, "ITERATOR_FREE: Cleaning induction %s and decrementing curloop ! \n", indname);
+#endif
+
+  revm_expr_hide(indname);
   
   /* Decrease iteration depth */
-  bzero(&world.curjob->iter[world.curjob->curiter], sizeof(revmiter_t));
-  world.curjob->iter[world.curjob->curiter].listidx  = REVM_IDX_UNINIT;
-  if (world.curjob->curiter)
-    world.curjob->curiter--;
+  bzero(&world.curjob->iter[world.curjob->curloop], sizeof(revmiter_t));
+  world.curjob->iter[world.curjob->curloop].listidx = REVM_IDX_UNINIT;
+  world.curjob->iter[world.curjob->curloop].curind  = NULL;
+  if (world.curjob->curloop)
+    world.curjob->curloop--;
   revm_move_pc(world.curjob->curcmd->endlabel);	  
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
@@ -356,7 +361,7 @@ static int	revm_induction_process(hash_t *table, list_t *list, char *curkey,
       indname = strdup(induction->label);
       revm_expr_clean(induction->label);
       induction = revm_expr_copy((revmexpr_t *) elem, indname, 0);
-      world.curjob->iter[world.curjob->curiter].curind = induction;
+      world.curjob->iter[world.curjob->curloop].curind = induction;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   
@@ -379,12 +384,12 @@ static int	revm_induction_process(hash_t *table, list_t *list, char *curkey,
   else 
     {
       typename = induction->type->name;
-      revm_expr_clean(paramname);
+      revm_expr_hide(paramname); //
       induction = revm_inform_type_addr(typename, paramname, (eresi_Addr) elem, NULL, 0, 1);
       if (!induction)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to create expression for induction variable", -1);
-      world.curjob->iter[world.curjob->curiter].curind = induction;
+      world.curjob->iter[world.curjob->curloop].curind = induction;
     }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -409,11 +414,11 @@ int		cmd_foreach()
 #if __DEBUG_FOREACH__
   fprintf(stderr, 
 	  "Beginning CMD_FOREACH : curcmd->name = %s curcmd->end = %s "
-	  "iter[cur].end = %s curiter = %u curscope = %u\n",
+	  "iter[cur].end = %s curloop = %u curscope = %u\n",
 	  world.curjob->curcmd->name, 
 	  world.curjob->curcmd->endlabel, 
-	  world.curjob->iter[world.curjob->curiter].end,
-	  world.curjob->curiter, world.curjob->curscope);
+	  world.curjob->iter[world.curjob->curloop].end,
+	  world.curjob->curloop, world.curjob->curscope);
 #endif
 
   /* Depends the mode we are in */
@@ -450,16 +455,16 @@ int		cmd_foreach()
       
       /* Use the correct keys array index depending on foreach iteration nbr */
     nextelem:
-      if (world.curjob->iter[world.curjob->curiter].listidx == REVM_IDX_UNINIT)
+      if (world.curjob->iter[world.curjob->curloop].listidx == REVM_IDX_UNINIT)
 	{
 	  index = 0;
-	  world.curjob->iter[world.curjob->curiter].listidx += 2;
+	  world.curjob->iter[world.curjob->curloop].listidx += 2;
 	}
       
       /* The induction variable existed already : record its previous modification in container */
       else
 	{
-	  index = world.curjob->iter[world.curjob->curiter].listidx++;
+	  index = world.curjob->iter[world.curjob->curloop].listidx++;
 	  revm_induction_record(flag, induction, keys[index - 1], table, list);
 	}
 
@@ -469,7 +474,7 @@ int		cmd_foreach()
 	  revm_iterator_free(table, list, induction->label);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
-      world.curjob->iter[world.curjob->curiter].curkey   = keys[index]; 
+      world.curjob->iter[world.curjob->curloop].curkey   = keys[index]; 
 
       /* Get the next elem if the current one is not matching */
       if (flag == 2 && regexec(&world.curjob->curcmd->regx[0], 

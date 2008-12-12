@@ -261,7 +261,7 @@ int		revm_type_reflect(hash_t *hash, char *typename)
 
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  keys = hash_get_keys(hash, &nbr);
- for (index = 1; index < nbr; index++)
+ for (index = 0; index < nbr; index++)
    {
      data = hash_get(hash, keys[index]);
      snprintf(logbuf, sizeof(logbuf), "%c%s_%s", 

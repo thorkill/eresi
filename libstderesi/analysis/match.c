@@ -161,7 +161,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   dstnbr = 1;
   XALLOC(__FILE__, __FUNCTION__, __LINE__, exprlist, sizeof(list_t), -1);
   elist_init(exprlist, "curdestlist", ASPECT_TYPE_EXPR);
-  for (curidx = world.curjob->iter[world.curjob->curiter].listidx - 1, curptr = destvalue; 
+  for (curidx = world.curjob->iter[world.curjob->curloop].listidx - 1, curptr = destvalue; 
        curptr && *curptr; 
        curptr = foundptr + 2, curidx++, dstnbr++)
     {
@@ -171,7 +171,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       if (foundptr)
 	*foundptr = 0x00;
       type   = revm_exprtype_get(curptr);
-      snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter[world.curjob->curiter].curkey, curidx); 
+      snprintf(namebuf, BUFSIZ, "%s-%u", world.curjob->iter[world.curjob->curloop].curkey, curidx); 
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
       if (!candid || !candid->annot)
@@ -187,7 +187,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
     }
 
   /* UNIMPLEMENTED: The rewritten element is not part of any list or is part of an alien list */
-  looplist = (list_t *) world.curjob->iter[world.curjob->curiter].list;
+  looplist = (list_t *) world.curjob->iter[world.curjob->curloop].list;
   if (!looplist)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Rewriting of non-list element unimplemented", -1);
@@ -223,13 +223,12 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	    "Error while propagating dataflow links", -1);
 	  */
 
-	  /* initialisation de subexpr par une autre expr est bugge ! */
-	  /* il nomme le field par le nom de la variable .. */
-	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curiter].curkey), candid);
+	  /* FIXME: Subexpr initialization is buggy (names first field by top-level variable name) */
+	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
 	  rname = strdup(matchme->label);
 	  revm_expr_destroy(matchme->label);
 	  matchme = revm_expr_copy(candid, rname, 0);
-	  world.curjob->iter[world.curjob->curiter].curind = matchme;
+	  world.curjob->iter[world.curjob->curloop].curind = matchme;
 
 	  //XXX: if we free it now, ->matchexpr and maybe other exprs will be dangling
 	  //revm_expr_destroy(candid->label);
@@ -243,8 +242,8 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   /* Insert a list at a certain offset of the list */
   else
     {
-      elist_replace(looplist, world.curjob->iter[world.curjob->curiter].curkey, elist_copy(exprlist));
-      world.curjob->iter[world.curjob->curiter].listidx += exprlist->elmnbr - 1;
+      elist_replace(looplist, world.curjob->iter[world.curjob->curloop].curkey, elist_copy(exprlist));
+      world.curjob->iter[world.curjob->curloop].listidx += exprlist->elmnbr - 1;
       elist_destroy(exprlist);
     }
 
@@ -431,8 +430,8 @@ int			cmd_match()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* The first time we enter this command, we have to fetch the params */
-  list = (list_t *) world.curjob->iter[world.curjob->curiter].list;
-  ind  = world.curjob->iter[world.curjob->curiter].curind;
+  list = (list_t *) world.curjob->iter[world.curjob->curloop].list;
+  ind  = world.curjob->iter[world.curjob->curloop].curind;
   if (list && ind && !strcmp(ind->label, world.curjob->curcmd->param[0]))
     {
       if (list->type != ASPECT_TYPE_EXPR)

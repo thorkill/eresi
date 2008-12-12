@@ -11,6 +11,7 @@
 
 /** Get the real value of the parameter string for further revmobj initialization */
 /** This function set the label and strval fields of the newly created revmexpr_t */
+/* FIXME: does not return correct type name if there are trailing whitespaces */
 static revmexpr_t *revm_expr_read(char **datavalue)
 {
   revmexpr_t	*expr;
@@ -1413,9 +1414,12 @@ revmexpr_t	*revm_expr_lookup(u_int oid)
 	   REVM_VAR_PREFIX, type->name, *(eresi_Addr *) cont->data);
   expr = revm_expr_get(logbuf);
   if (!expr)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid name for expression", NULL);  
-  
+    {
+      fprintf(stderr, "Name Expr %s \n", logbuf);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "Invalid name for expression", NULL);  
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 

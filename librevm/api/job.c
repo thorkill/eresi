@@ -43,7 +43,7 @@ revmjob_t	*revm_clone_job(char *newname, revmjob_t *job)
   
   /* Empty new job */
   new->curcmd         = NULL;
-  new->curiter        = 0;
+  new->curloop        = 0;
   new->curscope       = 0;
   new->ws.active      = 0;
   new->ws.oldline     = NULL;

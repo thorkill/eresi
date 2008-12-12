@@ -131,8 +131,9 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   char		*name;
   elfsh_SAddr	off;
   u_int		index = 0;
-  int		revm_quiet,revm_colors;
-  int		ret,cur;
+  u_char	revm_quiet;
+  int		revm_colors;
+  int		ret, cur;
   u_int		foffset;
   u_int		reloff;
   char		tmpbuf[20];
@@ -813,7 +814,6 @@ int		cmd_graph(void)
 	  write(fd,"}\n",2);
 	  close(fd);
 	  revm_graph_compile_graphic(dotfile);
-	  revm_output(" [*] Dump function blocks\n\n");
 	}
       else
 	revm_output(" [!] Invalid syntax: help graph\n");

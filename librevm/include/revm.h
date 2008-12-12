@@ -384,7 +384,7 @@ typedef struct        s_job
   revmrecur_t	      recur[REVM_MAXSRCNEST];		/* Recursion contexts */
   u_int               curscope;				/* Current recursion depth */
   revmiter_t	      iter[REVM_MAXSRCNEST];		/* "foreach" iteration context */
-  u_int		      curiter;				/* Current iteration depth */
+  u_int		      curloop;				/* Current iteration depth */
 
   /* Job files context */
   revmargv_t	      *curcmd;				/* Next command to be executed */

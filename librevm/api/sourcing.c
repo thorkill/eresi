@@ -209,13 +209,14 @@ int	       revm_context_restore(int		savedfd,
   for (idx = 0; idx < keynbr; idx++)
     {
 
+      /* Only free top-level expressions, the rest will be freed recursively by the expr_destroy */
+      if (strstr(keys[idx], REVM_SEP))
+	continue;
+
 #if __DEBUG_EXPRS__
       fprintf(stderr, " [D] Expression %s will be destroyed from ending scope \n", keys[idx]);
 #endif
 
-      /* Only free top-level expressions, the rest will be freed recursively by the expr_destroy */
-      if (strstr(keys[idx], REVM_SEP))
-	continue;
       revm_expr_destroy(keys[idx]);
 
     }
