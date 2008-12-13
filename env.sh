@@ -24,6 +24,7 @@ export LD_LIBRARY_PATH=`pwd`/libedfmt/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/usr/lib/debug/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/libkernsh/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/evarista/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=`pwd`/libgdbwrap/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=`pwd`/testsuite/debugging/binaries-multithreads/:$LD_LIBRARY_PATH
 
 export PATH=`pwd`/elfsh:$PATH

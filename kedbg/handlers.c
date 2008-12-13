@@ -1,9 +1,8 @@
 #include "kedbg.h"
 #include "interface.h"
 
-
 /* /\**************** Handler for vectors ****************\/ */
-void            kedbg_resetstep_ia32(void)
+void            kedbg_resetstep(void)
 {
   PROFILER_INQ();
   e2dbgworld.curthread->step = FALSE;
@@ -12,7 +11,7 @@ void            kedbg_resetstep_ia32(void)
 }
 
 
-void            kedbg_setstep_ia32(void)
+void            kedbg_setstep(void)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   e2dbgworld.curthread->step = TRUE;
@@ -32,7 +31,7 @@ void		*kedbg_bt_ia32(void *frame)
 }
 
 
-eresi_Addr	*kedbg_getfp_ia32(void)
+eresi_Addr	*kedbg_getfp(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -184,6 +183,7 @@ void            kedbg_sigint(int sig)
   PROFILER_INQ();
   NOT_USED(sig);
   gdbwrap_ctrl_c(loc);
+  kedbgworld.interrupted = TRUE;
   PROFILER_OUTQ();
 }
 

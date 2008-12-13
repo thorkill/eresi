@@ -5,7 +5,7 @@
 #include "interface.h"
 
 #define  ERROR_CONNECTION  "problem when connecting... exiting\n"
-#define  USAGE             "Usage: ./netgdb <server> <port> <file>\n"
+#define  USAGE             "Usage: ./netgdb <[server]:port> <file>\n"
 #define  KEDBGNAME         "kedbg"
 /* The commands are for internal debuging purpose. */
 #define  COM1              "youpla"
@@ -32,6 +32,7 @@ typedef struct
 {
   /* Offset for the bp (see cmd_kedbgcont). */
   u_char offset;
+  Bool   interrupted;
 } kedbgworld_t;
 
 extern          kedbgworld_t kedbgworld;

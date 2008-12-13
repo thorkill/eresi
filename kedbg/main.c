@@ -77,7 +77,7 @@ static void     kedbg_register_vector(void)
   e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_print_reg);
   e2dbg_register_getfphook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
-			   kedbg_getfp_ia32);
+			   kedbg_getfp);
   e2dbg_register_nextfphook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
 			    kedbg_bt_ia32);
   e2dbg_register_getrethook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
@@ -352,7 +352,7 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_curthread_init();	
   e2dbg_setup_hooks();
   kedbg_register_vector();
-  ret = revm_file_load(argv[3], 0, NULL);
+  ret = revm_file_load(argv[2], 0, NULL);
 
   ASSERT(!ret);
   elfsh_set_runtime_mode();
@@ -411,15 +411,25 @@ static int      kedbg_main(int argc, char **argv)
 int             main(int argc, char **argv)
 {
   int           fd;
+  char          *a;
+  char          *b;
 
 
   /* Input checks */
-  if (argc != 4)
+  if (argc != 3)
     {
       printf(USAGE);
       return -1;
     }
-  fd = gdbwrap_simpleconnect(argv[1], atoi(argv[2]));
+  
+  a = strtok(argv[1], ":");
+  b = strtok(NULL, ":");
+  
+  if (b == NULL)
+    fd = gdbwrap_simpleconnect("127.0.0.1", atoi(a));
+  else
+    fd = gdbwrap_simpleconnect(a, atoi(b));
+  
   if (fd == -1)
     {
       fprintf(stderr, ERROR_CONNECTION);

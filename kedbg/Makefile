@@ -31,17 +31,20 @@ CFLAGS32 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libetrace/include/ 				 \
 			-DERESI32 -DJEDBG -DKEDBG
 
-LDFLAGS32               += -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32        \
-                        -L../libetrace/ -letrace32 -L../libstderesi/ -lstderesi32   \
-                        -L/usr/pkg/lib/ -L../libmjollnir/ -lmjollnir32              \
-                        -L../libetrace -letrace32 $(LPTHREAD) -L../libasm/ -lasm32  \
-                        $(LDUIOPT32) -g3 $(STATOPT) \
-                        -L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
-                        -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)        \
+LDFLAGS32               += -L../libedfmt/ -ledfmt32				\
+			-L../libelfsh/ -lelfsh32        			\
+			-L../libetrace/ -letrace32				\
+			-L../libstderesi/ -lstderesi32   			\
+                        -L/usr/pkg/lib/ 					\
+			-L../libmjollnir/ -lmjollnir32              		\
+                        -L../libetrace -letrace32 $(LPTHREAD)			\
+			-L../libasm/ -lasm32 $(LDUIOPT32) -g3 $(STATOPT) 	\
+                        -L../libaspect/ -laspect32				\
+			-L../librevm/ -lrevm32           			\
+			-L../libgdbwrap/ -lgdbwrap				\
+                        -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
                         $(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
-                        ../libgdbwrap/libgdbwrap.o                               \
                         ../libe2dbg/common/libe2dbg-common32.o
-
 
 
 all			: all32 

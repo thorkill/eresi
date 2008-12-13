@@ -13,9 +13,9 @@ int             gdbwrap_simpleconnect(char *host, int port)
   extern        int           h_errno;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   hostaddr = gethostbyname(host);
-  protocol = getprotobyname( "tcp" );
+  protocol = getprotobyname("tcp");
 
   if (!hostaddr || h_errno == HOST_NOT_FOUND)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid gethostbyname", -1);
@@ -42,17 +42,6 @@ int             gdbwrap_simpleconnect(char *host, int port)
   if (rval == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Problem when connecting",
 		 -1);
-
-/*   XALLOC(__FILE__, __FUNCTION__, __LINE__,job, sizeof (revmjob_t), -1); */
-
- /*  job->ws.io.type     = REVM_IO_GDB; */
-/*   job->ws.io.input    = &revm_netgdb_input; */
-/*   job->ws.io.output   = &revm_netgdb_output; */
-/*   job->ws.createtime  = time(&job->ws.createtime); */
-/*   job->ws.io.input_fd = sd; */
-
-/*   hash_add(&world.jobs, "netgdb", job); */
-/*   world.curjob = job; */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sd);
 }

@@ -36,7 +36,13 @@ int             cmd_kedbgcont(void)
       gdbwrap_continue(loc);
       if (gdbwrap_is_active(loc))
 	{
-	  if (gdbwrap_lastsignal(loc) == SIGTRAP)
+	  name = revm_resolve(world.curjob->curfile, loc->reg32.eip, &off);
+	  if (kedbgworld.interrupted)
+	    {
+	      printf("\n[*] Stopped at %#x <%s + %u>\n", loc->reg32.eip, name, off);
+	      kedbgworld.interrupted = FALSE;
+	    }
+	  else if (gdbwrap_lastsignal(loc) == SIGTRAP)
 	    {
 	      snprintf(addr, sizeof(addr), "%#x", loc->reg32.eip - kedbgworld.offset);
 	      bp = e2dbg_breakpoint_lookup(addr);
@@ -45,12 +51,11 @@ int             cmd_kedbgcont(void)
 		  revm_clean();
 		  e2dbg_display(bp->cmd, bp->cmdnbr);
 
-		  name = revm_resolve(world.curjob->curfile, loc->reg32.eip, &off);
 		  if (!off)
 		    printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip, name);
 		  else
 		    printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip,
-			   name, off);			   
+			   name, off);
 		  /* Only if we don't use the simple bp. */
 		  if (kedbgworld.offset)
 		    {
@@ -96,12 +101,12 @@ int             cmd_kedbgstep(void)
   PROFILER_INQ();
   if (enable)
     {
-      kedbg_resetstep_ia32();
+      kedbg_resetstep();
       revm_output("[*] Disabling stepping\n");
     }
   else
     {
-      kedbg_setstep_ia32();
+      kedbg_setstep();
       revm_output("[*] Enabling stepping\n");
     }
   enable = !enable;

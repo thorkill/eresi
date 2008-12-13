@@ -116,8 +116,8 @@ int main( int argc, char **argv )
 	}
       else if(!strncmp("why", buffer,  3))
 	gdbwrap_reason_halted(desc);
-      else if(!strncmp("test", buffer,  4))
-	gdbwrap_test(desc);
+/*       else if(!strncmp("test", buffer,  4)) */
+/* 	gdbwrap_test(desc); */
       else if(!strncmp("gpr", buffer,  3))
 	gdbwrap_readgenreg(desc);
       else if(!strncmp("cont", buffer,  4))
@@ -142,16 +142,16 @@ int main( int argc, char **argv )
 	  printf("Returned from memorycontent: %s\n", c);
 	  fflush(stdout);
 	}
-      else if(!strncmp("own", buffer,  3))
-	{
-	  while (strncmp("quitown", buffer, 7))
-	    {
-	      printf("\nCommand: ");
-	      ret = gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin),
-					desc);
-	      printf("\n%s - size: %d", ret, strlen(ret));
-	    }
-	}
+/*       else if(!strncmp("own", buffer,  3)) */
+/* 	{ */
+/* 	  while (strncmp("quitown", buffer, 7)) */
+/* 	    { */
+/* 	      printf("\nCommand: "); */
+/* 	      ret = gdbwrap_own_command(fgets(buffer, sizeof(buffer) - 1, stdin), */
+/* 					desc); */
+/* 	      printf("\n%s - size: %d", ret, strlen(ret)); */
+/* 	    } */
+/* 	} */
       else printf("not supported yet\n");
       
     } while (strncmp("bye", buffer, 3));
