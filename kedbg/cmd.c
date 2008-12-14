@@ -56,16 +56,13 @@ int             cmd_kedbgcont(void)
 		  else
 		    printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip,
 			   name, off);
-		  /* Only if we don't use the simple bp. */
+		  c = BPCODE;
+		  eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
+		  e2dbg_deletebreak(bp);
 		  if (kedbgworld.offset)
-		    {
-		      c = BPCODE;
-		      eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
-		      e2dbg_deletebreak(bp);
-		      gdbwrap_writereg2(eip_pos, loc->reg32.eip - kedbgworld.offset, loc);
-		      gdbwrap_stepi(loc);
-		      e2dbg_setbreak(world.curjob->curfile, bp);
-		    }
+		    kedbg_writereg(eip_pos, loc->reg32.eip - kedbgworld.offset);
+		  gdbwrap_stepi(loc);
+		  e2dbg_setbreak(world.curjob->curfile, bp);
 		}
 	    }
 	  else
@@ -79,6 +76,7 @@ int             cmd_kedbgcont(void)
 
       gdbwrap_stepi(loc);      
       revm_clean();
+      gdbwrap_readgenreg(loc);
       e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
       parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
       name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);

@@ -73,7 +73,8 @@ unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
 
   /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
      next 2 characters reprensent the signal number. */
-  if (desc->packet != NULL && desc->packet[0] == GDBWRAP_SIGNAL_RECV)
+  if (desc->packet != NULL && (desc->packet[0] == GDBWRAP_SIGNAL_RECV ||
+			       desc->packet[0] == GDBWRAP_SIGNAL_RECV2))
     ret = gdbwrap_atoh(desc->packet + 1, 2 * sizeof(char));
 
   return ret;
@@ -686,8 +687,28 @@ void                 *gdbwrap_writememory(la32 linaddr, void *value,
      not converted to a char. */
   memcpy(packet + packetsize, value, bytes);
   packet[packetsize + bytes] = GDBWRAP_NULL_CHAR;
-
   rec = gdbwrap_send_data(packet, desc);
+
+  return rec;
+}
+
+
+void                 *gdbwrap_writememory2(la32 linaddr, void *value,
+					   unsigned bytes, gdbwrap_t *desc)
+{
+  char               packet[50];
+  uint8_t            packetsize;
+  char               *rec;
+
+  snprintf(packet, sizeof(packet), "%s%x%s%x%s", GDBWRAP_MEMWRITE2,
+	   linaddr, GDBWRAP_SEP_COMMA, bytes, GDBWRAP_SEP_COLON);
+  packetsize = strlen(packet);
+  /* GDB protocol expects the value we send to be a "Binary value", ie
+     not converted to a char. */
+  memcpy(packet + packetsize, value, bytes);
+  packet[packetsize + bytes] = GDBWRAP_NULL_CHAR;
+  rec = gdbwrap_send_data(packet, desc);
+
   return rec;
 }
 

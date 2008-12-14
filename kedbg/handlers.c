@@ -2,6 +2,32 @@
 #include "interface.h"
 
 /* /\**************** Handler for vectors ****************\/ */
+Bool            kedbg_isrealmode(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  char          code[]="\x0f\x20\xc0\xeb\xfb";
+  char          saved[4];
+  ureg32        savedeip;
+  Bool          ret;
+  
+  PROFILER_INQ();
+  printf("Saved eip: %#x\n", loc->reg32.eip);
+  savedeip = loc->reg32.eip;
+  kedbg_readmema(NULL, savedeip, saved, 2);
+  kedbg_writemem(NULL, savedeip - 3, code, strlen(code));
+  gdbwrap_stepi(loc);
+  gdbwrap_stepi(loc);
+  gdbwrap_readgenreg(loc);
+  printf("Value of eax: %#x\n", loc->reg32.eax);
+  ret = (loc->reg32.eax & 0x1) ? TRUE : FALSE;
+  kedbg_writemem(NULL, loc->reg32.eip, saved, 2);  
+
+  //  gdbwrap_writereg2(8, savedeip, loc);
+  
+  PROFILER_ROUTQ(ret);
+}
+
+
 void            kedbg_resetstep(void)
 {
   PROFILER_INQ();
@@ -22,11 +48,12 @@ void            kedbg_setstep(void)
 
 void		*kedbg_bt_ia32(void *frame)
 {
-  la32          ptr;
+  la32          ptr = 0;
 
   PROFILER_INQ();
+  printf("Is in realmode ?\n");
+  kedbg_isrealmode();
   kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, DWORD_IN_BYTE);
-
   PROFILER_ROUTQ((void *)ptr);
 }
 
@@ -38,18 +65,17 @@ eresi_Addr	*kedbg_getfp(void)
   PROFILER_INQ();
   /* First update all the reg. */
   gdbwrap_readgenreg(loc);
-
   PROFILER_ROUTQ((eresi_Addr *)loc->reg32.ebp);
 }
 
 
 void            *kedbg_getret_ia32(void *frame)
 {
-  la32          ptr;
+  la32          ptr = 0;
 
   PROFILER_INQ();
   kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
-
+  //  kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
 
@@ -108,10 +134,10 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 
 	  default:
 	    /* We gonna loop, but should not occur */
-	    fprintf(stderr, "Bp not supported - Muh ?");
+	    fprintf(stderr, "Bp not supported - Muh ? \n");
 	    break;
 	}
-    } while(gdbwrap_cmdnotsup(loc));
+    } while (gdbwrap_cmdnotsup(loc));
 
   PROFILER_ROUTQ(0);
 }
@@ -137,7 +163,6 @@ static int      kedbg_simpledelbp(elfshbp_t *bp)
 
   PROFILER_ROUTQ(0);
 }
-
 
 
 int             kedbg_delbp(elfshbp_t *bp)
@@ -219,7 +244,8 @@ void            *kedbg_readmem(elfshsect_t *sect)
   else
     {
       ptr = malloc(sect->shdr->sh_size);
-      kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr, sect->shdr->sh_size);
+      kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr,
+		     sect->shdr->sh_size);
     }
 
   PROFILER_ROUTQ(ptr);
@@ -229,12 +255,33 @@ void            *kedbg_readmem(elfshsect_t *sect)
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
 			       unsigned size)
 {
+  static u_char choice = 0;
   gdbwrap_t     *loc = gdbwrap_current_get();
-
+  
   PROFILER_INQ();
   NOT_USED(file);
-  gdbwrap_writememory(addr, data, size, loc);
+    do
+    {
+      switch (choice)
+	{
+	  case 0:
+	    gdbwrap_writememory(addr, data, size, loc);
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
 
+	  case 1:
+	    gdbwrap_writememory2(addr, data, size, loc);
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  default:
+	    fprintf(stderr, "Write to memory not supported.\n");
+	    break;
+	}
+    } while (gdbwrap_cmdnotsup(loc));
+    
   PROFILER_ROUTQ(0);
 }
 
@@ -315,4 +362,37 @@ void            kedbg_shipallreg(void)
 	  activated = FALSE;
 	}
     }
+}
+
+
+int             kedbg_writereg(ureg32 regNum, la32 val)
+{
+  static u_char choice = 0;
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  
+  PROFILER_INQ();
+  do
+    {
+      switch (choice)
+	{
+	  case 0:
+	    gdbwrap_writereg(regNum, val, loc);
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  case 1:
+	    gdbwrap_writereg2(regNum, val, loc);
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  default:
+	    fprintf(stderr, "Write to registers not supported.\n");
+	    break;
+	}
+    } while (gdbwrap_cmdnotsup(loc));
+    
+  PROFILER_ROUTQ(0);
+
 }

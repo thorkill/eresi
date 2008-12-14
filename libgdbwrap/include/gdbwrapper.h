@@ -67,6 +67,9 @@ char             *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
 				     gdbwrap_t *desc);
 void             *gdbwrap_writememory(la32 linaddr, void *value,
 				      unsigned bytes, gdbwrap_t *desc);
+
+void             *gdbwrap_writememory2(la32 linaddr, void *value,
+				       unsigned bytes, gdbwrap_t *desc);
 void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
 char             *gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_ctrl_c(gdbwrap_t *desc);

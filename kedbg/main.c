@@ -36,6 +36,8 @@ static void     kedbg_register_command(void)
   revm_command_add(CMD_HEXA, cmd_disasm, revm_gethexa, 1, HLP_HEXA);
   revm_command_add(CMD_HEXA2, cmd_disasm, revm_gethexa, 1, HLP_HEXA);
   revm_command_add(CMD_IVT, cmd_kedbgprintivt, NULL, 0, HLP_QUIT);
+  revm_command_add(CMD_WRITE, cmd_write, revm_getvarparams, 1, HLP_WRITE);
+
 
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
