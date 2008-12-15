@@ -40,6 +40,12 @@ int	asm_init_arch(asm_processor *proc, int arch)
       return asm_init_mips(proc);
       break;
 #endif
+#if LIBASM_ENABLE_ARM
+      //#warning Enabling ARM support
+    case ASM_PROC_ARM:
+      return asm_init_arm(proc);
+      break;
+#endif
     default:
       return (0);
     }
@@ -77,6 +83,13 @@ int	asm_arch_register(asm_processor *proc, int machine)
   if (proc->type == ASM_PROC_MIPS)
     {
       asm_register_mips();
+      to_ret = 1;
+    }
+#endif
+#if LIBASM_ENABLE_ARM
+  if (proc->type == ASM_PROC_ARM)
+    {
+      asm_register_arm();
       to_ret = 1;
     }
 #endif

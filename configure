@@ -1039,7 +1039,9 @@ echo "	libaspect/*.c libe2dbg/*/*.c libaspect/include/*.h \\"  >> Makefile
 echo "	librevm/*/*.c librevm/include/*.h libe2dbg/include/*.h \\" >> Makefile
 echo "	libedfmt/*.c libedfmt/include/*.h \\"			>> Makefile
 echo "	libasm/src/arch/ia32/*.c libmjollnir/src/*.c \\"	>> Makefile
-echo "	libasm/include/*.h libui/*.c libui/include/*.h \\" 	>> Makefile
+echo "	libasm/src/arch/arm/*.c libasm/src/arch/sparc/*.c \\"	>> Makefile
+echo "	libasm/src/arch/mips/*.c libasm/include/*.h \\"		>> Makefile
+echo "	libui/*.c libui/include/*.h \\" 			>> Makefile
 echo "	libdump/include/*.h libmjollnir/include/*.h \\"		>> Makefile
 echo "  etrace/*.c evarista/*.c libstderesi/*/*.c \\"		>> Makefile
 echo "  libstderesi/include/*.h \\"                             >> Makefile
