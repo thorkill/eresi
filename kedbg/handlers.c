@@ -1,11 +1,49 @@
 #include "kedbg.h"
 #include "interface.h"
 
-/* /\**************** Handler for vectors ****************\/ */
-Bool            kedbg_isrealmode(void)
+
+/**
+ * This function emulates the "monitor r cr0" we can send in VMWare to
+ * check the cr0 register. However, when the server replies, the first
+ * 0 has to be discarded.
+ */
+static Bool     kedbg_isrealmodewmon(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  char          code[]="\x0f\x20\xc0\xeb\xfb";
+  char          code[] = "r cr0";
+  char          reply[50];
+  char          *ret;
+  uint8_t       i;
+
+  PROFILER_INQ();
+  ret = gdbwrap_remotecmd(loc, code);
+
+  if (gdbwrap_cmdnotsup(loc))
+    PROFILER_ROUTQ(FALSE);
+ 
+  /* We add +1 to discard the first char.*/
+  for (i = 0; ret[i] != '\0'; i++)
+    reply[i] = (char)gdbwrap_atoh(ret + BYTE_IN_CHAR * i + 1, 2);
+
+  /* Last bit is 0. */  
+  if (!(gdbwrap_atoh(reply + strlen(reply) - 2, 1) & 0x1))
+    {
+      kedbgworld.pmode = FALSE;
+      PROFILER_ROUTQ(TRUE);
+    }
+  else
+    {
+      kedbgworld.pmode = TRUE;
+      PROFILER_ROUTQ(FALSE);
+    }
+}
+
+
+/* This is absolutely not working. */
+static Bool     kedbg_isrealmodeinject(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  char          code[]="\x0f\x20\xc0";
   char          saved[4];
   ureg32        savedeip;
   Bool          ret;
@@ -13,17 +51,54 @@ Bool            kedbg_isrealmode(void)
   PROFILER_INQ();
   printf("Saved eip: %#x\n", loc->reg32.eip);
   savedeip = loc->reg32.eip;
-  kedbg_readmema(NULL, savedeip, saved, 2);
-  kedbg_writemem(NULL, savedeip - 3, code, strlen(code));
-  gdbwrap_stepi(loc);
+  printf("sizeof du code: %d\n", 3);
+  kedbg_readmema(NULL, savedeip, saved, 3);
+  kedbg_writemem(NULL, savedeip, code, strlen(code));
   gdbwrap_stepi(loc);
   gdbwrap_readgenreg(loc);
   printf("Value of eax: %#x\n", loc->reg32.eax);
   ret = (loc->reg32.eax & 0x1) ? TRUE : FALSE;
-  kedbg_writemem(NULL, loc->reg32.eip, saved, 2);  
+  kedbg_writemem(NULL, savedeip, saved, 3);
+  gdbwrap_writereg2(loc, 8, savedeip);
 
-  //  gdbwrap_writereg2(8, savedeip, loc);
+  PROFILER_ROUTQ(ret);
+}
+
+
+Bool           kedbg_isrealmode(void)
+{
+  static u_char choice = 0;
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  Bool          ret;
   
+  PROFILER_INQ();
+
+  /* If we are not running in a VM, we've nothing to do here. */
+  if (!kedbgworld.run_in_vm || kedbgworld.pmode)
+    PROFILER_ROUTQ(FALSE);
+ 
+  do
+    {
+      switch (choice)
+	{
+	  case 0:
+	    ret = kedbg_isrealmodewmon();
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  case 1:
+	    ret = kedbg_isrealmodeinject();
+	    if (gdbwrap_cmdnotsup(loc))
+	      choice++;
+	    break;
+
+	  default:
+	    fprintf(stderr, "Impossible to determine the mode.\n");
+	    break;
+	}
+    } while (gdbwrap_cmdnotsup(loc));
+
   PROFILER_ROUTQ(ret);
 }
 
@@ -51,9 +126,12 @@ void		*kedbg_bt_ia32(void *frame)
   la32          ptr = 0;
 
   PROFILER_INQ();
-  printf("Is in realmode ?\n");
-  kedbg_isrealmode();
-  kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, DWORD_IN_BYTE);
+  
+  if (kedbg_isrealmode())
+    kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, WORD_IN_BYTE);
+  else
+    kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, DWORD_IN_BYTE);
+  
   PROFILER_ROUTQ((void *)ptr);
 }
 
@@ -74,7 +152,10 @@ void            *kedbg_getret_ia32(void *frame)
   la32          ptr = 0;
 
   PROFILER_INQ();
-  kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
+  if (kedbg_isrealmode())
+    kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, WORD_IN_BYTE);
+  else
+    kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
   //  kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
@@ -86,7 +167,7 @@ static int      kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
 
   PROFILER_INQ();
   NOT_USED(f);
-  gdbwrap_simplesetbp(bp->addr, loc);
+  gdbwrap_simplesetbp(loc, bp->addr);
 
   PROFILER_ROUTQ(0);
 }
@@ -98,7 +179,7 @@ static int      kedbg_setbpwint3(elfshobj_t *f, elfshbp_t *bp)
 
   PROFILER_INQ();
   NOT_USED(f);
-  gdbwrap_setbp(bp->addr, bp->savedinstr, loc);
+  gdbwrap_setbp(loc, bp->addr, bp->savedinstr);
 
   PROFILER_ROUTQ(0);
 }
@@ -148,7 +229,7 @@ static int      kedbg_delbpwint3(elfshbp_t *bp)
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
-  gdbwrap_delbp(bp->addr, bp->savedinstr, loc);
+  gdbwrap_delbp(loc, bp->addr, bp->savedinstr);
 
   PROFILER_ROUTQ(0);
 }
@@ -159,7 +240,7 @@ static int      kedbg_simpledelbp(elfshbp_t *bp)
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
-  gdbwrap_simpledelbp(bp->addr, loc);
+  gdbwrap_simpledelbp(loc, bp->addr);
 
   PROFILER_ROUTQ(0);
 }
@@ -196,6 +277,13 @@ void            kedbg_print_reg(void)
   e2dbg_register_dump("ESP", reg->esp);
   e2dbg_register_dump("EBP", reg->ebp);
   e2dbg_register_dump("EIP", reg->eip);
+  e2dbg_register_dump("EFLAGS", reg->eflags);
+  e2dbg_register_dump("CS", reg->cs);
+  e2dbg_register_dump("DS", reg->ds);
+  e2dbg_register_dump("SS", reg->ss);
+  e2dbg_register_dump("ES", reg->es);
+  e2dbg_register_dump("FS", reg->fs);
+  e2dbg_register_dump("GS", reg->gs);
 
   PROFILER_OUTQ();
 }
@@ -214,16 +302,16 @@ void            kedbg_sigint(int sig)
 
 
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
-				void *buf, unsigned size)
+				void *buf, u_int size)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          *ret;
   char          *charbuf = buf;
-  unsigned      i;
+  u_int         i;
 
   PROFILER_INQ();
   NOT_USED(file);
-  ret = gdbwrap_readmemory(addr, size, loc);
+  ret = gdbwrap_readmemory(loc, addr, size);
 
   /* gdbserver sends a string, we need to convert it. Note that 2
      characters = 1 real Byte.*/
@@ -253,7 +341,7 @@ void            *kedbg_readmem(elfshsect_t *sect)
 
 
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
-			       unsigned size)
+			       u_int size)
 {
   static u_char choice = 0;
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -265,13 +353,13 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
       switch (choice)
 	{
 	  case 0:
-	    gdbwrap_writememory(addr, data, size, loc);
+	    gdbwrap_writememory(loc, addr, data, size);
 	    if (gdbwrap_cmdnotsup(loc))
 	      choice++;
 	    break;
 
 	  case 1:
-	    gdbwrap_writememory2(addr, data, size, loc);
+	    gdbwrap_writememory2(loc, addr, data, size);
 	    if (gdbwrap_cmdnotsup(loc))
 	      choice++;
 	    break;
@@ -376,13 +464,13 @@ int             kedbg_writereg(ureg32 regNum, la32 val)
       switch (choice)
 	{
 	  case 0:
-	    gdbwrap_writereg(regNum, val, loc);
+	    gdbwrap_writereg(loc, regNum, val);
 	    if (gdbwrap_cmdnotsup(loc))
 	      choice++;
 	    break;
 
 	  case 1:
-	    gdbwrap_writereg2(regNum, val, loc);
+	    gdbwrap_writereg2(loc, regNum, val);
 	    if (gdbwrap_cmdnotsup(loc))
 	      choice++;
 	    break;

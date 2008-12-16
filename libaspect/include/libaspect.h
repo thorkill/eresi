@@ -262,6 +262,7 @@ typedef  uint64_t       va64;
 #define LODWORD(_qw)    ((uint32)(_qw)) 
 #define QWORD(_hi, _lo) ((((uint64)(_hi)) << 32) | ((uint32)(_lo)))
 
+#define BYTE_IN_CHAR    2
 #define WORD_IN_BYTE    2        
 #define DWORD_IN_BYTE   4
 #define QWORD_IN_BYTE   8

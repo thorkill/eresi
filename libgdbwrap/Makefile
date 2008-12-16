@@ -37,7 +37,7 @@ all32:  $(OBJ)
 	$(CC) -shared $(NAME).o -o $(NAME).so
 
 client:
-	$(CC) -L. -l gdbwrap -o client
+	$(CC) $(CLIENT) $(CFLAGS32) $(LDFLAGS32) libgdbwrap.a -o client
 
 clean:
 	rm -f $(OBJ) $(OBJ) *~ *\# \#* .\#* 

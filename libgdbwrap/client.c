@@ -124,8 +124,6 @@ int main( int argc, char **argv )
 	gdbwrap_continue(desc);
       else if(!strncmp("dump", buffer,  4))
 	dumpreg(desc);
-      else if(!strncmp("vm", buffer, 2))
-	gdbwrap_vmwareinit(desc);
       else if(!strncmp("stepi", buffer, 5))
 	gdbwrap_stepi(desc);
       else if(!strncmp("signal", buffer, 5))
@@ -134,6 +132,8 @@ int main( int argc, char **argv )
 	gdbwrap_writereg2(6, 0x12345678, desc);
       else if(!strncmp("ship", buffer, 4))
 	gdbwrap_shipallreg(desc);
+      else if(!strncmp("cr0", buffer, 4))
+	printf("Value: %s\n", gdbwrap_remotecmd("r cr0", desc));
       else if(!strncmp("mem", buffer, 3))
 	{
 	  char *c;

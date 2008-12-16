@@ -1,4 +1,3 @@
-#include "revm.h"
 #include "libe2dbg.h"
 #include "libasm-int.h"
 #include "gdbwrapper.h"
@@ -33,9 +32,13 @@ typedef struct
   /* Offset for the bp (see cmd_kedbgcont). */
   u_char offset;
   Bool   interrupted;
+  Bool   run_in_vm;
+  Bool   pmode;
 } kedbgworld_t;
 
 extern          kedbgworld_t kedbgworld;
+void            kedbg_register_command(void);
+void            kedbg_register_vector(void);
 int             cmd_linkmap(void);
 int             e2dbg_linkmap_load(char *name);
 int             cmd_com1(void);

@@ -55,28 +55,26 @@ void             gdbwrap_close(gdbwrap_t *desc);
 void             gdbwrap_hello(gdbwrap_t *desc);
 void             gdbwrap_bye(gdbwrap_t *desc);
 void             gdbwrap_reason_halted(gdbwrap_t *desc);
-char             *gdbwrap_own_command(char *command, gdbwrap_t *desc);
+char             *gdbwrap_own_command(gdbwrap_t *desc, char *command);
 void             gdbwrap_test(gdbwrap_t *desc);
 gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
-void             gdbwrap_setbp(la32 linaddr, void *datasaved, gdbwrap_t *desc);
-void             gdbwrap_simplesetbp(la32 linaddr, gdbwrap_t *desc);
-void             gdbwrap_delbp(la32 linaddr, void *datasaved, gdbwrap_t *desc);
-void             gdbwrap_simpledelbp(la32 linaddr, gdbwrap_t *desc);
-char             *gdbwrap_readmemory(la32 linaddr, unsigned bytes,
-				     gdbwrap_t *desc);
-void             *gdbwrap_writememory(la32 linaddr, void *value,
-				      unsigned bytes, gdbwrap_t *desc);
-
-void             *gdbwrap_writememory2(la32 linaddr, void *value,
-				       unsigned bytes, gdbwrap_t *desc);
-void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
+void             gdbwrap_setbp(gdbwrap_t *desc, la32 linaddr, void *datasaved);
+void             gdbwrap_simplesetbp(gdbwrap_t *desc, la32 linaddr);
+void             gdbwrap_delbp(gdbwrap_t *desc, la32 linaddr, void *datasaved);
+void             gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr);
+char             *gdbwrap_readmemory(gdbwrap_t *desc, la32 linaddr, unsigned bytes);
+void             *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr, void *value,
+				      unsigned bytes);
+void             *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr, void *value,
+				       unsigned bytes);
+void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
 char             *gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_ctrl_c(gdbwrap_t *desc);
-void             gdbwrap_signal(int signal, gdbwrap_t *desc);
+void             gdbwrap_signal(gdbwrap_t *desc, int signal);
 void             gdbwrap_stepi(gdbwrap_t *desc);
-void             gdbwrap_writereg(ureg32 regNum, la32 val, gdbwrap_t *desc);
-void             gdbwrap_writereg2(ureg32 regNum, la32 val, gdbwrap_t *desc);
-void             gdbwrap_vmwareinit(gdbwrap_t *desc);
+void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
+void             gdbwrap_writereg2(gdbwrap_t *desc, ureg32 regNum, la32 val);
+char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 
 

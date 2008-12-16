@@ -7,7 +7,7 @@
 
 include ../config.h
 
-SRC			= main.c handlers.c cmd.c misc.c
+SRC			= main.c handlers.c cmd.c misc.c register.c
 OBJ			= $(SRC:.c=.o)
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
