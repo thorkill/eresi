@@ -124,7 +124,8 @@ int		revm_implicit(revmcmd_t *actual)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No file loaded", -1);
 
   /* We need to set it here since the CURRENT object can change */
-  asm_set_resolve_handler(world.curjob->proc, asm_do_resolve, world.curjob->curfile);
+  if (world.curjob->proc && world.curjob->curfile)
+    asm_set_resolve_handler(world.curjob->proc, asm_do_resolve, world.curjob->curfile);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
