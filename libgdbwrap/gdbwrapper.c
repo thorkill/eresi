@@ -25,7 +25,7 @@ static char          *gdbwrap_lastmsg(gdbwrap_t *desc)
 
 static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
 {
-  ASSERT(error != NULL);
+  ASSERT(desc != NULL && error != NULL);
 
   DEBUGMSG(printf("Treating error (encoded): %s\n", error));
 
@@ -191,6 +191,7 @@ Bool                 gdbwrap_erroroccured(gdbwrap_t *desc)
   return desc->erroroccured;
 }
 
+
 unsigned             gdbwrap_atoh(const char * str, unsigned size)
 {
   unsigned           i;
@@ -257,11 +258,10 @@ static char          *gdbwrap_make_message(gdbwrap_t *desc, const char *query)
 
 /**
  * This function performes a run-length decoding and writes back to
- * *dstpacket*, but no more than *maxsize* bytes. Actually, it blows
- * up if we try to write more packet :).
+ * *dstpacket*, but no more than *maxsize* bytes. 
  *
- * @param srcpacket:  the encoded packet.
- * @param maxsize:  the maximal size of the decoded packet.
+ * @param srcpacket: the encoded packet.
+ * @param maxsize:   the maximal size of the decoded packet.
  */
 static char          *gdbwrap_run_length_decode(char *dstpacket, const char *srcpacket,
 						unsigned maxsize)
@@ -274,16 +274,19 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
   uint8_t            numberoftimes;
   unsigned           iter;
   unsigned           strlenc;
+  unsigned           check;
     
   ASSERT(dstpacket != NULL && srcpacket != NULL &&
-	 strncmp(srcpacket, GDBWRAP_START_ENCOD, 1));
-  if (&*srcpacket != &*dstpacket)
+  	 srcpacket[0] != GDBWRAP_START_ENCODC);
+  if (srcpacket != dstpacket)
     strncpy(dstpacket, srcpacket, maxsize);
   encodestr   = strstr(dstpacket, GDBWRAP_START_ENCOD);
+  check = strlen(dstpacket);
   while (encodestr != NULL)
     {
       valuetocopy    = encodestr[-1];
       numberoftimes  = encodestr[1] - 29;
+      ASSERT((check += numberoftimes) < maxsize);
       strlenc        = strlen(encodestr);
       /* We move the string to the right, then set the bytes. We
 	 substract 2, because we have <number>*<char> where * and
@@ -314,8 +317,8 @@ static void         gdbwrap_populate_reg(gdbwrap_t *desc, char *packet)
 {
   const char        *nextpacket;
   char              *nextupacket;
-  char              packetsemicolon[50];
-  char              packetcolon[50];
+  char              packetsemicolon[MSG_BUF];
+  char              packetcolon[MSG_BUF];
   unsigned          packetoffset = 0;
 
   /* If a signal is received, we populate the registers, starting
@@ -368,7 +371,7 @@ static void          gdbwrap_check_ack(gdbwrap_t *desc)
 
   rval = recv(desc->fd, desc->packet, 1, 0);
   /* The result of the previous recv must be a "+". */
-  if (strncmp(desc->packet, GDBWRAP_COR_CHECKSUM, 1))
+  if (desc->packet != GDBWRAP_COR_CHECKSUMC)
     fprintf(stderr, "The server has NOT sent any ACK."
 	    "It probably does not follow exactly the gdb protocol (%s - %d).\n",
 	    desc->packet, rval);
@@ -598,10 +601,7 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
 	  *(&desc->reg32.eax + i) = regvalue;
 	  rec += 2 * DWORD_IN_BYTE;
 	}
-      printf("Remaining: %s - reg32.eflags: %x\n",
-	     rec + sizeof(gdbwrap_gdbreg32) / sizeof(ureg32),
-	     desc->reg32.eflags);
-      
+
       return &desc->reg32; 
     }
   else
@@ -633,6 +633,7 @@ void                 gdbwrap_setbp(gdbwrap_t *desc, la32 linaddr, void *datasave
   char               *ret;
   unsigned           atohresult;
 
+  ASSERT(desc != NULL && desc != datasaved);
   ret = gdbwrap_readmemory(desc, linaddr, 1);
   /* Fix: not clean. ATOH is not clean when returning an unsigned. */
   atohresult = gdbwrap_atoh(ret, 2 * 1);
@@ -643,7 +644,7 @@ void                 gdbwrap_setbp(gdbwrap_t *desc, la32 linaddr, void *datasave
 
 void                 gdbwrap_simplesetbp(gdbwrap_t *desc, la32 linaddr)
 {
-  char               packet[50];
+  char               packet[MSG_BUF];
 
   snprintf(packet, sizeof(packet), "%s%s%x%s%x", GDBWRAP_INSERTBP,
 	   GDBWRAP_SEP_COMMA, linaddr, GDBWRAP_SEP_COMMA, 0x1);
@@ -659,7 +660,7 @@ void                 gdbwrap_delbp(gdbwrap_t *desc, la32 linaddr, void *datasave
 
 void                 gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr)
 {
-  char               packet[50];
+  char               packet[MSG_BUF];
   
   snprintf(packet, sizeof(packet), "%s%s%x%s%x", GDBWRAP_REMOVEBP,
 	   GDBWRAP_SEP_COMMA, linaddr, GDBWRAP_SEP_COMMA, 0x1);
@@ -671,7 +672,7 @@ char                 *gdbwrap_readmemory(gdbwrap_t *desc, la32 linaddr,
 					 unsigned bytes)
 {
   char               *rec;
-  char               packet[50];
+  char               packet[MSG_BUF];
 
   snprintf(packet, sizeof(packet), "%s%x%s%x", GDBWRAP_MEMCONTENT,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes);
@@ -681,16 +682,18 @@ char                 *gdbwrap_readmemory(gdbwrap_t *desc, la32 linaddr,
 }
 
 
-void                 *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr, void *value,
-					  unsigned bytes)
+void                 *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr,
+					  void *value, unsigned bytes)
 {
-  char               packet[50];
   uint8_t            packetsize;
   char               *rec;
+  char               *packet = alloca(bytes + MSG_BUF);
 
-  snprintf(packet, sizeof(packet), "%s%x%s%x%s", GDBWRAP_MEMWRITE,
+  ASSERT(desc != NULL && value != NULL);
+  snprintf(packet, MSG_BUF, "%s%x%s%x%s", GDBWRAP_MEMWRITE,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes, GDBWRAP_SEP_COLON);
   packetsize = strlen(packet);
+  ASSERT(packetsize < MSG_BUF);
   /* GDB protocol expects the value we send to be a "Binary value", ie
      not converted to a char. */
   memcpy(packet + packetsize, value, bytes);
@@ -701,16 +704,17 @@ void                 *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr, void *v
 }
 
 
-void                 *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr, void *value,
-					   unsigned bytes)
+void                 *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr,
+					   void *value, unsigned bytes)
 {
-  char               packet[50];
+  char               *packet = alloca(bytes + MSG_BUF);
   uint8_t            packetsize;
   char               *rec;
 
-  snprintf(packet, sizeof(packet), "%s%x%s%x%s", GDBWRAP_MEMWRITE2,
+  snprintf(packet, MSG_BUF, "%s%x%s%x%s", GDBWRAP_MEMWRITE2,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes, GDBWRAP_SEP_COLON);
   packetsize = strlen(packet);
+  ASSERT(packetsize < MSG_BUF);
   /* GDB protocol expects the value we send to be a "Binary value", ie
      not converted to a char. */
   memcpy(packet + packetsize, value, bytes);
@@ -727,8 +731,9 @@ void                 *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr, void *
  */
 void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val)
 {
-  char               regpacket[50];
-  
+  char               regpacket[MSG_BUF];
+
+  ASSERT(desc != NULL);
   snprintf(regpacket, sizeof(regpacket), "%s%x=%x",
 	   GDBWRAP_WRITEREG, regNum, val);
   gdbwrap_send_data(desc, regpacket);
@@ -743,9 +748,13 @@ void                 gdbwrap_writereg2(gdbwrap_t *desc, ureg32 regNum, la32 val)
   unsigned           offset;
   char               locreg[700];
 
+  offset = 2 * regNum * sizeof(ureg32);
+
+  ASSERT(desc != NULL && (regNum < sizeof(gdbwrap_gdbreg32) / sizeof(ureg32)) &&
+	 offset + 2 * sizeof(ureg32) < desc->max_packet_size);
   reg = gdbwrap_readgenreg(desc);
   ret = gdbwrap_lastmsg(desc);
-  offset = 2 * regNum * sizeof(ureg32);
+  ASSERT(reg != NULL && ret != NULL);
 
   snprintf(locreg, sizeof(locreg), "%08x", gdbwrap_little_endian(val));
   memcpy(ret + offset, locreg, 2 * sizeof(ureg32));
@@ -762,13 +771,13 @@ char                 *gdbwrap_shipallreg(gdbwrap_t *desc)
 {
   gdbwrap_gdbreg32   savedregs;
   char               *ret;
-  gdbwrap_gdbreg32   *reg;
   char               locreg[700];
   uint8_t            i;
 
+  ASSERT(desc != NULL);
   memcpy(&savedregs, &desc->reg32, sizeof(gdbwrap_gdbreg32));
 
-  reg = gdbwrap_readgenreg(desc);
+  gdbwrap_readgenreg(desc);
   ret = gdbwrap_lastmsg(desc);
 
   /* We modify the 9 GPR only and we copy the rest from the gpr
@@ -776,6 +785,7 @@ char                 *gdbwrap_shipallreg(gdbwrap_t *desc)
   for (i = 0; i < 9; i++)
     snprintf(locreg + i * 2 * sizeof(ureg32), 2 * sizeof(ureg32) + 1,
 	     "%08x", gdbwrap_little_endian(*(&savedregs.eax + i)));
+  ASSERT(strlen(locreg) < desc->max_packet_size);
   memcpy(ret, locreg, strlen(locreg));
   snprintf(locreg, sizeof(locreg), "%s%s", GDBWRAP_WGENPURPREG, ret);
 
@@ -787,7 +797,8 @@ void                gdbwrap_ctrl_c(gdbwrap_t *desc)
 {
   u_char            sended = CTRL_C;
   int               rval;
-  
+
+  ASSERT(desc != NULL);
   desc->interrupted = TRUE;
   send(desc->fd, &sended, sizeof(u_char), 0);
   rval = recv(desc->fd, desc->packet, desc->max_packet_size, 0);
@@ -810,8 +821,9 @@ void                gdbwrap_ctrl_c(gdbwrap_t *desc)
 void                 gdbwrap_signal(gdbwrap_t *desc, int signal)
  {
    char              *rec;
-   char              signalpacket[50];
+   char              signalpacket[MSG_BUF];
 
+   ASSERT(desc != NULL);
    snprintf(signalpacket, sizeof(signalpacket), "%s;C%.2x",
 	    GDBWRAP_CONTINUEWITH, signal);
    rec = gdbwrap_send_data(desc, signalpacket);
@@ -822,6 +834,7 @@ void                 gdbwrap_stepi(gdbwrap_t *desc)
 {
   char               *rec;
 
+  ASSERT(desc != NULL);
   rec = gdbwrap_send_data(desc, GDBWRAP_STEPI);
 
   if (gdbwrap_is_active(desc))
@@ -839,12 +852,13 @@ void                 gdbwrap_stepi(gdbwrap_t *desc)
  **/
 char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 {
-  char              signalpacket[50];
-  char              cmdcpy[50];
+  char              signalpacket[MSG_BUF];
+  char              cmdcpy[MSG_BUF];
   char              *ret;
   uint8_t           i;
   uint8_t           rval;
 
+  ASSERT(desc != NULL && cmd != NULL);
   /* We jump 2 in 2 chars, since 1B = 2chars. */
   for (i = 0; i < sizeof(cmdcpy) && cmd[i] != GDBWRAP_NULL_CHAR; i++)
     snprintf(cmdcpy + BYTE_IN_CHAR * i, BYTE_IN_CHAR + sizeof(GDBWRAP_NULL_CHAR),
