@@ -5,5 +5,7 @@ int     asm_arm_sbc(asm_instr * ins, u_char * buf, u_int len,
 {
   LIBASM_PROFILE_FIN();
 
+  ins->instr = ASM_ARM_SBC;
+
   LIBASM_PROFILE_FOUT(4);
 }

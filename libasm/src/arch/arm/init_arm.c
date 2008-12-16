@@ -99,11 +99,11 @@ int     asm_init_arm(asm_processor *proc)
 
   LIBASM_PROFILE_FIN();
   
-  /* proc->instr_table = arm_instr_list; TODO: create the list */
+  proc->instr_table = arm_instr_list;
   /* proc->resolve_immediate = asm_resolve_arm; TODO: create this function */
   proc->resolve_data = 0;
   proc->fetch = asm_fetch_arm;
-  /*proc->display_handle = asm_display_instr_arm; TODO: create this function */
+  proc->display_handle = asm_arm_display_instr;
   proc->type = ASM_PROC_ARM;
   
   /*

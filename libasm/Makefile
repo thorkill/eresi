@@ -105,9 +105,9 @@ endif
 ifeq ($(LIBASM_ENABLE_ARM), 1)
 PACKED_ARCH += packed_arm
 SRCS_libasm += 	src/arch/arm/init_arm.c	\
-		src/arch/arm/register_arm.c	#\
-		#src/arch/sparc/tables_sparc.c	\
-		#src/arch/sparc/output_sparc.c	\
+		src/arch/arm/register_arm.c	\
+		src/arch/arm/tables_arm.c	\
+		src/arch/arm/output_arm.c	#\
 		#src/arch/sparc/sparc_convert.c
 ifeq ($(LIBASM_PACKED_HANDLERS),1)
 $(info ARM Packed)
