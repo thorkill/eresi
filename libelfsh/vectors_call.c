@@ -488,7 +488,7 @@ int		elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   dim[0] = ostype;
   dim[1] = iotype;
   fct = aspect_vectors_select(mem, dim);
-  ret = fct(addr, buf, size);
+  ret = fct(file, addr, buf, size);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

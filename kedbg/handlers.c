@@ -345,9 +345,9 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
 {
   static u_char choice = 0;
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
-  PROFILER_INQ();
+
   NOT_USED(file);
+  PROFILER_INQ();
     do
     {
       switch (choice)
