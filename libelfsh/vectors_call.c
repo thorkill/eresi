@@ -463,7 +463,7 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
 int		elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
 {
   int		ret;
-  u_int         dim[4];
+  u_int         dim[2];
   vector_t      *mem;
   int          (*fct)();
   u_char        archtype;
@@ -485,9 +485,8 @@ int		elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "READMEM handler inexistant for this ARCH/OS", NULL);
   mem = aspect_vector_get(ELFSH_HOOK_WRITEMEM);
-  dim[0] = archtype;
-  dim[1] = ostype;
-  dim[2] = iotype;
+  dim[0] = ostype;
+  dim[1] = iotype;
   fct = aspect_vectors_select(mem, dim);
   ret = fct(addr, buf, size);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);

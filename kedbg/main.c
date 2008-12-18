@@ -249,6 +249,7 @@ static int      kedbg_main(int argc, char **argv)
   revm_set_prompt(kedbg_create_prompt);
 
   /* Overwrite of some commands. */
+  eresi_commands_init();
   kedbg_register_command();
   hash_init(&e2dbgworld.threads, "threads", 5, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp, "breakpoints", 51, ASPECT_TYPE_UNKNOW);

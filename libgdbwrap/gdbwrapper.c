@@ -371,7 +371,7 @@ static void          gdbwrap_check_ack(gdbwrap_t *desc)
 
   rval = recv(desc->fd, desc->packet, 1, 0);
   /* The result of the previous recv must be a "+". */
-  if (desc->packet != GDBWRAP_COR_CHECKSUMC)
+  if (desc->packet[0] != GDBWRAP_COR_CHECKSUMC)
     fprintf(stderr, "The server has NOT sent any ACK."
 	    "It probably does not follow exactly the gdb protocol (%s - %d).\n",
 	    desc->packet, rval);
