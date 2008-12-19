@@ -449,11 +449,9 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff,
 	  tmpbuff  = elfsh_readmem(parent);
 	  tmpbuff += vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr);
 	}
-      
-#if defined(KERNSH)
-      if (elfsh_is_runtime_mode())
+
+      if (kernsh_is_present() && elfsh_is_runtime_mode())
 	parent->parent->rhdr.base = 0;
-#endif
       
       tmpbuff += index * sizeof(eresi_Addr);
       loff     = * (eresi_Addr *) tmpbuff;

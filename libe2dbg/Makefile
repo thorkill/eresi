@@ -54,7 +54,7 @@ endif
 
 $(DBGNAME32O):
 			@$(CC) -shared $(COBJ32) $(EXTRAOBJ32) $(UOBJ32) $(LDFLAGS32) \
-			$(KERNSHLIB32) -o $(DBGNAME32).so
+			-o $(DBGNAME32).so
 			@$(AR) $(DBGNAME32).a $(COBJ32) $(UOBJ32) $(EXTRAOBJ32)
 			@$(RANLIB) $(DBGNAME32).a
 			@$(LD) -r $(COBJ32) $(EXTRAOBJ32) $(UOBJ32) -o $(DBGNAME32O)
@@ -72,7 +72,7 @@ mod64			:
 
 $(DBGNAME64O)			:
 			@$(CC) -shared $(COBJ64) $(EXTRAOBJ64) $(UOBJ64) $(LDFLAGS64) \
-			$(KERNSHLIB64) -o $(DBGNAME64).so
+			-o $(DBGNAME64).so
 			@$(AR) $(DBGNAME64).a $(OBJ64)
 			@$(RANLIB) $(DBGNAME64).a
 			@$(LD) -r $(OBJ64) $(EXTRAOBJ64) -o $(DBGNAME64O)

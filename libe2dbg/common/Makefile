@@ -23,7 +23,7 @@ CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
-			-I../../libetrace/include/ $(KERNSHINCINC) $(KERNSH)     \
+			-I../../libetrace/include/			         \
 			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT) $(EXTRACFLAGS) \
 			-DERESI32
 
@@ -34,7 +34,7 @@ CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I../../libui/include/ -I../../libmjollnir/include/ 	 \
 			-I../../libaspect/include -I../../librevm/include/	 \
 			-I../../libedfmt/include/ -I../../liballocproxy/include/ \
-			-I../../libetrace/include $(KERNSHINC) $(KERNSH)         \
+			-I../../libetrace/include				 \
 			-DE2DBG_PRESENT  -DE2DBG_INTERN $(ASMOPT) $(EXTRACFLAGS) \
 			-DERESI64
 
@@ -50,6 +50,7 @@ clean		       :
 		       @$(RM) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
 
 fclean		       : clean
+			@$(RM) *.o
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

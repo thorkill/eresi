@@ -16,24 +16,22 @@ RM			= rm -f
 NAME32			= ../std-elf.32.o
 NAME64			= ../std-elf.64.o
 
-CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)        \
+CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT)		  \
 			 -I../../libelfsh/include/ -I../../libetrace/include/     \
 			 -I../../libdump/include/ -I../../libasm/include/         \
 			 -I/usr/pkg/include/  -I../../libui/include/ $(BUILDOP)   \
 			 -I../../libmjollnir/include/ -I../../libaspect/include/  \
 			 -I../../libedfmt/include/ -I../../librevm/include/	  \
-			 $(KERNSHINCINC) $(KERNSH)				  \
-			 $(STATOPT2) $(ASMOPT) -DERESI32 		  \
+			 $(STATOPT2) $(ASMOPT) -DERESI32			  \
 			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
-CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT) 	  \
+CFLAGS64		+= -fPIC -g3 -Wall -I../include $(DYNOPT)		  \
 			 -I../../libelfsh/include/ -I../../libetrace/include/	  \
 			 -I../../libdump/include/ -I../../libasm/include/         \
 			 -I/usr/pkg/include/  -I../../libaspect/include/          \
 			 -I../../libui/include/ -I../../libmjollnir/include/      \
 			 -I../../libedfmt/include/ -I../../librevm/include/	  \
-			 $(KERNSHINCINC) $(KERNSH)				  \
-			 $(STATOPT2) $(ASMOPT) -DERESI64 $(BUILDOP) \
+			 $(STATOPT2) $(ASMOPT) -DERESI64 $(BUILDOP)	          \
 			-I../../e2dbg/include/ $(NCURSESLNOPT) $(READLNOPT)
 
 all			: all32 all64

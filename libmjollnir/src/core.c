@@ -91,12 +91,8 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 	  sect = elfsh_get_parent_section(sess->cur->obj, vaddr + curr, &off);
 	  restlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
 	  eos = (restlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
-
 	  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
-	    {
-	      XREALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, ptr, curlen + restlen, -1);
-	    }
-
+	    XREALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, ptr, curlen + restlen, -1);
 	  curlen += restlen;
 	  ptr = elfsh_readmema(sess->cur->obj, vaddr + curr, ptr + curr, curlen - curr);
 	  vaddr += curr;

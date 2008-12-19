@@ -71,10 +71,6 @@
   extern char **environ;
 #endif
 
-#if defined(KERNSH)
-#include "libkernsh.h"
-#endif
-
 /* Disassembling engine */
 #include <libasm.h>
  

@@ -72,7 +72,7 @@ fclean: clean
 	@$(MAKE) -C common fclean
 	@$(MAKE) -C kernel fclean
 	@$(MAKE) -C user   fclean
-	@$(RM) *.a *.so
+	@$(RM) *.a *.so *.o
 
 #tags:
 #	@$(ETAGS) -a arch/i386/*.c include/*.h engine/*.c sample/*.c
