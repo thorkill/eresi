@@ -20,6 +20,8 @@ static u_char aspect_initialized = 0;
 
 static u_char called_ctors = 0;
 static u_char dbgpresent   = 0;
+static u_char kshpresent   = 0;
+static u_char kdbgpresent  = 0;
 
 /**
  * @brief Count the number of constructors already called in the framework (update internal variable)
@@ -77,6 +79,46 @@ u_char		e2dbg_presence_get()
   return (dbgpresent); 
 }	
 
+
+/**
+ * @brief Set kernsh presence flag
+ */
+void kernsh_present_set()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  kshpresent = 1;
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+/**
+ * @brief Get presence of kernsh
+ * @return 1 on success, 0 on error
+ */
+int kernsh_is_present()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, kshpresent);
+}
+
+/**
+ * @brief Set presence of kedbg
+ */
+void kedbg_present_set()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  kdbgpresent = 1;
+  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
+}
+
+/**
+ * @brief Get presence of kedbg
+ * @return 1 on success, 0 on error
+ */
+int kedbg_is_present()
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, kdbgpresent);
+}
 
 /** Are we in kernel mode */
 u_char		e2dbg_kpresence_get()

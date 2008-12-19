@@ -82,7 +82,7 @@ int             cmd_kedbgcont(void)
       name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
       instr  = alloca(20);
       kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
-      revm_instr_display(-1, 0, loc->reg32.eip, 0, 20, name, off, instr);
+      revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
     }
 
   if (!gdbwrap_is_active(loc))

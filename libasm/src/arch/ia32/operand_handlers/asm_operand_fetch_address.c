@@ -36,8 +36,6 @@ int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode,
   operand->content = ASM_OP_VALUE;
   operand->ptr = opcode;
   operand->imm = 0;
-  //operand->len = 4;
-  //memcpy(&operand->imm, opcode, 4);
   len = asm_proc_opsize(ins->proc) ? 2 : 4;
   operand->len = len;
   memcpy(&operand->imm, opcode, len);

@@ -384,7 +384,7 @@ void			e2dbg_do_breakpoint()
 		 (eresi_Addr) parent, parent->name, name, sect->name, off);
 #endif
 
-	  revm_instr_display(-1, 0, *pc, 0, 20, name, off, (char *) *pc);
+	  revm_instr_display(-1, *pc, 0, 20, name, off, (char *) *pc);
 	  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 	  if (!e2dbgworld.stoppedthread->trace)
 	    e2dbg_entry(NULL);

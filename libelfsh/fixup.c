@@ -32,7 +32,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   elfsh_Sym	newent;
   elfsh_Sym	*actual;
   eresi_Addr	startaddr;
-  u_int		index;
+  int		index;
   char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -82,19 +82,23 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 	{
 	  actual->st_size = list->shdr->sh_size;
 	  str = elfsh_get_symbol_name(file, actual);
+
 	  if (str == NULL || !*str)
-	    actual->st_name = elfsh_insert_in_strtab(file, list->name);
+	    {
+	      actual->st_name = elfsh_insert_in_strtab(file, list->name);
+	      str = list->name;
+	    }
 	}
     }
 
   /* Fixup all 0 length non-section-typed symbols */
   actual = symtab->data;
   for (index = 0; 
-       index < symtab->shdr->sh_size / sizeof(elfsh_Sym); 
+       index < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym)); 
        index++, actual++)
     if (elfsh_get_symbol_type(actual) != STT_BLOCK && 
 	actual->st_value && !actual->st_size && 
-	index + 1 < symtab->shdr->sh_size / sizeof(elfsh_Sym))
+	index + 1 < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym)))
       actual->st_size = actual[1].st_value - actual->st_value;
 
   /* Fixup _start symbol value [and create it if unexistant] */
@@ -175,7 +179,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 		      "Cannot find RELPLT", NULL);
 
   /* On Sparc, some of the first entries are reserved */
-  if (FILE_IS_SPARC(plt->parent) && off < elfsh_get_first_pltentsz(file))
+  if (FILE_IS_SPARC(plt->parent) && off < (u_int) elfsh_get_first_pltentsz(file))
     {
 
 #if __DEBUG_COPYPLT__

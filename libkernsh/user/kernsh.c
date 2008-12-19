@@ -539,29 +539,3 @@ int kernsh_raw_read(elfshobj_t *file,  u_int foffset, void *dest_buff, int len)
     }
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Mode is wrong", -1);
 }
-
-
-
-/**
- * @brief Set kernsh's present
- */
-void kernsh_present_set()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  libkernshworld.present = 1;
-
-  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
-}
-
-/**
- * @brief Get kernsh's present
- * @return 1 on success, 0 on error
- */
-int kernsh_is_present()
-{
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-                (libkernshworld.present == 1));
-}

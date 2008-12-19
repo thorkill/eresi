@@ -1,14 +1,14 @@
 /**
 ** @file disasm.c
-** 
-** Started on  Fri Nov  2 15:41:34 2001 jfv
-** $Id: disasm.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** @brief Implement disassembling and hexadumping in ERESI
 **
+** Started on  Fri Nov  2 15:41:34 2001 jfv
+** $Id
 */
 #include "libstderesi.h"
 
 
-static revmlist_t* second = NULL;
+static revmlist_t	*second = NULL;
 
 
 /**
@@ -19,8 +19,7 @@ static revmlist_t* second = NULL;
  * @param roffset
  * @return
 */
-char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, 
-			      elfsh_SAddr *roffset)
+char		*revm_resolve(elfshobj_t *file, eresi_Addr addr, elfsh_SAddr *roffset)
 {
   int		index;
   elfshobj_t	*actual;
@@ -191,10 +190,8 @@ void		asm_do_resolve(void *data, eresi_Addr vaddr,
  * @param nindex
  * @param buff
  */
-int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr, 
-				   u_int foffset, u_int size, char *name, 
-				   u_int nindex, char *buff)
-			      
+int		revm_instr_display(int fd, eresi_Addr vaddr, u_int foffset, u_int size, 
+				   char *name, u_int symoff, char *buff)
 {
   char		*s;
   char		buf[256];
@@ -206,24 +203,22 @@ int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
   char		c1[2];
   char		c2[2];
   u_int		strsz;
-  u_int		delta;
   int		err;
-
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!buff)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", (-1));    
   revm_proc_init();
-
+  err = 0;
+  
   /* Print the instr. itself : vaddr and relative symbol resolution */
-  ret = asm_read_instr(&ptr, (u_char *) buff + index, size - index + delta, 
-		       world.curjob->proc);
+  ret = asm_read_instr(&ptr, (u_char *) buff, size, world.curjob->proc);
   if (ret == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Failed to read instruction", ret);
+		 "Failed to read instruction", ESTD_DISASM_FAILED);
 
-  s = (!ret ? "(bad)" : 
-       asm_display_instr_att(&ptr, (vaddr ? vaddr + index : 0)));
+  s = (!ret ? "(bad)" : asm_display_instr_att(&ptr, vaddr));
 
   /* Libasm test */
   if (fd == -1)
@@ -233,20 +228,20 @@ int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
       if (world.state.revm_quiet)
 	{
 	  snprintf(buf, sizeof(buf), " %s %s + %s", 
-		   revm_coloraddress(XFMT, vaddr + index), 
+		   revm_coloraddress(XFMT, vaddr), 
 		   revm_colorstr(name),
-		   revm_colornumber("%u", nindex));
+		   revm_colornumber("%u", symoff));
 	  size = snprintf(logbuf, BUFSIZ, "%-40s %-30s ", 
 			  buf, revm_colorinstr(s));
 	}
       else
 	{
 	  size = snprintf(buf, sizeof(buf), " %s [%s %s] %s + %s", 
-			  revm_coloraddress(XFMT, vaddr + index), 
+			  revm_coloraddress(XFMT, vaddr), 
 			  revm_colorfieldstr("foff:"), 
-			  revm_colornumber("%u", foffset + index), 
+			  revm_colornumber("%u", foffset), 
 			  revm_colorstr(name), 
-			  revm_colornumber("%u", nindex));
+			  revm_colornumber("%u", symoff));
 	  strsz = strlen(s);
 	  size = snprintf(logbuf, BUFSIZ, "%-*s %-*s ", 
 			  (size > 95 ? 125 : 
@@ -269,8 +264,8 @@ int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
       if (!world.state.revm_quiet)
 	for (idx_bytes = 0; idx_bytes < (u_int) ret; idx_bytes++)
 	  {
-	    c1[0] = base[(buff[index + idx_bytes] >> 4) & 0x0F];
-	    c2[0] = base[buff[index + idx_bytes] & 0x0F];
+	    c1[0] = base[(buff[idx_bytes] >> 4) & 0x0F];
+	    c2[0] = base[buff[idx_bytes] & 0x0F];
 	    c1[1] = c2[1] = 0x00;
 	    size += snprintf(logbuf + size, sizeof(logbuf) - size, "%s%s ", 
 			     revm_colorfieldstr(c1), 
@@ -309,8 +304,7 @@ int		revm_instr_display(int fd, u_int index, eresi_Addr vaddr,
  * @return Always 0.
  */
 int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, 
-				  u_int index, u_int size, u_int off, char *buff, 
-				  u_int foffset)
+				  u_int size, u_int symoff, char *buff, u_int fileoff)
 				  
 {
   eresi_Addr	vaddr2;
@@ -324,15 +318,15 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
   u_int		loff;  
   char		*pStr;
   char		base[16] = "0123456789ABCDEF";
+  u_int		curoff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);      
    if (name == NULL || !*name)
      name = ELFSH_NULL_STRING;
    vaddr2 = vaddr;
-   curidx = 0;
-
+   curoff = curidx = 0;
    
-   while (index < size && size > 0)
+   while (curoff < size && size > 0)
      {
        
        /* Take care of quiet mode */
@@ -341,7 +335,7 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
 	   sprintf(buf, " %s %s + %s", 
 		   revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
 		   revm_colorstr(name), 
-		   revm_colornumber("%u", (parent ? index : index + off)));
+		   revm_colornumber("%u", symoff));
 	   snprintf(logbuf, BUFSIZ - 1, "%-40s ", buf);
 	   revm_output(logbuf);
 	 }
@@ -350,9 +344,9 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
 	   sprintf(buf, " %s [%s %s] %s + %s", 
 		   revm_coloraddress(AFMT, (eresi_Addr) vaddr2), 
 		   revm_colorfieldstr("foff:"),
-		   revm_colornumber(DFMT, foffset + curidx), 
+		   revm_colornumber(DFMT, fileoff + curidx), 
 		   revm_colorstr(name), 
-		   revm_colornumber("%u", (parent ? index : index + off)));
+		   revm_colornumber("%u", symoff));
 	   snprintf(logbuf, BUFSIZ - 1, "%-*s", 60 + revm_color_size(buf), buf);
 	   revm_output(logbuf);
 	 }
@@ -364,7 +358,7 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
        for (loff = 0; loff < ret; loff++)
 	 {
 	   c1[0] = c2[0] = ' ';
-	   if (index + loff < size)
+	   if (curoff + loff < size)
 	     {
 	       c1[0] = base[(buff[curidx + loff] >> 4) & 0x0F];
 	       c2[0] = base[(buff[curidx + loff] >> 0) & 0x0F];
@@ -382,7 +376,7 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
        for (loff = 0; loff < ret; loff++)
 	 {
 	   c1[0] = buff[curidx + loff];
-	   pStr = (index + loff >= size ? " " : 
+	   pStr = (curoff + loff >= size ? " " : 
 		   (PRINTABLE(buff[curidx + loff]) ? c1 : "."));
 	   if (strlen(tmp) + 1 < BUFSIZ)
 	     strcat(tmp, pStr);
@@ -391,13 +385,14 @@ int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
        err = revm_output(revm_colorstr(tmp));
        revm_endline();
        revm_output("\n");
-       index += ret;
+       symoff += ret;
        vaddr2 += ret;
        curidx += ret;
+       curoff += ret;
        
        /* If we have requested to stop the output */
        if (err < 0)
-	 PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+	 PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, err);
      }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -433,12 +428,13 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff,
   elfsh_SAddr	idx_bytes;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);      
+
   for (index = 0; index * sizeof(eresi_Addr) < sym->st_size; index++)
     {
       
-      /* Do not print more than 250 entries at a time */
+      /* Do not print more than 192 bytes at a time */
       /* Use an offset for more dumping */
-      if (index >= 250)
+      if (index * sizeof(eresi_Addr) >= ESTD_MAXREAD_SIZE)
 	{
 	  revm_output("-- symbol size is bigger (use an offset) --\n");
 	  break;
@@ -539,8 +535,8 @@ int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff,
  * @return
  */
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
-				    u_int off, u_int foffset, eresi_Addr vaddr, 
-				    char *name, char otype, u_char addbase)
+				    u_int reqoff, u_int symoff, u_int foffset, 
+				    eresi_Addr vaddr, char *name, char otype, u_char addbase)
 {
   char		*buff;
   u_int		index;
@@ -548,12 +544,21 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   int		value;
   int		nbrinstr;
   eresi_Addr	base;
+  eresi_Addr	wheretoread;
+  u_int		remain;
+  u_int		readnow;
+  char		*bufarg;
+  u_int		readsz;
+  eresi_Addr	startaddr;
+#if __DEBUG_DISASM__
+  char		logbuf[BUFSIZ];
+#endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (!parent && elfsh_is_static_mode())
+  if (!parent && (elfsh_is_static_mode() || world.state.revm_mode != REVM_STATE_EMBEDDED))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "parent section is NULL", -1);
+		      "Parent section is NULL", -1);
 
   /* Special case if the symbol is a plt entry */
   if (parent && sym && elfsh_is_pltentry(parent->parent, sym) == 1 && 
@@ -562,9 +567,9 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 
 #if __DEBUG_DISASM__
   snprintf(logbuf, BUFSIZ - 1, 
-	   "[debug:revm_object_display] %s off(%u) size(%u) vaddr(%08X) "
+	   "[debug:revm_object_display] %s off(%u) size(%u) vaddr("XFMT") "
 	   "foffset(%u), parent(%p, %s) \n",
-	   name, off, size, vaddr, foffset, parent, 
+	   name, reqoff, size, vaddr, foffset, parent, 
 	   (parent ? parent->name : "UNK"));
   revm_output(logbuf);
 #endif
@@ -572,23 +577,33 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
   /* Get the pointer on relevant data */
   if (parent)
     {
-      buff  = elfsh_readmem(parent);
-      if (elfsh_is_static_mode())
-	buff += (vaddr - parent->shdr->sh_addr);
-      else
-	buff += (vaddr - (parent->parent->rhdr.base + parent->shdr->sh_addr));
-      index = off;
+      wheretoread = parent->shdr->sh_addr;
+      wheretoread += (vaddr - parent->shdr->sh_addr); 
+      index = reqoff;
+      wheretoread += reqoff; 
+      readnow = MJR_MIN(size, ESTD_MAXREAD_SIZE);
+      bufarg = NULL;
+      if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
+	{
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, buff, readnow, -1);
+	  bufarg = buff;
+	}
+      buff = elfsh_readmema(parent->parent, wheretoread, bufarg, readnow);
+      remain = (size > ESTD_MAXREAD_SIZE ? size - ESTD_MAXREAD_SIZE : 0);
     }
   else
     {
+      wheretoread = vaddr;
       buff = (char *) vaddr;
+      bufarg = NULL;
+      readnow = size;
+      remain = 0;
       index = 0;
     }
 
-#if defined(KERNSH)
-  if (elfsh_is_runtime_mode())
+  /* If we are in the kernel shell, it will do its own base address management */
+  if (kernsh_is_present() && elfsh_is_runtime_mode())
       parent->parent->rhdr.base = 0;
-#endif  
 
   /* Filter requests on void sections (ex: bss when not inserted in file) */
   if (elfsh_is_static_mode() && (!parent || !parent->data))
@@ -612,35 +627,71 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 
       /* We want assembly and hexa */
     case REVM_VIEW_DISASM:
-#if defined(KERNSH)
+
       if (!kernsh_is_present() && elfsh_is_runtime_mode() && addbase)
 	vaddr += parent->parent->rhdr.base;
-#else
-      if (elfsh_is_runtime_mode() && parent && addbase)
-	vaddr += parent->parent->rhdr.base;
-#endif
 
       base = (elfsh_is_runtime_mode() ? parent->parent->rhdr.base : 0);
-      idx_bytes = (parent && sym && sym->st_value ? 
-		   vaddr + index - sym->st_value - base : index);
+      idx_bytes = symoff + index;
+      vaddr += index;
+      foffset += index;
 
-      for (nbrinstr = 0; nbrinstr < size && size > 0; nbrinstr++)
+      do
 	{
-	  value = revm_instr_display(-1, index, vaddr, foffset, size, name,
-				     idx_bytes, buff);
-	  if (value <= 0)
+	  value = 0;
+	  if (!size)
 	    break;
-	  index += value;
-	  idx_bytes += value;
+	  for (startaddr = vaddr, readsz = nbrinstr = 0; 
+	       nbrinstr < size && (vaddr - startaddr) < readnow - 20; 
+	       nbrinstr++)
+	    {
+	      value = revm_instr_display(-1, vaddr, foffset, readnow, name, idx_bytes, buff + readsz);
+	      if (value <= 0)
+		break;
+	      readsz += value;
+	      vaddr += value;
+	      index += value;
+	      idx_bytes += value;
+	      foffset += value;
+	    }
+	  if (value <= 0 || !remain)
+	    break;
+	  wheretoread += readsz;
+	  readnow = MJR_MIN(remain, ESTD_MAXREAD_SIZE);
+	  buff = elfsh_readmema(parent->parent, wheretoread, bufarg, readnow);
+	  remain -= readsz;
 	}
+      while (1);
       break;
 
   /* We want hexa + ascii output of the data */
     case REVM_VIEW_HEX:
-      revm_hexa_display(parent, name, vaddr, index, size, off, buff, foffset);
+      vaddr += index;
+      foffset += index;
+      do
+	{
+	  value = revm_hexa_display(parent, name, vaddr, readnow, symoff + index, buff, foffset);
+	  if (value < 0 || !remain)
+	    break;
+	  wheretoread += readnow;
+	  readnow = MJR_MIN(remain, ESTD_MAXREAD_SIZE);
+	  buff = elfsh_readmema(parent->parent, wheretoread, bufarg, readnow);
+	  remain -= readnow;
+	  vaddr += readnow;
+	  index += readnow;
+	  foffset += readnow;
+	}
+      while (1);
     }
-  
+
+  if (parent && elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
+    XFREE(__FILE__, __FUNCTION__, __LINE__, buff);  
   revm_output("\n");
+
+  if (value == ESTD_DISASM_FAILED)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		      "Failed to disassemble", -1);
+    
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -698,7 +749,7 @@ int		revm_section_display(elfshsect_t	*s,
 	
 	symname = elfsh_get_symbol_name(s->parent, actual + index);
 	foff    = s->shdr->sh_offset + actual[index].st_value - s->shdr->sh_addr;
-	err     = revm_object_display(s, actual + index, size, re->off, foff,
+	err     = revm_object_display(s, actual + index, size, re->off, 0, foff,
 				      base + actual[index].st_value, symname, 
 				      re->otype, 0);
 	
@@ -716,7 +767,7 @@ int		revm_section_display(elfshsect_t	*s,
       else
 	size = s->shdr->sh_size;
       actual = elfsh_get_symbol_by_name(s->parent, name);
-      if (revm_object_display(s, actual, size, re->off, s->shdr->sh_offset, 
+      if (revm_object_display(s, actual, size, re->off, 0, s->shdr->sh_offset, 
 			      s->shdr->sh_addr, name, re->otype, 1) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Unable to display section data", -1);
@@ -847,9 +898,8 @@ int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
 
       /* Display matched object */
       foff = elfsh_get_foffset_from_vaddr(file, sym[index].st_value);
-      if (revm_object_display(s, sym + index, actual->size, actual->off, foff,
-			      base + sym[index].st_value, name, 
-			      actual->otype, 0) == -1)
+      if (revm_object_display(s, sym + index, actual->size, actual->off, 0, foff,
+			      base + sym[index].st_value, name, actual->otype, 0) == -1)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			  "Error while displaying matched object", -1);
       
@@ -884,6 +934,7 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
   u_int		matchs;
   elfshsect_t	*s;
   u_int		foff;
+  int		err;
 
 #if __DEBUG_DISASM__
   char		logbuf[BUFSIZ];
@@ -917,7 +968,8 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No matching symbol for offset", -1);
 
-  actual->off += off;
+  //actual->off += off;
+
   if (!actual->size)
     actual->size = elfsh_get_symbol_size(sym);
   else
@@ -943,8 +995,11 @@ int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
   else if (!actual->size)
     actual->size = s->shdr->sh_size;
 
-  revm_object_display(s, sym, actual->size, actual->off, foff,
-		      vaddr, name, actual->otype, 0);
+  err = revm_object_display(s, sym, actual->size, actual->off, off,
+			    foff, vaddr, name, actual->otype, 0);
+  if (err < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to display object", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -985,7 +1040,7 @@ int		revm_match_find(elfshobj_t *file)
 	  err = revm_match_special(file, expr->value->immed_val.ent, actual);
 	  if (err < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Unable to match address in variable", -1);
+			 "Failed analyzing address from eresi variable", -1);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 
@@ -998,7 +1053,7 @@ int		revm_match_find(elfshobj_t *file)
 	  err = revm_match_special(file, vaddr, actual);
 	  if (err < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Unable to match virtual address", -1);
+			 "Failed to analyze at virtual address", -1);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
   
@@ -1013,7 +1068,7 @@ int		revm_match_find(elfshobj_t *file)
 	  err = revm_match_special(file, vaddr, actual);
 	  if (err < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			 "Unable to match file offset", -1);
+			 "Failed to analyze at file offset", -1);
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
     }
@@ -1075,7 +1130,7 @@ int             cmd_disasm()
   hash_free_keys(keys);
 
   /* Else print a message */
-  revm_output(" [E] Unable to match within loaded files\n\n");
+  revm_output(" [E] Failed to disassemble\n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

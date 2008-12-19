@@ -96,7 +96,7 @@ int			cmd_flowjack(void)
       
       puts(" [*] would patch block at -> ");
       name = elfsh_reverse_metasym(world.curjob->curfile, cal->vaddr, &off);
-      revm_instr_display(-1, 0, cal->vaddr, 0, cal->size, name, off, buffer);
+      revm_instr_display(-1, cal->vaddr, 0, cal->size, name, off, buffer);
       
       /* Understand what is the calling instruction */
       switch (caller->type)
@@ -141,7 +141,7 @@ int			cmd_flowjack(void)
 
       /* display for debug */
       puts(" * patched ->");
-      revm_instr_display(-1, 0, cal->vaddr, 0, cal->size, name, off, buffer);
+      revm_instr_display(-1, cal->vaddr, 0, cal->size, name, off, buffer);
       elfsh_writememf(world.curjob->curfile, foff, buffer, cal->size);
     }
 

@@ -13,28 +13,22 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_DELETE, cmd_delete, revm_getvarparams, 0, HLP_DELETE);
   revm_command_add(CMD_LINKMAP, cmd_linkmap, revm_getvarparams, 1, HLP_LINKMAP);
   revm_command_add(CMD_GOT, cmd_got, revm_getvarparams, 1, HLP_GOT);
-  revm_command_add(CMD_DUMPREGS, cmd_kedbg_dump_regs,
-		   revm_getvarparams, 0, HLP_DUMPREGS);
+  revm_command_add(CMD_DUMPREGS, cmd_kedbg_dump_regs, revm_getvarparams, 0, HLP_DUMPREGS);
   revm_command_add(CMD_STEP, cmd_kedbgstep, revm_getvarparams, 0, HLP_STEP);
-  /* stackaddr is not set, ie does not work. */
   revm_command_add(CMD_BT, cmd_bt, NULL, 0, HLP_BT);
   revm_command_add(CMD_BT2, cmd_bt, NULL, 0, HLP_BT);
-  //revm_command_add(CMD_DBGSTACK, cmd_dbgstack, revm_getoption, 1, HLP_DBGSTACK);
   revm_command_add(CMD_DISPLAY, cmd_display, revm_getvarparams, 0, HLP_DISPLAY);
-  revm_command_add(CMD_UNDISPLAY, cmd_undisplay, revm_getvarparams, 0,
-		   HLP_UNDISPLAY);
+  revm_command_add(CMD_UNDISPLAY, cmd_undisplay, revm_getvarparams, 0, HLP_UNDISPLAY);
   revm_command_add(CMD_RSHT, cmd_rsht, revm_getregxoption, 1, HLP_RSHT);
   revm_command_add(CMD_RPHT, cmd_rpht, revm_getregxoption, 1, HLP_RPHT);
   revm_command_add(CMD_QUIT, cmd_kedbgquit, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_QUIT2, cmd_kedbgquit, NULL, 0, HLP_QUIT);
-
-  revm_command_add(CMD_DISASM, cmd_disasm, NULL, 0, HLP_DISASM);
-  revm_command_add(CMD_DISASM2, cmd_disasm, NULL, 0, HLP_DISASM);
+  revm_command_add(CMD_DISASM, cmd_disasm, revm_getdisasm, 0, HLP_DISASM);
+  revm_command_add(CMD_DISASM2, cmd_disasm, revm_getdisasm, 0, HLP_DISASM);
   revm_command_add(CMD_HEXA, cmd_disasm, revm_gethexa, 1, HLP_HEXA);
   revm_command_add(CMD_HEXA2, cmd_disasm, revm_gethexa, 1, HLP_HEXA);
   revm_command_add(CMD_IVT, cmd_kedbgprintivt, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_WRITE, cmd_write, revm_getvarparams, 1, HLP_WRITE);
-
 
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
@@ -56,12 +50,9 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_RENAME     , cmd_rename        , revm_getoption2,   1, HLP_RENAME);  
   revm_command_add(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
 
-
   /*   revm_command_add(CMD_ITRACE, cmd_itrace, NULL, 0, HLP_ITRACE); */
   /*   revm_command_add(CMD_WATCH    , (void *) cmd_watch    , revm_getvarparams, 1, HLP_WATCH); */
   /*   revm_command_add(CMD_STACK    , (void *) cmd_stack    , revm_getoption,    1, HLP_STACK); */
-
-
   /*   revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS); */
 
 }

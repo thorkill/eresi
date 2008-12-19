@@ -233,9 +233,8 @@
 #define HLP_PROFILE		"Change the ELFsh profiling behavior \n\n\t" \
 				CMD_PROFILE" enable|disable warn|trace|alloc|debug|all"
 
-#define	HLP_DECLARE		"Declare a new typed named variable \n\n\t" \
-				"<typename> <varname> = field1val ... fieldNval\n"
-
+#define	HLP_DECLARE		"Declare a new variable of this type \n\n\t" \
+				"<typename> <varname> = field1:val1 <...> fieldN:valN\n"
 
 /* Interactive only command */
 #define	HLP_LOAD		 "Load a new ELF file"

@@ -375,7 +375,6 @@ typedef struct	s_libkernshworld
   autotask_t	typetask;		/* Make type for task_struct */
   asm_processor	proc;			/* To play with libasm of course */
   elfshobj_t	*root;			/* Pointer to the kernel's elfshobj_t*/
-  u_char	present;		/* Is KERNSH being currently used ? */
 }		libkernshworld_t;
 
 extern libkernshworld_t     libkernshworld; /* Global libkernsh struct */
@@ -392,8 +391,6 @@ int		kernsh_info_netbsd();
 int		kernsh_info_freebsd();
 elfshobj_t	*kernsh_load_file(char *);
 void		kernsh_unload_file(elfshobj_t *);
-int		kernsh_is_present();
-void		kernsh_present_set();
 
 /* Raw mode */
 int		kernsh_raw_write(elfshobj_t *, u_int, void *, int);

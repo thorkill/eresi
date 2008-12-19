@@ -704,7 +704,6 @@ int		elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
   int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   new = elfsh_create_symbol(sect->shdr->sh_addr, sect->curend,
 			    STT_SECTION, STB_LOCAL, 0, sect->index);
   ret = elfsh_insert_symbol(file->secthash[ELFSH_SECTION_SYMTAB],

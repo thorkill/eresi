@@ -81,17 +81,13 @@
 extern asm_processor	proc;
 
 /* Now come INTERNAL DEBUGGING VARIABLES for various part of the ERESI code */
-#define	__DEBUG_DISASM__	0
 #define	__DEBUG_SIGHANDLER__	0
 #define	__DEBUG_LANG__		0
 #define	__DEBUG_SCANNER__	0
 #define	__DEBUG_ASLR__		0
 #define __DEBUG_NETWORK__	0
 #define __DEBUG_RESOLVE__	0
-#define __DEBUG_HIJACK__	0
 #define __DEBUG_TEST__		0
-#define	__DEBUG_GRAPH__		0
-#define __DEBUG_ARG_COUNT__	0
 #define	__DEBUG_EXPRS__		0
 #define	__DEBUG_EXPRS_MORE__	0
 #define	__DEBUG_INFORM__	0
@@ -558,18 +554,17 @@ int             revm_version_unk(u_int ai, u_int i, char *id, char *n, char *t);
 /* Disassembling and hexadecimal view functions */
 int		revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buf, eresi_Addr vaddr,
 				   char *name, u_int foffset);
-int		revm_instr_display(int, u_int, eresi_Addr, u_int, u_int,
-				 char *, u_int, char *);
+int		revm_instr_display(int, eresi_Addr, u_int, u_int, char *, u_int, char *);
 int		revm_section_display(elfshsect_t *s, char *name, revmlist_t *re);
 int		revm_match_sht(elfshsect_t *l, revmlist_t *actual);
 int		revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab, 
 				revmlist_t *actual, int flag);
 int		revm_match_special(elfshobj_t *file, eresi_Addr vaddr, revmlist_t*);
 int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int size, 
-				    u_int off, u_int foffset, eresi_Addr vaddr, 
+				    u_int off, u_int symoff, u_int foffset, eresi_Addr vaddr, 
 				    char *name, char otype, u_char addbase);
-int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr, u_int index, 
-				  u_int size, u_int off, char *buff, u_int foffset);
+int		revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
+				  u_int size, u_int symoff, char *buff, u_int fileoff);
 
 /* Parsing / Scanning functions */
 char		*revm_filter_param(char *buf, char *ptr);

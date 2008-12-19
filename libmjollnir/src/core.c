@@ -28,7 +28,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   container_t	*curblock;
   mjrblock_t	*block;
   u_int		delayslotsize;
-  u_char	*ptr;
+  u_char	*ptr, *argptr;
   u_int		curlen;
   u_int		restlen;
   elfshsect_t	*sect;
@@ -71,8 +71,15 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   sect = elfsh_get_parent_section(sess->cur->obj, vaddr, &off);
   curlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
   eos = (curlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, curlen, -1);
-  ptr = elfsh_readmema(sess->cur->obj, vaddr, ptr, curlen);
+  argptr = NULL;
+
+  /* In most cases we dont need to do a malloc, since we will read from the section's cache */
+  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, curlen, -1);
+      argptr = ptr;
+    }
+  ptr = elfsh_readmema(sess->cur->obj, vaddr, argptr, curlen);
 
   /* Read all instructions, making sure we never override section's boundaries */
   for (curr = 0; vaddr + curr < sect->shdr->sh_addr + sect->shdr->sh_size; curr += ilen)
@@ -84,7 +91,12 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 	  sect = elfsh_get_parent_section(sess->cur->obj, vaddr + curr, &off);
 	  restlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
 	  eos = (restlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
-	  XREALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, ptr, curlen + restlen, -1);
+
+	  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
+	    {
+	      XREALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, ptr, curlen + restlen, -1);
+	    }
+
 	  curlen += restlen;
 	  ptr = elfsh_readmema(sess->cur->obj, vaddr + curr, ptr + curr, curlen - curr);
 	  vaddr += curr;
@@ -152,8 +164,8 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 #endif
 	  
 	  block->size += delayslotsize;
-	  //only free in kernsh/kedbg in runtime mode
-	  //XFREE(__FILE__, __FUNCTION__, __LINE__, ptr);
+	  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
+	    XFREE(__FILE__, __FUNCTION__, __LINE__, ptr);
 	  break;
 	}
     }

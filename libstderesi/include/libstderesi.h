@@ -8,8 +8,12 @@
  #define __LIBSTDERESI_H_
 
 /* Debug flags for libstderesi */
-#define	__DEBUG_REWRITE__ 0
-#define	__DEBUG_FOREACH__ 0
+#define	__DEBUG_REWRITE__	0
+#define	__DEBUG_FOREACH__	0
+#define	__DEBUG_DISASM__	0
+#define __DEBUG_HIJACK__	0
+#define	__DEBUG_GRAPH__		0
+#define __DEBUG_ARG_COUNT__	0
 
 /* User defined configuration */
 #include "revm.h"
@@ -241,6 +245,11 @@ extern u_char   quit_msg_setup;
 
 #define	ELFSH_LINKTYPE_MAX	7
 #define	ELFSH_LINKSCOPE_MAX	3
+
+/* Maximum size of a single read -- useful when targets are remote */
+/* Better keep it a multiple of 16 */
+#define	ESTD_MAXREAD_SIZE	192
+#define	ESTD_DISASM_FAILED	(-3)
 
 /* Data value/string/description arrays */
 extern revmconst_t     asm_instr_type[ELFSH_INSTRTYPE_MAX];

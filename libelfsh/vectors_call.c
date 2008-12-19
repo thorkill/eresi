@@ -444,7 +444,6 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "READMEM handler inexistant for this ARCH/OS", NULL);
   mem = aspect_vector_get(ELFSH_HOOK_READMEMA);
-  //  dim[0] = archtype;
   dim[0] = ostype;
   dim[1] = iotype;
   fct = aspect_vectors_select(mem, dim);

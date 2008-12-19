@@ -130,15 +130,15 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   char		*buffer;
   char		*name;
   elfsh_SAddr	off;
-  u_int		index = 0;
   u_char	revm_quiet;
   int		revm_colors;
-  int		ret, cur;
-  u_int		foffset;
+  int		cur;
   u_int		reloff;
   char		tmpbuf[20];
   u_int		len;
   list_t	*instrlist;
+  u_int		totaloff;
+  char		*bufarg;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_quiet = world.state.revm_quiet;
@@ -157,30 +157,37 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
       PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
     }
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
-  foffset = elfsh_get_foffset_from_vaddr(world.curjob->curfile, blk->vaddr);
-  ret     = elfsh_readmemf(world.curjob->curfile, foffset, buffer, blk->size);
-  if (ret > 0)
+  /* Read data to be graphed */
+  if (kernsh_is_present() || kedbg_is_present())
     {
-      name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &off);
-      while ((index < blk->size) && cur)
-	{
-	  len = snprintf(tmpbuf, sizeof(tmpbuf), "%3u: ", reloff);
-	  write(fd, tmpbuf, len);
-	  cur = revm_instr_display(fd, index, blk->vaddr, 0, blk->size,
-				 name, index + off, buffer);
-
-	  if (cur <= 0)
-	    goto end;
-
-	  index += cur;
-	  reloff += cur;
-	  write(fd, "\\l", 2);
-	  revm_endline();
-	}
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
+      bufarg = buffer;
     }
+  else
+    bufarg = NULL;
+  buffer = elfsh_readmema(world.curjob->curfile, blk->vaddr, bufarg, blk->size);
+  if (!buffer)
+    goto end;
+
+  /* Graph code from block */
+  name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &off);
+  for (totaloff = 0; totaloff < blk->size; totaloff += cur)
+    {
+      len = snprintf(tmpbuf, sizeof(tmpbuf), "%3u: ", reloff);
+      write(fd, tmpbuf, len);
+      cur = revm_instr_display(fd, blk->vaddr + totaloff, 0, blk->size - totaloff,
+			       name, off + totaloff, buffer + totaloff);
+      if (cur <= 0)
+	goto end;
+      reloff += cur;
+      write(fd, "\\l", 2);
+      revm_endline();
+    }
+
+  /* Cleanup and exit */
  end:
-    XFREE(__FILE__, __FUNCTION__, __LINE__,buffer);
+  if (kernsh_is_present() || kedbg_is_present())
+    XFREE(__FILE__, __FUNCTION__, __LINE__, buffer);
   world.state.revm_quiet = revm_quiet;
   nocolor = revm_colors;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

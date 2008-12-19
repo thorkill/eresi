@@ -427,7 +427,8 @@ elfsh_Sym		*elfsh_get_sym_from_shtentry(elfshobj_t *file,
   for (current = file->secthash[ELFSH_SECTION_SYMTAB]->data;
        index < nbr; index++)
     if (elfsh_get_symbol_type(current + index) == STT_SECTION &&
-	current[index].st_value == hdr->sh_addr)
+	current[index].st_value == hdr->sh_addr &&
+	current[index].st_size  == hdr->sh_size)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (current + index));
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

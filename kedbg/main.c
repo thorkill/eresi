@@ -351,6 +351,7 @@ int             main(int argc, char **argv)
   /* Why did it stop ? */
   gdbwrap_reason_halted(gdbwrap_current_get());
   kedbg_get_regvars_ia32();
+  kedbg_present_set();
   kedbg_main(argc, argv);
   return 0;
 }

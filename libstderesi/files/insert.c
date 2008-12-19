@@ -128,8 +128,7 @@ int		cmd_insert()
 			      &sym, name) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                           "Cannot insert symbol", -1);
-
-
+      elfsh_sync_sorted_symtab(world.curjob->curfile->secthash[ELFSH_SECTION_SYMTAB]);
     }
 
   /* Insert PHT entries */

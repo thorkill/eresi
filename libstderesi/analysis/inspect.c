@@ -142,7 +142,7 @@ int			cmd_inspect()
   revm_output(" -- block disassembly --\n");
   sect = elfsh_get_parent_section(obj, blk->vaddr, NULL);
   off  = elfsh_get_foffset_from_vaddr(obj, blk->vaddr);
-  revm_object_display(sect, sym, blk->size, 0, off, blk->vaddr, 
+  revm_object_display(sect, sym, blk->size, 0, 0, off, blk->vaddr, 
 		      name, REVM_VIEW_DISASM, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

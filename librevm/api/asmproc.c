@@ -42,6 +42,7 @@ void	revm_proc_init()
 		   "Architecture %s not supported. No flowjack available.\n",
 		   elfsh_get_machine_string(elfsh_get_arch(world.curjob->curfile->hdr)));
 	  revm_output(logbuf);
+	  PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 	}
     }
 

@@ -439,11 +439,16 @@ extern aspectworld_t	aspectworld;
 int		aspect_init();
 void		aspect_called_ctors_inc();
 int		aspect_called_ctors_finished();
+int		kernsh_is_present();
+void		kernsh_present_set();
+void		kedbg_present_set();
+int		kedbg_is_present();
 void		e2dbg_presence_set();
 void		e2dbg_presence_reset();
 u_char		e2dbg_presence_get();
 u_char		e2dbg_kpresence_get();
 void		e2dbg_kpresence_set(u_char pres);
+
 
 /* Retreive pointer on the vector hash table */
 hash_t*		aspect_vecthash_get();

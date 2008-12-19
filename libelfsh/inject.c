@@ -922,9 +922,10 @@ int		elfsh_insert_unmapped_section(elfshobj_t	*file,
 		      "Cannot add section", -1);
 
   /* Inject the symbol */
-  if (elfsh_insert_sectsym(file, sect) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Cannot insert section symbol", -1);
+  // XXX: no symbol for unmapped section.
+  //if (elfsh_insert_sectsym(file, sect) < 0)
+  //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+  //	      "Cannot insert section symbol", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
