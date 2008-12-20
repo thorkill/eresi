@@ -195,7 +195,6 @@ static Bool       kedbg_file_is_bios(elfshobj_t *file)
 static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 {
   eresi_Addr    addr;
-  asm_processor proc;
   elfshsect_t   *textsct;
 
   textsct = elfsh_get_section_by_name(file, ".text", NULL, NULL, NULL);

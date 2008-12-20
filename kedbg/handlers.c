@@ -49,7 +49,6 @@ static Bool     kedbg_isrealmodeinject(void)
   char          code[]="\x0f\x20\xc0";
   char          saved[4];
   gdbwrap_gdbreg32 regs;
-  Bool          ret;
   
   PROFILER_INQ();
   
@@ -312,15 +311,20 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 
   PROFILER_INQ();
   NOT_USED(file);
+
+  if (size)
+    {
+      if (buf == NULL)
+	PROFILER_ERRQ("buf is NULL !", buf);
+      ASSERT(buf != NULL);
+      ret = gdbwrap_readmemory(loc, addr, size);
+
+      /* gdbserver sends a string, we need to convert it. Note that 2
+	 characters = 1 real Byte.*/
+      for (i = 0; i < size; i++) 
+	charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
+    }
   
-  ret = gdbwrap_readmemory(loc, addr, size);
-
-  /* gdbserver sends a string, we need to convert it. Note that 2
-     characters = 1 real Byte.*/
-  /* XXX: buf can be NULL ! in that case this should be done directly on the "ret" buffer */
-  for (i = 0; i < size; i++) 
-    charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
-
   PROFILER_ROUTQ(charbuf);
 }
 
