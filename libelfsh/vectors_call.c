@@ -435,7 +435,6 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
 		 "Invalid NULL parameter", NULL);
   
   /* Fingerprint binary */
-  archtype = elfsh_get_archtype(file);
   iotype = elfsh_get_iotype(file);
   ostype = elfsh_get_ostype(file);
   if (archtype == ELFSH_ARCH_ERROR ||

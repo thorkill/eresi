@@ -17,7 +17,8 @@ static Bool     kedbg_isrealmodewmon(void)
 
   PROFILER_INQ();
   ret = gdbwrap_remotecmd(loc, code);
-
+  ASSERT(strlen(ret) < sizeof(reply));
+  
   if (gdbwrap_cmdnotsup(loc))
     PROFILER_ROUTQ(FALSE);
  
@@ -39,29 +40,34 @@ static Bool     kedbg_isrealmodewmon(void)
 }
 
 
-/* This is absolutely not working. */
+/* When the monitor doesn't work, we inject directly a "mov %cr0,
+   %eax" and we check the last bit of %eax. We save the state of all
+   the general purpose registers that we restore afterwards. */
 static Bool     kedbg_isrealmodeinject(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          code[]="\x0f\x20\xc0";
   char          saved[4];
-  ureg32        savedeip;
+  gdbwrap_gdbreg32 regs;
   Bool          ret;
   
   PROFILER_INQ();
-  printf("Saved eip: %#x\n", loc->reg32.eip);
-  savedeip = loc->reg32.eip;
-  printf("sizeof du code: %d\n", 3);
-  kedbg_readmema(NULL, savedeip, saved, 3);
-  kedbg_writemem(NULL, savedeip, code, strlen(code));
+  
+  memcpy(&regs, &loc->reg32, sizeof(regs));
+  kedbg_readmema(NULL, regs.eip, saved, strlen(code));
+  kedbg_writemem(NULL, regs.eip, code, strlen(code));
   gdbwrap_stepi(loc);
   gdbwrap_readgenreg(loc);
-  printf("Value of eax: %#x\n", loc->reg32.eax);
-  ret = (loc->reg32.eax & 0x1) ? TRUE : FALSE;
-  kedbg_writemem(NULL, savedeip, saved, 3);
-  gdbwrap_writereg2(loc, 8, savedeip);
-
-  PROFILER_ROUTQ(ret);
+  if (loc->reg32.eax & 0x1)
+    kedbgworld.pmode = TRUE;
+  else
+    kedbgworld.pmode = FALSE;
+  
+  kedbg_writemem(NULL, regs.eip, saved, 3);
+  memcpy(&loc->reg32, &regs, sizeof(regs));
+  gdbwrap_shipallreg(loc);
+  
+  PROFILER_ROUTQ(kedbgworld.pmode);
 }
 
 
@@ -126,7 +132,7 @@ void		*kedbg_bt_ia32(void *frame)
   la32          ptr = 0;
 
   PROFILER_INQ();
-  
+
   if (kedbg_isrealmode())
     kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, WORD_IN_BYTE);
   else
@@ -156,7 +162,7 @@ void            *kedbg_getret_ia32(void *frame)
     kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, WORD_IN_BYTE);
   else
     kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
-  //  kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
 
@@ -185,10 +191,6 @@ static int      kedbg_setbpwint3(elfshobj_t *f, elfshbp_t *bp)
 }
 
 
-/**
- * Set up a breakpoint. We have to change the memory on the server
- * side, thus we need to save the value we change.
- */
 int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -214,9 +216,8 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 	    break;
 
 	  default:
-	    /* We gonna loop, but should not occur */
-	    fprintf(stderr, "Bp not supported - Muh ? \n");
-	    break;
+	    /* Should not occur */
+	    PROFILER_ERRQ("Bp not supported", -1);
 	}
     } while (gdbwrap_cmdnotsup(loc));
 
@@ -311,9 +312,11 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 
   PROFILER_INQ();
   NOT_USED(file);
+  
   ret = gdbwrap_readmemory(loc, addr, size);
 
-  /* gdbserver sends a string, we need to convert it. Note that 2 characters = 1 real Byte.*/
+  /* gdbserver sends a string, we need to convert it. Note that 2
+     characters = 1 real Byte.*/
   /* XXX: buf can be NULL ! in that case this should be done directly on the "ret" buffer */
   for (i = 0; i < size; i++) 
     charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);

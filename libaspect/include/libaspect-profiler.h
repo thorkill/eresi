@@ -322,6 +322,9 @@ do {						\
   return ret;	          			\
 } while (0)					
 
+#define PROFILER_ERRQ(msg, ret)			\
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, msg, ret);
+
 #define	PROFILER_ERR(file, f, l, m, r)		\
 do {						\
   if (profiler_started()) {			\

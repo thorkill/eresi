@@ -707,18 +707,21 @@ void                 *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr,
 void                 *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr,
 					   void *value, unsigned bytes)
 {
-  char               *packet = alloca(bytes + MSG_BUF);
-  uint8_t            packetsize;
   char               *rec;
-
+  char               *packet = alloca(2 * bytes + MSG_BUF);
+  u_char             *val = value;
+  u_short            i;
+  u_int              len;
+  
   snprintf(packet, MSG_BUF, "%s%x%s%x%s", GDBWRAP_MEMWRITE2,
 	   linaddr, GDBWRAP_SEP_COMMA, bytes, GDBWRAP_SEP_COLON);
-  packetsize = strlen(packet);
-  ASSERT(packetsize < MSG_BUF);
-  /* GDB protocol expects the value we send to be a "Binary value", ie
-     not converted to a char. */
-  memcpy(packet + packetsize, value, bytes);
-  packet[packetsize + bytes] = GDBWRAP_NULL_CHAR;
+
+  for (i = 0; i < bytes; i++)
+    {
+      len = strlen(packet);
+      ASSERT(len + 1 < 2 * bytes + MSG_BUF);
+      snprintf(packet + len, BYTE_IN_CHAR + 1, "%02x", (unsigned)val[i]);
+    }
   rec = gdbwrap_send_data(desc, packet);
 
   return rec;
