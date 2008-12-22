@@ -28,6 +28,8 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
 
   /* TODO: check if endianess conversion is needed */
   /* TODO: it seems to have another way of verifying endianess */
+
+  /*
 #if __BYTE_ORDER == __LITTLE_ENDIAN
   u_char        *ptr;
   int           i;
@@ -38,10 +40,11 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
     *(ptr + i) = *(buf + 3 - i);
 
 #else
-
+  */
   memcpy(&converted, buf, 4);
-  
+  /*
 #endif
+  */
 
   LIBASM_PROFILE_FIN();
 
@@ -52,7 +55,7 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   ins->type = ASM_TYPE_NONE;
 
   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_ARM);
-  dim[0] = (converted & 0x6000000) >> 26;
+  dim[0] = (converted & 0xC000000) >> 26;
   dim[1] = 0;
   dim[2] = 0;
   
