@@ -662,6 +662,9 @@ int		cmd_kmem_disasm()
       memset(new_buff, '\0', len);
 
       ret = elfsh_readmema(libkernshworld.root, addr, new_buff, len);
+      if (ret == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Impossible to read mem", -1);
 
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff),
@@ -674,13 +677,6 @@ int		cmd_kmem_disasm()
       kernsh_disasm(new_buff, len, addr);
 
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_buff);
-    }
-
-  if (ret != len)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to read mem",
-		   -1);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

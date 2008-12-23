@@ -1,0 +1,18 @@
+
+- iskernel flag dans le elfshobj_t nest jamais sette !
+
+- openmem devrait etre appele automatiquement.
+
+- Les symboles devraient etre injectes automatiquement en lisant le System.map.
+
+- faire les hooks alloc, mprotect, munprotect dans libelfsh
+
+- les handlers readmema ne sont pas prevus pour economiser
+la memoire (buf = NULL en static mode) et segfault si buf = NULL.
+
+- reladd ne fonctionne pas sur vmlinuz car cest un ET_REL
+
+- kern_disasm devrait etre remplace par la commande D 
+
+- la commande sym segfault sur le vmlinuz decompresse
+

@@ -1,9 +1,11 @@
-#!elfsh/elfsh32
+#!../../kernsh/kernsh32
 
-load vmlinux
+openmem
+mode d
+
 type thread_info = task:*long
 type task_struct = state:long thread_info:*thread_info
 inform task_struct init_task
 
-print 1.task_struct[init_task].thread_info.task
-print 1.task_struct[init_task].thread_info
+print $init_task.thread_info.task
+print $init_task.thread_info

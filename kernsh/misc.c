@@ -131,7 +131,7 @@ int		kernsh_disasm(char *buffer, int len, unsigned long addr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   index = 0;
-  while(index < len && len > 0)
+  while (index < len && len > 0)
     {
       value = kernsh_instr_display(index, addr, index, len, NULL, 0, buffer);
       if (value <= 0)

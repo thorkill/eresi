@@ -23,11 +23,9 @@ void	setup_local_cmdhash()
 		   0, 
 		   HLP_KMODE);
   
-  revm_command_add(CMD_SCT, (void *)cmd_sct, (void *) NULL, 0, HLP_SCT);
-  
-  revm_command_add(CMD_IDT, (void *)cmd_idt, (void *) NULL, 0, HLP_IDT);
-  
-  revm_command_add(CMD_GDT, (void *)cmd_gdt, (void *) NULL, 0, HLP_GDT);
+  revm_command_add(CMD_SCT, (void *) cmd_sct, (void *) NULL, 0, HLP_SCT);
+  revm_command_add(CMD_IDT, (void *) cmd_idt, (void *) NULL, 0, HLP_IDT);
+  revm_command_add(CMD_GDT, (void *) cmd_gdt, (void *) NULL, 0, HLP_GDT);
   
   revm_command_add(CMD_KALLOC, (void *)cmd_kalloc, 
 		   (void*) revm_getvarparams, 
@@ -145,23 +143,15 @@ void	setup_local_cmdhash()
 		   0,
 		   HLP_KMEM_INFO);
 
-  revm_command_add(CMD_KDUMP_GET_VMA, (void *)cmd_kdump_get_vma, 
-		   (void*) revm_getvarparams,
-		   0,
-		   HLP_KDUMP_GET_VMA);
+  revm_command_add(CMD_KDUMP_GET_VMA, (void *) cmd_kdump_get_vma, 
+		   (void*) revm_getoption,  0, HLP_KDUMP_GET_VMA);
   
-  revm_command_add(CMD_KDUMP_VMA, (void *)cmd_kdump_vma, 
-		   (void*) revm_getvarparams,
-		   0,
-		   HLP_KDUMP_VMA);
+  revm_command_add(CMD_KDUMP_VMA, (void *) cmd_kdump_vma, 
+		   (void*) revm_getoption, 0, HLP_KDUMP_VMA);
 
   revm_command_add(CMD_RPHT, (void *) cmd_rpht, 
-		   revm_getregxoption, 
-		   1, 
-		   HLP_RPHT);
+		   revm_getregxoption, 1, HLP_RPHT);
   
   revm_command_add(CMD_RSHT, (void *) cmd_rsht, 
-		   revm_getregxoption, 
-		   1, 
-		   HLP_RSHT);
+		   revm_getregxoption, 1, HLP_RSHT);
 }

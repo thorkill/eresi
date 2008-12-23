@@ -44,7 +44,6 @@ int kernsh_openmem_mem_linux()
 
   libkernshworld.physical = 1;
   libkernshworld.root->iotype = ELFSH_IOTYPE_DEVMEM26;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -79,35 +78,32 @@ int kernsh_closemem_mem_linux()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-int kernsh_readmema_mem_linux(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
+void		*kernsh_readmema_mem_linux(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
-  unsigned long roffset;
+  eresi_Addr	roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+		 "Memory not opened !", NULL);
 
   /* We must substract kernel_start(page_offset) to get the physical address */
   roffset = offset - libkernshworld.kernel_start;
-
   if (libkernshworld.mmap)
     {
-      if (memcpy(buf, libkernshworld.ptr+roffset, size) == NULL)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Memcpy failed !", -1);
-	}
+      if (memcpy(buf, libkernshworld.ptr + roffset, size) == NULL)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "Memcpy failed !", NULL);
     }
   else
     {
 #if defined(__linux__)
-      XLSEEK64(libkernshworld.fd, roffset, SEEK_SET, -1);
+      XLSEEK64(libkernshworld.fd, roffset, SEEK_SET, NULL);
 #endif
-      XREAD(libkernshworld.fd, buf, size, -1);
+      XREAD(libkernshworld.fd, buf, size, NULL);
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 /**
@@ -117,9 +113,9 @@ int kernsh_readmema_mem_linux(elfshobj_t *unused, eresi_Addr offset, void *buf, 
  * @param size Count bytes to write
  * @return size on success, -1 on error
  */
-int kernsh_writemem_mem_linux(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
+int		kernsh_writemem_mem_linux(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
-  unsigned long roffset;
+  eresi_Addr	roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
@@ -202,24 +198,22 @@ int kernsh_closemem_netbsd()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_readmema_netbsd(elfshobj_t *file, eresi_Addr offset, void *buf, int size)
+void	*kernsh_readmema_netbsd(elfshobj_t *file, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+		 "Memory not opened !", NULL);
 
   //  printf("READ MEM NETBSD\n");
 
 #if defined(__NetBSD__)
   if (krevm_read(libkernshworld.kd, offset, buf, size) < 0)
-    {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   krevm_geterr(libkernshworld.kd), -1);
-    }
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 krevm_geterr(libkernshworld.kd), NULL);
 #endif  
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 int kernsh_writemem_netbsd(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)

@@ -28,12 +28,8 @@ int kernsh_openmem()
   printf("OPENMEM\n");
 #endif
 
-  libkernshworld.kernel_start = (unsigned long) 
-    config_get_data(LIBKERNSH_CONFIG_KERNEL_START);
-  
-  libkernshworld.kernel_end = (unsigned long) 
-    config_get_data(LIBKERNSH_CONFIG_KERNEL_END);
-
+  libkernshworld.kernel_start = (eresi_Addr) config_get_data(LIBKERNSH_CONFIG_KERNEL_START);
+  libkernshworld.kernel_end = (eresi_Addr) config_get_data(LIBKERNSH_CONFIG_KERNEL_END);
 
 #if __DEBUG_KERNSH__
   printf("KERNEL_START 0x%lx\n", libkernshworld.kernel_start);
@@ -136,7 +132,7 @@ int kernsh_openmem()
   
   ret = fct();
 
-  if(ret == 0)
+  if (ret == 0)
     {
       libkernshworld.open = 1;
       int vm = (int) config_get_data(LIBKERNSH_CONFIG_USEVM);

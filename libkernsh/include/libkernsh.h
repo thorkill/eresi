@@ -187,8 +187,6 @@ enum
 
 #define LIBKERNSH_VECTOR_NAME_OPENMEM			"openmem"
 #define LIBKERNSH_VECTOR_NAME_CLOSEMEM			"closemem"
-//#define LIBKERNSH_VECTOR_NAME_READMEM			"readmem"
-//#define LIBKERNSH_VECTOR_NAME_WRITEMEM		"writemem"
 #define LIBKERNSH_VECTOR_NAME_SCT			"sct"
 #define LIBKERNSH_VECTOR_NAME_IDT			"idt"
 #define LIBKERNSH_VECTOR_NAME_GDT			"gdt"
@@ -471,11 +469,11 @@ int	kernsh_closemem_mem_linux();
 int	kernsh_closemem_kcore_linux_2_6();
 int	kernsh_closemem_netbsd();
 
-int	kernsh_readmema_kmem_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
-int	kernsh_readmema_kmem_linux_2_4(elfshobj_t *file, eresi_Addr, void *, int);
-int	kernsh_readmema_mem_linux(elfshobj_t *file, eresi_Addr, void *, int);
-int	kernsh_readmema_kcore_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
-int	kernsh_readmema_netbsd(elfshobj_t *file, eresi_Addr, void *, int);
+void	*kernsh_readmema_kmem_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
+void	*kernsh_readmema_kmem_linux_2_4(elfshobj_t *file, eresi_Addr, void *, int);
+void	*kernsh_readmema_mem_linux(elfshobj_t *file, eresi_Addr, void *, int);
+void	*kernsh_readmema_kcore_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
+void	*kernsh_readmema_netbsd(elfshobj_t *file, eresi_Addr, void *, int);
 
 int	kernsh_writemem_kmem_linux_2_6(elfshobj_t *file, eresi_Addr, void *, int);
 int	kernsh_writemem_kmem_linux_2_4(elfshobj_t *file, eresi_Addr, void *, int);
@@ -584,7 +582,7 @@ int kernsh_kvirtm_write_virtm_syscall_linux(pid_t, eresi_Addr, char *, int);
 int kernsh_kvirtm_openmem();
 int kernsh_kvirtm_closemem();
 
-int kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr, char *, int);
+void *kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr, char *, int);
 int kernsh_kvirtm_readmem_proc_linux(eresi_Addr, char *, int);
 int kernsh_kvirtm_readmem_syscall_linux(eresi_Addr, char *, int);
 

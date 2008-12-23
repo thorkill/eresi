@@ -129,6 +129,11 @@ int		kernsh_main(int ac, char **av)
 /* The main Kernsh routine */
 int		main(int ac, char **av)
 {
+  if (geteuid() || getuid())
+    {
+      fprintf(stderr, "You need to be root to execute kernsh\n");
+      exit(-1);
+    }
   return (kernsh_main(ac, av));
 }
 

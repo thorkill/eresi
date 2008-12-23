@@ -61,19 +61,19 @@ int kernsh_closemem_kmem_linux_2_6()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-int kernsh_readmema_kmem_linux_2_6(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
+void	*kernsh_readmema_kmem_linux_2_6(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+		 "Memory not opened !", NULL);
 
 #if defined(__linux__)
-  XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
+  XLSEEK64(libkernshworld.fd, offset, SEEK_SET, NULL);
 #endif
   
-  XREAD(libkernshworld.fd, buf, size, -1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
+  XREAD(libkernshworld.fd, buf, size, NULL);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 /**
@@ -167,28 +167,28 @@ int kernsh_closemem_kmem_linux_2_4()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-int kernsh_readmema_kmem_linux_2_4(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
+void	*kernsh_readmema_kmem_linux_2_4(elfshobj_t *unused, eresi_Addr offset, void *buf, int size)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+		 "Memory not opened !", NULL);
 
   if (libkernshworld.mmap)
     {
       if (memcpy(buf, libkernshworld.ptr+offset, size) == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Memcpy failed !", -1);
+		     "Memcpy failed !", NULL);
     }
   else
     {
 #if defined(__linux__)
-      XLSEEK64(libkernshworld.fd, offset, SEEK_SET, -1);
+      XLSEEK64(libkernshworld.fd, offset, SEEK_SET, NULL);
 #endif
-      XREAD(libkernshworld.fd, buf, size, -1);
+      XREAD(libkernshworld.fd, buf, size, NULL);
     }
   
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, size);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 /**

@@ -450,13 +450,12 @@ int kernsh_register_kvirtm_read_virtm(u_int ostype, u_int virtmtype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int kernsh_register_kvirtm_read_mem(u_int ostype, u_int virtmtype, void *fct)
+int		kernsh_register_kvirtm_read_mem(u_int ostype, u_int virtmtype, void *fct)
 {
-  vector_t *sct;
-  u_int *dim;
+  vector_t	*sct;
+  u_int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
   sct = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM);
 
   dim    = alloca(sizeof(u_int) * 3);
@@ -467,8 +466,7 @@ int kernsh_register_kvirtm_read_mem(u_int ostype, u_int virtmtype, void *fct)
   printf("REGISTER KVIRTM READ MEM\n");
 #endif
 
-  aspect_vectors_insert(sct, dim, (int)fct);
-  
+  aspect_vectors_insert(sct, dim, (u_long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

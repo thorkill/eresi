@@ -88,6 +88,7 @@ int		cmd_openmem()
 {
   int		ret;
   char		buff[BUFSIZ];
+  elfshsect_t	*cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -108,7 +109,6 @@ int		cmd_openmem()
 	       (char *) config_get_data(LIBKERNSH_CONFIG_KERNELELF));
       
       ret = revm_file_load(buff, 0, NULL);
-
       if (ret)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to load kernel", -1);
@@ -119,22 +119,21 @@ int		cmd_openmem()
 		     "Unable to get elf file", -1);
       libkernshworld.open_static = 1;
     }
-  else 
-    {
-      elfsh_set_runtime_mode();
-    }
-
+  
   /* Open memory */
+  elfsh_set_runtime_mode();
   ret = kernsh_openmem();
-
   if (ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Cannot open memory", -1);
 
+  /* Fixup decompressed kernel sections base address */
+  for (cur = libkernshworld.root->sectlist; cur; cur = cur->next)
+    if (elfsh_get_section_allocflag(cur->shdr) && !cur->shdr->sh_addr)
+      cur->shdr->sh_addr = libkernshworld.kernel_start;
+
   memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), 
-	   "%s\n\n",
-	   revm_colorfieldstr("[+] OPEN MEMORY"));
+  snprintf(buff, sizeof(buff), "%s\n\n", revm_colorfieldstr(" [*] Kernel memory opened"));
   revm_output(buff);
   revm_endline();
   export_vars();

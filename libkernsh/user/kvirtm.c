@@ -340,7 +340,7 @@ int kernsh_kvirtm_closemem()
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int		kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int len)
+void		*kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int len)
 {
   int		ret, get, i, j, max_size;
   u_int         dim[3];
@@ -350,7 +350,7 @@ int		kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+		 "Memory not opened !", NULL);
 
   ret = 0;
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
@@ -359,12 +359,11 @@ int		kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int
   printf("kernsh_kvirtm_read_mem\n");
 #endif
 
-  get = (int)config_get_data(LIBKERNSH_CONFIG_VIRTM);
+  get = (int) config_get_data(LIBKERNSH_CONFIG_VIRTM);
 
   krv = aspect_vector_get(LIBKERNSH_VECTOR_NAME_KVIRTMREADMEM);
   dim[0] = libkernshworld.os;
   dim[1] = get;
-
   fct = aspect_vectors_select(krv, dim);
 
   if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
@@ -383,7 +382,7 @@ int		kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int
   else
     ret = fct(addr, buffer, len);
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buffer);
 }
 
 /**
