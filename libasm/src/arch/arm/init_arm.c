@@ -144,6 +144,9 @@ void    fill_dim_vector_type1(int inst, u_int *dim_vec)
   six_nibble = (inst & 0x0F00000) >> 20;
   sev_nibble = (inst & 0xF000000) >> 24;
 
+  // FIXME: sev_nibble == 0x03 is also valid for other instructions
+  // than MSR.
+
   if (sev_nibble == 0x03
       || (sev_nibble == 0x01 && (six_nibble & 0x09) == 0x00 && sec_nibble == 0x00))
     {
