@@ -350,33 +350,11 @@ void            *kedbg_readmem(elfshsect_t *sect)
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
 			       u_int size)
 {
-  static u_char choice = 0;
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   NOT_USED(file);
   PROFILER_INQ();
-    do
-    {
-      switch (choice)
-	{
-	  case 0:
-	    gdbwrap_writememory(loc, addr, data, size);
-	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
-	    break;
-
-	  case 1:
-	    gdbwrap_writememory2(loc, addr, data, size);
-	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
-	    break;
-
-	  default:
-	    fprintf(stderr, "Write to memory not supported.\n");
-	    break;
-	}
-    } while (gdbwrap_cmdnotsup(loc));
-    
+  gdbwrap_writemem(loc, addr, data, size);
   PROFILER_ROUTQ(0);
 }
 
@@ -462,32 +440,9 @@ void            kedbg_shipallreg(void)
 
 int             kedbg_writereg(ureg32 regNum, la32 val)
 {
-  static u_char choice = 0;
   gdbwrap_t     *loc = gdbwrap_current_get();
   
   PROFILER_INQ();
-  do
-    {
-      switch (choice)
-	{
-	  case 0:
-	    gdbwrap_writereg(loc, regNum, val);
-	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
-	    break;
-
-	  case 1:
-	    gdbwrap_writereg2(loc, regNum, val);
-	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
-	    break;
-
-	  default:
-	    fprintf(stderr, "Write to registers not supported.\n");
-	    break;
-	}
-    } while (gdbwrap_cmdnotsup(loc));
-    
+  gdbwrap_writereg(loc, regNum, val);
   PROFILER_ROUTQ(0);
-
 }

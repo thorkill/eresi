@@ -229,7 +229,7 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
   kedbg_continue();
   kedbg_delbp(&bp);
   eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
-  gdbwrap_writereg2(loc, eip_pos, bp.addr);
+  gdbwrap_writereg(loc, eip_pos, bp.addr);
 
   kedbg_get_regvars_ia32();
 }

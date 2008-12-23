@@ -35,6 +35,7 @@ typedef struct gdbwrap_t
   Bool             is_active;
   Bool             erroroccured;
   Bool             interrupted;
+  Bool             pmode;
 } gdbwrap_t;
 
 
@@ -64,17 +65,14 @@ void             gdbwrap_simplesetbp(gdbwrap_t *desc, la32 linaddr);
 void             gdbwrap_delbp(gdbwrap_t *desc, la32 linaddr, void *datasaved);
 void             gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr);
 char             *gdbwrap_readmemory(gdbwrap_t *desc, la32 linaddr, unsigned bytes);
-void             *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr, void *value,
-				      unsigned bytes);
-void             *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr, void *value,
-				       unsigned bytes);
+void             gdbwrap_writemem(gdbwrap_t *desc, la32 linaddr, void *value,
+				  unsigned bytes);
 void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
 char             *gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_ctrl_c(gdbwrap_t *desc);
 void             gdbwrap_signal(gdbwrap_t *desc, int signal);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
-void             gdbwrap_writereg2(gdbwrap_t *desc, ureg32 regNum, la32 val);
 char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 
 
