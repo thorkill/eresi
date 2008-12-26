@@ -8,6 +8,9 @@
 #ifndef LIBASM_INT_H
  #define LIBASM_INT_H
 
+/* Debug flags */
+#define		__DEBUG_MODRM__		1
+
 /**
  * Structure describing the modrm byte.
  */

@@ -51,14 +51,18 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
   struct s_modrm	*modrm;
   struct s_sidbyte	*sidbyte;
   u_char		mode;
+  u_char		pmode;
 
   modrm = (struct s_modrm *) (opcode);
   sidbyte = (struct s_sidbyte *) (opcode + 1);
 
   mode = asm_ia32_get_mode(proc);
+  pmode = (mode == INTEL_PROT);
 
-  fprintf(stderr, "\nIA32 processor in %c-mode (RMB) \n",
-	  (mode == INTEL_PROT ? 'p' : (mode == INTEL_REAL ? 'r' : 'U')));
+#if __DEBUG_MODRM__
+  fprintf(stderr, "[DEBUG_MODRM] IA32 processor in %c-mode (RMB) \n",
+	  (pmode ? 'p' : (mode == INTEL_REAL ? 'r' : 'U')));
+#endif
 
   switch (modrm->mod) 
     {
@@ -74,7 +78,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	    {
 	      op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
 	      op->regset = ASM_REGSET_R32;
-	      op->len = (mode == INTEL_PROT ? 6 : 4);				   //	 
+	      op->len = (pmode ? 6 : 4);				   //	 
 	      op->ptr = opcode;
 	      op->scale = asm_int_pow2(sidbyte->sid);
 
@@ -83,7 +87,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	      //memcpy((char *) &op->imm + 2, "\xff\xff", 2);
 	      //else
 	      //op->imm = 0;
-	      memcpy((char *) &op->imm, opcode + 2, (mode == INTEL_PROT ? 4 : 2)); //
+	      memcpy((char *) &op->imm, opcode + 2, (pmode ? 4 : 2)); //
 	      op->indexr = sidbyte->index;
 	    } 
 	  else 
@@ -103,8 +107,8 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	case ASM_REG_EBP:
 	  op->content = ASM_OP_REFERENCE | ASM_OP_VALUE;
 	  op->ptr = opcode;
-	  op->len = (mode == INTEL_PROT ? 5 : 3);			  //
-	  memcpy(&op->imm, opcode + 1, (mode == INTEL_PROT ? 4 : 2));	  //
+	  op->len = (pmode ? 5 : 3);			  //
+	  memcpy(&op->imm, opcode + 1, (pmode ? 4 : 2));	  //
 	  break;
 
 	default:
@@ -126,13 +130,13 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  else
 	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
 	  op->ptr = opcode;
-	  op->len = (mode == INTEL_PROT ? 3 : 1);			//
+	  op->len = (pmode ? 3 : 1);			//
 	  op->regset = ASM_REGSET_R32;
 	  op->baser = sidbyte->base;
 	  op->indexr = sidbyte->index;
 	  op->scale = asm_int_pow2(sidbyte->sid);
 	  if (*(opcode + 2) >= 0x80u)
-	    memset((char *) &op->imm + 1, '\xff', (mode == INTEL_PROT ? 3 : 1));	//
+	    memset((char *) &op->imm + 1, '\xff', (pmode ? 3 : 1));	//
 	  else
 	    op->imm = 0;
 	  memcpy(&op->imm, opcode + 2, 1);
@@ -144,7 +148,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  op->baser = modrm->m;
 	  op->regset = ASM_REGSET_R32;
 	  if (*(opcode + 1) >= 0x80u)
-	    memset((char *) &op->imm + 1, '\xff', (mode == INTEL_PROT ? 3 : 1));	//
+	    memset((char *) &op->imm + 1, '\xff', (pmode ? 3 : 1));	//
 	  else
 	    op->imm = 0;
 	  memcpy(&op->imm, opcode + 1, 1);
@@ -165,17 +169,17 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  op->baser = sidbyte->base;
 	  op->indexr = sidbyte->index;
 	  op->scale = asm_int_pow2(sidbyte->sid);
-	  op->len = (mode == INTEL_PROT ? 6 : 4);				//	  
-	  memcpy(&op->imm, opcode + 2, (mode == INTEL_PROT ? 4 : 2));		//	  
+	  op->len = (pmode ? 6 : 4);				//	  
+	  memcpy(&op->imm, opcode + 2, (pmode ? 4 : 2));		//	  
 	} 
       else 
 	{	  
 	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
-	  op->len = (mode == INTEL_PROT ? 5 : 3);				//
+	  op->len = (pmode ? 5 : 3);				//
 	  op->regset = ASM_REGSET_R32;
 	  op->baser = modrm->m;
 	  op->imm = 0;
-	  memcpy(&op->imm, opcode + 1, (mode == INTEL_PROT ? 4 : 2));		//
+	  memcpy(&op->imm, opcode + 1, (pmode ? 4 : 2));		//
 	}
       break;
     
@@ -217,12 +221,16 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
   struct s_modrm	*modrm;
   struct s_sidbyte	*sidbyte;
   u_char		mode;
+  u_char		pmode;
 
   mode = asm_ia32_get_mode(proc);
+  pmode = (mode == INTEL_PROT);
 
-  fprintf(stderr, "\nIA32 processor in %c-mode (RMV) \n",
-	  (mode == INTEL_PROT ? 'p' : (mode == INTEL_REAL ? 'r' : 'U')));
-  
+#if __DEBUG_MODRM__
+  fprintf(stderr, "[DEBUG_MODRM] IA32 processor in %c-mode (RMV) \n",
+	  (pmode ? 'p' : (mode == INTEL_REAL ? 'r' : 'U')));
+#endif  
+
   modrm = (struct s_modrm *) (opcode);
   sidbyte = (struct s_sidbyte *) (opcode + 1);
   
@@ -246,10 +254,10 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	      /* pushl 0x8050fe0(,%eax,4) ; opcode = 'ff 34 85 e0 0f 05 08' */
 	      op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
 	      op->regset = ASM_REGSET_R32;
-	      op->len = (mode == INTEL_PROT ? 6 : 4);					//
+	      op->len = (pmode ? 6 : 4);					//
 	      op->ptr = opcode;
 	      op->scale = asm_int_pow2(sidbyte->sid);
-	      memcpy((char *) &op->imm, opcode + 2, (mode == INTEL_PROT ? 4 : 2));	//
+	      memcpy((char *) &op->imm, opcode + 2, (pmode ? 4 : 2));	//
 	      op->baser = -1;
 	      op->indexr = sidbyte->index;
 	      break;
@@ -278,8 +286,8 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	case ASM_REG_EBP:
 	  op->content = ASM_OP_REFERENCE | ASM_OP_VALUE;
 	  op->ptr = opcode;
-	  op->len = (mode == INTEL_PROT ? 5 : 3);					//
-	  memcpy(&op->imm, opcode + 1, (mode == INTEL_PROT ? 4 : 2));			//
+	  op->len = (pmode ? 5 : 3);					//
+	  memcpy(&op->imm, opcode + 1, (pmode ? 4 : 2));			//
 	  break;
 
 	  /* modrm != EBP and modrm != ESP */
@@ -307,7 +315,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  op->indexr = sidbyte->index;
 	  op->scale = asm_int_pow2(sidbyte->sid);
 	  if (*(opcode + 2) >= 0x80u)
-	    memset((char *) &op->imm + 1, '\xff', (mode == INTEL_PROT ? 3 : 1));	//
+	    memset((char *) &op->imm + 1, '\xff', (pmode ? 3 : 1));	//
 	  else
 	    op->imm = 0;
 	  memcpy(&op->imm, opcode + 2, 1);
@@ -319,7 +327,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	op->regset = ASM_REGSET_R32;
 	op->baser = modrm->m;
 	if (*(opcode + 1) >= 0x80u)
-	  memset((char *) &op->imm + 1, '\xff', (mode == INTEL_PROT ? 3 : 1));		//
+	  memset((char *) &op->imm + 1, '\xff', (pmode ? 3 : 1));		//
 	else
 	  op->imm = 0;
 	memcpy(&op->imm, opcode + 1, 1);
@@ -335,22 +343,22 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  else
 	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	  
-	  op->len = (mode == INTEL_PROT ? 6 : 4);					//
+	  op->len = (pmode ? 6 : 4);					//
 	  op->ptr = opcode;
 	  op->baser = sidbyte->base;
 	  op->regset = ASM_REGSET_R32;
 	  op->indexr = sidbyte->index;
 	  op->scale = asm_int_pow2(sidbyte->sid);
-	  memcpy(&op->imm, opcode + 2, (mode == INTEL_PROT ? 4 : 2));			//
+	  memcpy(&op->imm, opcode + 2, (pmode ? 4 : 2));			//
 	} 
       else 
 	{
 	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
-	  op->len = (mode == INTEL_PROT ? 5 : 3);					//
+	  op->len = (pmode ? 5 : 3);					//
 	  op->ptr = opcode;
 	  op->regset = ASM_REGSET_R32;
 	  op->baser = modrm->m;
-	  memcpy(&op->imm, opcode + 1, (mode == INTEL_PROT ? 4 : 2));			//
+	  memcpy(&op->imm, opcode + 1, (pmode ? 4 : 2));			//
 	}
       break;
       
