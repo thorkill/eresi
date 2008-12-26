@@ -89,6 +89,7 @@ static char    	*edfmt_basename(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
+
 /** 
  * Main point of the debug format library 
  * This function manages this steps for every debugging formats:
@@ -100,7 +101,7 @@ static char    	*edfmt_basename(char *str)
 int			edfmt_format(elfshobj_t *file)
 {
   u_int			i;
-  elfshsect_t 		*sect = NULL;
+  volatile elfshsect_t 	*sect = NULL;
   u_int			count = 0;
   char			*base;
 
@@ -109,7 +110,6 @@ int			edfmt_format(elfshobj_t *file)
   if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong file object", -1);
-
 
   if (file->name)
     {
@@ -120,8 +120,8 @@ int			edfmt_format(elfshobj_t *file)
       
       /* We won't analyze libe2dbg library because, there's far too many information
 	 in this library, which allocate too much memory */    
-      if (!strcmp(base, "libe2dbg32.so")
-	  || !strcmp(base, "libe2dbg64.so"))
+      if (!strcmp(base, "libe2dbg32.so") || 
+	  !strcmp(base, "libe2dbg64.so"))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "We don't analyze e2dbg library", -1);
     }

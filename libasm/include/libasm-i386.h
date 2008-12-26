@@ -13,6 +13,7 @@ typedef struct s_asm_i386_processor	asm_i386_processor;
 typedef struct s_asm_i386_table		asm_i386_table;
 
 void	asm_resolve_ia32(void *d, eresi_Addr, char *, u_int);
+int	asm_ia32_get_mode(asm_processor *proc);
 
 /** Are we in protected mode or real mode ? */
 enum e_asm_proc_mode 

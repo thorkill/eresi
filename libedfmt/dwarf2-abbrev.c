@@ -632,7 +632,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 	  spos++;
 	  break;
 	case DW_OP_pick:	
-	  if (spos + buf[++i] < 0)
+	  if (((int) spos + buf[++i]) < 0)
 	    break;
 
 	  stack[spos+1].op = stack[spos - buf[i]].op;
@@ -663,7 +663,7 @@ int	      		edfmt_dwarf2_loc(edfmtdw2loc_t *loc, u_char *buf, u_int size)
 	  stack[spos - 2].value = tmp_value;
 	  break;
 	case DW_OP_abs:	
-	  if (stack[spos].value < 0)
+	  if (((int) stack[spos].value) < 0)
 	    stack[spos].value = - stack[spos].value;
 	  break;
 	case DW_OP_and:	

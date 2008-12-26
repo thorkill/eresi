@@ -26,7 +26,7 @@ void	init_instr_table(asm_processor *);
  */
 
 int	fetch_i386(asm_instr *instr, u_char *buf, u_int len, 
-			      asm_processor *proc)
+		   asm_processor *proc)
 {
   u_char	opcode;
   int		(*fetch)(asm_instr *, u_char *, u_int, asm_processor *);
@@ -87,6 +87,17 @@ void asm_free_i386(asm_processor *proc)
   free(proc->internals);
   free(proc->instr_table);
 }
+
+
+/** Get mode of IA32 processor */
+int asm_ia32_get_mode(asm_processor *proc)
+{
+  struct s_asm_proc_i386 *inter;
+
+  inter = proc->internals;
+  return (inter->mode);
+}
+
 
 /** 
  * Switch 
