@@ -296,25 +296,28 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
  * @brief Resolve the destination address of current call 
  * @param context mjorllnir context strucutre
  */
-eresi_Addr		mjr_get_call_destaddr(mjrcontext_t *context)
+eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 {
   int			 ilen;
   eresi_Addr		 dest;
   asm_instr		 *ins;
-  struct s_asm_proc_i386 *inter;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   dest = 0;
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
-  
-  if (context->proc.type == ASM_PROC_IA32)
+
+  switch (context->proc.type)
     {
+      
+      /* INTEL architecture */
+    case ASM_PROC_IA32:
+      
       /* The target block is called directly */
       if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
 	{    
 	  ilen = asm_instr_len(ins);
 	  asm_operand_get_immediate(ins, 1, 0, &dest);
-	  dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
+	  dest = asm_dest_resolve(&context->proc, context->hist[MJR_HISTORY_CUR].vaddr, (dest + ilen));
 	}
       /* The target block is called indirectly : if we find a pattern that correspond 
 	 to an easy to predict function pointer, then we compute it */
@@ -322,21 +325,21 @@ eresi_Addr		mjr_get_call_destaddr(mjrcontext_t *context)
 	dest = mjr_compute_fctptr(context);
       else
 	dest = MJR_BLOCK_INVALID;
-    }
-  else if (context->proc.type == ASM_PROC_SPARC)
-    {
+      break;
+
+      /* SPARC architecture */
+    case ASM_PROC_SPARC:
       if (ins->instr == ASM_SP_CALL)
 	{
 	  if (ins->op[0].content & ASM_SP_OTYPE_DISP30)
-	    {
-	      dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
-	    }
+	    dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
 	  else /* Indirect call (special case of JMPL) */
 	    dest = MJR_BLOCK_INVALID;
 	}
-    }
-  else if (context->proc.type == ASM_PROC_MIPS)
-    {
+      break;
+
+      /* MIPS architecture */
+    case ASM_PROC_MIPS:
       switch (ins->instr)
 	{
 	case ASM_MIPS_JAL:
@@ -347,22 +350,22 @@ eresi_Addr		mjr_get_call_destaddr(mjrcontext_t *context)
 	  dest = MJR_BLOCK_INVALID;
 	  break;
 	case ASM_MIPS_BAL:
-	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[0].imm+1)*4));
+	  dest = (context->hist[MJR_HISTORY_CUR].vaddr + (((short) ins->op[0].imm + 1) * 4));
 	  break;
 	default:
-	  dest = (context->hist[MJR_HISTORY_CUR].vaddr+(((short)ins->op[1].imm+1)*4));
+	  dest = (context->hist[MJR_HISTORY_CUR].vaddr + (((short) ins->op[1].imm + 1) * 4));
 	  break;
 	}
+      break;
+      
+      /* Unknown architecture */
+    default:
+      dest = MJR_BLOCK_INVALID;
     }
-  else
-    dest = MJR_BLOCK_INVALID;
 
-  /* Mainly to deal with real mode 20 bits addressing */
-  inter = context->proc.internals;
-  if (context->proc.type == ASM_PROC_IA32 && inter->mode == INTEL_REAL)
-    dest = dest & 0x000FFFFF;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
+
 
 /**
  * @brief Resolve the destination address of current jmp instruction
@@ -379,14 +382,18 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
   dest = 0;
   ins  = &context->hist[MJR_HISTORY_CUR].instr;
   
-  if (context->proc.type == ASM_PROC_IA32)
+  switch (context->proc.type)
     {
+
+      /* INTEL architecture */
+    case  ASM_PROC_IA32:
+
       /* The target block is called directly */
       if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
 	{    
 	  ilen = asm_instr_len(ins);
 	  asm_operand_get_immediate(ins, 1, 0, &dest);
-	  dest += ilen + context->hist[MJR_HISTORY_CUR].vaddr;
+	  dest = asm_dest_resolve(&context->proc, context->hist[MJR_HISTORY_CUR].vaddr, (dest + ilen));
 	}
       
       /* The target block is called indirectly : if we find a pattern that correspond 
@@ -395,32 +402,31 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 	dest = mjr_compute_fctptr(context);
       else
 	dest = MJR_BLOCK_INVALID;
-    }
-  else if (context->proc.type == ASM_PROC_SPARC)
-    {
+      break;
+
+      /* SPARC architecture */
+    case ASM_PROC_SPARC:
       /*
-      if (ins->instr & ASM_SP_JMPL)  //Indirect jump
+	if (ins->instr & ASM_SP_JMPL)  //Indirect jump
 	{
-	  printf("INDIRECT BRANCH TYPE FOR SPARC at addr "XFMT" ! \n", 
-		 context->hist[MJR_HISTORY_CUR].vaddr);
-	  dest = MJR_BLOCK_INVALID;
+	printf("INDIRECT BRANCH TYPE FOR SPARC at addr "XFMT" ! \n", 
+	context->hist[MJR_HISTORY_CUR].vaddr);
+	dest = MJR_BLOCK_INVALID;
 	}
       */
       if (ins->type & ASM_TYPE_CONDBRANCH || ins->type & ASM_TYPE_IMPBRANCH)
-	{
-	  dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
-	}
+	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
       else
 	{
 	  fprintf(stderr, " [D] UNKNOWN BRANCH FOR SPARC at addr "XFMT" ! \n", 
 		  context->hist[MJR_HISTORY_CUR].vaddr);
 	  dest = MJR_BLOCK_INVALID;
 	}
-    }
-  else if (context->proc.type == ASM_PROC_MIPS) 
-    {
+      break;
+  
+      /* MIPS architecture */
+    case ASM_PROC_MIPS:
       i = 0;
-      
       if ( (ins->instr & ASM_MIPS_BEQ) || (ins->instr & ASM_MIPS_BEQL) 
 	   || (ins->instr & ASM_MIPS_BNE) || (ins->instr & ASM_MIPS_BNEL) )
 	i = 2;
@@ -431,7 +437,6 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 		|| (ins->instr & ASM_MIPS_BLTZAL) || (ins->instr & ASM_MIPS_BLTZALL)
 		|| (ins->instr & ASM_MIPS_BLTZ) || (ins->instr & ASM_MIPS_BLTZL) )
         i = 1;
-      
       if (ins->op[i].type & ASM_MIPS_OTYPE_BRANCH)
         dest = (context->hist[MJR_HISTORY_CUR].vaddr + (((short)ins->op[i].imm+1) * 4));
       else if (ins->op[i].type & ASM_MIPS_OTYPE_JUMP)
@@ -439,17 +444,22 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 	  ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
       else
         dest = MJR_BLOCK_INVALID; /* Jump to register - not yet */
-    } 
-  else
-    dest = MJR_BLOCK_INVALID;
+      break;
+
+      /* Unknown architecture */
+    default:
+      dest = MJR_BLOCK_INVALID;
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
 
+
 /**
  * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
+ * @todo to remove ?
  */
 /*
 int			mjr_asm_check_function_start(mjrcontext_t *ctxt)

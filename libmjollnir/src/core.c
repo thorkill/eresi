@@ -35,6 +35,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   elfsh_SAddr	off;
   u_char	eos;
   u_int		depthinc;
+  u_int		curoff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -67,13 +68,24 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
   block->seen = 1;
 
-  /* Read data at this block's addr */
+  /* Verify that we have a parent section to read data from */
   sect = elfsh_get_parent_section(sess->cur->obj, vaddr, &off);
+
+#if __DEBUG_MJOLLNIR__
+  fprintf(stderr, " [D] analyse_rec: parent section of vaddr "AFMT" = %s (off %u) \n", 
+	  vaddr, (sect ? sect->name : "UNKNOW"), (u_int) off);
+#endif
+
+  if (!sect)
+    {
+      fprintf(stderr, " [*] Early finishing of CFG analysis at addr "AFMT" \n", vaddr);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* In many cases we dont need to do a malloc, since we will read from the section's cache */
   curlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
   eos = (curlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
   argptr = NULL;
-
-  /* In most cases we dont need to do a malloc, since we will read from the section's cache */
   if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, curlen, -1);
@@ -85,14 +97,20 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   for (curr = 0; vaddr + curr < sect->shdr->sh_addr + sect->shdr->sh_size; curr += ilen)
     {
 
-      /* Reallocate the buffer if necessary */
-      if (!eos && curr + 20 >= curlen)
+      /* Reallocate the buffer if necessary (runtime kernsh or kedbg mode) */
+      /* If we are in elfsh, e2dbg or evarista, never reallocate since we read from static cache */
+      /* The use of readmema is a bit subtle here, dont modify unless you know what you are doing */
+      if (!eos && curr + 15 >= curlen)
 	{
 	  sect = elfsh_get_parent_section(sess->cur->obj, vaddr + curr, &off);
 	  restlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
 	  eos = (restlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
 	  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
-	    XREALLOC(__FILE__, __FUNCTION__, __LINE__, ptr, ptr, curlen + restlen, -1);
+	    {
+	      curoff = (u_int) (ptr - argptr);
+	      XREALLOC(__FILE__, __FUNCTION__, __LINE__, argptr, argptr, curlen + restlen, -1);
+	      ptr = argptr + curoff;
+	    }
 	  curlen += restlen;
 	  ptr = elfsh_readmema(sess->cur->obj, vaddr + curr, ptr + curr, curlen - curr);
 	  vaddr += curr;
@@ -102,17 +120,16 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 
       /* Analyse current instruction */
       ilen = asm_read_instr(&instr, ptr + curr, curlen - curr, &sess->cur->proc);
-
-#if __DEBUG_READ__
-      fprintf(D_DESC,"[D] %s/%s,%d: ilen=%d first byte=%02x\n", 
-	      __FUNCTION__, __FILE__, __LINE__, ilen, *(ptr + curr));
-#endif
       
-      /* This is an error that should never happens, or we have a libasm bug */
+      /* This is an error that should never happen, or we have a serious libasm bug */
       if (ilen <= 0) 
 	{
-	  printf(" [D] asm_read_instr returned -1 at address " XFMT "\n", vaddr + curr);
-	  exit(-1);
+	  fprintf(stderr,
+		  " [D] asm_read_instr returned -1 (opcode %02X %02X %02X %02X %02X %02X) at "XFMT"\n", 
+		 *(ptr + curr), *(ptr + curr + 1), *(ptr + curr + 2),
+		 *(ptr + curr + 3), *(ptr + curr + 4), *(ptr + curr + 5), 
+		 vaddr + curr);
+	  goto end;
 	}
 
       mjr_history_shift(sess->cur, instr, vaddr + curr);
@@ -160,11 +177,13 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 #endif
 	  
 	  block->size += delayslotsize;
-	  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
-	    XFREE(__FILE__, __FUNCTION__, __LINE__, ptr);
 	  break;
 	}
     }
+
+ end:
+  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
+    XFREE(__FILE__, __FUNCTION__, __LINE__, argptr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
