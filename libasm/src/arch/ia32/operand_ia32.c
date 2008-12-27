@@ -117,7 +117,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  op->len = 1;
 	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE;
 	  op->baser = modrm->m;
-	  op->regset = ASM_REGSET_R32;
+	  op->regset = pmode ? ASM_REGSET_R32 : ASM_REGSET_R16;
 	  break;
 	}
       break;
