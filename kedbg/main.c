@@ -161,7 +161,7 @@ static void	kedbg_biosmap_load()
  */
 static Bool       kedbg_file_is_kernel(elfshobj_t *file)
 {
-  elfshsect_t   *textsct;
+  elfshsect_t     *textsct;
   
   textsct = elfsh_get_section_by_name(file, "__ksymtab", NULL, NULL, NULL);
   if (textsct != NULL)
@@ -174,14 +174,15 @@ static Bool       kedbg_file_is_kernel(elfshobj_t *file)
 /**
  * If the file has only one segment of 1MB, we have loaded the biosmap.
  */
-static Bool       kedbg_file_is_bios(elfshobj_t *file)
+static Bool     kedbg_file_is_bios(elfshobj_t *file)
 {
   elfsh_Phdr	*phdr;
   
   phdr = elfsh_get_segment_by_type(file, PT_LOAD, 0);
-  if (phdr == NULL || phdr->p_memsz != 0x100000 ||
-      !elfsh_segment_is_writable(phdr) ||
-      !elfsh_segment_is_readable(phdr) || 
+  if (phdr	    == NULL		||
+      phdr->p_memsz != 0x100000		||
+      !elfsh_segment_is_writable(phdr)	||
+      !elfsh_segment_is_readable(phdr)	|| 
       !elfsh_segment_is_executable(phdr))
     return FALSE;
   else
@@ -191,8 +192,8 @@ static Bool       kedbg_file_is_bios(elfshobj_t *file)
 
 static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 {
-  eresi_Addr    addr;
-  elfshsect_t   *textsct;
+  eresi_Addr      addr;
+  elfshsect_t     *textsct;
 
   textsct = elfsh_get_section_by_name(file, ".text", NULL, NULL, NULL);
   //already initialized in librevm

@@ -1,7 +1,7 @@
 /*
 ** backtrace.c for e2dbg
 **    
-** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
+** Started on  Tue Aug 16 09:38:03 2005 jfv
 **
 ** $Id: backtrace.c,v 1.1 2008-02-16 12:32:27 thor Exp $
 **
@@ -31,7 +31,7 @@ int		e2dbg_bt()
 		 "No current file", -1);
 
   /* Get the current frame by calling the hook */
-  frame = (eresi_Addr) e2dbg_getfp();
+  frame = (eresi_Addr)(uintptr_t)e2dbg_getfp();
   if (!frame)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No context", (-1));
 
@@ -58,27 +58,30 @@ int		e2dbg_bt()
       /* Resolve and print current trace frame */
       if (i == 0)
 	ret = *(e2dbg_getpc());
+
       name = revm_resolve(world.curjob->curfile, (eresi_Addr) ret, &off);
       if (!name)
 	name = "?";
 
-      /* Just insert the real entry point where we reach the thread entry point of e2dbg */
+      /* Just insert the real entry point where we reach the thread
+	 entry point of e2dbg */
       if (strstr(name, "e2dbg_thread_start"))
 	{
 	  snprintf(logbuf, BUFSIZ - 1, "%u", 
 		   (unsigned int) e2dbgworld.stoppedthread->tid);
 	  t = hash_get(&e2dbgworld.threads, logbuf);
-	  name2 = revm_resolve(world.curjob->curfile, (eresi_Addr) t->entry, &off2);
+	  name2 = revm_resolve(world.curjob->curfile,
+			       (eresi_Addr)(uintptr_t) t->entry, &off2);
 	  if (name2)
 	    {
 	      if (off2)
 		snprintf(logbuf, BUFSIZ - 1, 
 			 " [%02d] "XFMT" in "XFMT" <%s + " UFMT "> -ENTRY-\n", i, 
-			 ret, (eresi_Addr) t->entry, name2, off2);
+			 ret, (eresi_Addr)(uintptr_t) t->entry, name2, off2);
 	      else
 		snprintf(logbuf, BUFSIZ - 1, 
 			 " [%02d] "XFMT" in "XFMT " <%s> -ENTRY-\n", i, 
-			 ret, (eresi_Addr) t->entry, name2);
+			 ret, (eresi_Addr)(uintptr_t) t->entry, name2);
 	      e2dbg_output(logbuf);
 	      i++;
 	    }

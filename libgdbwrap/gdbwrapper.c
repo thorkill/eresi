@@ -44,8 +44,8 @@ static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
   if (!strncmp(GDBWRAP_DEAD, error, strlen(GDBWRAP_DEAD)))
     fprintf(stdout, "The server seems to be dead. Message not sent.\n");
 
-/*   if (error[0] == GDBWRAP_REPLAY_ERROR) */
-/*     fprintf(stdout, "Error received from the server: %s\n", error); */
+  if (error[0] == GDBWRAP_REPLAY_ERROR)
+    fprintf(stdout, "Error received from the server: %s\n", error);
   
   if (error[0] == GDBWRAP_EXIT_W_STATUS)
     {
@@ -59,8 +59,8 @@ static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
       desc->is_active = FALSE;
     }
 
-  if (error[0] == GDBWRAP_NULL_CHAR)
-    fprintf(stdout, "Command not supported\n");
+/*   if (error[0] == GDBWRAP_NULL_CHAR) */
+/*     fprintf(stdout, "Command not supported\n"); */
 
   desc->erroroccured = TRUE;
   return TRUE;
