@@ -235,7 +235,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
   modrm = (struct s_modrm *) (opcode);
   sidbyte = (struct s_sidbyte *) (opcode + 1);
   
-  op->regset = ASM_REGSET_R32;
+  op->regset = pmode ? ASM_REGSET_R32 : ASM_REGSET_R16;
   switch (modrm->mod) 
     {
 

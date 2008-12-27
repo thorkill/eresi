@@ -33,6 +33,7 @@ int     asm_operand_fetch_offset(asm_operand *operand, u_char *opcode,
   operand->content = ASM_OP_VALUE | ASM_OP_REFERENCE;
   operand->ptr = opcode;
   operand->imm = 0;
+  operand->regset = asm_proc_is_protected(ins->proc) ? ASM_REGSET_R32 : ASM_REGSET_R16;
   len = asm_proc_opsize(ins->proc) ? 2 : 4;
   operand->len = len;
   memcpy(&operand->imm, opcode, len);

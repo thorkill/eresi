@@ -31,7 +31,7 @@ int     asm_operand_fetch_general(asm_operand *operand, u_char *opcode,
   operand->type = ASM_OTYPE_GENERAL;
   operand->content = ASM_OP_BASE;
   operand->regset = asm_proc_opsize(ins->proc) ? 
-    ASM_REGSET_R16 : ASM_REGSET_R32;
+    ASM_REGSET_R32 : ASM_REGSET_R16;
   modrm = (struct s_modrm *) opcode;
   operand->baser = modrm->r;
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
