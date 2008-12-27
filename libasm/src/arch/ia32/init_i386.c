@@ -49,36 +49,25 @@ int	asm_init_i386(asm_processor *proc)
 }
 
 /**
- * Intialize the processor structure to disassemble i386 bytecode.
+ * Intialize the processor and vector structures to disassemble i386 bytecode.
  * @param Pointer to a asm_processor structure.
  * @return Always 1.
  */
 
 int asm_init_ia32(asm_processor *proc)
 {
-  
   struct s_asm_proc_i386 *inter;
   
   init_instr_table(proc);
   proc->type = ASM_PROC_IA32;
-  /* Register the ia32 vector */
   asm_register_ia32();
-
-  // XXX: dead code to remove
-  //asm_init_ia32_vector();
-  //asm_init_vectors(proc);
-  // asm_arch_register(proc, 1);  /* dummy parameters for the  moment */
-
-  
   proc->resolve_immediate = asm_resolve_ia32;
   proc->resolve_data = 0;
-  // proc->get_operand = create_i386_operand;
   proc->fetch = fetch_i386;
   proc->display_handle = asm_ia32_display_instr_att;
   inter = proc->internals = malloc(sizeof (struct s_asm_proc_i386));
   inter->opsize = inter->addsize = 0;
   inter->mode = INTEL_PROT;
-
   return (1);
 }
 
@@ -88,6 +77,23 @@ void asm_free_i386(asm_processor *proc)
   free(proc->instr_table);
 }
 
+/* Resolve destinations of control flow instruction depending on real or protected mode */
+eresi_Addr	asm_dest_resolve(asm_processor *proc, eresi_Addr addr, u_int shift)
+{
+  int		mode;
+  u_short	off;
+
+  mode = asm_ia32_get_mode(proc);
+  if (mode == INTEL_REAL)
+    {
+      off = (addr & 0xFFFF) + shift;
+      addr = (addr & 0xFFFF0000) + off;
+    }
+  else
+    addr += shift;
+  return (addr);
+}
+
 
 /** Get mode of IA32 processor */
 int asm_ia32_get_mode(asm_processor *proc)
@@ -95,10 +101,6 @@ int asm_ia32_get_mode(asm_processor *proc)
   struct s_asm_proc_i386 *inter;
 
   inter = proc->internals;
-
-  //fprintf(stderr, "GETTING MODE (%c) ON PROC %p \n", 
-  //  (inter->mode == INTEL_PROT ? 'P' : 'R'), proc);
-
   return (inter->mode);
 }
 
@@ -114,14 +116,8 @@ int asm_ia32_switch_mode(asm_processor *proc, int mode)
 
   inter = proc->internals;
   inter->mode = mode;
-
-  //fprintf(stderr, "SETTING %c-MODE ON PROC %p \n", 
-  //  (mode == INTEL_PROT ? 'P' : 'R'), proc);
-
   if (mode == INTEL_PROT)
-    {
-      inter->opsize = inter->addsize = 0;
-    }
+    inter->opsize = inter->addsize = 0;
   else
     {
       /**
