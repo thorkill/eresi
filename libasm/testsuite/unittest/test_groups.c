@@ -16,13 +16,19 @@ typedef struct s_instr2test
 } instr2test_t;
 
 
+
 instr2test_t g_instr2test_array[] =
   {
-    { "\xA1\x10\x00", 2, 0x000FF5CC, "", ""},
+    { "\xA1\x10\x00\x00\x00", 2, 0x000FF5CC, "mov           0x00000010,%eax", "mov           0x00000010,%ax"},
     { "\xFE\x06", 2, 0x000FF316, "inc           (%esi)", "inc           (%si)"},
-    { "\x66\x2E\x8B\x0C\x66", 5, 0x000FF5D1, "", ""},
-    { "\xEB\x00", 0x000FF2E4 , 2, "", ""},
-    { "\x70\x00", 0x000FF318 , 2, "", ""},
+    { "\x66\x2E\x8B\x0B\x66", 5, 0x000FF5D1, "mov           (%ebx),%cs:%ecx", "mov           (%bx),%cs:%cx"},
+    { "\xEB\x00", 2, 0x000FF2E4, "jmp           0x000FF2E6", ""},
+
+    { "\xE8\x09\x47\x00\x00", 5, 0x000FF2E6, "", ""},
+
+    //    { "\x70\x00", 0x000FF318 , 2, "", ""},
+    //    { "\x70\x00", 0x000FF318 , 2, "", ""},
+    //{ "\x70\x00", 0x000FF318 , 2, "", ""},
     { NULL, 0, 0, "", ""},
   };
 
@@ -36,7 +42,7 @@ char	*dump_bytes(unsigned char *ptr, int len)
   static char	buffer[513];
   
   for(i = 0; i < len; i++)
-    sprintf(buffer + (i * 2), "%0X", *(ptr + i));
+    sprintf(buffer + (i * 2), "%02X", *(ptr + i));
   return (buffer);
 }
 
