@@ -36,6 +36,7 @@ int			operand_rmb_ib(asm_instr *ins, u_char *opcode,
   return (1);
 }
 
+
 /**
  * @brief Decode a modRM operand of size Byte.
  *

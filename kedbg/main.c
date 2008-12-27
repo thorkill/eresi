@@ -152,9 +152,6 @@ static void	kedbg_biosmap_load()
   file->loadtime = time(&file->loadtime);
   file->iotype   = ELFSH_IOTYPE_GDBPROT;
   file->hostype  = E2DBG_HOST_GDB;
-
-  /* Set as 16b code. */
-  asm_ia32_switch_mode(&world.proc_ia32, INTEL_REAL);
 }
 
 
@@ -262,9 +259,12 @@ static int      kedbg_main(int argc, char **argv)
   e2dbg_presence_set();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
-
   
+  /* Put all files as being debugged within a VM */
   kedbg_propagate_type();
+
+  /* Set as 16b code. */
+  asm_ia32_switch_mode(&world.proc_ia32, INTEL_REAL);
 
   ret = kedbg_file_is_bios(world.curjob->curfile);
   if (!kedbg_file_is_kernel(world.curjob->curfile) && !ret)

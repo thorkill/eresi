@@ -152,7 +152,7 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
 
   baser = indexr = scale = imm = 0;
 
-  switch(num)
+  switch (num)
     {
     case 1:
       op = &ins->op[0];
@@ -174,19 +174,21 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     asm_operand_get_indexreg(ins, num, addr, &indexr);
     // if (op->content & ASM_OP_SCALE)
     asm_operand_get_scale(ins, num, addr, &scale);
-  
-  if (ASM_OP_ADDRESS & op->content) 
+    
+  if (op->content & ASM_OP_ADDRESS) 
     {
-      if (ASM_OP_REFERENCE & op->content) 
+      if (op->content & ASM_OP_REFERENCE) 
 	ins->proc->resolve_immediate(ins->proc->resolve_data, 
 				     imm & addr_mask, resolved, 256);
-      else if (ASM_OP_VALUE & op->content)
+      else if (op->content & ASM_OP_VALUE)
 	ins->proc->resolve_immediate(ins->proc->resolve_data, 
 				     (imm + addr + ins->len) & addr_mask, resolved, 256);
       else
 	ins->proc->resolve_immediate(ins->proc->resolve_data, 
 				     (imm + addr + ins->len) & addr_mask, resolved, 256);
     } 
+  else if (op->len == 1)
+    snprintf(resolved, sizeof(resolved), "0x%02X", (u_char) imm);
   else
     ins->proc->resolve_immediate(ins->proc->resolve_data,
 				 imm, resolved, 256);
@@ -234,14 +236,12 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
 	      get_reg_intel(baser, op->regset));
       break;
     case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE:
-      sprintf(buffer, "%s(%%%s)", 
-	      resolved
-	      , get_reg_intel(baser, op->regset));
+      sprintf(buffer, "%s(%%%s)", resolved,
+	      get_reg_intel(baser, op->regset));
       break;
     case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_ADDRESS:
-      sprintf(buffer, "*%s(%%%s)", 
-	      resolved
-	      , get_reg_intel(baser, op->regset));
+      sprintf(buffer, "*%s(%%%s)", resolved,
+	      get_reg_intel(baser, op->regset));
       break;
     case 
       ASM_OP_REFERENCE | ASM_OP_ADDRESS | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:

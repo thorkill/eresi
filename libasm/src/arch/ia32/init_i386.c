@@ -95,6 +95,10 @@ int asm_ia32_get_mode(asm_processor *proc)
   struct s_asm_proc_i386 *inter;
 
   inter = proc->internals;
+
+  //fprintf(stderr, "GETTING MODE (%c) ON PROC %p \n", 
+  //  (inter->mode == INTEL_PROT ? 'P' : 'R'), proc);
+
   return (inter->mode);
 }
 
@@ -110,6 +114,10 @@ int asm_ia32_switch_mode(asm_processor *proc, int mode)
 
   inter = proc->internals;
   inter->mode = mode;
+
+  //fprintf(stderr, "SETTING %c-MODE ON PROC %p \n", 
+  //  (mode == INTEL_PROT ? 'P' : 'R'), proc);
+
   if (mode == INTEL_PROT)
     {
       inter->opsize = inter->addsize = 0;

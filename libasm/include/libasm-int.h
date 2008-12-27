@@ -9,7 +9,7 @@
  #define LIBASM_INT_H
 
 /* Debug flags */
-#define		__DEBUG_MODRM__		1
+#define		__DEBUG_MODRM__		0
 
 /**
  * Structure describing the modrm byte.
