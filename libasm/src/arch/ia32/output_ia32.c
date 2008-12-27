@@ -144,7 +144,9 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
   int		imm;
   asm_operand	*op;
   char		*buffer;
-  
+  u_short	off;
+  int		mode;
+
   addr_mask = asm_proc_opsize(ins->proc) ? 0x000fffff : 0xffffffff;
 
   op = 0;
@@ -165,33 +167,35 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
       break;
     }
 
-
-  // if (op->content & ASM_OP_VALUE)
-    asm_operand_get_immediate(ins, num, addr, &imm);
-    // if (op->content & ASM_OP_BASE)
-    asm_operand_get_basereg(ins, num, addr, &baser);
-    // if (op->content & ASM_OP_INDEX)
-    asm_operand_get_indexreg(ins, num, addr, &indexr);
-    // if (op->content & ASM_OP_SCALE)
-    asm_operand_get_scale(ins, num, addr, &scale);
+  asm_operand_get_immediate(ins, num, addr, &imm);
+  asm_operand_get_basereg(ins, num, addr, &baser);
+  asm_operand_get_indexreg(ins, num, addr, &indexr);
+  asm_operand_get_scale(ins, num, addr, &scale);
     
   if (op->content & ASM_OP_ADDRESS) 
     {
       if (op->content & ASM_OP_REFERENCE) 
-	ins->proc->resolve_immediate(ins->proc->resolve_data, 
-				     imm & addr_mask, resolved, 256);
-      else if (op->content & ASM_OP_VALUE)
-	ins->proc->resolve_immediate(ins->proc->resolve_data, 
-				     (imm + addr + ins->len) & addr_mask, resolved, 256);
+	ins->proc->resolve_immediate(ins->proc->resolve_data, imm & addr_mask, resolved, 256);
       else
-	ins->proc->resolve_immediate(ins->proc->resolve_data, 
-				     (imm + addr + ins->len) & addr_mask, resolved, 256);
+	{
+
+	  /* Deal with real-mode or protected mode in IA32 */
+	  mode = (ins->proc->type == ASM_PROC_IA32 ? asm_ia32_get_mode(ins->proc) : INTEL_PROT);
+	  if (mode == INTEL_REAL)
+	    {
+	      off = (addr & 0xFFFF);
+	      off += imm + ins->len;
+	      addr = (addr & 0xFFFF0000) + off;
+	    }
+	  else
+	    addr += imm + ins->len;
+	  ins->proc->resolve_immediate(ins->proc->resolve_data, addr, resolved, 256);
+	}
     } 
   else if (op->len == 1)
     snprintf(resolved, sizeof(resolved), "0x%02X", (u_char) imm);
   else
-    ins->proc->resolve_immediate(ins->proc->resolve_data,
-				 imm, resolved, 256);
+    ins->proc->resolve_immediate(ins->proc->resolve_data, imm, resolved, 256);
   
   switch (op->content & ~ASM_OP_FIXED) 
     {
