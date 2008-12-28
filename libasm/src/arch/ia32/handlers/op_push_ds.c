@@ -14,7 +14,6 @@
 
 int op_push_ds(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
 {
-  new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_PUSH;
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
@@ -27,7 +26,8 @@ int op_push_ds(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 
   //asm_fixed_pack(content, type, regset, baser)
 #else
-  new->op[0].content = ASM_OP_BASE;
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new);
+  new->op[0].content |= ASM_OP_BASE | ASM_OP_FIXED;
   new->op[0].regset = ASM_REGSET_SREG;
   new->op[0].baser = ASM_REG_DS;
 #endif
