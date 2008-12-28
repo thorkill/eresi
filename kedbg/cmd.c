@@ -6,8 +6,7 @@ int             cmd_kedbg_dump_regs(void)
 {
   PROFILER_INQ();
   e2dbg_output(" .:: Registers ::. \n\n");
-  //  gdbwrap_readgenreg(loc);
-  kedbg_set_regvars_ia32();
+  kedbg_get_regvars_ia32();
   e2dbg_printregs();
   e2dbg_output("\n");
   PROFILER_ROUTQ(0);
