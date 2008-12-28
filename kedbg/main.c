@@ -152,6 +152,7 @@ static void	kedbg_biosmap_load()
   file->loadtime = time(&file->loadtime);
   file->iotype   = ELFSH_IOTYPE_GDBPROT;
   file->hostype  = E2DBG_HOST_GDB;
+  file->id       = ++world.state.lastid;
 }
 
 
