@@ -45,3 +45,4 @@ int             cmd_com1(void);
 int             cmd_kedbgcont(void);
 int             cmd_kedbgstep(void);
 int             cmd_kedbgquit(void);
+int             cmd_kedbgdisasm(void);

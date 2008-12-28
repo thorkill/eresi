@@ -79,7 +79,7 @@ Bool           kedbg_isrealmode(void)
   PROFILER_INQ();
 
   /* If we are not running in a VM, we've nothing to do here. */
-  if (!kedbgworld.run_in_vm || kedbgworld.pmode)
+  if (kedbgworld.run_in_vm == FALSE || kedbgworld.pmode == TRUE)
     PROFILER_ROUTQ(FALSE);
  
   do
@@ -104,6 +104,9 @@ Bool           kedbg_isrealmode(void)
 	}
     } while (gdbwrap_cmdnotsup(loc));
 
+  if (kedbgworld.pmode == TRUE)
+    asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
+  
   PROFILER_ROUTQ(ret);
 }
 

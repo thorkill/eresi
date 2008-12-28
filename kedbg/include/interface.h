@@ -31,6 +31,7 @@ void            kedbg_sigint(int sig);
 void            kedbg_continue(void);
 void            kedbg_shipallreg(void);
 int             kedbg_writereg(ureg32 regNum, la32 val);
+Bool            kedbg_isrealmode(void);
 
 /* Miscellaneous functions. */
 char            *kedbg_getstr(void *addr, char *buf, unsigned maxsize);

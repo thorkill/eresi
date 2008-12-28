@@ -125,10 +125,10 @@ int             cmd_kedbgquit(void)
 }
 
 
-int              cmd_kedbgprintivt(void)
+int             cmd_kedbgprintivt(void)
 {
-  uint32_t       ivt[256];
-  short          i;
+  uint32_t      ivt[256];
+  short         i;
 
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
@@ -140,5 +140,18 @@ int              cmd_kedbgprintivt(void)
       printf("0x%08x ", ivt[i]);
     }
   printf("\n\n");
+  PROFILER_ROUTQ(0);
+}
+
+
+/**
+ * Wrapper to cmd_disasm, but checks wether we are in realmode or
+ * not. It will set internal variable in case we change mode.
+ **/
+int             cmd_kedbgdisasm(void)
+{
+  PROFILER_INQ();
+  kedbg_isrealmode();
+  cmd_disasm();
   PROFILER_ROUTQ(0);
 }

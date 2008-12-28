@@ -23,10 +23,10 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_RPHT, cmd_rpht, revm_getregxoption, 1, HLP_RPHT);
   revm_command_add(CMD_QUIT, cmd_kedbgquit, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_QUIT2, cmd_kedbgquit, NULL, 0, HLP_QUIT);
-  revm_command_add(CMD_DISASM, cmd_disasm, revm_getdisasm, 0, HLP_DISASM);
-  revm_command_add(CMD_DISASM2, cmd_disasm, revm_getdisasm, 0, HLP_DISASM);
-  revm_command_add(CMD_HEXA, cmd_disasm, revm_gethexa, 1, HLP_HEXA);
-  revm_command_add(CMD_HEXA2, cmd_disasm, revm_gethexa, 1, HLP_HEXA);
+  revm_command_add(CMD_DISASM, cmd_kedbgdisasm, revm_getdisasm, 0, HLP_DISASM);
+  revm_command_add(CMD_DISASM2, cmd_kedbgdisasm, revm_getdisasm, 0, HLP_DISASM);
+  revm_command_add(CMD_HEXA, cmd_kedbgdisasm, revm_gethexa, 1, HLP_HEXA);
+  revm_command_add(CMD_HEXA2, cmd_kedbgdisasm, revm_gethexa, 1, HLP_HEXA);
   revm_command_add(CMD_IVT, cmd_kedbgprintivt, NULL, 0, HLP_QUIT);
   revm_command_add(CMD_WRITE, cmd_write, revm_getvarparams, 1, HLP_WRITE);
 

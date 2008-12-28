@@ -239,7 +239,8 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
 static int      kedbg_main(int argc, char **argv)
 {
   int           ret;
-   
+
+  PROFILER_INQ();  
   /* The "1" stands for interactive. */
   revm_setup(1, argv, REVM_STATE_INTERACTIVE, REVM_SIDE_CLIENT);
   revm_config(".kedbgrc");
@@ -255,7 +256,9 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_register_vector();
   ret = revm_file_load(argv[2], 0, NULL);
 
-  ASSERT(!ret);
+  if (ret)
+    PROFILER_ERRQ("[E] Wrong file - exiting\n", -1);  
+
   elfsh_set_runtime_mode();
   e2dbg_presence_set();
   world.curjob->curfile->hostype = E2DBG_HOST_GDB;
@@ -310,7 +313,7 @@ static int      kedbg_main(int argc, char **argv)
   
   revm_run_no_handler(argc, argv);
 
-  return 0;
+  PROFILER_ROUTQ(0);  
 }
 
 
@@ -352,8 +355,7 @@ int             main(int argc, char **argv)
   gdbwrap_reason_halted(gdbwrap_current_get());
   kedbg_get_regvars_ia32();
   kedbg_present_set();
-  kedbg_main(argc, argv);
-  return 0;
+  return kedbg_main(argc, argv);
 }
 
 
