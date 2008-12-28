@@ -64,6 +64,7 @@
 #define	HLP_DIV			"Divide first param by second one"
 #define	HLP_MOD			"Modulo operation between 2 parameters"
 #define	HLP_INFO		"Print ELF objects usage for scripting"
+#define	HLP_PROC		"Print information about currently used processor"
 #define	HLP_METACMD		"Execute a UNIX shell"
 #define	HLP_WRITE		"Write raw data to ELF section"
 #define	HLP_APPEND		"Append raw data to ELF section"

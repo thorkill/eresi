@@ -115,6 +115,7 @@
 #define	CMD_EXPORT		"export"
 #define	CMD_EDIT		"edit"
 #define	CMD_EVAL		"eval"
+#define	CMD_PROC		"proc"
 
 /* Type related commands */
 #define	CMD_INFORM		"inform"
@@ -124,6 +125,10 @@
 
 /* Debugging format commands */
 #define CMD_DEBUG		"debug"
+
+/* Debugger command -- FIXME should be in e2dbg only */
+#define	CMD_RSHT		"rsht"
+#define	CMD_RPHT		"rpht"
 
 /* ELF Version commands */
 #define CMD_VERSION		"version"
@@ -194,9 +199,7 @@
 
 /* config commands */
 #define CMD_CONFIGURE		"configure"
-
-#define	CMD_RSHT		"rsht"
-#define	CMD_RPHT		"rpht"
+#define	CMD_CONFIG		"config"
 
 /* Structures for subcommands provided by libetrace */
 
@@ -322,6 +325,7 @@ int		cmd_set();
 int		cmd_get();
 int		cmd_print();
 int		cmd_info();
+int		cmd_proc();
 int		cmd_add();
 int		cmd_sub();
 int		cmd_mul();

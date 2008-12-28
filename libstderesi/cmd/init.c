@@ -300,7 +300,9 @@ void		eresi_commands_init()
   revm_command_add(CMD_VERDEF  , (void *) cmd_verdef  , (void *) revm_getregxoption, 1, HLP_VERDEF);
   revm_command_add(CMD_HASH    , (void *) cmd_hashx   , (void *) revm_getregxoption, 1, HLP_HASH);
   revm_command_add(CMD_CONFIGURE, cmd_configure       , revm_getvarparams, 0, HLP_CONFIGURE);
-
+  revm_command_add(CMD_CONFIG  , cmd_configure        , revm_getvarparams, 0, HLP_CONFIGURE);
+  revm_command_add(CMD_PROC    , cmd_proc             , NULL, 0, HLP_PROC);
+  
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
   revm_command_add(CMD_UNION    , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
