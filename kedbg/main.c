@@ -287,6 +287,7 @@ static int      kedbg_main(int argc, char **argv)
       elfshsect_t   *ksymtab_strings;
 
       kedbgworld.run_in_vm = TRUE;
+      kedbg_isrealmode();
       /* If we have not loaded the bios but the kernel */
       if (!ret)
 	{

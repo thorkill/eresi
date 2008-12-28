@@ -26,7 +26,6 @@ NAME    = libgdbwrap
 CC      ?= gcc
 LD      ?= ld
 AR	= ar rc
-RANLIB  = ranlib
 
 all  :  all32
 
