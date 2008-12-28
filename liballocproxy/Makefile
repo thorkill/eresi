@@ -13,6 +13,7 @@ OBJ	= $(SRC:.c=.o)
 CFLAGS	+= -D__STD_C -DMALLOC_DEBUG -DUSE_ARENAS -DSHARED -DUSE_TLS \
 	-fPIC -g3 -Iinclude -I../libelfsh/include/
 NAME	= allocproxy
+RANLIB  = ranlib
 
 all	: heap
 
