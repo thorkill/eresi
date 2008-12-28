@@ -13,6 +13,8 @@
 #define  CMD_IVT           "ivt"
 
 #define  BPCODE            0xcc
+#define  MEMINJECT         0x500
+
 
 /* Debug flags */
 #define __DEBUG_KEDBG__	   FALSE

@@ -40,21 +40,32 @@ static Bool     kedbg_isrealmodewmon(void)
 }
 
 
-/* When the monitor doesn't work, we inject directly a "mov %cr0,
-   %eax" and we check the last bit of %eax. We save the state of all
-   the general purpose registers that we restore afterwards. */
+/**
+ * When the monitor doesn't work, we inject directly a "mov %cr0,
+ * %eax" and we check the last bit of %eax. We save the state of all
+ * the general purpose registers that we restore afterwards.  We
+ * inject the code at address 0x500 to be less intrusive. If we cannot
+ * access this memory area, it means that we already are un protected
+ * mode.
+ **/
 static Bool     kedbg_isrealmodeinject(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          code[]="\x0f\x20\xc0";
-  char          saved[4];
   gdbwrap_gdbreg32 regs;
   
   PROFILER_INQ();
   
+  kedbg_writemem(NULL, MEMINJECT, code, strlen(code));
+
+  if (gdbwrap_erroroccured(loc))
+    {
+      kedbgworld.pmode = TRUE;
+      PROFILER_ROUTQ(kedbgworld.pmode);
+    }
+
   memcpy(&regs, &loc->reg32, sizeof(regs));
-  kedbg_readmema(NULL, regs.eip, saved, strlen(code));
-  kedbg_writemem(NULL, regs.eip, code, strlen(code));
+  kedbg_writereg(offsetof(gdbwrap_gdbreg32, eip) / sizeof(ureg32), MEMINJECT);
   gdbwrap_stepi(loc);
   gdbwrap_readgenreg(loc);
   if (loc->reg32.eax & 0x1)
@@ -62,7 +73,6 @@ static Bool     kedbg_isrealmodeinject(void)
   else
     kedbgworld.pmode = FALSE;
   
-  kedbg_writemem(NULL, regs.eip, saved, 3);
   memcpy(&loc->reg32, &regs, sizeof(regs));
   gdbwrap_shipallreg(loc);
   
@@ -304,6 +314,9 @@ void            kedbg_sigint(int sig)
 }
 
 
+/**
+ * Reads the content of the memory and returns it as binary.
+ **/
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 				void *buf, u_int size)
 {
@@ -448,4 +461,24 @@ int             kedbg_writereg(ureg32 regNum, la32 val)
   PROFILER_INQ();
   gdbwrap_writereg(loc, regNum, val);
   PROFILER_ROUTQ(0);
+}
+
+
+eresi_Addr      kedbg_realmode_memalloc(u_int size)
+{
+  char          *ret = alloca(size + 1);
+  eresi_Addr    addr = 0x504;
+  u_int         i;
+  u_int         result = 0;
+
+  PROFILER_INQ();
+  do
+    {
+      kedbg_readmema(NULL, addr, ret, size);
+      for (i = 0; i < size; i++)
+	result += ret[i];
+      if (result)
+	addr += size;
+    } while (result && addr < 0x7c00);
+  PROFILER_ROUTQ(addr);
 }

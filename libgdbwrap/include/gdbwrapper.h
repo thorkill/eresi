@@ -74,5 +74,5 @@ void             gdbwrap_signal(gdbwrap_t *desc, int signal);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
 char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
-
+u_char           gdbwrap_lasterror(gdbwrap_t *desc);
 

@@ -63,6 +63,7 @@ static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
 /*     fprintf(stdout, "Command not supported\n"); */
 
   desc->erroroccured = TRUE;
+  fflush(stdout);
   return TRUE;
 }
 
@@ -80,6 +81,20 @@ unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
      next 2 characters reprensent the signal number. */
   if (lastmsg != NULL && (lastmsg[0] == GDBWRAP_SIGNAL_RECV ||
 			  lastmsg[0] == GDBWRAP_SIGNAL_RECV2))
+    ret = gdbwrap_atoh(lastmsg + 1, BYTE_IN_CHAR * sizeof(char));
+
+  return ret;
+}
+
+
+u_char               gdbwrap_lasterror(gdbwrap_t *desc)
+{
+  u_char             ret = 0;
+  char               *lastmsg = gdbwrap_lastmsg(desc);
+
+  /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
+     next 2 characters reprensent the signal number. */
+  if (lastmsg != NULL && lastmsg[0] == GDBWRAP_REPLAY_ERROR)
     ret = gdbwrap_atoh(lastmsg + 1, BYTE_IN_CHAR * sizeof(char));
 
   return ret;
@@ -949,5 +964,3 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 
   return ret;
 }
-
-

@@ -32,6 +32,7 @@ void            kedbg_continue(void);
 void            kedbg_shipallreg(void);
 int             kedbg_writereg(ureg32 regNum, la32 val);
 Bool            kedbg_isrealmode(void);
+eresi_Addr      kedbg_realmode_memalloc(u_int size);
 
 /* Miscellaneous functions. */
 char            *kedbg_getstr(void *addr, char *buf, unsigned maxsize);
