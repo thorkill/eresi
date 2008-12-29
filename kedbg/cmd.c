@@ -2,6 +2,26 @@
 #include "interface.h"
 
 
+static void     kedbg_stepandprint(void)
+{
+  char          *instr;
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  int           off;
+  char          *name;
+  elfshobj_t    *parent;
+
+  gdbwrap_stepi(loc);      
+  revm_clean();
+  gdbwrap_readgenreg(loc);
+  e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
+  parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
+  name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
+  instr  = alloca(20);
+  kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
+  revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
+}
+
+
 int             cmd_kedbg_dump_regs(void)
 {
   PROFILER_INQ();
@@ -23,7 +43,6 @@ int             cmd_kedbgcont(void)
   int           off;
   char          *name;
   uint8_t       eip_pos;
-  elfshobj_t    *parent;
 
   PROFILER_INQ();
   kedbg_set_regvars_ia32();
@@ -70,20 +89,8 @@ int             cmd_kedbgcont(void)
 	}
     }
   else
-    {
-      char    *instr;
-
-      gdbwrap_stepi(loc);      
-      revm_clean();
-      gdbwrap_readgenreg(loc);
-      e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
-      parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
-      name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
-      instr  = alloca(20);
-      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
-      revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
-    }
-
+    kedbg_stepandprint();
+  
   if (!gdbwrap_is_active(loc))
     cmd_quit();
   kedbg_get_regvars_ia32();
@@ -202,29 +209,15 @@ int             cmd_kedbgitrace(void)
   gdbwrap_t     *loc = gdbwrap_current_get();
   elfshbp_t	*bp;
   char          addr[50];
-  int           off;
-  char          *name;
-  elfshobj_t    *parent;
-
 
   PROFILER_INQ();
   e2dbgworld.curthread->trace = TRUE;
   signal(SIGINT, kedbg_itracesigint);
   while (e2dbgworld.curthread->trace == TRUE)
     {
-      char    *instr;
-      
-      gdbwrap_stepi(loc);
+      kedbg_stepandprint();
       snprintf(addr, sizeof(addr), XFMT, loc->reg32.eip);
       bp = hash_get(&e2dbgworld.bp, addr);
-      revm_clean();
-      gdbwrap_readgenreg(loc);
-      e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
-      parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
-      name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
-      instr  = alloca(20);
-      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
-      revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
 
       if (bp != NULL)
 	{
