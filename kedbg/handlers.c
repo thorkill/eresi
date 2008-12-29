@@ -464,13 +464,14 @@ int             kedbg_writereg(ureg32 regNum, la32 val)
 }
 
 
-eresi_Addr      kedbg_realmode_memalloc(u_int size)
+eresi_Addr      kedbg_realmode_memalloc(u_int size, u_int prot)
 {
   char          *ret = alloca(size + 1);
   eresi_Addr    addr = 0x504;
   u_int         i;
   u_int         result = 0;
 
+  NOT_USED(prot);
   PROFILER_INQ();
   do
     {
@@ -479,6 +480,10 @@ eresi_Addr      kedbg_realmode_memalloc(u_int size)
 	result += ret[i];
       if (result)
 	addr += size;
-    } while (result && addr < 0x7c00);
-  PROFILER_ROUTQ(addr);
+    } while (result && addr < 0xffff0);
+
+  if (!result)
+    PROFILER_ROUTQ(addr);
+  else
+    PROFILER_ROUTQ(ELFSH_INVALID_ADDR);
 }

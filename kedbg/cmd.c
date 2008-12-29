@@ -119,7 +119,6 @@ int             cmd_kedbgquit(void)
   PROFILER_INQ();
   gdbwrap_bye(loc);
   cmd_quit();
-
   PROFILER_ROUTQ(0);
 }
 
@@ -152,5 +151,37 @@ int             cmd_kedbgdisasm(void)
   PROFILER_INQ();
   kedbg_isrealmode();
   cmd_disasm();
+  PROFILER_ROUTQ(0);
+}
+
+
+/**
+ * Hooks all the IVT entries. Since a lot of entries are the same, we
+ * check before adding the breakpoint on the server side.
+ **/
+int             cmd_kedbghookivt(void)
+{
+  char          addr[50];
+  uint32_t      ivt[256];
+  u_short       ivtinc;
+  uint32_t      finaladdr;
+  elfshbp_t	*bp;
+  volatile      u_int    delay;
+  
+  PROFILER_INQ();
+  kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
+  for (ivtinc = 0; ivtinc < 256; ivtinc++)
+    {
+      finaladdr  = (ivt[ivtinc] & 0xFFFF0000) >> 12; //0xe2ce3
+      finaladdr += ivt[ivtinc] & 0xFFFF;
+      snprintf(addr, sizeof(addr), XFMT, finaladdr);
+      bp = hash_get(&e2dbgworld.bp, addr);
+
+      if (bp == NULL && finaladdr != 0x0)
+	{
+	  printf("Adding: %#x\n", finaladdr);
+	  e2dbg_breakpoint_add((eresi_Addr) finaladdr);
+	}
+    }
   PROFILER_ROUTQ(0);
 }

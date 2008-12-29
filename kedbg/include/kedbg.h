@@ -11,6 +11,10 @@
 #define  HELPCOM1          "Not much to say..."
 
 #define  CMD_IVT           "ivt"
+#define  CMD_HOOKIVT       "ivthook"
+
+#define  HLP_IVT           "Displays the IVT of the remote VM"
+#define  HLP_HOOKIVT       "Adds breakpoints to all addresses defined in the IVT"
 
 #define  BPCODE            0xcc
 #define  MEMINJECT         0x500
@@ -48,3 +52,4 @@ int             cmd_kedbgcont(void);
 int             cmd_kedbgstep(void);
 int             cmd_kedbgquit(void);
 int             cmd_kedbgdisasm(void);
+int             cmd_kedbghookivt(void);
