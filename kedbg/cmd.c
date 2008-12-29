@@ -166,14 +166,14 @@ int             cmd_kedbghookivt(void)
   u_short       ivtinc;
   uint32_t      finaladdr;
   elfshbp_t	*bp;
-  volatile      u_int    delay;
   
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
-  for (ivtinc = 0; ivtinc < 256; ivtinc++)
+  for (ivtinc = 0; ivtinc < 0x70; ivtinc++)
     {
-      finaladdr  = (ivt[ivtinc] & 0xFFFF0000) >> 12; //0xe2ce3
+      finaladdr  = (ivt[ivtinc] & 0xFFFF0000) >> 12;
       finaladdr += ivt[ivtinc] & 0xFFFF;
+      finaladdr &= 0xFFFFF;
       snprintf(addr, sizeof(addr), XFMT, finaladdr);
       bp = hash_get(&e2dbgworld.bp, addr);
 
