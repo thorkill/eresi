@@ -83,6 +83,7 @@ static Bool     kedbg_isrealmodeinject(void)
 Bool           kedbg_isrealmode(void)
 {
   static u_char choice = 0;
+  static Bool   first_time = TRUE;
   gdbwrap_t     *loc = gdbwrap_current_get();
   Bool          ret;
   
@@ -99,13 +100,23 @@ Bool           kedbg_isrealmode(void)
 	  case 0:
 	    ret = kedbg_isrealmodewmon();
 	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
+	      {
+		if (first_time == TRUE)
+		  choice++;
+		else
+		  goto exit;
+	      }
 	    break;
 
 	  case 1:
 	    ret = kedbg_isrealmodeinject();
 	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
+	      {
+		if (first_time == TRUE)
+		  choice++;
+		else
+		  goto exit;
+	      }
 	    break;
 
 	  default:
@@ -114,9 +125,12 @@ Bool           kedbg_isrealmode(void)
 	}
     } while (gdbwrap_cmdnotsup(loc));
 
+ exit:
   if (kedbgworld.pmode == TRUE)
     asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
-  
+
+  first_time = FALSE;
+
   PROFILER_ROUTQ(ret);
 }
 
@@ -206,7 +220,8 @@ static int      kedbg_setbpwint3(elfshobj_t *f, elfshbp_t *bp)
 int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  static u_char choice = 0;
+  static u_char choice ;
+  static Bool   first_time = TRUE;
 
   PROFILER_INQ();
   do
@@ -217,14 +232,24 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 	    kedbg_simplesetbp(f, bp);
 	    kedbgworld.offset = 0;
 	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
+	      {
+		if (first_time == TRUE)
+		  choice++;
+		else
+		  goto exit;
+	      }
 	    break;
 
 	  case 1:
 	    kedbg_setbpwint3(f, bp);
 	    kedbgworld.offset = 1;
 	    if (gdbwrap_cmdnotsup(loc))
-	      choice++;
+	      {
+		if (first_time == TRUE)
+		  choice++;
+		else
+		  goto exit;
+	      }
 	    break;
 
 	  default:
@@ -232,6 +257,9 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 	    PROFILER_ERRQ("Bp not supported", -1);
 	}
     } while (gdbwrap_cmdnotsup(loc));
+
+ exit:
+  first_time = FALSE;
 
   PROFILER_ROUTQ(0);
 }

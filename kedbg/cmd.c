@@ -169,7 +169,7 @@ int             cmd_kedbghookivt(void)
   
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
-  for (ivtinc = 0; ivtinc < 0x70; ivtinc++)
+  for (ivtinc = 0; ivtinc < 256; ivtinc++)
     {
       finaladdr  = (ivt[ivtinc] & 0xFFFF0000) >> 12;
       finaladdr += ivt[ivtinc] & 0xFFFF;
@@ -178,10 +178,8 @@ int             cmd_kedbghookivt(void)
       bp = hash_get(&e2dbgworld.bp, addr);
 
       if (bp == NULL && finaladdr != 0x0)
-	{
-	  printf("Adding: %#x\n", finaladdr);
-	  e2dbg_breakpoint_add((eresi_Addr) finaladdr);
-	}
+	e2dbg_breakpoint_add((eresi_Addr) finaladdr);
+
     }
   PROFILER_ROUTQ(0);
 }
