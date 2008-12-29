@@ -138,22 +138,30 @@ int     asm_init_arm(asm_processor *proc)
 /* Helper functions */
 void    fill_dim_vector_type1(int inst, u_int *dim_vec)
 {
-  int   sec_nibble, six_nibble, sev_nibble;
+  int   sec_nibble, six_nibble, sev_nibble, tmp;
 
   sec_nibble = (inst & 0x00000F0) >> 4;
   six_nibble = (inst & 0x0F00000) >> 20;
   sev_nibble = (inst & 0xF000000) >> 24;
 
-  // FIXME: sev_nibble == 0x03 is also valid for other instructions
-  // than MSR.
+  // FIXME: revise this parsing
 
-  if (sev_nibble == 0x03
-      || (sev_nibble == 0x01 && (six_nibble & 0x09) == 0x00 && sec_nibble == 0x00))
+  if (sev_nibble == 0x03)
     {
-      /* msr and mrs */
-      /* this condition will change to support other instructions listed as miscellaneous */
-      dim_vec[1] = 0x00;
-      dim_vec[2] = ((sev_nibble & 0x3) << 1) | MGETBIT(six_nibble,1);
+      tmp = six_nibble & 0x0B;
+      if (tmp == 0x00)
+        {
+          // TODO: undefined instruction
+        }
+      else if (tmp == 0x02)
+        {
+          // Move immediate to status register
+        }
+      else
+        {
+          // Data processing immediate
+          dim_vec[1] = 0x04;
+        }
     }
   else if ((sev_nibble & 0x0E) == 0x00 && (sec_nibble &0x09) == 0x09)
     {
@@ -181,12 +189,21 @@ void    fill_dim_vector_type1(int inst, u_int *dim_vec)
             | ((sec_nibble & 0x06) >> 1);
         }
     }
+  else if (sev_nibble == 0x01 && (six_nibble & 0x09) == 0x00)
+    {
+      // Miscellaneous
+      dim_vec[1] = 0x00;
+      dim_vec[2] = ((sev_nibble & 0x3) << 1) | MGETBIT(six_nibble,1);
+    }
   else
     {
       /* data processing */
       dim_vec[1] = 0x04;
-      dim_vec[2] = (inst & 0x1E00000) >> 21;
     }
+
+  if (dim_vec[1] == 0x04)
+    /* data processing */
+    dim_vec[2] = (inst & 0x1E00000) >> 21;
 }
 
 void    fill_dim_vector_type2(int inst, u_int *dim_vec)
