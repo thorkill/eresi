@@ -53,3 +53,4 @@ int             cmd_kedbgstep(void);
 int             cmd_kedbgquit(void);
 int             cmd_kedbgdisasm(void);
 int             cmd_kedbghookivt(void);
+int             cmd_kedbgitrace(void);

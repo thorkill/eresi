@@ -283,26 +283,26 @@ static int      kedbg_main(int argc, char **argv)
     }
   else
     {
-      elfshsect_t   *ksymtab;
-      elfshsect_t   *ksymtab_strings;
+/*       elfshsect_t   *ksymtab; */
+/*       elfshsect_t   *ksymtab_strings; */
 
       kedbgworld.run_in_vm = TRUE;
       kedbg_isrealmode();
       /* If we have not loaded the bios but the kernel */
       if (!ret)
 	{
-	  ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab",
-					      NULL, NULL, NULL);
-	  ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile,
-						      "__ksymtab_strings",
-						      NULL, NULL, NULL);
-	  ASSERT(ksymtab_strings != NULL && ksymtab != NULL);
+/* 	  ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab", */
+/* 					      NULL, NULL, NULL); */
+/* 	  ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile, */
+/* 						      "__ksymtab_strings", */
+/* 						      NULL, NULL, NULL); */
+/* 	  ASSERT(ksymtab_strings != NULL && ksymtab != NULL); */
 	  
-	  elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM);
-	  elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB);
+/* 	  elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM); */
+/* 	  elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB); */
 	  
-	  elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index);
-	  elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index);
+/* 	  elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index); */
+/* 	  elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index); */
 	  
 	  /* Load a map of the BIOS */
 	  kedbg_biosmap_load();

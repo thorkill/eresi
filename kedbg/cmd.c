@@ -183,3 +183,57 @@ int             cmd_kedbghookivt(void)
     }
   PROFILER_ROUTQ(0);
 }
+
+
+/**
+ * In case you get pissed of with the itrace...
+ **/
+void            kedbg_itracesigint(int sig)
+{
+  PROFILER_INQ();
+  NOT_USED(sig);
+  e2dbgworld.curthread->trace = FALSE;
+  PROFILER_OUTQ();
+}
+
+
+int             cmd_kedbgitrace(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  elfshbp_t	*bp;
+  char          addr[50];
+  int           off;
+  char          *name;
+  elfshobj_t    *parent;
+
+
+  PROFILER_INQ();
+  e2dbgworld.curthread->trace = TRUE;
+  signal(SIGINT, kedbg_itracesigint);
+  while (e2dbgworld.curthread->trace == TRUE)
+    {
+      char    *instr;
+      
+      gdbwrap_stepi(loc);
+      snprintf(addr, sizeof(addr), XFMT, loc->reg32.eip);
+      bp = hash_get(&e2dbgworld.bp, addr);
+      revm_clean();
+      gdbwrap_readgenreg(loc);
+      e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
+      parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
+      name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
+      instr  = alloca(20);
+      kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
+      revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
+
+      if (bp != NULL)
+	{
+	  e2dbg_deletebreak(bp);
+	  gdbwrap_stepi(loc);
+	  e2dbg_setbreak(world.curjob->curfile, bp);
+	  e2dbgworld.curthread->trace = FALSE;
+	}
+    }
+  signal(SIGINT, kedbg_sigint);
+  PROFILER_ROUTQ(0);
+}
