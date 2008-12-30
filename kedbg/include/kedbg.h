@@ -54,3 +54,5 @@ int             cmd_kedbgquit(void);
 int             cmd_kedbgdisasm(void);
 int             cmd_kedbghookivt(void);
 int             cmd_kedbgitrace(void);
+int             cmd_kedbgproc(void);
+int             cmd_kedbggraph(void);

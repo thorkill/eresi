@@ -30,6 +30,8 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_IVT, cmd_kedbgprintivt, NULL, 0, HLP_IVT);
   revm_command_add(CMD_HOOKIVT, cmd_kedbghookivt, NULL, 0, HLP_HOOKIVT);
   revm_command_add(CMD_WRITE, cmd_write, revm_getvarparams, 1, HLP_WRITE);
+  revm_command_add(CMD_PROC, cmd_kedbgproc , NULL, 0, HLP_PROC);
+  revm_command_add(CMD_GRAPH, cmd_kedbggraph, revm_getvarparams, 1, HLP_GRAPH);
 
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);

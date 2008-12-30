@@ -10,7 +10,8 @@ static void     kedbg_stepandprint(void)
   char          *name;
   elfshobj_t    *parent;
 
-  gdbwrap_stepi(loc);      
+  gdbwrap_stepi(loc);
+  kedbg_isrealmode();
   revm_clean();
   gdbwrap_readgenreg(loc);
   e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
@@ -204,6 +205,9 @@ void            kedbg_itracesigint(int sig)
 }
 
 
+/**
+ * Do steppig until we reach a known breakpoint. 
+ **/
 int             cmd_kedbgitrace(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -225,8 +229,28 @@ int             cmd_kedbgitrace(void)
 	  gdbwrap_stepi(loc);
 	  e2dbg_setbreak(world.curjob->curfile, bp);
 	  e2dbgworld.curthread->trace = FALSE;
+	  printf("[*] Breakpoint found at %#x\n", loc->reg32.eip);
 	}
     }
   signal(SIGINT, kedbg_sigint);
   PROFILER_ROUTQ(0);
 }
+
+
+int             cmd_kedbgproc(void)
+{
+  PROFILER_INQ();
+  kedbg_isrealmode();
+  cmd_proc();
+  PROFILER_ROUTQ(0);
+}
+
+
+int             cmd_kedbggraph(void)
+{
+  PROFILER_INQ();
+  kedbg_isrealmode();
+  cmd_graph();
+  PROFILER_ROUTQ(0);
+}
+
