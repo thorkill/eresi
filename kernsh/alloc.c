@@ -13,7 +13,7 @@ int		cmd_kalloc()
 {
   char          *param;
   char		buff[BUFSIZ];
-  eresi_addr	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
