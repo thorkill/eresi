@@ -16,19 +16,25 @@
  * @param addr Address of the new allocation
  * @return 0 on success, -1 on return
  */
-int kernsh_alloc(size_t size, eresi_Addr *addr)
+eresi_Addr	kernsh_alloc(elfshobj_t *file, size_t size, int prot)
 {
-  int mode, ret;
+  int		mode;
+  int		ret;
+  eresi_Addr	raddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   mode = (int) config_get_data(LIBKERNSH_CONFIG_ALLOC);
   if (mode == 0)
-    ret = kernsh_alloc_contiguous(size, addr);
+    ret = kernsh_alloc_contiguous(size, &raddr);
   else
-    ret = kernsh_alloc_noncontiguous(size, addr);
+    ret = kernsh_alloc_noncontiguous(size, &raddr);
+  
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to allocate kernel memory", ELFSH_INVALID_ADDR);  
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, raddr);
 }
 
 /**

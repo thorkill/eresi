@@ -174,7 +174,6 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
 }
 
 /**
- *
  * @param addr
  * @return
  */
@@ -185,4 +184,16 @@ int	elfsh_default_argchandler(eresi_Addr addr)
 		    "Unsupported Arch, ELF type, or OS", -1);
 }
 
+/**
+ * @param file
+ * @param size
+ * @param prot
+ * @return
+ */
+eresi_Addr elfsh_default_rmaphandler(elfshobj_t *file, size_t size, int prot)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	       "Unsupported Arch, ELF type, or OS", ELFSH_INVALID_ADDR);
+}
 

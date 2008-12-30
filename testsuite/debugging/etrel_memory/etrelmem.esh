@@ -1,18 +1,11 @@
-#!../../../elfsh/elfsh32
+#!e2dbg
 
 load myputs.o
-switch 1
+switch a.out
 mode dynamic
-
-#dynsym
-#sym
-
-#profile enable warn
-
-reladd 1 myputs.o
-
+reladd a.out muputs.o
+profile enable warn
 redir puts myputs
-redir legit_func new_legit_func
-D new_legit_func
-start
+profile disable warn
+
 

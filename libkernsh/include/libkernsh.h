@@ -515,7 +515,7 @@ int	kernsh_walk_kstrtab(const char *, eresi_Addr*, size_t);
 int	kernsh_get_kernel_syms(char *, eresi_Addr*, size_t);
 
 /* Alloc-Free */
-int	kernsh_alloc(size_t, eresi_Addr*);
+eresi_Addr kernsh_alloc(elfshobj_t *file, size_t size, int prot);
 int	kernsh_free(eresi_Addr);
 
 int	kernsh_alloc_contiguous(size_t, eresi_Addr*);

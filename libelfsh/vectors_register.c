@@ -413,3 +413,27 @@ int	elfsh_register_argchook(u_char archtype, u_char objtype,
 
 
 
+/**
+ * @brief Register a runtime map vector handler
+ * @param hostype The host type to register the handler for.
+ * @param fct The function pointer to register.
+ * @return Success (0) or Error (-1)
+ */
+int		elfsh_register_allochook(u_char hostype, void *fct)
+{
+  vector_t	*map;
+  u_int		*dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  map = aspect_vector_get(ELFSH_HOOK_ALLOC);
+  if (hostype >= E2DBG_HOST_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Host type", -1);
+  dim = alloca(sizeof(u_int));
+  dim[0] = hostype;
+  aspect_vectors_insert(map, dim, (unsigned long) fct);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+

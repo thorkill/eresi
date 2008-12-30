@@ -425,7 +425,6 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   u_int         dim[2];
   vector_t      *mem;
   void          *(*fct)();
-  u_char        archtype;
   u_char        iotype;
   u_char        ostype;
 
@@ -437,9 +436,8 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   /* Fingerprint binary */
   iotype = elfsh_get_iotype(file);
   ostype = elfsh_get_ostype(file);
-  if (archtype == ELFSH_ARCH_ERROR ||
-      ostype   == ELFSH_OS_ERROR   ||
-      iotype   == ELFSH_IOTYPE_ERROR)
+  if (ostype == ELFSH_OS_ERROR ||
+      iotype == ELFSH_IOTYPE_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "READMEM handler inexistant for this ARCH/OS", NULL);
   mem = aspect_vector_get(ELFSH_HOOK_READMEMA);
@@ -538,4 +536,40 @@ int		elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
   fct = aspect_vectors_select(mem, dim);
   ret = fct(file, foffset, dest_buff, len);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+/**
+ * @brief Map a new area in memory 
+ * @param memsz How much memory to allocate
+ * @param prot Which rights (in ELF format) to put on the allocated memory
+ * @return The address where the data has been allocated
+ */
+eresi_Addr	 elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot)
+{
+  eresi_Addr	addr;
+  u_int         dim[2];
+  vector_t      *mem;
+  int          (*fct)();
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Wont map memory in static mode", ELFSH_INVALID_ADDR);
+
+  mem = aspect_vector_get(ELFSH_HOOK_ALLOC);
+  dim[0] = elfsh_get_hosttype(file);
+  fct = aspect_vectors_select(mem, dim);
+  addr = fct(file, memsz, prot);
+
+#if	__DEBUG_RUNTIME__
+  printf("[DEBUG_RUNTIME] Section Mapped at addr "XFMT" (%u) with prot %c%c%c\n", 
+	 addr, memsz,
+	 ((prot & PF_R) ? 'R' : '-'),
+	 ((prot & PF_W) ? 'W' : '-'),
+	 ((prot & PF_X) ? 'X' : '-'));
+#endif
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
 }

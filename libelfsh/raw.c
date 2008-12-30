@@ -20,7 +20,8 @@ void		*elfsh_get_raw_by_addr(elfshobj_t *current, eresi_Addr addr, void *buf, u_
   elfshsect_t	*sect;
   elfsh_SAddr	offset;
 
-  /* This happens when the object is a ERESI variable */
+  /* This happens when the object is a ERESI variable or when we request
+   an address in runtime that is not part of any section */
   sect = elfsh_get_parent_section(current, (eresi_Addr) addr, &offset);
   if (!sect)
     return ((void *) addr);

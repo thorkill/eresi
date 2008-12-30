@@ -13,7 +13,7 @@ int		cmd_kalloc()
 {
   char          *param;
   char		buff[BUFSIZ];
-  unsigned long	addr;
+  eresi_addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -21,11 +21,11 @@ int		cmd_kalloc()
   if (param)
     {
       if (kernsh_alloc_contiguous(atoi(param), &addr))
-	    {
-	      revm_setvar_int("_", -1);
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			   "Cannot alloc contiguous memory", -1);
-	    }
+	{
+	  revm_setvar_int("_", -1);
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		       "Cannot alloc contiguous memory", -1);
+	}
       memset(buff, '\0', sizeof(buff));
       snprintf(buff, sizeof(buff), 
 	       "%s %s %s %s %s %s\n\n",
@@ -49,7 +49,7 @@ int		cmd_kfree()
 {
   char          *param;
   char		buff[BUFSIZ];
-  unsigned long	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -85,7 +85,7 @@ int		cmd_kallocnc()
 {
   char          *param;
   char		buff[BUFSIZ];
-  unsigned long	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -121,7 +121,7 @@ int		cmd_kfreenc()
 {
   char          *param;
   char		buff[BUFSIZ];
-  unsigned long	addr;
+  eresi_Addr	addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -130,7 +130,7 @@ int		cmd_kfreenc()
   if (param)
     {
       addr = strtoul( param, NULL, 16 );
-      if(kernsh_free_noncontiguous(addr))
+      if (kernsh_free_noncontiguous(addr))
 	{
 	  revm_setvar_int("_", -1);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

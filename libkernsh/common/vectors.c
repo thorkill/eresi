@@ -399,6 +399,8 @@ int kernsh_register_vectors()
 
   elfsh_register_readmemf(E2DBG_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_read);
   elfsh_register_readmemf(E2DBG_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_read);
+
+  elfsh_register_alloc(E2DBG_HOST_KERN, kernsh_alloc);
   
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, kernsh_sct_linux);
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, kernsh_sct_linux);

@@ -159,6 +159,7 @@
 #define		ELFSH_HOOK_READMEMA		"hook_readmema"
 #define		ELFSH_HOOK_READMEMF		"hook_readmemf"
 #define		ELFSH_HOOK_WRITEMEMF		"hook_writememf"
+#define		ELFSH_HOOK_ALLOC		"hook_alloc"
 
 /* Some defined values */
 #define		ELFSH_SECTION_NAME_MAPPED	".mapped"
@@ -293,6 +294,7 @@
 #define		ELFSH_PLT_ENTRY_SIZE	        16
 #define		ELFSH_SYMTAB_ENTRY_SIZE		sizeof(elfsh_Sym)
 
+#define		ELFSH_DEVZERO			"/dev/zero"
 #define		ELFSH_STARTSYM			"_start"
 #define		ELFSH_GOTSYM			"_GLOBAL_OFFSET_TABLE_"
 #define		ELFSH_NULL_STRING		"(NULL)"
@@ -1535,6 +1537,7 @@ int		elfsh_default_encodeplt1handler(elfshobj_t *file, elfshsect_t *sect,
 						elfshsect_t *sect2, eresi_Addr diff);
 int		elfsh_default_extplthandler(elfshsect_t*, elfshsect_t*, elfshsect_t *, elfshsect_t *);
 int		elfsh_void_altplthandler(elfshobj_t *null, elfsh_Sym  *null2, eresi_Addr null3);
+eresi_Addr	elfsh_default_rmaphandler(elfshobj_t *file, size_t size, int prot); 
 int		elfsh_memcpy(elfshobj_t *null, eresi_Addr addr, void *buf, u_int size);
 
 /* Registering API */
@@ -1551,6 +1554,7 @@ int		elfsh_register_writememf(u_int hostype, u_int exectype, void *fct);
 int		elfsh_register_readmemf(u_int hostype, u_int exectype, void *fct);
 int		elfsh_register_encodeplthook(u_char archtype, u_char objtype, u_char ostype, void *fct);
 int		elfsh_register_encodeplt1hook(u_char archtype, u_char objtype, u_char ostype, void *fct);
+int		elfsh_register_allochook(u_char hostype, void *fct);
 
 /* Calling a vectored feature */
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr created);
@@ -1571,6 +1575,7 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size);
 int		elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len);
 int		elfsh_writemem(elfshobj_t *, eresi_Addr, void *, u_int);
 int		elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len);
+eresi_Addr	elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot);
 
 /* sparc32.c */
 int		elfsh_cflow_sparc32(elfshobj_t  *null,
@@ -1716,9 +1721,8 @@ elfsh_Sword     elfsh_get_gpvalue(elfshobj_t* file);
 
 
 /* runtime.c */
-eresi_Addr	 elfsh_runtime_map(elfsh_Phdr *segment);
-int		elfsh_runtime_unmap(elfsh_Phdr *segment);
 int		elfsh_set_phdr_prot(u_int mode);
+eresi_Addr	elfsh_map_userland(elfshobj_t *file, u_int memsz, int prot);
 int		elfsh_munprotect(elfshobj_t *obj, eresi_Addr addr, uint32_t sz);
 int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot);
 

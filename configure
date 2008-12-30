@@ -43,10 +43,12 @@ printHelp()
     echo "   --use-etags       : Use etags"
     echo "   --use-ctags       : Use ctags"
     echo "   --use-cpp         : Build the project as C++"
+    echo "   --no-stackprot    : Use -fno-stack-protector gcc option"
     echo
-    echo "   --libasm-ia32     : Enable libasm ia32 engine"
-    echo "   --libasm-sparc    : Enable libasm sparc engine"
-    echo "   --libasm-mips     : Enable libasm mips engine"
+    echo "   --libasm-ia32     : Enable libasm INTEL engine"
+    echo "   --libasm-sparc    : Enable libasm SPARC engine"
+    echo "   --libasm-mips     : Enable libasm MIPS engine"
+    echo "   --libasm-arm      : Enable libasm ARM engine"
     echo "   --libasm-packed   : Pack handlers in a single file"
     echo "   --libasm-unpacked : Keep handlers per source file"
     echo
@@ -253,6 +255,11 @@ CTAGS="1"
 --use-cpp*)
 echo  " [*] Enabling C++ built"
 echo  "CC		= g++"			>> $CONFIGFILE
+;;
+
+--no-stackprot*)
+echo " [*] Disabling gcc stack protection"
+echo "EXTRACFLAGS	= -fno-stack-protector" >> $CONFIGFILE
 ;;
 
 --set-shell*)

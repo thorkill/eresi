@@ -572,7 +572,7 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 
   /* In runtime static binary injection, we need a safe p_vaddr each time we call this function */
   phdr.p_flags = elfsh_set_phdr_prot(mode);
-  phdr.p_vaddr = elfsh_runtime_map(&phdr); 
+  phdr.p_vaddr = elfsh_runtime_map(file, phdr.p_memsz, phdr.p_flags); 
   if (phdr.p_vaddr == ELFSH_INVALID_ADDR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot runtime map", -1);
@@ -585,22 +585,6 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
 
   /* Write data at address */
   elfsh_writemem(file, phdr.p_vaddr, data, rsize);
-
-  /* -- replaced by a vector
-
-#if defined(KERNSH)
-  if (elfsh_is_runtime_mode())
-    {
-      kernsh_writemem(phdr.p_vaddr, data, rsize);
-    }
-  else
-    {
-      memcpy((void *) phdr.p_vaddr, data, rsize);
-    }
-#else
-  memcpy((void *) phdr.p_vaddr, data, rsize);
-#endif
-  */
 
   /* Modify some ondisk information */
   phdr.p_paddr  = phdr.p_vaddr;
@@ -616,11 +600,8 @@ int		elfsh_insert_runtime_section(elfshobj_t	 *file,
   /* After modification, OK at least on x86 */
   sect->phdr = elfsh_insert_runtime_phdr(file, &phdr); 
   if (!sect->phdr)
-    {
-      elfsh_runtime_unmap(&phdr); 
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			    "Cannot insert RPHT entry", -1);
-    }      
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Cannot insert RPHT entry", -1);
 
   /* Synchronize the ondisk perspective */
   range = elfsh_insert_runtime_shdr(file, hdr, file->rhdr.rshtnbr, sect->name, 1);
