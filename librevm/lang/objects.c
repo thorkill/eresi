@@ -41,20 +41,38 @@ revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
 /**
  * @brief Create constant object 
  */
-revmobj_t	*revm_create_LONG(char perm, eresi_Addr val)
+revmobj_t	*revm_create_ptr(char perm, eresi_Addr val, u_int type)
 {
   revmobj_t	*new;
+  aspectype_t	*atype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  atype = aspect_type_get_by_id(type);
+  if (!type)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid type for constant", (NULL));
 
   /* Please use create_IMMEDSTR for that */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;
   new->perm  = perm;
-  new->otype = aspect_type_get_by_id(ASPECT_TYPE_LONG);
-  new->size  = sizeof(val);
+  new->otype = atype;
+  new->size  = atype->size;
   new->immed_val.ent = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+}
+
+
+/**
+ * @brief Create constant object 
+ */
+revmobj_t	*revm_create_LONG(char perm, eresi_Addr val)
+{
+  revmobj_t	*new;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  new = revm_create_ptr(perm, val, ASPECT_TYPE_LONG);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
 }
 
 
@@ -66,38 +84,20 @@ revmobj_t	*revm_create_CADDR(char perm, eresi_Addr val)
   revmobj_t	*new;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Please use create_IMMEDSTR for that */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
-  new->immed = 1;
-  new->perm  = perm;
-  new->otype = aspect_type_get_by_id(ASPECT_TYPE_CADDR);
-  new->size  = sizeof(val);
-  new->immed_val.ent = val;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  new = revm_create_ptr(perm, val, ASPECT_TYPE_CADDR);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
 }
 
 /** 
  * @brief Create constant object
- *
- * @param perm
- * @param val
- * @return
  */
 revmobj_t	*revm_create_DADDR(char perm, eresi_Addr val)
 {
   revmobj_t	*new;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  /* Please use create_IMMEDSTR for that */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
-  new->immed = 1;
-  new->perm = perm;
-  new->otype = aspect_type_get_by_id(ASPECT_TYPE_DADDR);
-  new->size = sizeof(val);
-  new->immed_val.ent = val;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
+  new = revm_create_ptr(perm, val, ASPECT_TYPE_DADDR);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
 }
 
 

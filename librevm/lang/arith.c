@@ -44,6 +44,40 @@ static revmexpr_t	*revm_ename_get(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
+/** Dereference an existing address expression */
+static revmexpr_t	*revm_deref(revmexpr_t *ref)
+{
+  revmexpr_t		*res;
+  eresi_Addr		addr;
+  char			*buff;
+  eresi_Addr		*paddr;
+  revmobj_t		*obj;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!ref || !ref->type || !ref->value)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid expression to reference", NULL);
+  switch (ref->type->type)
+    {
+    case ASPECT_TYPE_LONG:
+    case ASPECT_TYPE_CADDR:
+    case ASPECT_TYPE_DADDR:
+      addr = (ref->value->immed ? ref->value->immed_val.ent : ref->value->get_obj(ref->value->parent));
+      break;
+    default:
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Dereference on non-pointer expression", NULL);
+    }
+  buff  = alloca(sizeof(eresi_Addr));
+  paddr = (eresi_Addr *) elfsh_readmema(world.curjob->curfile, addr, buff, sizeof(eresi_Addr));
+  if (!paddr || (eresi_Addr) paddr == addr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Dereference of non-pointer expression", NULL);
+  obj = revm_create_ptr(0, *paddr, ref->type->type);
+  res = revm_expr_create_from_object(obj, revm_tmpvar_create(), 0);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
+}
+
 
 /** Compute an intermediate numerical result */
 static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res, u_char *op)
@@ -86,9 +120,11 @@ static revmexpr_t	*revm_compute_rec(char **str)
   revmexpr_t		*res;
   revmexpr_t		*left;
   u_char		op;
+  u_char		deref;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   op = REVM_OP_UNKNOW;
+  deref = 0;
   for (left = res = NULL; **str; (*str)++)
     switch (**str)
       {
@@ -99,6 +135,14 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid subexpression : remove spaces ?", NULL);
+	if (deref)
+	  {
+	    res = revm_deref(res);
+	    if (!res)
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Invalid dereference", NULL);
+	    deref = 0;
+	  }
 	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -110,43 +154,48 @@ static revmexpr_t	*revm_compute_rec(char **str)
 
 	/* Operation ! */
       case '+':
-	if (op != REVM_OP_UNKNOW || !left)
+	if (op != REVM_OP_UNKNOW || !left || deref)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_ADD;
 	break;
       case '-':
-	if (op != REVM_OP_UNKNOW || !left)
+	if (op != REVM_OP_UNKNOW || !left || deref)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_SUB;
 	break;
       case '*':
 	if (op != REVM_OP_UNKNOW || !left)
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Invalid arithmetic syntax", NULL);
+	  {
+	    if (deref)
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Invalid multiple dereferences", NULL);
+	    deref = 1;
+	    break;
+	  }
 	op = REVM_OP_MUL;
 	break;
       case '/':
-	if (op != REVM_OP_UNKNOW || !left)
+	if (op != REVM_OP_UNKNOW || !left || deref)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_DIV;
 	break;
       case '%':
-	if (op != REVM_OP_UNKNOW || !left)
+	if (op != REVM_OP_UNKNOW || !left || deref)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_MOD;
 	break;
       case '<':
-	if (op != REVM_OP_UNKNOW || !left)
+	if (op != REVM_OP_UNKNOW || !left || deref)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_SHL;
 	break;
       case '>':
-	if (op != REVM_OP_UNKNOW || !left)
+	if (op != REVM_OP_UNKNOW || !left || deref)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_SHR;
@@ -158,6 +207,14 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unknown expression name", NULL);
+	if (deref)
+	  {
+	    res = revm_deref(res);
+	    if (!res)
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			   "Invalid dereference", NULL);
+	    deref = 0;
+	  }
 	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

@@ -727,6 +727,7 @@ revmobj_t	*revm_create_IMMEDSTR(char perm, char *str);
 revmobj_t	*revm_create_LONG(char perm, eresi_Addr val);
 revmobj_t	*revm_create_CADDR(char perm, eresi_Addr val);
 revmobj_t	*revm_create_DADDR(char perm, eresi_Addr val);
+revmobj_t	*revm_create_ptr(char perm, eresi_Addr val, u_int type);
 
 /* Interface related functions */
 int		revm_system(char *cmd);
