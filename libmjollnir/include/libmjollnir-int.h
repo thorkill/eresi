@@ -12,14 +12,14 @@
 #define __DEBUG_OPERAND__	0
 #define __DEBUG_BLOCKS__	0
 #define __DEBUG_BLK_LOOKUP__	0
-#define __DEBUG_FLOW__		0
+#define __DEBUG_FLOW__		1
 #define __DEBUG_CNTNR__		0
 #define __DEBUG_CNTNR_LOOKUP__	0
 #define __DEBUG_FUNCS__		0
 #define __DEBUG_FUCNS_LOOKUP__	0
 #define __DEBUG_FNG__		0
 #define	__DEBUG_ONDISK__	0
-#define	__DEBUG_LINKS__		0
+#define	__DEBUG_LINKS__		1
 
 /* Debug descriptor */
 #define D_DESC		stderr

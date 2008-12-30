@@ -50,8 +50,8 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
   
 #if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr " XFMT " offset %u\n", 
-	  vaddr, offset);
+  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr " XFMT " \n", 
+	  vaddr);
 #endif
 
   assert(curblock != NULL);

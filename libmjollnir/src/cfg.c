@@ -124,9 +124,8 @@ int			mjr_trace_control(mjrcontext_t *context,
 
 #if __DEBUG_FLOW__
 	  fprintf(D_DESC,"[W] *** %s: unusual retaddr found - expected ret: "
-		  XFMT" section end: "XFMT" ***\n",
-		  __FUNCTION__, curvaddr + ilen + addend, 
-		  context->cursct->shdr->sh_size + context->cursct->shdr->sh_addr);
+		  XFMT" section end is below this address. ***\n",
+		  __FUNCTION__, curvaddr + ilen + addend);
 #endif
 	  
 	  *retaddr = MJR_BLOCK_INVALID;
