@@ -57,14 +57,13 @@ void             gdbwrap_hello(gdbwrap_t *desc);
 void             gdbwrap_bye(gdbwrap_t *desc);
 void             gdbwrap_reason_halted(gdbwrap_t *desc);
 char             *gdbwrap_own_command(gdbwrap_t *desc, char *command);
-void             gdbwrap_test(gdbwrap_t *desc);
 gdbwrap_gdbreg32 *gdbwrap_readgenreg(gdbwrap_t *desc);
 void             gdbwrap_continue(gdbwrap_t *desc);
 void             gdbwrap_setbp(gdbwrap_t *desc, la32 linaddr, void *datasaved);
 void             gdbwrap_simplesetbp(gdbwrap_t *desc, la32 linaddr);
 void             gdbwrap_delbp(gdbwrap_t *desc, la32 linaddr, void *datasaved);
 void             gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr);
-char             *gdbwrap_readmemory(gdbwrap_t *desc, la32 linaddr, unsigned bytes);
+char             *gdbwrap_readmem(gdbwrap_t *desc, la32 linaddr, unsigned bytes);
 void             gdbwrap_writemem(gdbwrap_t *desc, la32 linaddr, void *value,
 				  unsigned bytes);
 void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
@@ -72,7 +71,6 @@ char             *gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_ctrl_c(gdbwrap_t *desc);
 void             gdbwrap_signal(gdbwrap_t *desc, int signal);
 void             gdbwrap_stepi(gdbwrap_t *desc);
-void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
 char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 u_char           gdbwrap_lasterror(gdbwrap_t *desc);
 

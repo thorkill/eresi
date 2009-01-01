@@ -655,7 +655,7 @@ void                 gdbwrap_setbp(gdbwrap_t *desc, la32 linaddr, void *datasave
   unsigned           atohresult;
 
   ASSERT(desc != NULL && desc != datasaved);
-  ret = gdbwrap_readmemory(desc, linaddr, 1);
+  ret = gdbwrap_readmem(desc, linaddr, 1);
   /* Fix: not clean. ATOH is not clean when returning an unsigned. */
   atohresult = gdbwrap_atoh(ret, 2 * 1);
   memcpy(datasaved, &atohresult, 1);
@@ -689,8 +689,8 @@ void                 gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr)
 }
 
 
-char                 *gdbwrap_readmemory(gdbwrap_t *desc, la32 linaddr,
-					 unsigned bytes)
+char                 *gdbwrap_readmem(gdbwrap_t *desc, la32 linaddr,
+				      unsigned bytes)
 {
   char               *rec;
   char               packet[MSG_BUF];
@@ -956,11 +956,11 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
   /* If we have a new line, it meens the packet is not finished (to
      prove...), we listen to the next incoming packet, which is an
      OK. */
-  if (gdbwrap_atoh(ret + strlen(ret) - 2, BYTE_IN_CHAR) == 0xa)
-    {
+/*   if (ret != NULL && gdbwrap_atoh(ret + strlen(ret) - 2, BYTE_IN_CHAR) == 0xa) */
+/*     { */
       gdbwrap_send_ack(desc);
       rval = recv(desc->fd, cmdcpy, sizeof(cmdcpy), 0);
-    }
+/* } */
 
   return ret;
 }
