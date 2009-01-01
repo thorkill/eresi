@@ -499,7 +499,7 @@ void			e2dbg_do_breakpoint()
       *pc -= bpsz;
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);
       memcpy((u_char *) *pc, bp->savedinstr, bpsz);
-      elfsh_mprotect(*pc, bpsz, prot);
+      elfsh_mprotect(bp->obj, *pc, bpsz, prot);
       e2dbg_setstep();
 
 #if __DEBUG_BP__

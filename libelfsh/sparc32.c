@@ -84,7 +84,7 @@ int			elfsh_cflow_sparc32(elfshobj_t  *file,
   opcode[5] = SPARC32_B_OPCODE(diff); // b <original function+8>
   opcode[6] = SPARC32_NOP;
 
-  elfsh_mprotect((eresi_Addr) hook, 28, prot);
+  elfsh_mprotect(file, (eresi_Addr) hook, 28, prot);
 
   opcode = (void *) buff;
 

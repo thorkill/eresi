@@ -483,9 +483,7 @@ elfshobj_t *kernsh_load_file(char *name)
   elfshobj_t *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   ret = elfsh_load_obj(name);
-  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -496,9 +494,7 @@ elfshobj_t *kernsh_load_file(char *name)
 void kernsh_unload_file(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   elfsh_unload_obj(file);
-  
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

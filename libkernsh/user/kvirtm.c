@@ -351,6 +351,9 @@ void		*kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, i
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Memory not opened !", NULL);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot read userland virtual memory in static mode", NULL);
 
   ret = 0;
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;

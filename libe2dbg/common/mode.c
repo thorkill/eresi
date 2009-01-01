@@ -44,7 +44,7 @@ int		cmd_mode()
 	  if (world.curjob->curfile)
 	    if (!world.curjob->curfile->linkmap && 
 		!world.curjob->curfile->rhdr.base &&
-		world.curjob->curfile->hostype != E2DBG_HOST_GDB)
+		world.curjob->curfile->hostype != ELFSH_HOST_GDB)
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 				"Can't switch to dynamic"
 				" mode on not mapped file.", -1);

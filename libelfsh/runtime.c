@@ -67,9 +67,7 @@ eresi_Addr	elfsh_map_userland(elfshobj_t *file, u_int memsz, int prot)
  * @param sz
  * @return
  */
-int		elfsh_munprotect(elfshobj_t *file, 
-				 eresi_Addr addr, 
-				 uint32_t sz)
+int		elfsh_munprotect_userland(elfshobj_t *file, eresi_Addr addr, uint32_t sz)
 {
   elfshsect_t	*sect;
   elfsh_Phdr	*phdr;
@@ -77,15 +75,6 @@ int		elfsh_munprotect(elfshobj_t *file,
   int		prot;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(KERNSH)
-
-  if (elfsh_is_runtime_mode())
-    {
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
-
-#endif
-
   if (!elfsh_is_runtime_mode())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
@@ -125,25 +114,16 @@ int		elfsh_munprotect(elfshobj_t *file,
  * @param prot
  * @return
  */
-int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot)
+int		elfsh_mprotect_userland(elfshobj_t *file, eresi_Addr addr, uint32_t sz, int prot)
 {
   int		retval;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-#if defined(KERNSH)
-  
-  if (elfsh_is_runtime_mode())
-    {
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
-
-#endif
   if (!elfsh_is_runtime_mode())
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
   retval = mprotect((void *) (long) addr - (long) addr % getpagesize(), 
 		    getpagesize(), prot);
-
   if (retval != 0)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Failed munprotect", -1);

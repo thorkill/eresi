@@ -105,7 +105,7 @@ int		e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -135,7 +135,7 @@ int		e2dbg_register_getrethook(u_char archtype, u_char hosttype,
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Object type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -163,7 +163,7 @@ int	e2dbg_register_sregshook(u_char archtype, u_char hosttype, u_char ostype,
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -191,7 +191,7 @@ int      e2dbg_register_gregshook(u_char archtype, u_char hosttype, u_char ostyp
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Host type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -218,7 +218,7 @@ int		e2dbg_register_pregshook(u_char archtype, u_char hosttype, u_char ostype, v
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -246,7 +246,7 @@ int      e2dbg_register_getpchook(u_char archtype, u_char hosttype, u_char ostyp
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -274,7 +274,7 @@ int      e2dbg_register_getfphook(u_char archtype, u_char hosttype, u_char ostyp
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -302,7 +302,7 @@ int      e2dbg_register_setstephook(u_char archtype, u_char hosttype, u_char ost
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -330,7 +330,7 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype, u_char o
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Invalid Object type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -361,7 +361,7 @@ int		e2dbg_register_breakhook(u_char archtype, u_char hosttype,
   if (archtype >= ELFSH_ARCH_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Architecture type", -1);
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   if (ostype >= ELFSH_OS_NUM)
@@ -386,7 +386,7 @@ int		e2dbg_register_delbreakhook(u_char hosttype, void *fct)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   breakp = aspect_vector_get(E2DBG_HOOK_DELBREAK);
 
-  if (hosttype >= E2DBG_HOST_NUM)
+  if (hosttype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   dim[0] = hosttype;
@@ -411,7 +411,7 @@ static int	e2dbg_register_vectors()
   XALLOC(__FILE__, __FUNCTION__, __LINE__,dims   , 4 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__,strdims, 4 * sizeof(char *), -1);
   dims[0]    = ELFSH_ARCH_NUM;
-  dims[1]    = E2DBG_HOST_NUM;
+  dims[1]    = ELFSH_HOST_NUM;
   dims[2]    = ELFSH_OS_NUM;
   strdims[0] = "ARCHTYPE";
   strdims[1] = "HOSTYPE";
@@ -420,7 +420,7 @@ static int	e2dbg_register_vectors()
   /* Except the breakpoint deletion hook */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, adims   , 2 * sizeof(u_int) , -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, astrdims, 2 * sizeof(char *), -1);
-  adims[0]    = E2DBG_HOST_NUM;
+  adims[0]    = ELFSH_HOST_NUM;
   astrdims[0] = "HOSTYPE";
 
   /* Initialize debugger vectors */
@@ -497,7 +497,7 @@ int		  e2dbg_getregs()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETREGS handler unexistant for this ARCH/OS", -1);
@@ -533,7 +533,7 @@ int		  e2dbg_setregs()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETREGS handler unexistant for this ARCH/OS", -1);
@@ -567,7 +567,7 @@ int		e2dbg_printregs()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "PRINTREGS handler unexistant for this ARCH/OS", -1);
@@ -603,7 +603,7 @@ eresi_Addr*     e2dbg_getpc()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETPC handler unexistant for this ARCH/OS", NULL);
@@ -639,7 +639,7 @@ eresi_Addr*     e2dbg_getfp()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETPC handler unexistant for this ARCH/OS", NULL);
@@ -674,7 +674,7 @@ int		  e2dbg_setstep()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETSTEP handler unexistant for this ARCH/OS", -1);
@@ -705,7 +705,7 @@ int		  e2dbg_resetstep()
   hosttype = elfsh_get_hosttype(world.curjob->curfile);
   ostype = elfsh_get_ostype(world.curjob->curfile);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETPC handler unexistant for this ARCH/OS", -1);
@@ -739,7 +739,7 @@ eresi_Addr	e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr)
   hosttype = elfsh_get_hosttype(file);
   ostype = elfsh_get_ostype(file);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "BACKTRACE (nextfp) handler unexistant for this ARCH/OS", 
@@ -776,7 +776,7 @@ eresi_Addr	e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
   hosttype = elfsh_get_hosttype(file);
   ostype = elfsh_get_ostype(file);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "GETRET handler unexistant for this ARCH/OS", -1);
@@ -814,7 +814,7 @@ int		  e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp)
   hosttype = elfsh_get_hosttype(file);
   ostype = elfsh_get_ostype(file);
   if (archtype == ELFSH_ARCH_ERROR ||
-      hosttype == E2DBG_HOST_ERROR ||
+      hosttype == ELFSH_HOST_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "SETBREAK handler unexistant for this ARCH/OS", -1);
@@ -848,7 +848,7 @@ int	        e2dbg_deletebreak(elfshbp_t *bp)
 
   /* Fingerprint binary */
   hosttype = elfsh_get_hosttype(bp->obj);
-  if (hosttype == E2DBG_HOST_ERROR)
+  if (hosttype == ELFSH_HOST_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "DELBREAK handler unexistant for this ARCH/OS", -1);
   

@@ -17,7 +17,7 @@ int		elfsh_register_readmemf(u_int hostype, u_int exectype, void *fct)
   u_int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  if (hostype >= E2DBG_HOST_NUM)
+  if (hostype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   if (exectype >= LIBELFSH_MODE_NUM)
@@ -38,7 +38,7 @@ int		elfsh_register_writememf(u_int hostype, u_int exectype, void *fct)
   u_int		*dim;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
-  if (hostype >= E2DBG_HOST_NUM)
+  if (hostype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   if (exectype >= LIBELFSH_MODE_NUM)
@@ -426,12 +426,59 @@ int		elfsh_register_allochook(u_char hostype, void *fct)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   map = aspect_vector_get(ELFSH_HOOK_ALLOC);
-  if (hostype >= E2DBG_HOST_NUM)
+  if (hostype >= ELFSH_HOST_NUM)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid Host type", -1);
   dim = alloca(sizeof(u_int));
   dim[0] = hostype;
   aspect_vectors_insert(map, dim, (unsigned long) fct);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+
+/**
+ * @brief Register a mprotect vector handler
+ * @param hostype The host type to register the handler for.
+ * @param fct The function pointer to register.
+ * @return Success (0) or Error (-1)
+ */
+int		elfsh_register_mprotecthook(u_char hostype, void *fct)
+{
+  vector_t	*mprot;
+  u_int		*dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  mprot = aspect_vector_get(ELFSH_HOOK_MPROTECT);
+  if (hostype >= ELFSH_HOST_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Host type", -1);
+  dim = alloca(sizeof(u_int));
+  dim[0] = hostype;
+  aspect_vectors_insert(mprot, dim, (unsigned long) fct);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/**
+ * @brief Register a munprotect vector handler
+ * @param hostype The host type to register the handler for.
+ * @param fct The function pointer to register.
+ * @return Success (0) or Error (-1)
+ */
+int		elfsh_register_munprotecthook(u_char hostype, void *fct)
+{
+  vector_t	*munprot;
+  u_int		*dim;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  munprot = aspect_vector_get(ELFSH_HOOK_MUNPROTECT);
+  if (hostype >= ELFSH_HOST_NUM)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		      "Invalid Host type", -1);
+  dim = alloca(sizeof(u_int));
+  dim[0] = hostype;
+  aspect_vectors_insert(munprot, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

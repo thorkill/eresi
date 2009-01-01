@@ -204,7 +204,7 @@ int		revm_execscript()
 			      "Command execution failed", -1);
 
 	  /* Test for (embedded or not) debugger scripting */
-	  if ((world.curjob->curfile && world.curjob->curfile->iotype != E2DBG_HOST_GDB) && 
+	  if ((world.curjob->curfile && world.curjob->curfile->iotype != ELFSH_HOST_GDB) && 
 	      (!strcmp(cur->name, CMD_CONTINUE) || !strcmp(cur->name, CMD_CONTINUE2)))
 	    {
 	      next                    = cur->next;

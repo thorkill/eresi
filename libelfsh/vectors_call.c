@@ -573,3 +573,61 @@ eresi_Addr	 elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
 }
+
+
+
+
+/**
+ * @brief Remove memory credentials.
+ * @param file Parent file we are working on.
+ * @param memsz Minimum memory size to restore protection for.
+ * @param prot Protection to put for memory.
+ * @return Success (0) or Error (-1).
+ */
+int		 elfsh_mprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz, int prot)
+{
+  u_int         dim[2];
+  vector_t      *mprot;
+  int          (*fct)();
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Wont mprotect in static mode", -1);
+  
+  mprot = aspect_vector_get(ELFSH_HOOK_MPROTECT);
+  dim[0] = elfsh_get_hosttype(file);
+  fct = aspect_vectors_select(mprot, dim);
+  ret = fct(file, addr, memsz, prot);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}
+
+
+
+
+/**
+ * @brief Restore memory credentials.
+ * @param file Parent file we are working on.
+ * @param memsz Minimum memory size to restore protection for.
+ * @param prot Protection to put for memory.
+ * @return Success (0) or Error (-1).
+ */
+int		 elfsh_munprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz)
+{
+  u_int         dim[2];
+  vector_t      *mprot;
+  int          (*fct)();
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Wont munprotect in static mode", -1);
+  
+  mprot = aspect_vector_get(ELFSH_HOOK_MUNPROTECT);
+  dim[0] = elfsh_get_hosttype(file);
+  fct = aspect_vectors_select(mprot, dim);
+  ret = fct(file, addr, memsz);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
+}

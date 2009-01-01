@@ -85,7 +85,7 @@ int		elfsh_init_vectors()
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, dims    , 3 * sizeof(u_int), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, strdims , 3 * sizeof(char *), -1);
-  dims[0]     = E2DBG_HOST_NUM;
+  dims[0]     = ELFSH_HOST_NUM;
   dims[1]     = LIBELFSH_MODE_NUM;
   strdims[0]  = "HOSTTYPE";
   strdims[1]  = "EXECMODE";
@@ -95,13 +95,17 @@ int		elfsh_init_vectors()
   aspect_register_vector(ELFSH_HOOK_WRITEMEMF, elfsh_default_writememf, 
 			 dims, strdims, 2, ASPECT_TYPE_CADDR);  
 
-  /* Now the allocation vector */
+  /* Now the allocation, mprotect and munprotect vectors */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, dims    , 2 * sizeof(u_int), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, strdims , 2 * sizeof(char *), -1);
-  dims[0]     = E2DBG_HOST_NUM;
+  dims[0]     = ELFSH_HOST_NUM;
   strdims[0]  = "HOSTTYPE";
 
   aspect_register_vector(ELFSH_HOOK_ALLOC, elfsh_default_rmaphandler, 
+			 dims, strdims, 1, ASPECT_TYPE_CADDR);  
+  aspect_register_vector(ELFSH_HOOK_MPROTECT, elfsh_void_mprotecthandler, 
+			 dims, strdims, 1, ASPECT_TYPE_CADDR);  
+  aspect_register_vector(ELFSH_HOOK_MUNPROTECT, elfsh_void_munprotecthandler, 
 			 dims, strdims, 1, ASPECT_TYPE_CADDR);  
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -659,13 +663,19 @@ void		elfsh_setup_hooks()
   elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_memcpy);
 
   /* Register handlers for READMEMF/WRITEMEMF hook */
-  elfsh_register_readmemf(E2DBG_HOST_USER, LIBELFSH_MODE_STATIC, elfsh_raw_read);
-  elfsh_register_readmemf(E2DBG_HOST_USER, LIBELFSH_MODE_RUNTIME, elfsh_raw_read);
-  elfsh_register_writememf(E2DBG_HOST_USER, LIBELFSH_MODE_STATIC, elfsh_raw_write);
-  elfsh_register_writememf(E2DBG_HOST_USER, LIBELFSH_MODE_RUNTIME, elfsh_raw_write);
+  elfsh_register_readmemf(ELFSH_HOST_USER, LIBELFSH_MODE_STATIC, elfsh_raw_read);
+  elfsh_register_readmemf(ELFSH_HOST_USER, LIBELFSH_MODE_RUNTIME, elfsh_raw_read);
+  elfsh_register_writememf(ELFSH_HOST_USER, LIBELFSH_MODE_STATIC, elfsh_raw_write);
+  elfsh_register_writememf(ELFSH_HOST_USER, LIBELFSH_MODE_RUNTIME, elfsh_raw_write);
 
   /* Register handlers for the ALLOC hook */
-  elfsh_register_allochook(E2DBG_HOST_USER, elfsh_map_userland);
+  elfsh_register_allochook(ELFSH_HOST_USER, elfsh_map_userland);
+
+  /* Register handlers for the ALLOC hook */
+  elfsh_register_mprotecthook(ELFSH_HOST_USER, elfsh_mprotect_userland);
+
+  /* Register handlers for the ALLOC hook */
+  elfsh_register_munprotecthook(ELFSH_HOST_USER, elfsh_munprotect_userland);
   
   done++;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

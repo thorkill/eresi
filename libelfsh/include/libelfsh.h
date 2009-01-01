@@ -115,12 +115,12 @@
 #define		ELFSH_OS_NUM			9
 #define		ELFSH_OS_ERROR			0xFF
 
-/* KERNEL / USER memory hosting type */
-#define		E2DBG_HOST_USER			0
-#define		E2DBG_HOST_KERN			1
-#define		E2DBG_HOST_GDB			2
-#define		E2DBG_HOST_NUM			3
-#define		E2DBG_HOST_ERROR		0xFF
+/* KERNEL / USER / GDBNODE memory hosting type */
+#define		ELFSH_HOST_USER			0
+#define		ELFSH_HOST_KERN			1
+#define		ELFSH_HOST_GDB			2
+#define		ELFSH_HOST_NUM			3
+#define		ELFSH_HOST_ERROR		0xFF
 
 /* Number of possible types for READ/WRITE memory hook - some reserved */
 #define		ELFSH_IOTYPE_STATIC		0
@@ -160,6 +160,8 @@
 #define		ELFSH_HOOK_READMEMF		"hook_readmemf"
 #define		ELFSH_HOOK_WRITEMEMF		"hook_writememf"
 #define		ELFSH_HOOK_ALLOC		"hook_alloc"
+#define		ELFSH_HOOK_MPROTECT		"hook_mprotect"
+#define		ELFSH_HOOK_MUNPROTECT		"hook_munprotect"
 
 /* Some defined values */
 #define		ELFSH_SECTION_NAME_MAPPED	".mapped"
@@ -811,10 +813,9 @@ struct		 s_obj
   int		 rights;		/* 0 = RO, 1 = WR */
   time_t	 loadtime;		/* Time of Loading */
   u_int		 id;			/* Object ID */
-  u_char	 hostype;		/* !< @brief Are we manipulating the kernel ? */
+  u_char	 hostype;		/* !< @brief HOST type used for various runtime features */
   u_char	 iotype;		/* !< @brief IO type used to read and write memory */
   char		 running;		/* !< @brief Is the process running ? */
-  char		 scanned;		/* !< @brief Has the object already been block scanned ? */
   char		 hdr_broken;		/* !< @brief Is the header broken/corrupted ? */
   char		 read;			/* !< @brief Has the object already been read ? */
   char		 shtrm;			/* !< @brief Mark SHT and Unmapped sections as stripped ? */
@@ -1539,6 +1540,10 @@ int		elfsh_default_extplthandler(elfshsect_t*, elfshsect_t*, elfshsect_t *, elfs
 int		elfsh_void_altplthandler(elfshobj_t *null, elfsh_Sym  *null2, eresi_Addr null3);
 eresi_Addr	elfsh_default_rmaphandler(elfshobj_t *file, size_t size, int prot); 
 int		elfsh_memcpy(elfshobj_t *null, eresi_Addr addr, void *buf, u_int size);
+int		elfsh_void_munprotecthandler(elfshobj_t *obj, eresi_Addr addr, uint32_t sz);
+int		elfsh_void_mprotecthandler(elfshobj_t *obj, eresi_Addr addr, uint32_t sz, int prot);
+int		elfsh_register_munprotecthook(u_char hostype, void *fct);
+int		elfsh_register_mprotecthook(u_char hostype, void *fct);
 
 /* Registering API */
 int		elfsh_register_altplthook(u_char arch, u_char obj, u_char os, void *fct);
@@ -1576,6 +1581,9 @@ int		elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len);
 int		elfsh_writemem(elfshobj_t *, eresi_Addr, void *, u_int);
 int		elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len);
 eresi_Addr	elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot);
+int		elfsh_munprotect(elfshobj_t *obj, eresi_Addr addr, uint32_t sz);
+int		elfsh_mprotect(elfshobj_t *obj, eresi_Addr addr, uint32_t sz, int prot);
+
 
 /* sparc32.c */
 int		elfsh_cflow_sparc32(elfshobj_t  *null,
@@ -1723,8 +1731,9 @@ elfsh_Sword     elfsh_get_gpvalue(elfshobj_t* file);
 /* runtime.c */
 int		elfsh_set_phdr_prot(u_int mode);
 eresi_Addr	elfsh_map_userland(elfshobj_t *file, u_int memsz, int prot);
-int		elfsh_munprotect(elfshobj_t *obj, eresi_Addr addr, uint32_t sz);
-int		elfsh_mprotect(eresi_Addr addr, uint32_t sz, int prot);
+
+int		elfsh_munprotect_userland(elfshobj_t *obj, eresi_Addr addr, uint32_t sz);
+int		elfsh_mprotect_userland(elfshobj_t *obj, eresi_Addr addr, uint32_t sz, int prot);
 
 /* state.c */
 u_char		elfsh_is_static_mode(); 

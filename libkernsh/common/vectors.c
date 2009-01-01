@@ -394,13 +394,13 @@ int kernsh_register_vectors()
   elfsh_register_writemem(ELFSH_OS_NETBSD, ELFSH_IOTYPE_DEVMEM26, kernsh_writemem_netbsd);
   elfsh_register_writemem(ELFSH_OS_NETBSD, ELFSH_IOTYPE_DEVMEM26, kernsh_writemem_netbsd);
 
-  elfsh_register_writememf(E2DBG_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_write);
-  elfsh_register_writememf(E2DBG_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_write);
+  elfsh_register_writememf(ELFSH_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_write);
+  elfsh_register_writememf(ELFSH_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_write);
 
-  elfsh_register_readmemf(E2DBG_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_read);
-  elfsh_register_readmemf(E2DBG_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_read);
+  elfsh_register_readmemf(ELFSH_HOST_KERN, LIBELFSH_MODE_STATIC, kernsh_raw_read);
+  elfsh_register_readmemf(ELFSH_HOST_KERN, LIBELFSH_MODE_RUNTIME, kernsh_raw_read);
 
-  elfsh_register_allochook(E2DBG_HOST_KERN, kernsh_alloc);
+  elfsh_register_allochook(ELFSH_HOST_KERN, kernsh_alloc);
   
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_6, kernsh_sct_linux);
   kernsh_register_sct(LIBKERNSH_ARCH_I386, LIBKERNSH_OS_LINUX_2_4, kernsh_sct_linux);

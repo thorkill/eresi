@@ -30,7 +30,7 @@ int		e2dbg_breakpoint_delete(elfshbp_t *bp)
   /* Delete the breakpoint */
   prot = elfsh_munprotect(bp->obj, addr,  1);
   e2dbg_deletebreak(bp);
-  elfsh_mprotect(addr, 1, prot);
+  elfsh_mprotect(bp->obj, addr, 1, prot);
   name = revm_resolve(bp->obj, addr, &off);
   snprintf(logbuf, BUFSIZ, XFMT, addr);
   hash_del(&e2dbgworld.bp, logbuf);

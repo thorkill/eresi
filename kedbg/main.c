@@ -131,7 +131,7 @@ static void     kedbg_propagate_type(void)
   for (index = 0; index < keynbr; index++)
     {
       actual = hash_get(&world.curjob->loaded, keys[index]);
-      actual->hostype = E2DBG_HOST_GDB;
+      actual->hostype = ELFSH_HOST_GDB;
       actual->iotype  = ELFSH_IOTYPE_GDBPROT;
     }
   hash_free_keys(keys);
@@ -151,7 +151,7 @@ static void	kedbg_biosmap_load()
   hash_add(&world.curjob->loaded, file->name, file);
   file->loadtime = time(&file->loadtime);
   file->iotype   = ELFSH_IOTYPE_GDBPROT;
-  file->hostype  = E2DBG_HOST_GDB;
+  file->hostype  = ELFSH_HOST_GDB;
   file->id       = ++world.state.lastid;
 }
 
@@ -262,7 +262,7 @@ static int      kedbg_main(int argc, char **argv)
 
   elfsh_set_runtime_mode();
   e2dbg_presence_set();
-  world.curjob->curfile->hostype = E2DBG_HOST_GDB;
+  world.curjob->curfile->hostype = ELFSH_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
   
   /* Put all files as being debugged within a VM */

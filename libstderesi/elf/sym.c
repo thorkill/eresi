@@ -22,7 +22,6 @@
  */
 int		ds(elfshobj_t	*file,
 		   elfshsect_t	*sect,
-		   elfsh_Sym	*tab,
 		   u_int        num,
 		   regex_t	*regx,
 		   char		*(*get_symname)(elfshobj_t *f, elfsh_Sym *s))
@@ -34,10 +33,10 @@ int		ds(elfshobj_t	*file,
   u_int		typenum;
   u_int		bindnum;
   u_int		foff;
-  int		index;
+  u_int		index;
   char		*sect_name;
   char		buff[512];
-  char		off[20];
+  char		off[50];
   char		type_unk[ERESI_MEANING + 1];
   char		bind_unk[ERESI_MEANING + 1];
 
@@ -101,10 +100,12 @@ int		ds(elfshobj_t	*file,
 					   table[index].st_value));
 					
       if (sect && sect->shdr->sh_addr != table[index].st_value)
-	sprintf(off, " + %s", revm_colornumber("%u", 
-					     (u_int) (table[index].st_value - sect->shdr->sh_addr)));
+	snprintf(off, sizeof(off), " + %s", 
+		 revm_colornumber("%u", (u_int) (table[index].st_value - sect->shdr->sh_addr)));
       else
 	*off = '\0';
+
+
 
       /* Different output depending on the quiet flag */
       if (!world.state.revm_quiet)
@@ -151,11 +152,9 @@ int		ds(elfshobj_t	*file,
 	}
 
       revm_endline();
-	  
     }
 
   revm_endline();
-  
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -190,7 +189,7 @@ int		cmd_sym()
   revm_output(logbuf);
   FIRSTREGX(tmp);
   
-  ret = ds(world.curjob->curfile, sct, symtab, 
+  ret = ds(world.curjob->curfile, sct, 
 	   num, tmp, elfsh_get_symbol_name);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -236,7 +235,7 @@ int		cmd_dynsym()
   revm_output(logbuf);
   FIRSTREGX(tmp);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		ds(world.curjob->curfile, sct, dynsym, 
+		ds(world.curjob->curfile, sct,
 		   num, tmp, elfsh_get_dynsymbol_name));
 }
 

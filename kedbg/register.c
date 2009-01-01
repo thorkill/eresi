@@ -67,21 +67,21 @@ void     kedbg_register_vector(void)
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_readmema);
   elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
   elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
-  e2dbg_register_pregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+  e2dbg_register_pregshook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_print_reg);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_getfp);
-  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+  e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			    kedbg_bt_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			    kedbg_getret_ia32);
-  e2dbg_register_sregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
+  e2dbg_register_sregshook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_set_regvars_ia32);
-  e2dbg_register_gregshook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
+  e2dbg_register_gregshook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_get_regvars_ia32);
-  e2dbg_register_getpchook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB,
+  e2dbg_register_getpchook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_getpc_ia32);
-  e2dbg_register_breakhook(ELFSH_ARCH_IA32, E2DBG_HOST_GDB, ELFSH_OS_LINUX,
+  e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_setbp);
-  e2dbg_register_delbreakhook(E2DBG_HOST_GDB, kedbg_delbp);
+  e2dbg_register_delbreakhook(ELFSH_HOST_GDB, kedbg_delbp);
 }

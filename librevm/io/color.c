@@ -33,14 +33,11 @@ color_t 	*revm_colorblank()
   color_t 	*c;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   XALLOC(__FILE__, __FUNCTION__, __LINE__,c, sizeof(color_t), NULL);
-
   c->fground = COLOR_NONE;
   c->bground = COLOR_NONE;
   c->bold = COLOR_NONE;
   c->underline = COLOR_NONE;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (c));
 }
 
@@ -252,11 +249,11 @@ void 		revm_endline()
 
 /* Simple functions */
 char *revm_colorinstr(char *text) 	{ return revm_colorget("%s", "instr"     , text); }
-char *revm_colorstr(char *text) 		{ return revm_colorget("%s", "string"     , text); }
+char *revm_colorstr(char *text) 	{ return revm_colorget("%s", "string"     , text); }
 char *revm_colorfieldstr(char *text) 	{ return revm_colorget("%s", "fieldstring", text); }
 char *revm_colortypestr(char *text) 	{ return revm_colorget("%s", "typestring" , text); }
-char *revm_colorend(char *text) 		{ return revm_colorget("%s", "endstring"  , text); }
-char *revm_colorwarn(char *text) 		{ return revm_colorget("%s", "warnstring" , text); }
+char *revm_colorend(char *text) 	{ return revm_colorget("%s", "endstring"  , text); }
+char *revm_colorwarn(char *text) 	{ return revm_colorget("%s", "warnstring" , text); }
 char *revm_colorfunction(char *text) 	{ return revm_colorget("%s", "function"   , text); }
 char *revm_colorfilename(char *text) 	{ return revm_colorget("%s", "filename"   , text); }
 
@@ -266,13 +263,10 @@ char 		*revm_coloradv(char *type, char *pattern, char *text)
   char 		*p;
 
   NOPROFILER_IN();
-
   p = revm_colorget(pattern, type, text); 
-
   strncpy(text, p, BUFSIZ);
   text[BUFSIZ-1] = 0;
   curtok--;
-
   NOPROFILER_ROUT(text);
 }
 
@@ -360,7 +354,6 @@ int		revm_color_size(char *string)
     {
       if (string[i] == C_STARTCOLOR)
 	{
-	  //size++;
 	  while (i < len && string[i] != 'm')
 	    {
 	      size++;

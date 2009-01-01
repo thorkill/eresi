@@ -86,6 +86,9 @@ void		*kernsh_readmema_mem_linux(elfshobj_t *unused, eresi_Addr offset, void *bu
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Memory not opened !", NULL);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot read /dev/mem in static mode", NULL);
 
   /* We must substract kernel_start(page_offset) to get the physical address */
   roffset = offset - libkernshworld.kernel_start;
@@ -204,6 +207,9 @@ void	*kernsh_readmema_netbsd(elfshobj_t *file, eresi_Addr offset, void *buf, int
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Memory not opened !", NULL);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot read /dev/mem in static mode", NULL);
 
   //  printf("READ MEM NETBSD\n");
 

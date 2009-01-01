@@ -119,7 +119,7 @@ int		elfsh_raw_write(elfshobj_t	*file,
     {
       prot = elfsh_munprotect(file, (eresi_Addr) dst + sect_off, len);
       memcpy(dst + sect_off, src_buff, len);
-      elfsh_mprotect((eresi_Addr) dst + sect_off, len, prot);
+      elfsh_mprotect(file, (eresi_Addr) dst + sect_off, len, prot);
     }
   else
     memcpy(dst + sect_off, src_buff, len);

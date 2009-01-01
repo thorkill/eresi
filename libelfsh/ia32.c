@@ -94,7 +94,8 @@ int		elfsh_extplt_ia32(elfshsect_t *extplt,
 			  (eresi_Addr) reloc, 
 			  (char *) reloc - (char *) elfsh_readmem(extplt));
   *reloc = relplt->curend;
-  elfsh_mprotect((eresi_Addr) reloc, 
+  elfsh_mprotect(extplt->parent,
+		 (eresi_Addr) reloc, 
 		 (char *) reloc - (char *) elfsh_readmem(extplt), prot);
   extplt->curend += elfsh_get_pltentsz(extplt->parent);
 
@@ -353,7 +354,7 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   memcpy(hook + 5, buff, ret);
   memcpy(hook + 5 + ret, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hook + 6 + ret) = symbol->st_value - (hooks->shdr->sh_addr + hooks->curend + 10);
-  elfsh_mprotect((eresi_Addr) hook, 16, prot);
+  elfsh_mprotect(file, (eresi_Addr) hook, 16, prot);
 
   /* We need to grab the parent section to compute the remaining offset */
   source = elfsh_get_parent_section_by_foffset(file, off, NULL);
@@ -370,7 +371,6 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
 
   /* Ret: the minimal instruction aligned length for installing the hook caller-side properly */
   hookbuf = alloca(ret);
-  //prot = elfsh_munprotect(hookbuf, 16);
   memcpy(hookbuf, "\xe9\x00\x00\x00\x00", 5);
   *(uint32_t *) ((char *) hookbuf + 1) = (hooks->shdr->sh_addr + hooks->curend) - (symbol->st_value + 5); 
   memset(hookbuf + 5, 0x90, ret - 5);
@@ -378,7 +378,6 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   if (len != ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Error during hook installation", -1);
-  //elfsh_mprotect(hookbuf, 16, prot);
 
   /* Insert the old symbol on the original saved bytes (do the insertion AFTER all use of symbol !!) */
   snprintf(bufname, BUFSIZ, "old_%s", name);
@@ -387,8 +386,6 @@ int			elfsh_cflow_ia32(elfshobj_t	*file,
   snprintf(bufname, BUFSIZ, "hook_%s", name);
   elfsh_insert_funcsym(file, bufname, hooks->shdr->sh_addr + hooks->curend,
 		       ret + 10, hooks->index);
-
-
 
 #if	__DEBUG_CFLOW__      
   printf("[DEBUG_CFLOW] hook_legit_func = %08X, old_legit_func = %08X \n", 
@@ -447,7 +444,7 @@ int		elfsh_hijack_plt_ia32(elfshobj_t *file,
 		  &displacement, sizeof(displacement));
 #endif
 
-  elfsh_mprotect(symbol->st_value, 
+  elfsh_mprotect(file, symbol->st_value, 
 		 elfsh_get_pltentsz(file), prot);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

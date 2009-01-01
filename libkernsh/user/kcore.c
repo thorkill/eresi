@@ -76,28 +76,31 @@ int kernsh_closemem_kcore_linux_2_6()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-void		*kernsh_readmema_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr offset, 
+void		*kernsh_readmema_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr addr, 
 						 void *buf, int size)
 {
-  eresi_Addr	roffset;
+  eresi_Addr	realaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Memory not opened !", NULL);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot read kcore in static mode", NULL);
 
-  roffset = offset - libkernshworld.kernel_start + 0x1000;
+  realaddr = addr - libkernshworld.kernel_start + 0x1000;
 
   if (libkernshworld.mmap)
     {
-      if (memcpy(buf, libkernshworld.ptr+roffset, size) == NULL)
+      if (memcpy(buf, libkernshworld.ptr + realaddr, size) == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Memcpy failed !", NULL);
     }
   else
     {
 #if defined(__linux__)
-      XLSEEK64(libkernshworld.fd, roffset, SEEK_SET, NULL);
+      XLSEEK64(libkernshworld.fd, realaddr, SEEK_SET, NULL);
 #endif
       XREAD(libkernshworld.fd, buf, size, NULL);
     }

@@ -269,7 +269,7 @@ int                     e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp)
   fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] Address to be flushed: %016lx \n", addr);
 #endif
   
-  /* Testing .... */
+  /* FIXME: Testing .... nothing is working until now */
   __asm__ __volatile__("iflush %0 + %1 \n\t" ::
 		       "r" ((unsigned long) addr), 
 		       "r" (0));
@@ -329,7 +329,7 @@ int                     e2dbg_break_sparc32(elfshobj_t *f, elfshbp_t *bp)
   fprintf(stderr, "[DEBUG_BREAKPOINTS:sparc32] after sleep & write\n");
 #endif
 
-  elfsh_mprotect(bp->addr, 8, prot);
+  elfsh_mprotect(f, bp->addr, 8, prot);
 
   sleep(2);
 

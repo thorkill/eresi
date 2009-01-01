@@ -67,6 +67,9 @@ void	*kernsh_readmema_kmem_linux_2_6(elfshobj_t *unused, eresi_Addr offset, void
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Memory not opened !", NULL);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot read kmem in static mode", NULL);
 
 #if defined(__linux__)
   XLSEEK64(libkernshworld.fd, offset, SEEK_SET, NULL);
@@ -173,6 +176,9 @@ void	*kernsh_readmema_kmem_linux_2_4(elfshobj_t *unused, eresi_Addr offset, void
   if (!libkernshworld.open)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Memory not opened !", NULL);
+  if (elfsh_is_static_mode())
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Cannot read kmem in static mode", NULL);
 
   if (libkernshworld.mmap)
     {

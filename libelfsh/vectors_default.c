@@ -50,12 +50,7 @@ int elfsh_default_readmemf(elfshobj_t *file, u_int off, char *buff, int len)
 
 								
 /**
- * Default hooks handlers
- *
- * @param null
- * @param null2
- * @param null3
- * @return
+ * @brief Default hooks handlers
  */
 int	elfsh_default_plthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
@@ -67,13 +62,7 @@ int	elfsh_default_plthandler(elfshobj_t *null,
 }
 
 /**
- * Used for encoding a random PLT entry
- * Do nothing by default, this is not fatal 
- *
- * @param file
- * @param sect
- * @param diff
- * @return
+ * @brief Default PLT encoding handler.
  */
 int	elfsh_default_encodeplthandler(elfshobj_t *file, 
 				       elfshsect_t *sect, 
@@ -85,12 +74,7 @@ int	elfsh_default_encodeplthandler(elfshobj_t *file,
 }
 
 /**
- * Used for encoding of the first PLT entry 
- *
- * @param file
- * @param sect
- * @param sect2
- * @return
+ * @brief Default first entry PLT encoding handler.
  */
 int	elfsh_default_encodeplt1handler(elfshobj_t *file, 
 					elfshsect_t *sect,
@@ -103,12 +87,7 @@ int	elfsh_default_encodeplt1handler(elfshobj_t *file,
 }
 
 /**
- *
- * @param null
- * @param null2
- * @param null3
- * @param null4
- * @param null5
+ * @brief Default relocation handler.
  */
 int	elfsh_default_relhandler(elfshsect_t *null, 
 				 elfsh_Rel  * null2, 
@@ -122,12 +101,7 @@ int	elfsh_default_relhandler(elfshsect_t *null,
 }
 
 /**
- *
- * @param null
- * @param nulls
- * @param null2
- * @param null3
- * @return
+ * @brief Default control flow redirection handler.
  */
 int	elfsh_default_cflowhandler(elfshobj_t   *null,
 				   char		*nulls,
@@ -141,12 +115,7 @@ int	elfsh_default_cflowhandler(elfshobj_t   *null,
 
 
 /**
- *
- * @param o
- * @param d
- * @param t
- * @param f
- * @return
+ * @brief Default EXTPLT handler.
  */
 int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d, 
 				    elfshsect_t *t, elfshsect_t *f)
@@ -157,13 +126,9 @@ int	elfsh_default_extplthandler(elfshsect_t *o, elfshsect_t *d,
 }
 
 /**
- * Used on architectures where altplt hijack is not required, thus induce no fatal error
+ * @brief Default ALTPLT handler.
+ * Used on architectures where altplt hijack is not required, thus induces no fatal error
  * DO NOT use this as a default handler, unless you know exactly what you are doing
- *
- * @param null
- * @param null2
- * @param null3
- * @return
  */
 int	elfsh_void_altplthandler(elfshobj_t *null, 
 				 elfsh_Sym  *null2, 
@@ -174,8 +139,29 @@ int	elfsh_void_altplthandler(elfshobj_t *null,
 }
 
 /**
- * @param addr
- * @return
+ * @brief Default MPROTECT handler
+ * Used in kernel context where mprotect is not required, thus induces no fatal error
+ * DO NOT use this as a default handler, unless you know exactly what you are doing
+ */
+int	elfsh_void_mprotecthandler(elfshobj_t *obj, eresi_Addr addr, uint32_t sz, int prot)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * @brief Default MUNPROTECT handler.
+ * Used on architectures where altplt hijack is not required, thus induces no fatal error
+ * DO NOT use this as a default handler, unless you know exactly what you are doing
+ */
+int	elfsh_void_munprotecthandler(elfshobj_t *obj, eresi_Addr addr, uint32_t sz)
+{
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/**
+ * @brief Default argument counting handler.
  */
 int	elfsh_default_argchandler(eresi_Addr addr)
 {
@@ -185,10 +171,7 @@ int	elfsh_default_argchandler(eresi_Addr addr)
 }
 
 /**
- * @param file
- * @param size
- * @param prot
- * @return
+ * @brief Default runtime memory mapping handler.
  */
 eresi_Addr elfsh_default_rmaphandler(elfshobj_t *file, size_t size, int prot)
 {

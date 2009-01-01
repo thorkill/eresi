@@ -314,7 +314,7 @@ int		e2dbg_break_ia32(elfshobj_t *f,
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:ia32] after write\n");
 #endif
-  elfsh_mprotect(bp->addr, 4, prot);
+  elfsh_mprotect(f, bp->addr, 4, prot);
 #if __DEBUG_BREAKPOINTS__
   fprintf(stderr, "[DEBUG_BREAKPOINTS:ia32] after mprotect\n");
 #endif

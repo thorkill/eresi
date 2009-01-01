@@ -117,6 +117,7 @@ int		cmd_openmem()
       if (libkernshworld.root == NULL)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to get elf file", -1);
+      libkernshworld.root->hostype = ELFSH_HOST_KERN;
       libkernshworld.open_static = 1;
     }
   
