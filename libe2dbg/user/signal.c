@@ -518,7 +518,12 @@ void			e2dbg_do_breakpoint()
 #if __DEBUG_BP__
       fprintf(stderr, " Breakpoint desinstalled at addr %08X \n", *pc);
 #endif
-      e2dbg_display(bp->cmd, bp->cmdnbr);
+
+      if (bp->cmdnbr)
+	e2dbg_display(bp->cmd, bp->cmdnbr);
+      else
+	e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
+	
 #if __DEBUG_BP__
       fprintf(stderr, " e2dbg display ! \n");
 #endif
