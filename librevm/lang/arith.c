@@ -135,13 +135,12 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid subexpression : remove spaces ?", NULL);
-	if (deref)
+	while (deref--)
 	  {
 	    res = revm_deref(res);
 	    if (!res)
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Invalid dereference", NULL);
-	    deref = 0;
 	  }
 	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
@@ -168,10 +167,7 @@ static revmexpr_t	*revm_compute_rec(char **str)
       case '*':
 	if (op != REVM_OP_UNKNOW || !left)
 	  {
-	    if (deref)
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Invalid multiple dereferences", NULL);
-	    deref = 1;
+	    deref++;
 	    break;
 	  }
 	op = REVM_OP_MUL;
@@ -207,13 +203,12 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unknown expression name", NULL);
-	if (deref)
+	while (deref--)
 	  {
 	    res = revm_deref(res);
 	    if (!res)
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Invalid dereference", NULL);
-	    deref = 0;
 	  }
 	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
