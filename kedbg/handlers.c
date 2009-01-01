@@ -11,7 +11,7 @@ static Bool     kedbg_isrealmodewmon(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          code[] = "r cr0";
-  char          reply[50];
+  char          reply[150];
   char          *ret;
   uint8_t       i;
 
