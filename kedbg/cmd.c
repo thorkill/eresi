@@ -68,7 +68,10 @@ int             cmd_kedbgcont(void)
 	      if (bp != NULL)
 		{
 		  revm_clean();
-		  e2dbg_display(bp->cmd, bp->cmdnbr);
+		  if (bp->cmdnbr)
+		    e2dbg_display(bp->cmd, bp->cmdnbr);
+		  else
+		    e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 
 		  if (!off)
 		    printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip, name);
