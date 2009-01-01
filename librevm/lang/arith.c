@@ -135,12 +135,13 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid subexpression : remove spaces ?", NULL);
-	while (deref--)
+	while (deref)
 	  {
 	    res = revm_deref(res);
 	    if (!res)
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Invalid dereference", NULL);
+	    deref--;
 	  }
 	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
@@ -203,12 +204,13 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	if (!res)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unknown expression name", NULL);
-	while (deref--)
+	while (deref)
 	  {
 	    res = revm_deref(res);
 	    if (!res)
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			   "Invalid dereference", NULL);
+	    deref--;
 	  }
 	res = revm_compute_intermediate(&left, res, &op);
 	if (!res)
