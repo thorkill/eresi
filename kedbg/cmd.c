@@ -192,6 +192,8 @@ int             cmd_kedbghookivt(void)
 	e2dbg_breakpoint_add((eresi_Addr) finaladdr);
 
     }
+
+  printf("[*] Entries of the IVT have been hooked.\n");
   PROFILER_ROUTQ(0);
 }
 

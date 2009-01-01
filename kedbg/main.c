@@ -258,7 +258,10 @@ static int      kedbg_main(int argc, char **argv)
   ret = revm_file_load(argv[2], 0, NULL);
 
   if (ret)
-    PROFILER_ERRQ("[E] Wrong file - exiting\n", -1);  
+    {
+      fprintf(stderr, "Wrong file - exiting\n");
+      PROFILER_ERRQ("[E] Wrong file - exiting\n", -1);
+    }
 
   elfsh_set_runtime_mode();
   e2dbg_presence_set();

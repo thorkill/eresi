@@ -90,7 +90,7 @@ Bool           kedbg_isrealmode(void)
   PROFILER_INQ();
 
   /* If we are not running in a VM, we've nothing to do here. */
-  if (kedbgworld.run_in_vm == FALSE || kedbgworld.pmode == TRUE)
+  if (kedbgworld.run_in_vm == FALSE)
     PROFILER_ROUTQ(FALSE);
  
   do
@@ -361,7 +361,7 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
       if (buf == NULL)
 	PROFILER_ERRQ("buf is NULL !", buf);
       ASSERT(buf != NULL);
-      ret = gdbwrap_readmemory(loc, addr, size);
+      ret = gdbwrap_readmem(loc, addr, size);
 
       /* gdbserver sends a string, we need to convert it. Note that 2
 	 characters = 1 real Byte.*/
