@@ -36,6 +36,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   u_char	eos;
   u_int		depthinc;
   u_int		curoff;
+  u_int		totlen;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -83,7 +84,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
     }
 
   /* In many cases we dont need to do a malloc, since we will read from the section's cache */
-  curlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
+  totlen = curlen = MJR_MIN(sect->shdr->sh_size - off, MJR_MAX_BLOCK_SIZE);
   eos = (curlen != MJR_MAX_BLOCK_SIZE ? 1 : 0);
   argptr = NULL;
   if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
@@ -92,6 +93,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
       argptr = ptr;
     }
   ptr = elfsh_readmema(sess->cur->obj, vaddr, argptr, curlen);
+
 
   /* Read all instructions, making sure we never override section's boundaries */
   for (curr = 0; vaddr + curr < sect->shdr->sh_addr + sect->shdr->sh_size; curr += ilen)
@@ -108,7 +110,8 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 	  if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
 	    {
 	      curoff = (u_int) (ptr - argptr);
-	      XREALLOC(__FILE__, __FUNCTION__, __LINE__, argptr, argptr, curlen + restlen, -1);
+	      totlen += restlen;
+	      XREALLOC(__FILE__, __FUNCTION__, __LINE__, argptr, argptr, totlen, -1);
 	      ptr = argptr + curoff;
 	    }
 	  curlen += restlen;
