@@ -16,19 +16,21 @@
 #define  HLP_IVT           "Displays the IVT of the remote VM"
 #define  HLP_HOOKIVT       "Adds breakpoints to all addresses defined in the IVT"
 
+/* Various defined values */
 #define  BPCODE            0xcc
 #define  MEMINJECT         0x500
+#define	 CR0STR		   "637230"
 
 
 /* Debug flags */
 #define __DEBUG_KEDBG__	   FALSE
 
 #if __DEBUG_KEDBG__
-#define DEBUGMSG(_command)				\
-   do							\
-      {							\
-         _command;					\
-      } while(0)
+#define DEBUGMSG(_command)			\
+do						\
+{						\
+  _command;					\
+} while(0)
 #else
 #define DEBUGMSG(_command)				
 #endif

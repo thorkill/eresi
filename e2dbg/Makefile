@@ -45,7 +45,7 @@ LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			-L../libui/ -lui32 -L../libedfmt -ledfmt32  	    \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
 			-DERESI32 $(EXTRAOPT) $(LDDUMPOPT32) $(LPTHREAD)            \
-			$(LDMJOLLNIR) $(KERNSHLIB32) $(NCURSESLNOPT) $(READLNOPT)
+			$(LDMJOLLNIR) $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 			-L../libetrace/ -letrace64 -L../libstderesi -lstderesi64    \
@@ -55,7 +55,7 @@ LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
 			-L../libui/ -lui64 -L../libedfmt -ledfmt64 \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
 			-DERESI64 $(EXTRAOPT) $(LDDUMPOPT64) $(LPTHREAD)            \
-			$(LDMJOLLNIR) $(KERNSHLIB64) $(NCURSESLNOPT) $(READLNOPT)
+			$(LDMJOLLNIR) $(NCURSESLNOPT) $(READLNOPT)
 
 all			: all32 all64
 

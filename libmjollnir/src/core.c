@@ -94,7 +94,6 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
     }
   ptr = elfsh_readmema(sess->cur->obj, vaddr, argptr, curlen);
 
-
   /* Read all instructions, making sure we never override section's boundaries */
   for (curr = 0; vaddr + curr < sect->shdr->sh_addr + sect->shdr->sh_size; curr += ilen)
     {

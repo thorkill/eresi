@@ -11,18 +11,18 @@ static Bool     kedbg_isrealmodewmon(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          code[] = "r cr0";
-  char          reply[50];
+  char          reply[100];
   char          *ret;
   uint8_t       i;
 
   PROFILER_INQ();
   ret = gdbwrap_remotecmd(loc, code);
 
-  if (strlen(ret) > sizeof(reply) || strstr("637230", ret) == NULL)
+  if (strlen(ret) > sizeof(reply) || !strstr(CR0STR, ret))
     {
-      PROFILER_ERRQ("Impossible to determine CPU mode", FALSE);
       printf("Impossible to detect the mode. Upgrade your VMWare version and"
 	     "use the proc <protected> to switch manually to protected mode.\n");
+      PROFILER_ERRQ("Impossible to determine CPU mode", FALSE);
     }
   if (gdbwrap_cmdnotsup(loc))
     PROFILER_ROUTQ(FALSE);
