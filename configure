@@ -181,6 +181,7 @@ LIBASM_PACKED_HANDLERS=0
 --enable-testing*)
 echo " [*] Enable compilation without install"
 echo "#define E2DBG_PATH             " \"`pwd`/libe2dbg/\" >> $VARSFILE
+echo "EXTRACFLAGS += -g3"				   >> $CONFIGFILE
 TESTING="1"
 ;;
 
@@ -259,7 +260,7 @@ echo  "CC		= g++"			>> $CONFIGFILE
 
 --no-stackprot*)
 echo " [*] Disabling gcc stack protection"
-echo "EXTRACFLAGS	= -fno-stack-protector" >> $CONFIGFILE
+echo "EXTRACFLAGS += -fno-stack-protector" >> $CONFIGFILE
 ;;
 
 --set-shell*)
