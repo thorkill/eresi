@@ -47,7 +47,7 @@ mod32			:
 			$(MAKE) -C analysis all32
 			$(MAKE) -C files all32
 
-$(NAME32).so		:
+$(NAME32).so		: mod32
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
 			$(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
@@ -66,7 +66,7 @@ mod64			:
 			$(MAKE) -C analysis all64
 			$(MAKE) -C files all64
 
-$(NAME64).so			:
+$(NAME64).so			: mod64
 			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME64}.a ${OBJ64} 

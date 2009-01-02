@@ -52,7 +52,7 @@ ifdef USE_KE2DBG
 			$(MAKE) -C kernel 
 endif
 
-$(DBGNAME32O):
+$(DBGNAME32O): mod32
 			@$(CC) -shared $(COBJ32) $(EXTRAOBJ32) $(UOBJ32) $(LDFLAGS32) \
 			-o $(DBGNAME32).so
 			@$(AR) $(DBGNAME32).a $(COBJ32) $(UOBJ32) $(EXTRAOBJ32)
@@ -70,7 +70,7 @@ mod64			:
 			$(MAKE) -C common all64
 			$(MAKE) -C user   all64
 
-$(DBGNAME64O)			:
+$(DBGNAME64O)			: mod64
 			@$(CC) -shared $(COBJ64) $(EXTRAOBJ64) $(UOBJ64) $(LDFLAGS64) \
 			-o $(DBGNAME64).so
 			@$(AR) $(DBGNAME64).a $(OBJ64)

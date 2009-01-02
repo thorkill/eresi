@@ -42,7 +42,7 @@ mod32			:
 			$(MAKE) -C io   all32
 			$(MAKE) -C api  all32
 
-$(NAME32).so			:
+$(NAME32).so			: mod32
 			$(CC) -shared $(OBJ32) -o $(NAME32).so $(LDFLAGS32) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME32}.a ${OBJ32} 
@@ -57,7 +57,7 @@ mod64			:
 			$(MAKE) -C io   all64
 			$(MAKE) -C api  all64
 
-lib64			:
+lib64			: mod64
 			$(CC) -shared $(OBJ64) -o $(NAME64).so $(LDFLAGS64) \
 			$(STATOPT) $(NCURSESLNOPT) $(READLNOPT)
 			ar rc ${NAME64}.a ${OBJ64} 
