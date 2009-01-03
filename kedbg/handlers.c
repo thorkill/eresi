@@ -99,8 +99,11 @@ Bool           kedbg_isrealmode(void)
 
   /* If we are not running in a VM, we've nothing to do here. */
   if (kedbgworld.run_in_vm == FALSE)
-    PROFILER_ROUTQ(FALSE);
- 
+    {
+      asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
+      PROFILER_ROUTQ(FALSE);
+    }
+  
   do
     {
       switch (choice)
