@@ -111,10 +111,11 @@ int     asm_register_arm_instructions()
 {
   LIBASM_PROFILE_FIN();
 
-  /* status register manipulation */
-  asm_register_arm_opcode(0x00, 0x00, 0x02, (unsigned long) asm_arm_mrs);
-  asm_register_arm_opcode(0x00, 0x00, 0x03, (unsigned long) asm_arm_msr);
-  asm_register_arm_opcode(0x00, 0x00, 0x07, (unsigned long) asm_arm_msr);
+  // TODO: verify if a different function is needed for different forms of a
+  // single instruction, such as MCR and MCR2.
+  // If not, maybe it'll be better to remove the multiple entries used in
+  // the opcode vector
+
   /* multiply */
   asm_register_arm_opcode(0x00, 0x01, 0x00, (unsigned long) asm_arm_mul);
   asm_register_arm_opcode(0x00, 0x01, 0x01, (unsigned long) asm_arm_mla);
@@ -127,26 +128,51 @@ int     asm_register_arm_instructions()
   asm_register_arm_opcode(0x00, 0x02, 0x01, (unsigned long) asm_arm_swpb);
   /* extra load/store */
   asm_register_arm_opcode(0x00, 0x03, 0x01, (unsigned long) asm_arm_strh);
+  asm_register_arm_opcode(0x00, 0x03, 0x02, (unsigned long) asm_arm_ldrd);
+  asm_register_arm_opcode(0x00, 0x03, 0x03, (unsigned long) asm_arm_strd);
   asm_register_arm_opcode(0x00, 0x03, 0x05, (unsigned long) asm_arm_ldrh);
   asm_register_arm_opcode(0x00, 0x03, 0x06, (unsigned long) asm_arm_ldrsb);
   asm_register_arm_opcode(0x00, 0x03, 0x07, (unsigned long) asm_arm_ldrsh);
+  /* miscellaneous */
+  /* .. dsp multiply */
+  asm_register_arm_opcode(0x00, 0x04, 0x00, (unsigned long) asm_arm_smlaxy);
+  asm_register_arm_opcode(0x00, 0x04, 0x01, (unsigned long) asm_arm_smlawy);
+  asm_register_arm_opcode(0x00, 0x04, 0x02, (unsigned long) asm_arm_smlalxy);
+  asm_register_arm_opcode(0x00, 0x04, 0x03, (unsigned long) asm_arm_smulxy);
+  asm_register_arm_opcode(0x00, 0x04, 0x05, (unsigned long) asm_arm_smulwy);
+  /* .. dsp add/sub */
+  asm_register_arm_opcode(0x00, 0x05, 0x00, (unsigned long) asm_arm_qadd);
+  asm_register_arm_opcode(0x00, 0x05, 0x01, (unsigned long) asm_arm_qsub);
+  asm_register_arm_opcode(0x00, 0x05, 0x02, (unsigned long) asm_arm_qdadd);
+  asm_register_arm_opcode(0x00, 0x05, 0x03, (unsigned long) asm_arm_qdsub);
+  /* .. other */
+  /* ... status register manipulation */
+  asm_register_arm_opcode(0x00, 0x06, 0x00, (unsigned long) asm_arm_mrs);
+  asm_register_arm_opcode(0x00, 0x00, 0x00, (unsigned long) asm_arm_msr); /* MSR(1) */
+  asm_register_arm_opcode(0x00, 0x06, 0x02, (unsigned long) asm_arm_msr); /* MSR(2) */
+
+  asm_register_arm_opcode(0x00, 0x06, 0x03, (unsigned long) asm_arm_bx);
+  asm_register_arm_opcode(0x00, 0x06, 0x07, (unsigned long) asm_arm_clz);
+  asm_register_arm_opcode(0x00, 0x06, 0x00, (unsigned long) asm_arm_blx); /* BLX(2) */
+  asm_register_arm_opcode(0x00, 0x06, 0x09, (unsigned long) asm_arm_bkpt);
   /* data processing */
-  asm_register_arm_opcode(0x00, 0x04, 0x00, (unsigned long) asm_arm_and);
-  asm_register_arm_opcode(0x00, 0x04, 0x01, (unsigned long) asm_arm_eor);
-  asm_register_arm_opcode(0x00, 0x04, 0x02, (unsigned long) asm_arm_sub);
-  asm_register_arm_opcode(0x00, 0x04, 0x03, (unsigned long) asm_arm_rsb);
-  asm_register_arm_opcode(0x00, 0x04, 0x04, (unsigned long) asm_arm_add);
-  asm_register_arm_opcode(0x00, 0x04, 0x05, (unsigned long) asm_arm_adc);
-  asm_register_arm_opcode(0x00, 0x04, 0x06, (unsigned long) asm_arm_sbc);
-  asm_register_arm_opcode(0x00, 0x04, 0x07, (unsigned long) asm_arm_rsc);
-  asm_register_arm_opcode(0x00, 0x04, 0x08, (unsigned long) asm_arm_tst);
-  asm_register_arm_opcode(0x00, 0x04, 0x09, (unsigned long) asm_arm_teq);
-  asm_register_arm_opcode(0x00, 0x04, 0x0a, (unsigned long) asm_arm_cmp);
-  asm_register_arm_opcode(0x00, 0x04, 0x0b, (unsigned long) asm_arm_cmn);
-  asm_register_arm_opcode(0x00, 0x04, 0x0c, (unsigned long) asm_arm_orr);
-  asm_register_arm_opcode(0x00, 0x04, 0x0d, (unsigned long) asm_arm_mov);
-  asm_register_arm_opcode(0x00, 0x04, 0x0e, (unsigned long) asm_arm_bic);
-  asm_register_arm_opcode(0x00, 0x04, 0x0f, (unsigned long) asm_arm_mvn);
+  asm_register_arm_opcode(0x00, 0x07, 0x00, (unsigned long) asm_arm_and);
+  asm_register_arm_opcode(0x00, 0x07, 0x01, (unsigned long) asm_arm_eor);
+  asm_register_arm_opcode(0x00, 0x07, 0x02, (unsigned long) asm_arm_sub);
+  asm_register_arm_opcode(0x00, 0x07, 0x03, (unsigned long) asm_arm_rsb);
+  asm_register_arm_opcode(0x00, 0x07, 0x04, (unsigned long) asm_arm_add);
+  asm_register_arm_opcode(0x00, 0x07, 0x05, (unsigned long) asm_arm_adc);
+  asm_register_arm_opcode(0x00, 0x07, 0x06, (unsigned long) asm_arm_sbc);
+  asm_register_arm_opcode(0x00, 0x07, 0x07, (unsigned long) asm_arm_rsc);
+  asm_register_arm_opcode(0x00, 0x07, 0x08, (unsigned long) asm_arm_tst);
+  asm_register_arm_opcode(0x00, 0x07, 0x09, (unsigned long) asm_arm_teq);
+  asm_register_arm_opcode(0x00, 0x07, 0x0A, (unsigned long) asm_arm_cmp);
+  asm_register_arm_opcode(0x00, 0x07, 0x0B, (unsigned long) asm_arm_cmn);
+  asm_register_arm_opcode(0x00, 0x07, 0x0C, (unsigned long) asm_arm_orr);
+  asm_register_arm_opcode(0x00, 0x07, 0x0D, (unsigned long) asm_arm_mov);
+  asm_register_arm_opcode(0x00, 0x07, 0x0E, (unsigned long) asm_arm_bic);
+  asm_register_arm_opcode(0x00, 0x07, 0x0F, (unsigned long) asm_arm_mvn);
+
   /* load/store */
   asm_register_arm_opcode(0x01, 0x00, 0x00, (unsigned long) asm_arm_str);
   asm_register_arm_opcode(0x01, 0x00, 0x01, (unsigned long) asm_arm_strt);
@@ -156,6 +182,9 @@ int     asm_register_arm_instructions()
   asm_register_arm_opcode(0x01, 0x01, 0x01, (unsigned long) asm_arm_ldrt);
   asm_register_arm_opcode(0x01, 0x01, 0x02, (unsigned long) asm_arm_ldrb);
   asm_register_arm_opcode(0x01, 0x01, 0x03, (unsigned long) asm_arm_ldrbt);
+  /* PLD */
+  asm_register_arm_opcode(0x01, 0x02, 0x00, (unsigned long) asm_arm_pld);
+
   /* load/store multiple */
   asm_register_arm_opcode(0x02, 0x00, 0x00, (unsigned long) asm_arm_stm); // first form
   asm_register_arm_opcode(0x02, 0x00, 0x02, (unsigned long) asm_arm_ldm); // first form
@@ -165,14 +194,23 @@ int     asm_register_arm_instructions()
   /* branch */
   asm_register_arm_opcode(0x02, 0x01, 0x00, (unsigned long) asm_arm_b);
   asm_register_arm_opcode(0x02, 0x01, 0x01, (unsigned long) asm_arm_bl);
+  asm_register_arm_opcode(0x02, 0x01, 0x02, (unsigned long) asm_arm_blx); /* BLX(1) */
+
   /* coprocessor */
-  asm_register_arm_opcode(0x03, 0x00, 0x00, (unsigned long) asm_arm_stc);
-  asm_register_arm_opcode(0x03, 0x00, 0x01, (unsigned long) asm_arm_ldc);
-  asm_register_arm_opcode(0x03, 0x01, 0x02, (unsigned long) asm_arm_cdp);
-  asm_register_arm_opcode(0x03, 0x01, 0x03, (unsigned long) asm_arm_mcr);
-  asm_register_arm_opcode(0x03, 0x01, 0x04, (unsigned long) asm_arm_mrc);
+  asm_register_arm_opcode(0x03, 0x00, 0x00, (unsigned long) asm_arm_mcrr);
+  asm_register_arm_opcode(0x03, 0x00, 0x01, (unsigned long) asm_arm_mrrc);
+  asm_register_arm_opcode(0x03, 0x01, 0x00, (unsigned long) asm_arm_stc);
+  asm_register_arm_opcode(0x03, 0x01, 0x01, (unsigned long) asm_arm_ldc);
+  asm_register_arm_opcode(0x03, 0x01, 0x02, (unsigned long) asm_arm_stc); /* STC2 */
+  asm_register_arm_opcode(0x03, 0x01, 0x03, (unsigned long) asm_arm_ldc); /* LDC2 */
+  asm_register_arm_opcode(0x03, 0x02, 0x00, (unsigned long) asm_arm_cdp);
+  asm_register_arm_opcode(0x03, 0x02, 0x01, (unsigned long) asm_arm_cdp); /* CDP2 */
+  asm_register_arm_opcode(0x03, 0x03, 0x00, (unsigned long) asm_arm_mcr);
+  asm_register_arm_opcode(0x03, 0x03, 0x01, (unsigned long) asm_arm_mrc);
+  asm_register_arm_opcode(0x03, 0x03, 0x02, (unsigned long) asm_arm_mcr); /* MCR2 */
+  asm_register_arm_opcode(0x03, 0x03, 0x03, (unsigned long) asm_arm_mrc); /* MRC2 */
   /* exception */
-  asm_register_arm_opcode(0x03, 0x01, 0x05, (unsigned long) asm_arm_swi);
+  asm_register_arm_opcode(0x03, 0x04, 0x00, (unsigned long) asm_arm_swi);
 
   LIBASM_PROFILE_FOUT(1);
 }

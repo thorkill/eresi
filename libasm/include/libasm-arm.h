@@ -1,6 +1,9 @@
 #ifndef _LIBASM_ARM_H_
 #define _LIBASM_ARM_H_
 
+#define MGETBYTE(val, byte) ((val >> (byte*8)) & 0x00FF)
+#define MGETNIBBLE(val, nibble) ((val >> (nibble*4)) & 0x000F)
+
 /* Registration functions */
 int asm_register_arm();
 
@@ -12,8 +15,12 @@ int asm_arm_add(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_and(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_b(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_bic(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_bkpt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_bl(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_blx(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_bx(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_cdp(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_clz(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_cmn(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_cmp(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_eor(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -22,29 +29,43 @@ int asm_arm_ldm(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldr(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrb(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrbt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_ldrd(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrh(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrsb(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrsh(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mcr(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_mcrr(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mla(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mov(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mrc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_mrrc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mrs(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_msr(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mul(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_mvn(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_orr(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_pld(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_qadd(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_qdadd(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_qdsub(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_qsub(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_rsb(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_rsc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_sbc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_smlal(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_smlalxy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_smlawy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_smlaxy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_smull(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_smulwy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_smulxy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_stc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_stm(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_str(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_strb(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_strbt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_strd(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_strh(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_strt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_sub(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -71,8 +92,12 @@ enum e_arm_instr
     ASM_ARM_AND,
     ASM_ARM_B,
     ASM_ARM_BIC,
+    ASM_ARM_BKPT,
     ASM_ARM_BL,
+    ASM_ARM_BLX,
+    ASM_ARM_BX,
     ASM_ARM_CDP,
+    ASM_ARM_CLZ,
     ASM_ARM_CMN,
     ASM_ARM_CMP,
     ASM_ARM_EOR,
@@ -81,29 +106,43 @@ enum e_arm_instr
     ASM_ARM_LDR,
     ASM_ARM_LDRB,
     ASM_ARM_LDRBT,
+    ASM_ARM_LDRD,
     ASM_ARM_LDRH,
     ASM_ARM_LDRSB,
     ASM_ARM_LDRSH,
     ASM_ARM_LDRT,
     ASM_ARM_MCR,
+    ASM_ARM_MCRR,
     ASM_ARM_MLA,
     ASM_ARM_MOV,
     ASM_ARM_MRC,
+    ASM_ARM_MRRC,
     ASM_ARM_MRS,
     ASM_ARM_MSR,
     ASM_ARM_MUL,
     ASM_ARM_MVN,
     ASM_ARM_ORR,
+    ASM_ARM_PLD,
+    ASM_ARM_QADD,
+    ASM_ARM_QDADD,
+    ASM_ARM_QDSUB,
+    ASM_ARM_QSUB,
     ASM_ARM_RSB,
     ASM_ARM_RSC,
     ASM_ARM_SBC,
     ASM_ARM_SMLAL,
+    ASM_ARM_SMLALXY,
+    ASM_ARM_SMLAWY,
+    ASM_ARM_SMLAXY,
     ASM_ARM_SMULL,
+    ASM_ARM_SMULWY,
+    ASM_ARM_SMULXY,
     ASM_ARM_STC,
     ASM_ARM_STM,
     ASM_ARM_STR,
     ASM_ARM_STRB,
     ASM_ARM_STRBT,
+    ASM_ARM_STRD,
     ASM_ARM_STRH,
     ASM_ARM_STRT,
     ASM_ARM_SUB,
