@@ -20,6 +20,7 @@
 #define  BPCODE            0xcc
 #define  MEMINJECT         0x500
 #define	 CR0STR		   "637230"
+#define  MONITOREMUL       "r cr0"
 
 
 /* Debug flags */

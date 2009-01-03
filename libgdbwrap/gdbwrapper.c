@@ -956,11 +956,11 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
   /* If we have a new line, it meens the packet is not finished (to
      prove...), we listen to the next incoming packet, which is an
      OK. */
-/*   if (ret != NULL && gdbwrap_atoh(ret + strlen(ret) - 2, BYTE_IN_CHAR) == 0xa) */
-/*     { */
+  if (ret != NULL && gdbwrap_atoh(ret + strlen(ret) - 2, BYTE_IN_CHAR) == 0xa)
+    {
       gdbwrap_send_ack(desc);
       rval = recv(desc->fd, cmdcpy, sizeof(cmdcpy), 0);
-/* } */
+    }
 
   return ret;
 }
