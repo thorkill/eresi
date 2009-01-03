@@ -8,15 +8,13 @@ static void     kedbg_stepandprint(void)
   gdbwrap_t     *loc = gdbwrap_current_get();
   int           off;
   char          *name;
-  elfshobj_t    *parent;
 
   gdbwrap_stepi(loc);
   kedbg_isrealmode();
   revm_clean();
   gdbwrap_readgenreg(loc);
   e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
-  parent = e2dbg_get_parent_object((eresi_Addr)loc->reg32.eip);
-  name   = revm_resolve(parent, (eresi_Addr) loc->reg32.eip, &off);
+  name   = revm_resolve(world.curjob->curfile, (eresi_Addr) loc->reg32.eip, &off);
   instr  = alloca(20);
   kedbg_readmema(NULL, (eresi_Addr)loc->reg32.eip, instr, 20);
   revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
