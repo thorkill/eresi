@@ -100,8 +100,11 @@ static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res,
   world.state.revm_quiet = 1;
   ofinal = revm_create_IMMED((*left)->type->type, 1, 0);
   if (!ofinal)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid type for arithmetic variable", NULL);
+    {
+      world.state.revm_quiet = quiet;
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Invalid type for arithmetic variable", NULL);
+    }
   final = revm_expr_create_from_object(ofinal, revm_tmpvar_create(), 0);
   ret = revm_arithmetics(final, *left, res, *op);
   world.state.revm_quiet = quiet;

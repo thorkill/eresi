@@ -67,7 +67,7 @@ int			cmd_set()
       /* Dont copy the result variable over itself if we use $_ as a source variable */
       if (strcmp(e2->label, REVM_VAR_RESULT))
 	{
-	  revm_expr_destroy(last->label);
+	  revm_expr_destroy_by_name(last->label);
 	  last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
 	  if (!last)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -96,7 +96,7 @@ int			cmd_set()
       e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0);
       if (!e1)
 	{
-	  revm_expr_destroy(e2->label);
+	  revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid destination variable", (-1));
 	}
@@ -108,7 +108,7 @@ int			cmd_set()
       if (!e1->type && revm_convert_object(e1, e2->type->type) < 0)
 	{
 	  if (e2->value && !e2->value->perm)
-	    revm_expr_destroy(e2->label);
+	    revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to convert destination type expression", (-1));
 	}
@@ -116,14 +116,14 @@ int			cmd_set()
 	  revm_convert_object(e2, e1->type->type) < 0)
 	{
 	  if (e2->value && !e2->value->perm)
-	    revm_expr_destroy(e2->label);
+	    revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to convert source type expression", (-1));
 	}
       if (revm_expr_set(e1, e2) < 0)
 	{
 	  if (e2->value && !e2->value->perm)
-	    revm_expr_destroy(e2->label);
+	    revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to set expression", (-1));
 	}
@@ -134,12 +134,12 @@ int			cmd_set()
     {
       if (!e1->type)
 	{
-	  revm_expr_destroy(e1->label);
+	  revm_expr_destroy_by_name(e1->label);
 	  e1 = revm_expr_copy(e2, world.curjob->curcmd->param[0], 0);
 	  if (!e1)
 	    {
 	      if (e2->value && !e2->value->perm)
-		revm_expr_destroy(e2->label);
+		revm_expr_destroy_by_name(e2->label);
 	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			   "Unable to set expressions", (-1));
 	    }
@@ -147,7 +147,7 @@ int			cmd_set()
       else if (revm_expr_set(e1, e2) < 0)
 	{
 	  if (e2->value && !e2->value->perm)
-	    revm_expr_destroy(e2->label);
+	    revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to set expression", (-1));
 	}
@@ -156,7 +156,7 @@ int			cmd_set()
   /* Copy the result in the last result variable */
   if (e2->type->type != ASPECT_TYPE_HASH && e2->type->type != ASPECT_TYPE_LIST)
     {
-      revm_expr_destroy(last->label);
+      revm_expr_destroy_by_name(last->label);
       last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
       if (!last)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -165,9 +165,9 @@ int			cmd_set()
 
   /* Everything OK */
   if (e1->value && !e1->value->perm)
-    revm_expr_destroy(e1->label);
+    revm_expr_destroy_by_name(e1->label);
   if (e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
 
   if (!world.state.revm_quiet)
     revm_output(" [*] Expression set succesfully \n\n");
@@ -221,9 +221,9 @@ int			cmd_cmp()
   /* Error checking */
   res = revm_expr_compare(e1, e2, &val);
   if (e1->value && !e1->value->perm)
-    revm_expr_destroy(e1->label);
+    revm_expr_destroy_by_name(e1->label);
   if (e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
   if (res < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Error while setting result variable", res);
@@ -267,17 +267,17 @@ int			cmd_test()
   if (revm_testbit(e1, e2, &res) < 0)
     {
       if (e1->value && !e1->value->perm)
-	revm_expr_destroy(e1->label);
+	revm_expr_destroy_by_name(e1->label);
       if (e2->value && !e2->value->perm)
-	revm_expr_destroy(e2->label);
+	revm_expr_destroy_by_name(e2->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Error while setting result variable", -1);
     }
 
   if (e1->value && !e1->value->perm)
-    revm_expr_destroy(e1->label);
+    revm_expr_destroy_by_name(e1->label);
   if (e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
 
   /* Everything was OK */
   if (!world.state.revm_quiet)
@@ -322,7 +322,7 @@ int			cmd_add()
   if (o1->otype->type == ASPECT_TYPE_HASH)
     {
       ret = revm_hash_add(o1->parent, e2);		
-      revm_expr_destroy(e1->label);		// destroy the source alias variable
+      revm_expr_destroy_by_name(e1->label);		// destroy the source alias variable
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to insert hash element", -1);
@@ -335,7 +335,7 @@ int			cmd_add()
   else if (o1->otype->type == ASPECT_TYPE_LIST)
     {
       ret = revm_elist_add(o1->parent, e2);		
-      revm_expr_destroy(e1->label);		// destroy the source alias variable
+      revm_expr_destroy_by_name(e1->label);		// destroy the source alias variable
       if (ret < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Unable to insert list element", -1);
@@ -348,7 +348,7 @@ int			cmd_add()
   if (revm_arithmetics(NULL, e1, e2, REVM_OP_ADD) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
-	revm_expr_destroy(e2->label);
+	revm_expr_destroy_by_name(e2->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to add elements", -1);
     }
@@ -356,7 +356,7 @@ int			cmd_add()
   /* Return success */
  end:
   if (e2 && e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -394,7 +394,7 @@ int			cmd_sub()
       if (ret < 0)
 	{
 	  if (e2 && e2->value && !e2->value->perm)
-	    revm_expr_destroy(e2->label);
+	    revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to delete hash element", -1);
 	}
@@ -410,7 +410,7 @@ int			cmd_sub()
       if (ret < 0)
 	{
 	  if (e2 && e2->value && !e2->value->perm)
-	    revm_expr_destroy(e2->label);
+	    revm_expr_destroy_by_name(e2->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to delete list element", -1);
 	}
@@ -423,7 +423,7 @@ int			cmd_sub()
   if (revm_arithmetics(NULL, e1, e2, REVM_OP_SUB) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
-	revm_expr_destroy(e2->label);
+	revm_expr_destroy_by_name(e2->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to substract elements", -1);
     }
@@ -431,7 +431,7 @@ int			cmd_sub()
  end:
   /* Everything was OK */
   if (e2 && e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -459,14 +459,14 @@ int			cmd_mul()
   if (revm_arithmetics(NULL, e1, e2, REVM_OP_MUL) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
-	revm_expr_destroy(e2->label);
+	revm_expr_destroy_by_name(e2->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to multiply elements", -1);
     }
 
   /* Everything was OK */
   if (e2 && e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -494,14 +494,14 @@ int			cmd_div()
   if (revm_arithmetics(NULL, e1, e2, REVM_OP_DIV) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
-	revm_expr_destroy(e2->label);
+	revm_expr_destroy_by_name(e2->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to divide elements", -1);
     }
   
   /* Everything was OK */
   if (e2 && e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -529,14 +529,14 @@ int			cmd_mod()
   if (revm_arithmetics(NULL, e1, e2, REVM_OP_MOD) < 0)
     {
       if (e2 && e2->value && !e2->value->perm)
-	revm_expr_destroy(e2->label);
+	revm_expr_destroy_by_name(e2->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Unable to divide elements", -1);
     }
 
   /* Everything was OK */
   if (e2 && e2->value && !e2->value->perm)
-    revm_expr_destroy(e2->label);
+    revm_expr_destroy_by_name(e2->label);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

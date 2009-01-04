@@ -463,6 +463,17 @@ void		_exit(int err)
 
 
 /**
+ * Wrapper for exit_group
+ * @param err Return value.
+ */
+int	exit_group(int exitcode)
+{
+  write(2, " [*] Now exiting all threads\n\n", 30);
+  _exit(exitcode);
+}
+
+
+/**
  * Wrapper for heap initialisation 
  * @param first_time
  * @return

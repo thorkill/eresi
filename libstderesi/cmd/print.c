@@ -133,7 +133,7 @@ int			cmd_print()
       if (expr && expr->value && !expr->value->perm)
 	{
 	  revm_object_print(expr->value);
-	  revm_expr_destroy(expr->label);
+	  revm_expr_destroy_by_name(expr->label);
 	  continue;
 	}
       else if (expr)
@@ -149,7 +149,7 @@ int			cmd_print()
       if (expr && expr->value && !expr->value->perm)
 	{
 	  revm_object_print(expr->value);
-	  revm_expr_destroy(expr->label);
+	  revm_expr_destroy_by_name(expr->label);
 	  continue;
 	}
       else if (!expr)

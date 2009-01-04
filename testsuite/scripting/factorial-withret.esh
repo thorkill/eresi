@@ -1,5 +1,6 @@
 #!../../evarista/evarista32
 
+print $ESHLVL
 cmp $ESHLVL 0
 jne factstart
 sdir .
@@ -19,8 +20,13 @@ print $_
 set $2 $_
 
 result:
+print $ESHLVL
 cmp $ESHLVL 0
 je printres
+print $2
+
+profile enable warn
+#exec sleep 10
 return $2
 
 printres:

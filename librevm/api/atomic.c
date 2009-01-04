@@ -730,7 +730,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
   /* Set the last result variable */
   last = revm_expr_get(REVM_VAR_RESULT);
   if (last)
-    revm_expr_destroy(REVM_VAR_RESULT);
+    revm_expr_destroy_by_name(REVM_VAR_RESULT);
   res = revm_create_IMMED(ASPECT_TYPE_INT, 1, *val);
   last = revm_expr_create_from_object(res, REVM_VAR_RESULT, 1);
   if (!last)

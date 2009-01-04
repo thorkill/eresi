@@ -240,7 +240,7 @@ int		cmd_load()
   tmp = expr->value;
   if (!tmp->otype)
     {
-      revm_expr_destroy(expr->label);
+      revm_expr_destroy_by_name(expr->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Missing parameter", (-1));
     }
@@ -250,7 +250,7 @@ int		cmd_load()
       revm_convert_object(expr, ASPECT_TYPE_STR);
       if (tmp->otype->type != ASPECT_TYPE_STR)
 	{
-	  revm_expr_destroy(expr->label);
+	  revm_expr_destroy_by_name(expr->label);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Invalid file to load", (-1));
 	}
@@ -258,7 +258,7 @@ int		cmd_load()
   str = (tmp->immed ? tmp->immed_val.str : tmp->get_name(tmp->root, tmp->parent));
   if (hash_get(&world.curjob->loaded, str) || hash_get(&world.shared_hash, str))
     {
-      revm_expr_destroy(expr->label);
+      revm_expr_destroy_by_name(expr->label);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		   "Cannot load file many times in the same workspace", (-1));
     }

@@ -17,12 +17,10 @@ int		 e2dbg_linkmap_print(elfshobj_t *file)
   int		 i = 1;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid argument", -1);
-
-  if (!file->linkmap)
+  if (!file->linkmap || file->linkmap == E2DBG_ABSENT_LINKMAP)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No linkmap", -1);
 

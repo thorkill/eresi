@@ -47,12 +47,12 @@ int			cmd_define()
 	if (revm_arithmetics(NULL, orig, obj, REVM_OP_ADD) < 0)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		       "Unable to add values to be defined", -1);
-	revm_expr_destroy(obj->label);
+	revm_expr_destroy_by_name(obj->label);
       }
   
   /* Finally put the value up */
   cons->val = orig->value->immed_val.ent;
-  revm_expr_destroy(orig->label);
+  revm_expr_destroy_by_name(orig->label);
   hash_add(&const_hash, world.curjob->curcmd->param[0], cons);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

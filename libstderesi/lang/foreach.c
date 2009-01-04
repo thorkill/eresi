@@ -243,7 +243,7 @@ static void	*revm_iterator_get(char *itername, char ***keys, int *keynbr, char *
 		 "Unable to find iterator name", NULL);
   setname = strdup(setname);
   if (setexpr)
-    revm_expr_destroy(setexpr->label);
+    revm_expr_destroy_by_name(setexpr->label);
  
 #if __DEBUG_FOREACH__
   fprintf(stderr, "ITERATOR_GET: Found setname = %s in foreach ! \n", setname);

@@ -31,7 +31,7 @@ int		cmd_return()
     {
       lastvar = revm_expr_get(REVM_VAR_RESULT);
       if (lastvar)
-	revm_expr_destroy(lastvar->label);
+	revm_expr_destroy_by_name(lastvar->label);
       retval = revm_lookup_param(world.curjob->curcmd->param[0], 1);
       if (!retval)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

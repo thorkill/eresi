@@ -187,9 +187,11 @@ int	       revm_context_restore(int		savedfd,
 				    char	*savedname)
 {
   char		buf[BUFSIZ];
-  u_int		idx;
+  int		idx;
   char		**keys;
   int		keynbr;
+  revmexpr_t	*res;
+  revmexpr_t	*oldres;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -209,15 +211,27 @@ int	       revm_context_restore(int		savedfd,
   for (idx = 0; idx < keynbr; idx++)
     {
 
-      /* Only free top-level expressions, the rest will be freed recursively by the expr_destroy */
+      /* Only free top-level expressions, the rest will be freed recursively by revm_expr_destroy_by_name() */
       if (strstr(keys[idx], REVM_SEP))
 	continue;
+      
+      /* Special treatment for the return value that needs to move to the inner scope */
+      if (!strcmp(keys[idx], REVM_VAR_RESULT) && world.curjob->curscope)
+	{
+	  res = revm_expr_get(keys[idx]);
+	  oldres = hash_get(&world.curjob->recur[world.curjob->curscope - 1].exprs, REVM_VAR_RESULT);
+	  if (oldres)
+	    revm_expr_destroy(oldres);
+	  hash_add(&world.curjob->recur[world.curjob->curscope - 1].exprs, keys[idx], res);
+	  revm_expr_print(res, 0);
+	  continue;
+	}
 
 #if __DEBUG_EXPRS__
       fprintf(stderr, " [D] Expression %s will be destroyed from ending scope \n", keys[idx]);
 #endif
 
-      revm_expr_destroy(keys[idx]);
+      revm_expr_destroy_by_name(keys[idx]);
 
     }
   hash_free_keys(keys);

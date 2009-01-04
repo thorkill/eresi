@@ -138,7 +138,7 @@ int		cmd_reflect()
 
   /* Put the current bloc in the last result variable */
   /*
-  revm_expr_destroy(REVM_VAR_RESULT);
+  revm_expr_destroy_by_name(REVM_VAR_RESULT);
   revm_expr_copy(expr, REVM_VAR_RESULT);
   */
 

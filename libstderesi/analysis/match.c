@@ -226,12 +226,12 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  /* FIXME: Subexpr initialization is buggy (names first field by top-level variable name) */
 	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
 	  rname = strdup(matchme->label);
-	  revm_expr_destroy(matchme->label);
+	  revm_expr_destroy_by_name(matchme->label);
 	  matchme = revm_expr_copy(candid, rname, 0);
 	  world.curjob->iter[world.curjob->curloop].curind = matchme;
 
 	  //XXX: if we free it now, ->matchexpr and maybe other exprs will be dangling
-	  //revm_expr_destroy(candid->label);
+	  //revm_expr_destroy_by_name(candid->label);
 	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
 	  if (!matchme)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

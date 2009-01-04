@@ -323,7 +323,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 
 	  /* Destroy the temporary variable we have created for the right-hand-side value */
 	  if (revm_variable_istemp(curdata))
-	    revm_expr_destroy(curdata->label);
+	    revm_expr_destroy_by_name(curdata->label);
 
 	  /* Handle terminal Array fields */
 	  if (childtype->dimnbr && childtype->elemnbr)			
@@ -466,7 +466,6 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
   char		*size;
   char		*typename;
   char		offset[128];
-  u_int		idx;
   int		sz;
   char		*pad, *pad2;
   int		newtaboff;
@@ -1257,15 +1256,81 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-/* Destroy an expression and remove it from the hash table */
-static int	revm_expr_unlink(char *e, u_char exprfree, u_char datafree)
+
+/** Unlink an expression */
+static int	revm_expr_unlink(revmexpr_t *expr, u_char exprfree, u_char datafree)
 {
-  revmexpr_t	*expr;
   revmexpr_t	*prevexpr;
   revmexpr_t	*child;
   revmexpr_t	*next;
   char		newname[BUFSIZ];
   hash_t	*thash;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", -1);
+  
+  /* Update the global type hashes too by recovering a previous expression of that name, if any */
+  if (expr->type)
+    {
+      snprintf(newname, sizeof(newname), "type_%s", expr->type->name);
+      thash = hash_find(newname);
+      if (!thash)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Cannot find hash table for this expression type", -1);
+      hash_del(thash, expr->label);
+      prevexpr = revm_expr_get(expr->label);
+      if (prevexpr)
+	{
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n", 
+		  expr->label, expr->type->name);
+#endif
+	  hash_set(thash, expr->label, prevexpr->annot);
+	}
+    }
+
+  /* If the expression in present in some hash table, we dont free it */
+  if (expr->annot && expr->annot->inhash)
+    {
+#if __DEBUG_EXPRS__
+      fprintf(stderr, " [D] NOT FREED EXPR %s because still in hash table \n", expr->label);
+#endif
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  /* Free the object */
+  if (expr->value)
+    revm_destroy_object(expr->value, datafree);
+
+  for (child = expr->childs; child; child = next)
+    {
+      next = child->next;
+      snprintf(newname, sizeof(newname), "%s.%s", expr->label, child->label);
+      if (revm_expr_unlink_by_name(newname, exprfree, datafree) < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed to destroy child expression", -1);
+    }
+
+  if (exprfree)
+    {
+      
+#if __DEBUG_EXPRS__
+      fprintf(stderr, "\n [D] UNLINK EXPR %s (exprfree = %hhu) \n", expr->label, exprfree);
+#endif
+      
+      XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/* Destroy an expression and remove it from the hash table */
+int		revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree)
+{
+  revmexpr_t	*expr;
   int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -1286,65 +1351,15 @@ static int	revm_expr_unlink(char *e, u_char exprfree, u_char datafree)
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unknown expression name", -1);
-
-  /* Update the global type hashes too by recovering a previous expression of that name, if any */
-  if (expr->type)
-    {
-      snprintf(newname, sizeof(newname), "type_%s", expr->type->name);
-      thash = hash_find(newname);
-      if (!thash)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Cannot find hash table for this expression type", -1);
-      hash_del(thash, e);
-      prevexpr = revm_expr_get(e);
-      if (prevexpr)
-	{
-#if __DEBUG_EXPRS__
-	  fprintf(stderr, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n", 
-		  e, expr->type->name);
-#endif
-	  hash_set(thash, e, prevexpr->annot);
-	}
-    }
-
-  /* If the expression in present in some hash table, we dont free it */
-  if (expr->annot && expr->annot->inhash)
-    {
-#if __DEBUG_EXPRS__
-      fprintf(stderr, " [D] NOT FREED EXPR %s because still in hash table \n", expr->label);
-#endif
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }
-
-  /* Free the object */
-  if (expr->value)
-    revm_destroy_object(expr->value, datafree);
-
-  for (child = expr->childs; child; child = next)
-    {
-      next = child->next;
-      snprintf(newname, sizeof(newname), "%s.%s", e, child->label);
-      if (revm_expr_unlink(newname, exprfree, datafree) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Failed to destroy child expression", -1);
-    }
-
-  if (exprfree)
-    {
-      
-#if __DEBUG_EXPRS__
-      fprintf(stderr, "\n [D] UNLINK EXPR %s (exprfree = %hhu) \n", e, exprfree);
-#endif
-      
-      XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
-    }
-
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+  if (revm_expr_unlink(expr, exprfree, datafree) < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to unlink expression by name", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
 }
 
 
 /** Destroy an expression and remove it from the hash table : front end function */
-int		revm_expr_destroy(char *ename)
+int		revm_expr_destroy_by_name(char *ename)
 {
   int		ret;
 
@@ -1352,12 +1367,30 @@ int		revm_expr_destroy(char *ename)
   if (!ename || *ename != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
-  ret = revm_expr_unlink(ename, 1, 1);
+  ret = revm_expr_unlink_by_name(ename, 1, 1);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Unable to destroy expression by name", -1);
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/** Destroy an expression and remove it from the hash table : front end function */
+int		revm_expr_destroy(revmexpr_t *expr)
+{
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameter", -1);
+  ret = revm_expr_unlink(expr, 1, 1);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to destroy expression", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
+
 
 /** Remove expression from the hash table without destruction : front end function */
 int		revm_expr_hide(char *ename)
@@ -1368,7 +1401,7 @@ int		revm_expr_hide(char *ename)
   if (!ename || *ename != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
-  ret = revm_expr_unlink(ename, 0, 0);
+  ret = revm_expr_unlink_by_name(ename, 0, 0);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to hide expression", -1);
@@ -1385,7 +1418,7 @@ int		revm_expr_clean(char *ename)
   if (!ename || *ename != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", -1);
-  ret = revm_expr_unlink(ename, 1, 0);
+  ret = revm_expr_unlink_by_name(ename, 1, 0);
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to clean expression", -1);

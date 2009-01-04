@@ -84,7 +84,7 @@ extern asm_processor	proc;
 #define __DEBUG_NETWORK__	0
 #define __DEBUG_RESOLVE__	0
 #define __DEBUG_TEST__		0
-#define	__DEBUG_EXPRS__		0
+#define	__DEBUG_EXPRS__		1
 #define	__DEBUG_EXPRS_MORE__	0
 #define	__DEBUG_INFORM__	0
 
@@ -798,9 +798,11 @@ int		revm_expr_match_by_name(char *original, char *candidate);
 int		revm_expr_compare_by_name(char *original, char *candidate, eresi_Addr *val);
 int		revm_expr_set_by_name(char *dest, char *source);
 aspectype_t	*revm_exprtype_get(char *exprvalue);
+int		revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree);
 revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char force);
 revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield);
-int		revm_expr_destroy(char *ename);
+int		revm_expr_destroy_by_name(char *ename);
+int		revm_expr_destroy(revmexpr_t *expr);
 int		revm_expr_hide(char *ename);
 int		revm_expr_clean(char *ename);
 revmexpr_t	*revm_expr_lookup(u_int oid);

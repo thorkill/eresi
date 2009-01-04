@@ -48,10 +48,7 @@ struct2 mystruct2c = (field3(field1:42, field2:43), field4:44, field5(field1:46,
 
 print $mystruct2c
 
-# List all existing expressions at this state
-#tables expressions
-
-# Test de mauvais typage -OK- 
+# Wrong typing test -OK-
 #struct0 mystruct0b = struct1(field0:42)
 
 print ************ Now testing printing of types *****************
@@ -72,8 +69,7 @@ print $mystruct2c
 
 print *********** Now testing basic whole-expression comparison ****************
 
-profile enable warn
-
+verb
 cmp $mystruct0 $mystruct0
 cmp $mystruct0 $mystruct0b
 cmp $mystruct0b $mystruct0c
@@ -81,8 +77,6 @@ cmp $mystruct1 $mystruct1b
 cmp $mystruct1b $mystruct1c
 cmp $mystruct2 $mystruct2b
 cmp $mystruct2b $mystruct2c
-
-quit
 
 print *********** Now testing field-order insensitive comparison ****************
 

@@ -220,18 +220,42 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
   gdbwrap_t     *loc = gdbwrap_current_get();
   uint8_t       eip_pos;
 
+  PROFILER_INQ();  
   memset(bp.savedinstr, 0, 16);
-  
   bp.addr = kedbg_find_entrypoint(file);
-
   kedbg_setbp(file, &bp);
   kedbg_continue();
   kedbg_delbp(&bp);
   eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
   gdbwrap_writereg(loc, eip_pos, bp.addr);
-
   kedbg_get_regvars_ia32();
+  PROFILER_OUTQ();  
 }
+
+/** 
+ * There is a mapped symbol table in the kernel that we can try to map,
+ * but its format is awkward. This function is never used for now
+ */
+static int	kedbg_ksymtab_fixup()
+{
+  elfshsect_t   *ksymtab;
+  elfshsect_t   *ksymtab_strings;
+
+  PROFILER_INQ();  
+  ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab", 
+				      NULL, NULL, NULL); 
+  ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile, 
+					      "__ksymtab_strings",
+					      NULL, NULL, NULL); 
+  if (!ksymtab_strings || !ksymtab)
+    PROFILER_ERRQ("[E] Unable to find mapped kernel symtab\n", -1);
+  elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM); 
+  elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB); 
+  elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index); 
+  elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index); 
+  PROFILER_ROUTQ(0);  
+}
+
 
 
 /**
@@ -256,7 +280,6 @@ static int      kedbg_main(int argc, char **argv)
   e2dbg_setup_hooks();
   kedbg_register_vector();
   ret = revm_file_load(argv[2], 0, NULL);
-
   if (ret)
     {
       fprintf(stderr, "Wrong file - exiting\n");
@@ -286,38 +309,17 @@ static int      kedbg_main(int argc, char **argv)
     }
   else
     {
-/*       elfshsect_t   *ksymtab; */
-/*       elfshsect_t   *ksymtab_strings; */
-
+      world.curjob->curfile->linkmap = E2DBG_ABSENT_LINKMAP;
       kedbgworld.run_in_vm = TRUE;
       kedbg_isrealmode();
-      /* If we have not loaded the bios but the kernel */
+      /* If we have not loaded the bios but the kernel, load the BIOS map */
       if (!ret)
-	{
-/* 	  ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab", */
-/* 					      NULL, NULL, NULL); */
-/* 	  ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile, */
-/* 						      "__ksymtab_strings", */
-/* 						      NULL, NULL, NULL); */
-/* 	  ASSERT(ksymtab_strings != NULL && ksymtab != NULL); */
-	  
-/* 	  elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM); */
-/* 	  elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB); */
-	  
-/* 	  elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index); */
-/* 	  elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index); */
-	  
-	  /* Load a map of the BIOS */
-	  kedbg_biosmap_load();
-	}
+	kedbg_biosmap_load();
     }
 
-
   /* Signal handler */
-  signal(SIGINT, kedbg_sigint);
-  
+  signal(SIGINT, kedbg_sigint);  
   revm_run_no_handler(argc, argv);
-
   PROFILER_ROUTQ(0);  
 }
 

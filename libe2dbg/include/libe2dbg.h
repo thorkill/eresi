@@ -43,6 +43,7 @@ extern char **environ;
 #define		__DEBUG_THREADS__	FALSE
 
 #define		E2DBG_DYNAMIC_LINKMAP	((elfshlinkmap_t *) 1)
+#define		E2DBG_ABSENT_LINKMAP	((elfshlinkmap_t *) 2)
 #define		E2DBG_PROFILER_BUFLEN	256
 
 #define		E2DBG_CONFIG		".e2dbgrc"

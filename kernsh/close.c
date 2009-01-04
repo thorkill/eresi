@@ -32,9 +32,6 @@ int		cmd_closemem()
       if (hash_size(&libkernshworld.root->parent_hash))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unload parent object first", -1);
-      if (libkernshworld.root->linkmap)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "You cannot unload a mapped object", -1);
       ret = revm_unload_dep(libkernshworld.root, libkernshworld.root);
       if (!world.state.revm_quiet)
 	{
