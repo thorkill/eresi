@@ -17,6 +17,7 @@
 #define  HLP_HOOKIVT       "Adds breakpoints to all addresses defined in the IVT"
 
 /* Various defined values */
+#define  KERBASEADDR       0xc0000000
 #define  BPCODE            0xcc
 #define  MEMINJECT         0x500
 #define	 CR0STR		   "637230"

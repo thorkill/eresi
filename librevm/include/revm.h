@@ -84,7 +84,7 @@ extern asm_processor	proc;
 #define __DEBUG_NETWORK__	0
 #define __DEBUG_RESOLVE__	0
 #define __DEBUG_TEST__		0
-#define	__DEBUG_EXPRS__		1
+#define	__DEBUG_EXPRS__		0
 #define	__DEBUG_EXPRS_MORE__	0
 #define	__DEBUG_INFORM__	0
 

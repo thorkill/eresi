@@ -52,8 +52,10 @@ int		e2dbg_bt()
 	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 	}
 
-      /* Call the getret hook */
+      /* Call the getret hook and check its result. */
       ret = (eresi_Addr) e2dbg_getret(world.curjob->curfile, (eresi_Addr) frame);
+      if (!ret || ret == 0xffffffff)
+	break;
 
       /* Resolve and print current trace frame */
       if (i == 0)
