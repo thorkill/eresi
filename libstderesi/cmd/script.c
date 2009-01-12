@@ -23,17 +23,12 @@ int			cmd_script()
   char			*path;
   int			size;
   revmargv_t		*cmd;
-  int			argc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (world.scriptsdir == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "No scripts dir specified", -1);
   cmd = world.curjob->curcmd;
-  for (argc = 0; cmd->param[argc] != NULL; argc++);
-  if (!argc)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid parameter", (-1));
   
   /* It can happens that the command bounce to cmd_source has already been set up */
   if (!strcmp(world.curjob->curcmd->name, CMD_SOURCE))

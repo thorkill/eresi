@@ -4,8 +4,6 @@ print $ESHLVL
 cmp $ESHLVL 0
 jne factstart
 sdir .
-#quiet
-#profile enable warn
 
 factstart:
 cmp $# 2
@@ -25,8 +23,6 @@ cmp $ESHLVL 0
 je printres
 print $2
 
-profile enable warn
-#exec sleep 10
 return $2
 
 printres:

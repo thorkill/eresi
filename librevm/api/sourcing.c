@@ -222,7 +222,7 @@ int	       revm_context_restore(int		savedfd,
 	  oldres = hash_get(&world.curjob->recur[world.curjob->curscope - 1].exprs, REVM_VAR_RESULT);
 	  if (oldres)
 	    revm_expr_destroy(oldres);
-	  hash_add(&world.curjob->recur[world.curjob->curscope - 1].exprs, keys[idx], res);
+	  hash_add(&world.curjob->recur[world.curjob->curscope - 1].exprs, strdup(keys[idx]), res);
 	  revm_expr_print(res, 0);
 	  continue;
 	}
