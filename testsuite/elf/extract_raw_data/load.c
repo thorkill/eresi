@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "libelfsh.h"
 
-int	test_binary(char *bin);
+int test = 42;
 
 /**
  *
@@ -13,8 +13,12 @@ int	main(int ac, char **av)
   
   char *targets[] =
     {
-      "load",
-      "load.o",
+#if ERESI32
+      "load32",
+      "load.32.o",
+#elif ERESI64
+      "load.64.o.64",
+#endif
       NULL
     };
   
@@ -33,23 +37,22 @@ int	main(int ac, char **av)
 
 int	test_binary(char *binary)
 {
-  Elf32_Sym	*sym;
+  elfsh_Sym	*sym;
   elfshobj_t	*obj;
   void		*ptr;
-  unsigned long	start;
+  eresi_Addr	start;
   unsigned long len;
   int		ret;
   int		foffset;
   int		to_ret;
   elfshsect_t	*sect;
-
-  char	*sym_name = ".text";
+  char		*sym_name = ".data";
 
   /** Load elfsh objet */
   obj = elfsh_load_obj(binary);
   if (!obj)
     {
-      printf("ERR failed loading object %s", binary);
+      printf("ERR failed loading object %s \n", binary);
       return(0);
     }
   /** Fetch symbol from a string */
@@ -64,7 +67,7 @@ int	test_binary(char *binary)
   len = sym->st_size;
 
   /** Get file offset from that symbol */
-  printf("INFO vaddr = %08X size = %i\n", sym->st_value, sym->st_size);
+  printf("INFO vaddr = "XFMT" size = %i\n", sym->st_value, sym->st_size);
   sect = elfsh_get_section_by_name(obj, sym_name, NULL, NULL, NULL);
   if (!sect)
     {
@@ -73,7 +76,7 @@ int	test_binary(char *binary)
     }
 
   foffset = sect->shdr->sh_offset;
-  printf("INFO file offset of %s = %08X\n", sym_name, foffset);
+  printf("INFO file offset of %s = %u len = %u\n", sym_name, foffset, len);
 
   ptr = malloc(len);
   ret = elfsh_readmemf(obj, foffset, ptr, len);

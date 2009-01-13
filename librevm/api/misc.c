@@ -191,6 +191,8 @@ int		revm_testscript(int ac, char **av)
       !strstr(buff, "elfsh") &&
       !strstr(buff, "etrace") &&
       !strstr(buff, "e2dbg") &&
+      !strstr(buff, "kernsh") &&
+      !strstr(buff, "kedbg") &&
       !strstr(buff, "evarista"))
     {
       XCLOSE(fd, 0);

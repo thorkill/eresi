@@ -60,12 +60,11 @@ int		revm_init()
 
 
 /** 
- * Setup ELFsh/e2dbg hash tables and structures 
+ * Setup ERESI hash tables and structures 
  */
-int		revm_setup(int ac, char **av, 
-			   char mode, char side)
+int		revm_setup(int ac, char **av, char mode, char side)
 {
-  char buff[BUFSIZ];
+  char		buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -90,7 +89,6 @@ int		revm_setup(int ac, char **av,
   else
     {
       elfsh_set_static_mode();
-
       if (ac == 1)
 	world.state.revm_mode = REVM_STATE_INTERACTIVE;
       else if (revm_testscript(ac, av))
@@ -99,7 +97,6 @@ int		revm_setup(int ac, char **av,
 	  revm_tables_setup();
 	  if (revm_openscript(&av[1]) < 0)
 	    QUIT_ERROR(-1);
-	  ac = 1;
 	  av[1] = NULL;
 	}
     }

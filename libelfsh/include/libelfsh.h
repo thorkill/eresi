@@ -1521,7 +1521,7 @@ int             elfsh_register_vector(char      *name,
 
 int		elfsh_get_pagesize(elfshobj_t *file);
 u_int		elfsh_get_breaksize(elfshobj_t *file);
-void		elfsh_setup_hooks();
+void		elfsh_setup_hooks() __attribute__ ((constructor));
 
 /* Default handlers for vectors */
 int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, eresi_Addr n3);

@@ -1,0 +1,314 @@
+#!/bin/sh
+#
+# @todo
+#
+#
+
+#
+# If TESTING is set to 1, eresi-config will be usable without installing eresi.
+# TESTING_ROOT is then the path to your working directory.
+
+TESTING=1
+
+# FIXME: incorrect ! ERESI can be present anywhere, or even already installed
+TESTING_ROOT=${ERESI_ENV}
+
+# Those variables are path were eresi headers and libraries were installed.
+#
+
+INCDIR=/usr/local/include
+LIBDIR=/usr/local/lib
+
+# @todo check if argument is --help
+# 
+#echo "Usage "
+
+#
+# Command lines options for each component without dependancies.
+# Dependancies is managed next in the ouput part of the script.
+
+if [ $TESTING = 1 ] ; then
+LIBASM_CFLAGS="-I ${TESTING_ROOT}/libasm/include"
+LIBASM_DEFINES=
+LIBASM_LIBS="-L ${TESTING_ROOT}/libasm/ -lasm64"
+
+LIBASPECT_CFLAGS="-DERESI64 -I ${TESTING_ROOT}/libaspect/include"
+LIBASPECT_DEFINES=
+LIBASPECT_LIBS="-L ${TESTING_ROOT}/libaspect/ -laspect64"
+
+LIBGDBWRAP_CFLAGS="-I ${TESTING_ROOT}/libgdbwrap/include"
+LIBGDBWRAP_DEFINES=
+LIBGDBWRAP_LIBS="-L ${TESTING_ROOT}/libgdbwrap/ -lgdbwrap64"
+
+LIBELFSH_CFLAGS="-I ${TESTING_ROOT}/libelfsh/include"
+LIBELFSH_DEFINES=
+LIBELFSH_LIBS="-L ${TESTING_ROOT}/libelfsh/ -lelfsh64"
+
+LIBKERNSH_CFLAGS="-I ${TESTING_ROOT}/libkernsh/include"
+LIBKERNSH_DEFINES=
+LIBKERNSH_LIBS="-L ${TESTING_ROOT}/libkernsh/ -lkernsh64"
+
+LIBREVM_CFLAGS="-I ${TESTING_ROOT}/librevm/include"
+LIBREVM_DEFINES=
+LIBREVM_LIBS="-L ${TESTING_ROOT}/librevm/ -lrevm64"
+
+LIBSTDERESI_CFLAGS="-I ${TESTING_ROOT}/libstderesi/include"
+LIBSTDERESI_DEFINES=
+LIBSTDERESI_LIBS="-L ${TESTING_ROOT}/libstderesi/ -lstderesi64"
+
+LIBETRACE_CFLAGS="-I ${TESTING_ROOT}/libetrace/include"
+LIBETRACE_DEFINES=
+LIBETRACE_LIBS="-L ${TESTING_ROOT}/libetrace/ -letrace64"
+
+LIBEDFMT_CFLAGS="-I ${TESTING_ROOT}/libedfmt/include"
+LIBEDFMT_DEFINES=
+LIBEDFMT_LIBS="-L ${TESTING_ROOT}/libedfmt/ -ledfmt64"
+
+LIBMJOLLNIR_CFLAGS="-I ${TESTING_ROOT}/libmjollnir/include"
+LIBMJOLLNIR_DEFINES=
+LIBMJOLLNIR_LIBS="-L ${TESTING_ROOT}/libmjollnir/ -lmjollnir64"
+
+else
+
+LIBASM_CFLAGS="-DERESI64 -I ${INCDIR}"
+LIBASM_DEFINES=
+LIBASM_LIBS="-L ${LIBDIR} -lasm64"
+
+LIBASPECT_CFLAGS="-I ${INCDIR}"
+LIBASPECT_DEFINES=
+LIBASPECT_LIBS="-L ${LIBDIR} -laspect64"
+
+LIBGDBWRAP_CFLAGS="-I ${INCDIR}"
+LIBGDBWRAP_DEFINES=
+LIBGDBWRAP_LIBS="-L ${LIBDIR} -lgdbwrap64"
+
+LIBKERHSH_CFLAGS="-I ${INCDIR}"
+LIBKERNSH_DEFINES=
+LIBKERNSH_LIBS="-L ${LIBDIR} -lkernsh64"
+
+LIBREVM_CFLAGS="-I ${INCDIR}"
+LIBREVM_DEFINES=
+LIBREVM_LIBS="-L ${LIBDIR} -lrevm64"
+
+LIBSTDERESI_CFLAGS="-I ${INCDIR}"
+LIBSTDERESI_DEFINES=
+LIBSTDERESI_LIBS="-L ${LIBDIR} -lstderesi64"
+
+LIBELFSH_CFLAGS="-I ${INCDIR}"
+LIBELFSH_DEFINES=
+LIBELFSH_LIBS="-L ${LIBDIR} -lelfsh64"
+
+LIBEDFMT_CFLAGS="-I ${INCDIR}"
+LIBEDFMT_DEFINES=
+LIBEDFMT_LIBS="-L ${LIBDIR} -ledfmt64"
+
+LIBETRACE_CFLAGS="-I ${INCDIR}"
+LIBETRACE_DEFINES=
+LIBETRACE_LIBS="-L ${LIBDIR} -letrace64"
+
+LIBMJOLLNIR_CFLAGS="-I ${INCDIR}"
+LIBMJOLLNIR_DEFINES=
+LIBMJOLLNIR_LIBS="-L ${LIBDIR} -lmjollnir64"
+
+fi
+
+#
+# Loop throught arguments
+#
+
+while [ "_$1" != "_" ] ; do
+    case "$1" in 
+    libasm)
+    LIBASM=1
+    ;;
+    libelfsh)
+    LIBELFSH=1
+    ;;
+    libmjollnir)
+    LIBMJOLLNIR=1
+    ;;
+    libedfmt)
+    LIBEDFMT=1
+    ;;
+    libaspect)
+    LIBASPECT=1
+    ;;
+    libgdbwrap)
+    LIBGDBWRAP=1
+    ;;
+    libkernsh)
+    LIBKERNSH=1
+    ;;
+    librevm)
+    LIBREVM=1
+    ;;
+    libstderesi)
+    LIBSTDERESI=1
+    ;;
+
+    --libs)
+    showLIBS=1
+    ;;
+    --cflags)
+    showCFLAGS=1
+    ;;
+    --defines)
+    showDEFINES=1
+    ;;
+    esac
+    shift 1
+done
+
+#
+# Print required arguments.
+#
+
+##########################################
+############ LIBMJOLLNIR ####################
+
+if [ "$LIBMJOLLNIR" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBELFSH_CFLAGS} ${LIBETRACE_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS}  ${LIBMJOLLNIR_CFLAGS} 
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBELFSH_LIBS} ${LIBETRACE_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}  ${LIBMJOLLNIR_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBELFSH_DEFINES} ${LIBETRACE_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES} ${LIBMJOLLNIR_DEFINES}
+fi
+fi
+
+##########################################
+############ LIBASM ####################
+
+if [ "$LIBASM" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+fi
+fi
+
+##########################################
+############ LIBELFSH ####################
+
+if [ "$LIBELFSH" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBELFSH_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} 
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBELFSH_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBELFSH_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+fi
+
+fi
+
+
+##########################################
+############ LIBASPECT ####################
+
+if [ "$LIBASPECT" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBASPECT_CFLAGS}
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBASPECT_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBASPECT_DEFINES}
+fi
+
+fi
+
+##########################################
+############ LIBEDFMT ####################
+
+if [ "$LIBEDFMT" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBEDFMT_CFLAGS} ${LIBELFSH_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS}
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBEDFMT_LIBS} ${LIBELFSH_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBEDFMT_DEFINES} ${LIBELFSH_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES}
+fi
+
+fi
+
+##########################################
+############ LIBGDBWRAP ##################
+
+if [ "$LIBGDBWRAP" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBGDBWRAP_CFLAGS} ${LIBASPECT_CFLAGS}
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBGDBWRAP_LIBS} ${LIBASPECT_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBGDBWRAP_DEFINES} ${LIBASPECT_DEFINES}
+fi
+
+fi
+
+
+##########################################
+############ LIBKERNSH ##################
+
+if [ "$LIBKERNSH" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBKERNSH_CFLAGS} ${LIBELFSH_CFLAGS} ${LIBASM_CFLAGS} ${LIBASPECT_CFLAGS}
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBKERNSH_LIBS} ${LIBELFSH_LIBS} ${LIBASM_LIBS} ${LIBASPECT_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBGDBWRAP_DEFINES} ${LIBELFSH_DEFINES} ${LIBASM_DEFINES} ${LIBASPECT_DEFINES}
+fi
+
+fi
+
+##########################################
+############ LIBREVM ##################
+
+if [ "$LIBREVM" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBREVM_CFLAGS} ${LIBELFSH_CFLAGS} ${LIBASM_CFLAGS} \
+	${LIBASPECT_CFLAGS} ${LIBMJOLLNIR_FLAGS}
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBREVM_LIBS} ${LIBELFSH_LIBS} ${LIBASM_LIBS} ${LIBASPECT_LIBS} \
+	${LIBMJOLLNIR_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBREVM_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES} \
+	${LIBASPECT_DEFINES} ${LIBMJOLLNIR_DEFINES}
+fi
+
+fi
+
+##########################################
+############ LIBSTDERESI #################
+
+if [ "$LIBSTDERESI" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBSTDERESI_CFLAGS} ${LIBREVM_CFLAGS} ${LIBELFSH_CFLAGS} \
+	${LIBASM_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBEDFMT_FLAGS} ${LIBMJOLLNIR_FLAGS} 
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBSTDERESI_LIBS} ${LIBREVM_LIBS} ${LIBELFSH_LIBS} \
+	${LIBASM_LIBS} ${LIBASPECT_LIBS} ${LIBEDFMT_LIBS} ${LIBMJOLLNIR_LIBS} 
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBSTDERESI_DEFINES} ${LIBREVM_DEFINES} ${LIBELFSH_DEFINES} \
+	${LIBASM_DEFINES} ${LIBASPECT_DEFINES} ${LIBEDFMT_DEFINES} ${LIBMJOLLNIR_DEFINES} 
+fi
+
+fi

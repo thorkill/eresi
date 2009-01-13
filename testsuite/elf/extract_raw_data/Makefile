@@ -1,24 +1,34 @@
 SRCS	= load.c
-OBJS	= $(SRCS:.c=.o)
-
-CFLAGS	=$(shell eresi-config libelfsh --cflags)
-LDFLAGS	=$(shell eresi-config libelfsh --libs)
-
-NAME	= load
 RM	= rm -fr 
 
-$(info Using CFLAGS = $(CFLAGS))
-$(info Using LDFLAGS = $(LDFLAGS))
+OBJ32	= $(SRCS:.c=.32.o)
+OBJ64	= $(SRCS:.c=.64.o)
+OBJ6464	= $(SRCS:.c=.64.o.64)
+CFLAGS32  =$(shell eresi-config32 libelfsh --cflags)
+LDFLAGS32 =$(shell eresi-config32 libelfsh --libs)
+CFLAGS64  =$(shell eresi-config64 libelfsh --cflags)
+LDFLAGS64 =$(shell eresi-config64 libelfsh --libs)
+NAME32	= load32
+NAME64	= load64
 
+all: all32 all64
 
-all32: all
-all:	$(OBJS)
-	$(CC) -o $(NAME) $(OBJS) $(LDFLAGS)
+all32: $(OBJ32)
+	$(CC) -o $(NAME32) $(OBJ32) $(LDFLAGS32)
+
+all64: $(OBJ64) $(OBJ6464)
+	$(CC) -o $(NAME64) $(OBJ64) $(LDFLAGS64)
 
 fclean: clean
-	$(RM) $(NAME)
+	$(RM) $(NAME32) $(NAME64)
 clean:
-	$(RM) $(OBJS) *~
+	$(RM) $(OBJ32) $(OBJ64) $(OBJ6464) *~
 
-%.o:	%.c
-	$(CC) -c $< -o $@ $(CFLAGS) -g
+%.32.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS32) -g
+
+%.64.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS64) -g
+
+%.64.o.64: %.c
+	$(CC) -m64 -c $< -o $@ $(CFLAGS64) -g
