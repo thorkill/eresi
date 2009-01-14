@@ -1,9 +1,9 @@
 #!/bin/sh
 #
 # Homemade configure file for the ERESI project
-#
 # The ERESI team 2001-2008
 #
+# $Id$
 
 CHOSENBIT="0"
 STATIC="0"
@@ -383,7 +383,6 @@ echo "LIBASM_ENABLE_MIPS = 1" >> $CONFIGFILE
 echo "LIBASM_ENABLE_ARM = 1" >> $CONFIGFILE
 fi
 
-echo $LIBASM_PACKED_HANDLERS
 if [ "$LIBASM_PACKED_HANDLERS" != "0" ] ; then
 echo " [*] Libasm Packed handlers"
 echo "LIBASM_PACKED_HANDLERS = 1" >> $CONFIGFILE
@@ -559,10 +558,7 @@ fi
 
 echo  " [*] Enabling libasm support"
 echo  "LDASMOPT	= -lasm"		>> $CONFIGFILE
-
 echo "LPTHREAD=	$LPTHREAD"		>> $CONFIGFILE
-
-## Save BITS=
 echo "BITS = " $BITS			>> $CONFIGFILE
 echo "SHELL= " $SHELL			>> $CONFIGFILE
 
@@ -573,14 +569,6 @@ if [ "$KERNSH" = "1" ]; then
 	echo "KERNSHINC = -I../libkernsh/include" 	>> $CONFIGFILE
 	echo "KERNSHINCINC = -I../../libkernsh/include" >> $CONFIGFILE
 fi
-
-#case "$(uname -m)" in
-#i686)
-#LOCALBITS=32
-#*)
-#LOCALBITS=32
-#;;;
-#esac
 
 echo "##"							 > Makefile 
 echo "## Makefile "						>> Makefile
@@ -785,14 +773,25 @@ echo "	@ln -sf \$(BINPATH)elfsh64         \$(BINPATH)elfsh"	       >> Makefile
 echo "	@ln -sf \$(BINPATH)e2dbg64         \$(BINPATH)e2dbg"	       >> Makefile
 echo "	@ln -sf \$(BINPATH)etrace64        \$(BINPATH)etrace"	       >> Makefile
 echo "	@ln -sf \$(BINPATH)evarista64      \$(BINPATH)evarista"	       >> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@ln -sf \$(BINPATH)kernsh64        \$(BINPATH)kernsh"         >> Makefile
+fi
+echo "	@ln -sf \$(BINPATH)kedbg64         \$(BINPATH)kedbg"          >> Makefile
+echo "	@ln -sf \$(BINPATH)eresi-config64  \$(BINPATH)eresi-config"   >> Makefile
+
 echo "	@ln -sf \$(LIBPATH)libaspect64.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh64.a    \$(LIBPATH)libelfsh.a"     >> Makefile
+echo "	@ln -sf \$(LIBPATH)libetrace64.a   \$(LIBPATH)libetrace.a  "  >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg64.a    \$(LIBPATH)libe2dbg.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libmjollnir64.a \$(LIBPATH)libmjollnir.a"  >> Makefile
 echo "	@ln -sf \$(LIBPATH)librevm64.a     \$(LIBPATH)librevm.a"      >> Makefile
 echo "	@ln -sf \$(LIBPATH)libstderesi64.a \$(LIBPATH)libstderesi.a"  >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt64.a    \$(LIBPATH)libedfmt.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui64.a       \$(LIBPATH)libui.a"        >> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@ln -sf \$(LIBPATH)libkernsh64.a   \$(LIBPATH)libkernsh.a"   >> Makefile
+fi
+echo "	@ln -sf \$(LIBPATH)libgdbwrap64.a  \$(LIBPATH)libgdbwrap.a"   >> Makefile
 
 echo "	@ln -sf \$(LIBPATH)libaspect64.so   \$(LIBPATH)libaspect.so"   >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh64.so    \$(LIBPATH)libelfsh.so"    >> Makefile
@@ -803,12 +802,22 @@ echo "	@ln -sf \$(LIBPATH)librevm64.so     \$(LIBPATH)librevm.so"     >> Makefil
 echo "	@ln -sf \$(LIBPATH)libstderesi64.so \$(LIBPATH)libstderesi.so" >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt64.so    \$(LIBPATH)libedfmt.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui64.so       \$(LIBPATH)libui.so"       >> Makefile
+echo "	@ln -sf \$(LIBPATH)libkernsh64.so   \$(LIBPATH)libkernsh.so"   >> Makefile
+echo "	@ln -sf \$(LIBPATH)libgdbwrap64.so  \$(LIBPATH)libgdbwrap.so"  >> Makefile
 
 echo "install : prepareDir #mod_install "			>> Makefile
 echo "	@cp elfsh/elfsh?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp e2dbg/e2dbg?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp etrace/etrace?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp evarista/evarista?? \$(BINPATH)/ "			>> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@cp kernsh/kernsh?? \$(BINPATH)/ "			>> Makefile
+fi
+echo "	@cp kedbg/kedbg?? \$(BINPATH)/ "			>> Makefile
+echo "	@cp eresi-config?? \$(BINPATH)/ "			>> Makefile
+
+echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile
+echo "	@cp libgdbwrap/libgdbwrap*.a libgdbwrap/libgdbwrap*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
 echo "	@cp libelfsh/libelfsh*.a libelfsh/libelfsh*.so \$(LIBPATH) " >> Makefile
@@ -832,8 +841,13 @@ fi
 echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)e2dbg32         \$(BINPATH)e2dbg"	      >> Makefile
 echo "	@ln -sf \$(BINPATH)etrace32        \$(BINPATH)etrace"	      >> Makefile
-echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	       >> Makefile
-echo "	@ln -sf \$(BINPATH)kernsh32        \$(BINPATH)kernsh"        >> Makefile
+echo "	@ln -sf \$(BINPATH)evarista32      \$(BINPATH)evarista"	      >> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@ln -sf \$(BINPATH)kernsh32        \$(BINPATH)kernsh"         >> Makefile
+fi
+echo "	@ln -sf \$(BINPATH)kedbg32         \$(BINPATH)kedbg"          >> Makefile
+echo "	@ln -sf \$(BINPATH)eresi-config32  \$(BINPATH)eresi-config"   >> Makefile
+
 echo "	@ln -sf \$(LIBPATH)libaspect32.a   \$(LIBPATH)libaspect.a"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.a    \$(LIBPATH)libelfsh.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libetrace32.a    \$(LIBPATH)libetrace.a"     >> Makefile
@@ -843,17 +857,24 @@ echo "	@ln -sf \$(LIBPATH)librevm32.a     \$(LIBPATH)librevm.a"      >> Makefile
 echo "	@ln -sf \$(LIBPATH)libstderesi32.a \$(LIBPATH)libstderesi.a"      >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt32.a    \$(LIBPATH)libedfmt.a"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui32.a       \$(LIBPATH)libui.a"        >> Makefile
+if [ "$KERNSH" = "1" ]; then
+echo "	@ln -sf \$(LIBPATH)libkernsh32.a   \$(LIBPATH)libkernsh.a"   >> Makefile
+fi
+echo "	@ln -sf \$(LIBPATH)libgdbwrap32.a  \$(LIBPATH)libgdbwrap.a"   >> Makefile
+
 echo "	@ln -sf \$(LIBPATH)libaspect32.so   \$(LIBPATH)libaspect.so"   >> Makefile
 echo "	@ln -sf \$(LIBPATH)libelfsh32.so    \$(LIBPATH)libelfsh.so"    >> Makefile
-echo "	@ln -sf \$(LIBPATH)libetrace32.so    \$(LIBPATH)libetrace.so"    >> Makefile
+echo "	@ln -sf \$(LIBPATH)libetrace32.so    \$(LIBPATH)libetrace.so"  >> Makefile
 echo "	@ln -sf \$(LIBPATH)libe2dbg32.so    \$(LIBPATH)libe2dbg.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libmjollnir32.so \$(LIBPATH)libmjollnir.so" >> Makefile
 echo "	@ln -sf \$(LIBPATH)librevm32.so     \$(LIBPATH)librevm.so"     >> Makefile
 echo "	@ln -sf \$(LIBPATH)libstderesi32.so \$(LIBPATH)libstderesi.so" >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt32.so    \$(LIBPATH)libedfmt.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui32.so       \$(LIBPATH)libui.so"       >> Makefile
-echo "	@ln -sf \$(LIBPATH)libkernsh32.a   \$(LIBPATH)libkernsh.a"   >> Makefile
+if [ "$KERNSH" = "1" ]; then
 echo "	@ln -sf \$(LIBPATH)libkernsh32.so   \$(LIBPATH)libkernsh.so"   >> Makefile
+fi
+echo "	@ln -sf \$(LIBPATH)libgdbwrap32.so  \$(LIBPATH)libgdbwrap.so"  >> Makefile
 
 # Install headers
 echo "	@cp -R libelfsh/include/* \$(INCPATH) "			>> Makefile
