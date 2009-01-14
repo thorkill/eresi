@@ -1,17 +1,19 @@
 /*
-** sht_extend.c
+** sht_rebuild.c for testsuite in ERESI
 ** 
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
-** Last update Fri Jan 24 12:56:13 2003 jfv
-**
 ** $Id: sht_rebuild.c,v 1.4 2007-07-31 03:28:48 may Exp $
-**
 */
 #include "libelfsh.h"
 #include <stdio.h>
 
-#define         STRIPPED_FILE   "./sht_stripped_file"
-#define         OUTPUT_FILE     "./sht_rebuilt_file"
+#if ERESI32
+ #define		TROJANED_FILE	"./shtstripped32"
+ #define		OUTPUT_FILE	"./shtrebuilt32"
+#elif ERESI64
+ #define		TROJANED_FILE	"./shtstripped64"
+ #define		OUTPUT_FILE	"./shtrebuilt64"
+#endif
 
 /* We just map and save the object since ELFsh automatically rebuid SHT */
 int		main(int argc, char **argv)
@@ -24,7 +26,7 @@ int		main(int argc, char **argv)
   int		ret;
 
   /* map the object */
-  file = elfsh_map_obj(STRIPPED_FILE);
+  file = elfsh_map_obj(TROJANED_FILE);
   if (!file)
     {
       elfsh_error();

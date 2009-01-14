@@ -1,22 +1,18 @@
 #!../../../../elfsh/elfsh32
 
-exec gcc -g3 -static host.c 
-exec gcc -g3 -static rel2.c -c
-
 load a.out
-load rel2.o
+load rel.o
 
-source ./load_lib.esh
-#list
-
+#profile
 reladd 1 2
-
-profile
-profile
-
+#profile
 redir puts puts_troj
 redir legit_func hook_func
 
+# redir hook_func old_legit_func
+
 save fake_aout
+
+exec /sbin/paxctl -p -e -m -r -x -s ./fake_aout
 
 quit

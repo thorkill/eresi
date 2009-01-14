@@ -10,8 +10,7 @@
 
 int	legit_func(char *str)
 {
-  printf("LEGIT FUNC\n");
-  printf("legit func (%s) !\n", str);
+  puts("legit func !");
   return (0);
 }
 
@@ -22,23 +21,13 @@ int main()
 
   read(0, buff, BUFSIZ-1);
 
-  str = malloc(10);
-  if (str == NULL)
-    goto err;
-  strcpy(str, "test");
-  printf("First_printf %s\n", str);
-  fflush(stdout);
   puts("First_puts");
-  printf("Second_printf %s\n", str);
-
-  free(str);
 
   puts("Second_puts");
 
   fflush(stdout);
+
   legit_func("test");
+ 
   return (0);
- err:
-  printf("Malloc problem\n");
-  return (-1);
 }

@@ -1,19 +1,19 @@
 /*
-** symtab_extend.c for elfsh testsuite
+** symtab_extend.c for ERESI testsuite
 ** 
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
-** Last update Mon Jun 30 11:13:50 2003 jfv
-**
 ** $Id: symtab_extend.c,v 1.3 2007-07-31 03:28:48 may Exp $
-**
 */
 #include	"libelfsh.h"
 
 
-#define		INPUT_FILE	"./a.out"
-#define		OUTPUT_FILE	"./fake_aout"
-
-
+#if ERESI32
+ #define		INPUT_FILE	"./hijackme32"
+ #define		OUTPUT_FILE	"./fake_aout32"
+#elif ERESI64
+ #define		INPUT_FILE	"./hijackme64"
+ #define		OUTPUT_FILE	"./fake_aout64"
+#endif
 
 int		main(int argc, char **argv)
 {
@@ -29,7 +29,6 @@ int		main(int argc, char **argv)
       elfsh_error();
       exit(-1);
     }
-
 
   /***********************************************************/
   /**************** TEST FOR SYMTAB + STRTAB INJECTION *******/

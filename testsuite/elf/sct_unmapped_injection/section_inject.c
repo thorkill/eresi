@@ -9,8 +9,13 @@
 */
 #include "libelfsh.h"
 
-#define         TROJANED_FILE   "./a.out"
-#define         OUTPUT_FILE     "./fake_aout"
+#if ERESI32
+ #define		TROJANED_FILE	"./hijackme32"
+ #define		OUTPUT_FILE	"./fake_aout32"
+#elif ERESI64
+ #define		TROJANED_FILE	"./hijackme64"
+ #define		OUTPUT_FILE	"./fake_aout64"
+#endif
 
 
 /* test for non-mapped data */

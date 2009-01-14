@@ -15,6 +15,7 @@ all	:
 	@cd etrel_pie-ssp      && $(MAKE) 
 	@cd etrel_static       && $(MAKE) 
 	@cd etrel_extplt       && $(MAKE)
+	@cd etrel_extstatic    && $(MAKE)
 
 
 clean	:
@@ -23,6 +24,7 @@ clean	:
 	@cd etrel_pie-ssp      && $(MAKE) clean
 	@cd etrel_static       && $(MAKE) clean
 	@cd etrel_extplt       && $(MAKE) clean
+	@cd etrel_extstatic    && $(MAKE) clean
 
 fclean	: clean
 	@cd et_rel2static      && $(MAKE) fclean
@@ -30,3 +32,5 @@ fclean	: clean
 	@cd etrel_pie-ssp      && $(MAKE) fclean
 	@cd etrel_static       && $(MAKE) fclean
 	@cd etrel_extplt       && $(MAKE) fclean
+	@cd etrel_extstatic    && $(MAKE) fclean
+

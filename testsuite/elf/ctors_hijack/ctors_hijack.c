@@ -1,18 +1,18 @@
 /*
-** unlink.c for unlinked
+** ctors_hijack.c for testsuite in ERESI
 ** 
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
-** Last update Sun Mar 10 02:47:22 2002 jfv
-**
 ** $Id: ctors_hijack.c,v 1.3 2007-07-31 03:28:48 may Exp $
-**
 */
 #include	"libelfsh.h"
 
-
-#define		TROJANED_FILE	"./a.out"
-#define		OUTPUT_FILE	"./fake_aout"
-
+#if ERESI32
+ #define		TROJANED_FILE	"./hijackme32"
+ #define		OUTPUT_FILE	"./fake_aout32"
+#elif ERESI64
+ #define		TROJANED_FILE	"./hijackme64"
+ #define		OUTPUT_FILE	"./fake_aout64"
+#endif
 
 int		main(int argc, char **argv)
 {

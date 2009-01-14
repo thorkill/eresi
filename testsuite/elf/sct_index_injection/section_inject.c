@@ -1,16 +1,18 @@
 /*
-** sht_inject.c
+** section_inject.c for testsuite in ERESI
 ** 
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
-** Last update Thu Mar 20 06:36:23 2003 jfv
-**
 ** $Id: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
-**
 */
 #include "libelfsh.h"
 
-#define         TROJANED_FILE   "./a.out"
-#define         OUTPUT_FILE     "./fake_aout"
+#if ERESI32
+ #define		TROJANED_FILE	"./hijackme32"
+ #define		OUTPUT_FILE	"./fake_aout32"
+#elif ERESI64
+ #define		TROJANED_FILE	"./hijackme64"
+ #define		OUTPUT_FILE	"./fake_aout64"
+#endif
 
 
 /* the first execve + exit shellcode I found in my tree, not a very short one ;) */
@@ -99,7 +101,7 @@ int		main(int argc, char **argv)
   hdr = elfsh_create_shdr(0, SHT_PROGBITS, SHF_EXECINSTR | SHF_ALLOC, 0, 0, sizeof(sc), 0, 0, 0, 0);
 
   /* Insert the section at index 20 */
-  if (elfsh_insert_section_idx(file, new, hdr, sc, 20) < 0)
+  if (elfsh_insert_section_idx(file, new, hdr, sc, 24) < 0)
     {
       elfsh_error();
       exit(-1);
@@ -112,16 +114,6 @@ int		main(int argc, char **argv)
       elfsh_error();
       exit(-1);
     }
-
-
-  /* choose if u want to hijack "puts" using .got (default) or using the entry point */
-  //file->hdr->e_entry = new->shdr->sh_addr;
-  /* if (elfsh_set_got_entry_by_name(file, "puts", new->shdr->sh_addr) < 0)
-    {
-      elfsh_error();
-      exit(-1);
-    }
-  */
 
   /* Now we save */
   ret = elfsh_save_obj(file, OUTPUT_FILE);

@@ -1,8 +1,5 @@
 ##
-## Makefile for  in 
-## 
-## Made by jfv
-## Login   <jfv@epita.fr>
+## Makefile for dtors_hijack in ERESI testsuite
 ## 
 ## Started on  Sun Mar 10 01:19:24 2002 jfv
 ## Last update Sun Dec 15 01:55:25 2002 jfv
@@ -11,25 +8,37 @@
 include ../../../config.h
 
 SRC	= dtors_hijack.c
-OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm32 \
-	-L../../../libaspect/ -laspect32
-NAM	= dtors_hijacker
 RM	= rm -f 
 VULN	= hijacked.c
-OPT	= -O2 -I../../../libelfsh/include/ -I../../../libaspect/include $(BITS) -DERESI32
 
-CFLAGS	= $(OPT)
+OBJ32	= $(SRC:.c=.32.o)
+OBJ64	= $(SRC:.c=.64.o)
+CFLAGS32  =$(shell eresi-config32 libelfsh --cflags)
+LDFLAGS32 =$(shell eresi-config32 libelfsh --libs)
+CFLAGS64  =$(shell eresi-config64 libelfsh --cflags)
+LDFLAGS64 =$(shell eresi-config64 libelfsh --libs)
+NAME32	= dtors_hijacker32
+NAME64	= dtors_hijacker64
 
-all32: all
-all	: $(OBJ)
-	@$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
-	@$(CC) $(OPT) $(VULN)
+all: all32 all64
 
-clean	:
-	$(RM) $(OBJ) *~ \#* *\#
+all32: $(OBJ32)
+	$(CC) $(LDFLAGS32) $(OBJ32) -o $(NAME32)
+	$(CC) $(VULN) -o hijackme32
 
+all64: $(OBJ64)
+	$(CC) $(LDFLAGS64) $(OBJ64) -o $(NAME64)
+	$(CC) -m64 $(VULN) -o hijackme64
 
-fclean	: clean
-	$(RM) $(NAM) a.out fake_aout
+fclean: clean
+	$(RM) $(NAME32) $(NAME64) hijackme* fake_aout*
+
+clean:
+	$(RM) $(OBJ32) $(OBJ64) *~
+
+%.32.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS32) -g
+
+%.64.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS64) -g

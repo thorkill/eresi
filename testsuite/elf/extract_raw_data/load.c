@@ -37,7 +37,6 @@ int	main(int ac, char **av)
 
 int	test_binary(char *binary)
 {
-  elfsh_Sym	*sym;
   elfshobj_t	*obj;
   void		*ptr;
   eresi_Addr	start;
@@ -55,19 +54,8 @@ int	test_binary(char *binary)
       printf("ERR failed loading object %s \n", binary);
       return(0);
     }
-  /** Fetch symbol from a string */
-  sym = elfsh_get_metasym_by_name(obj,sym_name);
-  if (!sym)
-    {
-      printf("ERR add elfsh handling error there : metasym failed\n");
-      to_ret = 0;
-      goto leave;
-    }
-  
-  len = sym->st_size;
 
   /** Get file offset from that symbol */
-  printf("INFO vaddr = "XFMT" size = %i\n", sym->st_value, sym->st_size);
   sect = elfsh_get_section_by_name(obj, sym_name, NULL, NULL, NULL);
   if (!sect)
     {
@@ -76,6 +64,7 @@ int	test_binary(char *binary)
     }
 
   foffset = sect->shdr->sh_offset;
+  len = sect->shdr->sh_size;
   printf("INFO file offset of %s = %u len = %u\n", sym_name, foffset, len);
 
   ptr = malloc(len);

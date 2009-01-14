@@ -1,18 +1,18 @@
 /*
-** sht_extend.c
+** section_inject.c for ERESI testsuite
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
-** Last update Mon Jun 30 11:54:57 2003 jv
-**
 ** $Id: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
-**
 */
 #include "libelfsh.h"
 
-#define         TROJANED_FILE   "./a.out"
-#define         OUTPUT_FILE     "./fake_aout"
-
-
+#if ERESI32
+ #define		TROJANED_FILE	"./hijackme32"
+ #define		OUTPUT_FILE	"./fake_aout32"
+#elif ERESI64
+ #define		TROJANED_FILE	"./hijackme64"
+ #define		OUTPUT_FILE	"./fake_aout64"
+#endif
 
 /* the first execve + exit shellcode I found in my tree, not a very short one ;) */
 #if defined(__linux__)

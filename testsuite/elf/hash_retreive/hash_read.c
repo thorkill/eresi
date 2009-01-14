@@ -1,21 +1,18 @@
 /*
-** unlink.c for unlinked
+** hash_read.c for testsuite in ERESI
 ** 
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
-** Last update Mon Mar 25 10:49:20 2002 jfv
-**
 ** $Id: hash_read.c,v 1.3 2007-07-31 03:28:48 may Exp $
-**
 */
 #include	"libelfsh.h"
 
+#if ERESI32
+ #define		TROJANED_FILE	"./readme32"
+#elif ERESI64
+ #define		TROJANED_FILE	"./readme64"
+#endif
 
-#define		TROJANED_FILE	"./a.out"
-#define		OUTPUT_FILE	"./fake_aout"
 #define		HASHED_SYMBOL	"printf"
-
-
-
 
 int		main(int argc, char **argv)
 {
@@ -34,11 +31,6 @@ int		main(int argc, char **argv)
   printf("Value for %s retreived from .hash: %8p \n", HASHED_SYMBOL, 
 	 elfsh_get_dynsymbol_by_hash(file, HASHED_SYMBOL));
 
-  ret = elfsh_save_obj(file, OUTPUT_FILE);
-  if (ret < 0)
-    elfsh_error();
-
-  printf("Relinking *%s* \n", ret ? "Error" : "OK");
   return (0);
 }
 

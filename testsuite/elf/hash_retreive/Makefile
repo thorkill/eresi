@@ -8,25 +8,37 @@
 include ../../../config.h
 
 SRC	= hash_read.c
-OBJ	= $(SRC:.c=.o)
 CC	= gcc
-LIB	= -L../../../libelfsh/ -lelfsh32 -L../../../libasm -lasm32 \
-	-L../../../libaspect/ -laspect32
-NAM	= hash_reader
 RM	= rm -f 
 VULN	= main.c
-OPT	= -O2 -I../../../libelfsh/include/ \
-	-I../../../libaspect/include $(BITS) -DERESI32
-CFLAGS	= $(OPT)
 
-all32: all
-all	: $(OBJ)
-	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
-	$(CC) $(OPT) $(VULN)
+OBJ32	= $(SRC:.c=.32.o)
+OBJ64	= $(SRC:.c=.64.o)
+CFLAGS32  =$(shell eresi-config32 libelfsh --cflags)
+LDFLAGS32 =$(shell eresi-config32 libelfsh --libs)
+CFLAGS64  =$(shell eresi-config64 libelfsh --cflags)
+LDFLAGS64 =$(shell eresi-config64 libelfsh --libs)
+NAME32	= hash_reader32
+NAME64	= hash_reader64
 
-clean	:
-	$(RM) $(OBJ) *~ \#* *\#
+all: all32 all64
 
+all32: $(OBJ32)
+	$(CC) $(LDFLAGS32) $(OBJ32) -o $(NAME32)
+	$(CC) $(VULN) -o readme32
 
-fclean	: clean
-	$(RM) $(NAM) a.out fake_aout
+all64: $(OBJ64)
+	$(CC) $(LDFLAGS64) $(OBJ64) -o $(NAME64)
+	$(CC) -m64 $(VULN) -o readme64
+
+fclean: clean
+	$(RM) $(NAME32) $(NAME64) readme*
+
+clean:
+	$(RM) $(OBJ32) $(OBJ64) *~
+
+%.32.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS32) -g
+
+%.64.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS64) -g
