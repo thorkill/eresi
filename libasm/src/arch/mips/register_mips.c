@@ -1,7 +1,7 @@
 /**
  * @file register_mips.c
  * @brief Registration of the MIPS disassembling vectors.
- * $Id: register_mips.c,v 1.3 2008/03/13 16:15:37 strauss & pi3 Exp $
+ * $Id$: register_mips.c,v 1.3 2008/03/13 16:15:37 strauss & pi3 Exp $
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki

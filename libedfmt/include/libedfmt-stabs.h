@@ -4,7 +4,7 @@
 ** Started Sat 13 2006 09:52:12 mxatone
 **
 **
-** $Id: libedfmt-stabs.h,v 1.9 2007-08-17 01:45:46 heroine Exp $
+** $Id$: libedfmt-stabs.h,v 1.9 2007-08-17 01:45:46 heroine Exp $
 **
 */
 

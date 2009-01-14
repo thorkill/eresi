@@ -3,7 +3,7 @@
  * @brief This file implements the MIPS ASCII output engine
  *
  * Made by Manuel Martin and Adam Zabrocki
- * $Id
+ * $Id$
  */
 #include <libasm.h>
 

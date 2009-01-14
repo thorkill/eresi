@@ -2,7 +2,7 @@
  * @file error.c
  * @ingroup libasm_engine
 ** 
-** $Id: error.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
+** $Id$: error.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
 ** 
 ** Author  : <kahmm@altdev.net>
 ** Started : Sun Nov 30 19:58:38 2003

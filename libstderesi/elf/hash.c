@@ -5,7 +5,7 @@
  * 
  * Started on  Sun Oct 07 10:20:18 2005 mxatone
  *
- * $Id: hash.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$: hash.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 *
 */
 #include "libstderesi.h"

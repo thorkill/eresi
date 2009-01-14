@@ -6,7 +6,7 @@
 ** December 10 2006 : merged from modflow to the ELFsh vm -may
 ** December 31 2006 : factored and cleaned code -may
 **
-** $Id: flowjack.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: flowjack.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"

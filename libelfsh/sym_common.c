@@ -6,7 +6,7 @@
  * Started on  Tue Dec 31 10:19:01 2002 jfv
  * 
  *
- * $Id: sym_common.c,v 1.13 2008-02-16 12:32:27 thor Exp $
+ * $Id$: sym_common.c,v 1.13 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"

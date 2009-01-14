@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** Moved from elfsh to librevm on January 2007 -may
 **
-** $Id: revm.h,v 1.97 2008-02-16 12:32:27 thor Exp $
+** $Id$: revm.h,v 1.97 2008-02-16 12:32:27 thor Exp $
 */
 #ifndef __REVM_H_
  #define __REVM_H_

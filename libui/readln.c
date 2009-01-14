@@ -5,7 +5,7 @@
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
 ** Updated on  Tue Jun 27 23:51:04 2006 mxatone
 **
-** $Id: readln.c,v 1.22 2007-11-29 15:33:39 may Exp $
+** $Id$: readln.c,v 1.22 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "libui.h"

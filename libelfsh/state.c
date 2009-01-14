@@ -4,10 +4,7 @@
  * @brief Provide initialization and debugger state related functions.
  *
  * Started on  Sat Jun  2 15:20:18 2005 jfv
- * 
- *
- * $Id: state.c,v 1.17 2008-02-16 12:32:27 thor Exp $
- *
+ * $Id$: state.c,v 1.17 2008-02-16 12:32:27 thor Exp $
  */
 #include "libelfsh.h"
 

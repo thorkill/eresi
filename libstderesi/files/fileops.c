@@ -4,7 +4,7 @@
 ** Started on  Thu Feb 13 04:06:45 2003 jfv
 ** Last update Wed Mar 10 12:31:49 2004 jfv
 **
-** $Id: fileops.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: fileops.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"

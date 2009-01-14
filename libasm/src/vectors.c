@@ -2,7 +2,7 @@
  * @defgroup libasm_engine libasm Engine.
  */
 /**
- * $Id: vectors.c,v 1.13 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: vectors.c,v 1.13 2007/10/14 00:01:41 heroine Exp $
  * @file vectors.c
  * @ingroup libasm_engine
  * @brief Initialization the instruction and opcode vectors.

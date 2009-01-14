@@ -9,7 +9,7 @@
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id: vectors.c,v 1.25 2008-02-16 12:32:27 thor Exp $
+** $Id$: vectors.c,v 1.25 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"

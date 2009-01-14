@@ -2,7 +2,7 @@
  * @file mips_convert.c
  * @brief Convert MIPS instruction to definied types and fill suitable structures.
  *
- * $Id: mips_convert.c,v 1.4 2008/03/13 15:46:27 heroine && pi3 Exp $
+ * $Id$: mips_convert.c,v 1.4 2008/03/13 15:46:27 heroine && pi3 Exp $
  *
  * Integrated to vectors
  *            - Adam 'pi3' Zabrocki

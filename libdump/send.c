@@ -5,7 +5,7 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 ** 
 **
-** $Id: send.c,v 1.4 2007-08-03 18:05:03 may Exp $
+** $Id$: send.c,v 1.4 2007-08-03 18:05:03 may Exp $
 **
 */
 

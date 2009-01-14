@@ -5,7 +5,7 @@
  *
  * Started Jan 26 2007 11:54:22 mxatone
  *
- * $Id: api.c,v 1.15 2007-06-02 08:28:50 mxatone Exp $
+ * $Id$: api.c,v 1.15 2007-06-02 08:28:50 mxatone Exp $
  *
  */
 

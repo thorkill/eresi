@@ -11,7 +11,7 @@
  * Last update Sep 27 2005 mxatone
  * 
  *
- * $Id: version.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+ * $Id$: version.c,v 1.11 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"

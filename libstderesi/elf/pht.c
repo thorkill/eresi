@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:18:35 2001 jfv
  *
  *
- * $Id: pht.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$: pht.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"

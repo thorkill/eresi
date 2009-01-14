@@ -2,7 +2,7 @@
  * @file op_unary_rmv.c
  * @ingroup handlers_ia32
  * @brief Handler for instruction unary rmv opcode 0xf7
- * $Id: op_unary_rmv.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: op_unary_rmv.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
  *
 */
 #include <libasm.h>

@@ -4,7 +4,7 @@
  *
  * Started on  Tue Feb 26 22:11:12 2002 jfv
  *
- * $Id: ctors.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+ * $Id$: ctors.c,v 1.7 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"

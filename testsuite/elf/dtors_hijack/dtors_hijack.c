@@ -4,7 +4,7 @@
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
 ** Last update Sun Mar 10 02:56:20 2002 jfv
 **
-** $Id: dtors_hijack.c,v 1.3 2007-07-31 03:28:48 may Exp $
+** $Id$: dtors_hijack.c,v 1.3 2007-07-31 03:28:48 may Exp $
 **
 */
 #include	"libelfsh.h"

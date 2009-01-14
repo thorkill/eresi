@@ -4,7 +4,7 @@
 ** @brief Dump graphviz output of call graph and control flow graph.
 **
 ** Started : Fri Mar  7 07:18:03 2003 jfv
-** $Id: graph.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: graph.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 

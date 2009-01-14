@@ -2,7 +2,7 @@
  * @file op_out_dx_eax.c
  * @ingroup handlers_ia32
  *
- * $Id: op_out_dx_eax.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: op_out_dx_eax.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

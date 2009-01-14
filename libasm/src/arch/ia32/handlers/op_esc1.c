@@ -1,7 +1,7 @@
 /**
  * @file op_esc1.c
  * @ingroup handlers_ia32
- * $Id: op_esc1.c,v 1.8 2008/01/07 01:32:56 heroine Exp $
+ * $Id$: op_esc1.c,v 1.8 2008/01/07 01:32:56 heroine Exp $
  *
  */
 #include <libasm.h>

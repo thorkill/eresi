@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:19:38 2001 jfv
  *
  *
- * $Id: sym.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$: sym.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"

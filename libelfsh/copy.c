@@ -6,7 +6,7 @@
 ** Started on  Tue Mar  4 01:15:23 2003 jfv
 ** Last update Tue Mar 11 21:26:07 2003 jfv
 **
-** $Id: copy.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+** $Id$: copy.c,v 1.11 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

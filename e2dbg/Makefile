@@ -2,7 +2,7 @@
 ## Makefile for e2dbg in ERESI
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 jfv
-## $Id
+## $Id$
 ##
 
 include ../config.h

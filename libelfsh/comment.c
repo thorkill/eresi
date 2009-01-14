@@ -9,7 +9,7 @@
 ** Started on  Sun Dec  1 09:22:45 2002 jfv
 **
 **
-** $Id: comment.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+** $Id$: comment.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

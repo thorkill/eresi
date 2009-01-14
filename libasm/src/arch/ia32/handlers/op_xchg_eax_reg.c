@@ -2,7 +2,7 @@
  * @file op_xchg_eax_reg.c
  * @ingroup handlers_ia32
  * @brief Handler for instruction xchg eax,reg opcode 0x91 to 0x97
-** $Id: op_xchg_eax_reg.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
+** $Id$: op_xchg_eax_reg.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>

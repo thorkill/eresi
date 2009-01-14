@@ -5,7 +5,7 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 ** 
 **
-** $Id: libdump.h,v 1.3 2007-03-07 16:45:35 thor Exp $
+** $Id$: libdump.h,v 1.3 2007-03-07 16:45:35 thor Exp $
 **
 */
 

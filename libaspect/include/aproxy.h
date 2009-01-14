@@ -26,7 +26,7 @@
 
 /*
   @file aproxy.h
-  $Id: aproxy.h,v 1.2 2007-08-03 11:50:59 heroine Exp $
+  $Id$: aproxy.h,v 1.2 2007-08-03 11:50:59 heroine Exp $
   @brief `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.
 

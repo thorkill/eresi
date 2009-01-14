@@ -2,7 +2,7 @@
 ** section_inject.c for ERESI testsuite
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
-** $Id: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
+** $Id$: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
 */
 #include "libelfsh.h"
 

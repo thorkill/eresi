@@ -12,7 +12,7 @@
 ** Started on  Fri Mar 28 14:55:37 2003 jfv
 ** 
 **
-** $Id: relinject.c,v 1.19 2008-02-16 12:32:27 thor Exp $
+** $Id$: relinject.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

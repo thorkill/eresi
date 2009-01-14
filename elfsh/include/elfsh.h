@@ -5,7 +5,7 @@
  * Started on  Thu Feb 22 07:19:04 2001 jfv
  *
  *
- * $Id: elfsh.h,v 1.41 2007-11-29 14:01:55 may Exp $
+ * $Id$: elfsh.h,v 1.41 2007-11-29 14:01:55 may Exp $
  *
  */
 #ifndef __ELFSH_H_

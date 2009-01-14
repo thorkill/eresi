@@ -4,7 +4,7 @@
  * @brief Various object lookup functions built in the language.
  *
  * Started Nov 21 2003 jfv
- * $Id: lookup.c,v 1.20 2008-02-16 12:32:27 thor Exp $
+ * $Id$: lookup.c,v 1.20 2008-02-16 12:32:27 thor Exp $
  */
 #include "revm.h"
 

@@ -3,7 +3,7 @@
  * @ingroup handlers_ia32
  * @brief Handler for instruction in al,ib opcode 0xe4
  
- * $Id: op_in_al_ref_ib.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: op_in_al_ref_ib.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

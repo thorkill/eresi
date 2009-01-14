@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.31 2008/01/01 17:07:26 heroine Exp $
+## $Id$: Makefile,v 1.31 2008/01/01 17:07:26 heroine Exp $
 ## Author  : <sk at devhell dot org>
 ## Started : Xxx Xxx xx xx:xx:xx 2002
 ## Updated : Sun Mar 21 00:03:07 2004

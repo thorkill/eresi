@@ -4,7 +4,7 @@
 ** Started Fev 02 2006 09:53:25 mxatone
 **
 **
-** $Id: libedfmt-api.h,v 1.11 2007-06-02 08:28:51 mxatone Exp $
+** $Id$: libedfmt-api.h,v 1.11 2007-06-02 08:28:51 mxatone Exp $
 **
 */
 

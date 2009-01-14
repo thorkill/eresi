@@ -4,7 +4,7 @@
 ** @brief Commands for doing annotations on program objects
 **
 ** Started Jan 21 2007 12:57:03 jfv
-** $Id: inform.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$: inform.c,v 1.1 2007-11-29 14:01:56 may Exp $
 **
 */
 #include "libstderesi.h"

@@ -8,7 +8,7 @@
  ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
  ** 
  ** Started on  Tue Mar 26 19:07:23 2002 jfv
- ** $Id: sht_rebuild.c,v 1.24 2008-02-16 12:32:27 thor Exp $
+ ** $Id$: sht_rebuild.c,v 1.24 2008-02-16 12:32:27 thor Exp $
  */
 #include "libelfsh.h"
 #include "libasm.h"

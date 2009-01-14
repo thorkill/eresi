@@ -8,7 +8,7 @@
 ** Started on  Sun Jun 10 22:57:09 2001 jfv
 ** 
 **
-** $Id: notes.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+** $Id$: notes.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

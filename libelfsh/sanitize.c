@@ -6,7 +6,7 @@
 ** Started on  Sun Mar 30 04:13:03 2003 jfv
 ** 
 **
-** $Id: sanitize.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+** $Id$: sanitize.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:20:41 2001 jfv
 ** Last update Wed Mar 10 12:21:34 2004 jfv
 **
-** $Id: interp.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: interp.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"

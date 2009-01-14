@@ -8,7 +8,7 @@
  * Started on  Mon Feb 24 12:21:12 2003 jfv
  *
  *
- * $Id: objects.c,v 1.13 2007-11-28 07:56:09 may Exp $
+ * $Id$: objects.c,v 1.13 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"

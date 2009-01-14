@@ -1,7 +1,7 @@
 /*
 ** @file alloc.c 
 ** @ingroup kernsh
-** $Id: alloc.c,v 1.3 2007-11-29 15:33:39 may Exp $
+** $Id$: alloc.c,v 1.3 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"

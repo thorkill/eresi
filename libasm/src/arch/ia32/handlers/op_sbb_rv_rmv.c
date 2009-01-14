@@ -1,7 +1,7 @@
 /**
  * @file op_sbb_rv_rmv.c
  * @ingroup handlers_ia32
-** $Id: op_sbb_rv_rmv.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+** $Id$: op_sbb_rv_rmv.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>

@@ -1,7 +1,7 @@
 /**
  * @file output_ia32.c
  * @ingroup libasm_ia32
-** $Id: output_ia32.c,v 1.13 2008/01/07 01:32:56 heroine Exp $
+** $Id$: output_ia32.c,v 1.13 2008/01/07 01:32:56 heroine Exp $
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Xxx Xxx xx xx:xx:xx 2002

@@ -2,7 +2,7 @@
 ## Makefile for libdump in ERESI
 ## 
 ## Started on  Sat Jan 25 05:41:19 2003 jfv
-## $Id
+## $Id$
 ##
 
 include ../config.h

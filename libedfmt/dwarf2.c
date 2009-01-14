@@ -5,7 +5,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id: dwarf2.c,v 1.19 2007-05-20 19:13:57 mxatone Exp $
+** $Id$: dwarf2.c,v 1.19 2007-05-20 19:13:57 mxatone Exp $
 **
 */
 

@@ -6,7 +6,7 @@
  * Started on  Sun Mar 10 03:24:23 2002 jfv
  * Last update Sun May 25 17:40:19 2003 jfv
  *
- * $Id: strtab.c,v 1.10 2008-02-16 12:32:27 thor Exp $
+ * $Id$: strtab.c,v 1.10 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"

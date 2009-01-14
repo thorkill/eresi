@@ -1,7 +1,7 @@
 /**
  * @file output.c
  * @ingroup libasm_engine
- * $Id: output.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: output.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
  *  
  * Author  : <sk at devhell dot org>
  * Started : Xxx Xxx xx xx:xx:xx 2002

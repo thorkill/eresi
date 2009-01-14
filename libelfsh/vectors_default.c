@@ -6,7 +6,7 @@
 ** 
 ** Default handlers for elfsh hooked functionalities
 **
-** $Id$
+** $Id$$
 **
 */
 #include "libelfsh.h"

@@ -24,7 +24,7 @@
   Doug Lea and adapted to multiple threads/arenas by Wolfram Gloger.
 
 * Version ptmalloc2-20011215
-  $Id: aproxy_malloc.c,v 1.5 2007-05-11 10:48:29 may Exp $
+  $Id$: aproxy_malloc.c,v 1.5 2007-05-11 10:48:29 may Exp $
   based on:
   VERSION 2.7.0 Sun Mar 11 14:14:06 2001  Doug Lea  (dl at gee)
 

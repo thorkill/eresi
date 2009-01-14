@@ -5,7 +5,7 @@
 **
 ** Start on Wed May 23 13:55:45 2007 jfv
 **
-** $Id: reflect.c,v 1.3 2008-02-16 12:32:27 thor Exp $
+** $Id$: reflect.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 

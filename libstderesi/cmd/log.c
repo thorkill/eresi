@@ -5,7 +5,7 @@
 **
 ** Started September 16 03:11:04 2005 mm
 **
-** $Id: log.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$: log.c,v 1.1 2007-11-29 14:01:56 may Exp $
 **
 */
 #include "libstderesi.h"

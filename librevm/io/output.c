@@ -6,7 +6,7 @@
  * Started on Fri Mar 5 00:55:40 2004 jfv
  * Updated on Mon Mar 5 18:47:41 2007 jfv
  *
- * $Id: output.c,v 1.8 2007-08-17 15:38:52 heroine Exp $
+ * $Id$: output.c,v 1.8 2007-08-17 15:38:52 heroine Exp $
  *
  */
 #include "revm.h"

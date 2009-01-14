@@ -8,7 +8,7 @@
 ** Started on  Nov 24 2003 jfv
 ** 
 **
-** $Id: flush.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: flush.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"

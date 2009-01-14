@@ -4,7 +4,7 @@
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
 ** Last update Mon May 19 13:12:23 2003 jfv
 **
-** $Id: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
+** $Id$: section_inject.c,v 1.3 2007-07-31 03:28:48 may Exp $
 **
 */
 #include "libelfsh.h"

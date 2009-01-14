@@ -5,7 +5,7 @@
 **
 ** Last update Mon Aug 23 05:05:27 2005 ym
 **
-** $Id$
+** $Id$: libelfsh-irix.h 925 2008-03-24 18:25:11Z enioh $
 **
 */
 

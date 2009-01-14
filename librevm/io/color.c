@@ -5,7 +5,7 @@
  *
  * Started on Sept 11 2005 mxatone
  *
- * $Id: color.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+ * $Id$: color.c,v 1.7 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "revm.h"

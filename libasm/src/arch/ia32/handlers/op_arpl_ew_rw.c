@@ -1,5 +1,5 @@
 /*
-** $Id: op_arpl_ew_rw.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
+** $Id$: op_arpl_ew_rw.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>

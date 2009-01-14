@@ -7,7 +7,7 @@
 ** Last update Sat Feb 26 20:57:27 2004 yann malcom 
 ** 
 **
-** $Id$
+** $Id$: libelfsh-ia32.h 925 2008-03-24 18:25:11Z enioh $
 **
 */
 

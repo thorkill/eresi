@@ -8,7 +8,7 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id: extplt.c,v 1.20 2008-02-16 12:32:27 thor Exp $
+ * $Id$: extplt.c,v 1.20 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"

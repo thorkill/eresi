@@ -5,7 +5,7 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id: edfmt.c,v 1.15 2008-02-16 12:32:27 thor Exp $
+** $Id$: edfmt.c,v 1.15 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "revm.h"

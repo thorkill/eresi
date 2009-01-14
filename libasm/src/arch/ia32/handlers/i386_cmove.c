@@ -1,7 +1,7 @@
 /**
  * @file i386_cmove.c
  * @ingroup handlers_ia32
- * $Id: i386_cmove.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: i386_cmove.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

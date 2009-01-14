@@ -3,10 +3,7 @@
 ** @ingroup libaspect
 ** 
 ** Started on  Thu Nov 08 02:08:28 2001 mm
-** Last update Wed Jun 08 10:01:42 2005 mm
-**
-** $Id: profiler.c,v 1.10 2008-02-16 12:32:27 thor Exp $
-**
+** $Id$: profiler.c,v 1.10 2008-02-16 12:32:27 thor Exp $
 */
 #include "libaspect.h"
 

@@ -1,7 +1,7 @@
 /*
 ** kernsh.h for kernsh
 ** 
-** $Id: kernsh.h,v 1.6 2007-09-02 21:47:25 pouik Exp $
+** $Id$: kernsh.h,v 1.6 2007-09-02 21:47:25 pouik Exp $
 **
 */
 #ifndef __KERNSH_H__

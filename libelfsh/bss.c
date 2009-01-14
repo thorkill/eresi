@@ -11,7 +11,7 @@
 ** Last update Sat Jul 30 17:34:52 2005 jfv
 **
 **
-** $Id: bss.c,v 1.16 2008-02-16 12:32:27 thor Exp $
+** $Id$: bss.c,v 1.16 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

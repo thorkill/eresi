@@ -7,7 +7,7 @@
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
 **
-** $Id: output_sparc.c,v 1.10 2007/10/14 00:01:41 heroine Exp $
+** $Id$: output_sparc.c,v 1.10 2007/10/14 00:01:41 heroine Exp $
 **
 */
 

@@ -3,7 +3,7 @@
  * 
  * Started on  Thu Feb 22 07:19:04 2001 jfv
  *
- * $Id: e2dbg.h,v 1.24 2008-02-16 12:30:37 thor Exp $
+ * $Id$: e2dbg.h,v 1.24 2008-02-16 12:30:37 thor Exp $
  *
  */
 #ifndef __E2DBG_H_

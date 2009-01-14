@@ -4,7 +4,7 @@
 ** @brief Implement the iteration on arrays, lists, and hash tables.
 **
 ** Started on Wed Feb 28 19:19:04 2007 jfv
-** $Id: foreach.c,v 1.3 2008-02-16 12:32:27 thor Exp $
+** $Id$: foreach.c,v 1.3 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 

@@ -3,7 +3,7 @@
 ** @ingroup libaspect
 ** 
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
-** $Id: config.c,v 1.12 2008-02-16 12:32:27 thor Exp $
+** $Id$: config.c,v 1.12 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libaspect.h"

@@ -5,7 +5,7 @@
  *
  * Started September 16 03:11:04 2005 jfv
  *
- * $Id: curjob.c,v 1.6 2007-08-03 11:51:00 heroine Exp $
+ * $Id$: curjob.c,v 1.6 2007-08-03 11:51:00 heroine Exp $
  *
  */
 #include "revm.h"

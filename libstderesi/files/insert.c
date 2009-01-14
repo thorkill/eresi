@@ -6,7 +6,7 @@
 ** Started     Nov 22 01:26:01 2003 jfv
 **
 **
-** $Id: insert.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: insert.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libstderesi.h"

@@ -4,7 +4,7 @@
 ** Started on  Fri Jan 24 20:25:42 2003 jfv
 ** Last update Fri Dec 22 00:14:56 2006 jfv
 **
-** $Id: libaspect-hash.h,v 1.10 2007-11-28 07:56:08 may Exp $
+** $Id$: libaspect-hash.h,v 1.10 2007-11-28 07:56:08 may Exp $
 **
 */
 #ifndef _LIBHASH_H_

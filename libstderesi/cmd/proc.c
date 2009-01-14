@@ -3,7 +3,7 @@
 ** @ingroup libstderesi
 **
 ** Made by jfv <vanegue@eresi-project.org>
-** $Id
+** $Id$
 */
 #include "libstderesi.h"
 

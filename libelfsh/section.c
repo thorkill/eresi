@@ -6,7 +6,7 @@
 ** @brief All handlers and lowlevel routines for sections management.
 ** 
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
-** $Id: section.c,v 1.19 2008-02-16 12:32:27 thor Exp $
+** $Id$: section.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -643,9 +643,7 @@ elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
 
   for (s = file->sectlist; s; s = s->next)
     {
-      bval = (s->next != NULL ? s->next->shdr->sh_offset :
-	      s->shdr->sh_offset + s->shdr->sh_size);
-      i = INTERVAL(s->shdr->sh_offset, foff, bval);
+      i = INTERVAL(s->shdr->sh_offset, foff, s->shdr->sh_offset + s->shdr->sh_size);
       if (i && elfsh_get_section_type(s->shdr) != SHT_NOBITS)
 	{
 	  if (offset != NULL)

@@ -4,7 +4,7 @@
 ** @brief Prototypes of API for ERESI lists
 **
 ** Started on Fri Jul 13 20:25:42 2007 jfv
-** $Id: libaspect-list.h,v 1.8 2008-02-16 12:32:27 thor Exp $
+** $Id$: libaspect-list.h,v 1.8 2008-02-16 12:32:27 thor Exp $
 */
 
 #ifndef _LIBLIST_H_

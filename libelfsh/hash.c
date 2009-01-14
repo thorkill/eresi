@@ -6,7 +6,7 @@
 ** Started on  Mon Feb 26 04:15:44 2001 jfv
 ** 
 **
-** $Id: hash.c,v 1.13 2007-08-25 17:13:05 mxatone Exp $
+** $Id$: hash.c,v 1.13 2007-08-25 17:13:05 mxatone Exp $
 **
 */
 #include "libelfsh.h"

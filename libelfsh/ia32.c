@@ -6,7 +6,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 jfv
  *
  *
- * $Id: ia32.c,v 1.23 2008-02-16 12:32:27 thor Exp $
+ * $Id$: ia32.c,v 1.23 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libelfsh.h"

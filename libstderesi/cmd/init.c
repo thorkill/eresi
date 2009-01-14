@@ -3,7 +3,7 @@
 ** @ingroup libstderesi
 ** @brief Constructors for the ERESI standard library
 **
-** $Id: init.c,v 1.4 2007-12-09 23:00:18 may Exp $
+** $Id$: init.c,v 1.4 2007-12-09 23:00:18 may Exp $
 */
 #include <libstderesi.h>
 

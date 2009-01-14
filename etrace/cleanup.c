@@ -5,7 +5,7 @@
 **
 ** Started on  Sat May 31 23:48:41 2005 mxatone
 **
-** $Id: cleanup.c,v 1.4 2008-02-16 12:32:20 thor Exp $
+** $Id$: cleanup.c,v 1.4 2008-02-16 12:32:20 thor Exp $
 **
 */
 #include "etrace.h"

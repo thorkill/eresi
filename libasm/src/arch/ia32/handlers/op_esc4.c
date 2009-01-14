@@ -1,5 +1,5 @@
 /**
- * $Id: op_esc4.c,v 1.5 2008/01/07 01:32:56 heroine Exp $
+ * $Id$: op_esc4.c,v 1.5 2008/01/07 01:32:56 heroine Exp $
  * @file op_esc4.c
  *
  */

@@ -6,7 +6,7 @@
  * 
  * Started Fri Oct  7 21:05:26 CEST 2005 crew
  *
- * $Id: alloc-proxy.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+ * $Id$: alloc-proxy.c,v 1.1 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libe2dbg.h"

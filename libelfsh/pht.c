@@ -6,7 +6,7 @@
 ** Started on  Mon Feb 26 04:07:33 2001 jfv
 ** 
 **
-** $Id: pht.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+** $Id$: pht.c,v 1.7 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

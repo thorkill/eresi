@@ -4,7 +4,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
  *
- * $Id: init.c,v 1.37 2008-02-16 12:32:27 thor Exp $
+ * $Id$: init.c,v 1.37 2008-02-16 12:32:27 thor Exp $
  *
  */
 

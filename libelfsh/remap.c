@@ -9,7 +9,7 @@
 ** Started on  Mon Mar 17 09:30:33 2003 jfv
 ** 
 **
-** $Id: remap.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$: remap.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

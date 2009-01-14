@@ -2,7 +2,7 @@
 ## Makefile for userland part of libe2dbg in the ERESI framework
 ##
 ## Started on Wed Dec 19 06:32:29 2005 jfv
-## $Id
+## $Id$
 ##
 
 include ../../config.h

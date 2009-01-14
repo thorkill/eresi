@@ -4,7 +4,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id: stabs-utils.c,v 1.6 2007-03-07 16:45:35 thor Exp $
+** $Id$: stabs-utils.c,v 1.6 2007-03-07 16:45:35 thor Exp $
 **
 */
 

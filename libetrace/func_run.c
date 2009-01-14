@@ -4,7 +4,7 @@
 ** Libetrace implementation in the ERESI project.
 **
 ** Started on  Sun Jun 22 12:10:12 2007 jfv
-** $Id: libetrace.h,v 1.2 2007-11-29 10:25:02 rival Exp $
+** $Id$: libetrace.h,v 1.2 2007-11-29 10:25:02 rival Exp $
 **
 */
 

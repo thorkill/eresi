@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:21:14 2001 jfv
  * Last update Thu Mar 11 15:02:24 2004 jfv
  *
- * $Id: hdr.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$: hdr.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"

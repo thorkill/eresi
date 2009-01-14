@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:19:19 2001 jfv
  *
  *
- * $Id: rel.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$: rel.c,v 1.2 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libstderesi.h"

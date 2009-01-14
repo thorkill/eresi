@@ -5,7 +5,7 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 ** 
 **
-** $Id: dump_main.c,v 1.2 2007-03-07 16:45:35 thor Exp $
+** $Id$: dump_main.c,v 1.2 2007-03-07 16:45:35 thor Exp $
 **
 */
 

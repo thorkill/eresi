@@ -7,7 +7,7 @@
 ** Last update Sat Feb 26 20:57:27 2004 jfv
 ** 
 **
-** $Id$
+** $Id$: libelfsh-mips.h 1017 2008-07-06 04:01:08Z may $
 **
 */
 

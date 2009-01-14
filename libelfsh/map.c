@@ -6,7 +6,7 @@
 ** Started on  Sat Mar  2 20:47:36 2002 jfv
 ** 
 **
-** $Id: map.c,v 1.25 2008-02-16 12:32:27 thor Exp $
+** $Id$: map.c,v 1.25 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

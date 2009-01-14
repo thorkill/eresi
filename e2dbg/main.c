@@ -9,7 +9,7 @@
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Wed Jan 03 17:51:04 2007 jfv
  *
- * $Id: main.c,v 1.20 2008-02-16 12:30:23 thor Exp $
+ * $Id$: main.c,v 1.20 2008-02-16 12:30:23 thor Exp $
  *
  */
 #include "e2dbg.h"

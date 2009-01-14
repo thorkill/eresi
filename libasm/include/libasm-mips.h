@@ -1,6 +1,6 @@
 /**
  * @file libasm-mips.h
- * $Id: libasm-mips.h,v 1.5 2008/01/07 01:29:53 heroine Exp $
+ * $Id$: libasm-mips.h,v 1.5 2008/01/07 01:29:53 heroine Exp $
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki

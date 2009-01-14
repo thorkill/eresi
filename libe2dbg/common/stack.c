@@ -3,7 +3,7 @@
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
 **
-** $Id: stack.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+** $Id$: stack.c,v 1.1 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libe2dbg.h"

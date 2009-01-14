@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 27 19:41:45 2002 jfv
 ** Last update Thu Mar 20 05:47:12 2003 jfv
 **
-** $Id: raw.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+** $Id$: raw.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"
@@ -140,15 +140,17 @@ int		elfsh_raw_write(elfshobj_t	*file,
  */
 int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 {
-  elfshsect_t	*sect;
-  void		*src;
-  int		sect_off;
-
+  volatile elfshsect_t	*sect;
+  volatile void	*src;
+  volatile int	sect_off;
+  
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   sect = elfsh_get_parent_section_by_foffset(file, foffset, NULL);
   if (sect == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid virtual address", -1);
+
+  printf("Found sect %s at off %u\n", sect->name, foffset);
 
   sect_off = foffset - sect->shdr->sh_offset;
   if (sect_off + len > sect->shdr->sh_size)

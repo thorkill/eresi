@@ -6,7 +6,7 @@
 ** 
 ** API for registering handlers in vectors of Libelfsh
 **
-** $Id$
+** $Id$$
 */
 #include "libelfsh.h"
 

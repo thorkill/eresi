@@ -1,7 +1,7 @@
 /**
  * @file asm_operand_fetch_general.c
  * @ingroup operand_handler
- * $Id: asm_operand_fetch_general.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: asm_operand_fetch_general.c,v 1.4 2007/10/14 00:01:41 heroine Exp $
  * @brief Operand Handler to decode data for operand type ASM_OTYPE_GENERAL
  */
 

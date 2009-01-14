@@ -7,7 +7,7 @@
 ** Updated on  Wed Mar 23 14:21:32 2005 jfv
 ** 
 **
-** $Id: reginfo.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$: reginfo.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

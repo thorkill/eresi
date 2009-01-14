@@ -1,7 +1,7 @@
 /**
  * @file op_mov_ref_iv_eax.c
  * @ingroup handlers_ia32
- * $Id: op_mov_ref_iv_eax.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: op_mov_ref_iv_eax.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

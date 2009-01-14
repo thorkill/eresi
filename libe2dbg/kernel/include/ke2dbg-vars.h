@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2004 Droids Corporation.
  *
- * $Id: ke2dbg-vars.h,v 1.1 2008-02-16 12:32:27 thor Exp $
+ * $Id$: ke2dbg-vars.h,v 1.1 2008-02-16 12:32:27 thor Exp $
  *
  */
 

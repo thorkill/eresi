@@ -3,7 +3,7 @@
 ** @file main.c
 ** Updated on  Wed Jan 03 17:51:04 2007 mxatone
 **
-** $Id: main.c,v 1.12 2007-07-31 23:30:35 may Exp $
+** $Id$: main.c,v 1.12 2007-07-31 23:30:35 may Exp $
 **
 */
 #include "etrace.h"

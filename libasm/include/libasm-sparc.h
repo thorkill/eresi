@@ -6,7 +6,7 @@
 ** Started : Tue Dec  2 22:43:08 2003
 ** Updated : Thu Dec  4 03:29:25 2003
 **
-** $Id: libasm-sparc.h,v 1.14 2008/01/07 01:29:53 heroine Exp $
+** $Id$: libasm-sparc.h,v 1.14 2008/01/07 01:29:53 heroine Exp $
 **
 */
 

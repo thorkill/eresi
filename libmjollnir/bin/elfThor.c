@@ -1,7 +1,7 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id: elfThor.c,v 1.8 2007-02-26 17:47:15 thor Exp $
+ * $Id$: elfThor.c,v 1.8 2007-02-26 17:47:15 thor Exp $
  *
  */
 #include <libmjollnir.h>

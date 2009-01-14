@@ -1,18 +1,20 @@
 /*
-** etrel_inject.c for testsuite in elfsh
+** etrel_inject.c for testsuite in ERESI
 ** 
 ** Started on  Sat May 10 07:01:59 2003 jfv
-** Last update Mon Jun 30 07:38:12 2003 jfv
-**
-** $Id: etrel_inject.c,v 1.4 2007-07-31 03:28:48 may Exp $
-**
+** $Id$
 */
 #include	"libelfsh.h"
 
-#define         TROJANED_FILE   "a.out"
-#define		RELOC_FILE	"rel.o"
-#define         OUTPUT_FILE     "fake_aout"
-
+#if ERESI32
+ #define         TROJANED_FILE   "hijackme32"
+ #define	 RELOC_FILE	 "rel.32.o"
+ #define         OUTPUT_FILE     "fake_aout32"
+#elif ERESI64
+ #define         TROJANED_FILE   "hijackme64"
+ #define	 RELOC_FILE	 "rel.64.o"
+ #define         OUTPUT_FILE     "fake_aout64"
+#endif
 
 int		main(int argc, char **argv)
 {
@@ -20,6 +22,7 @@ int		main(int argc, char **argv)
   elfshobj_t	*rel;
   elfshsect_t	*txtsect;
   elfsh_Sym	*puts_troj;
+  elfsh_Sym	*hook_func;
   int		idx;
   u_long	addr;
 
@@ -37,14 +40,24 @@ int		main(int argc, char **argv)
     goto err;
 
   /* Get injected's section info */
-  txtsect = elfsh_get_section_by_name(host, "rel.o.text", NULL, NULL, NULL);
+  txtsect = elfsh_get_section_by_name(host, RELOC_FILE".text", NULL, NULL, NULL);
   if (txtsect == NULL)
     goto err;
 
+  /* hijack functions */
   puts_troj = elfsh_get_symbol_by_name(host, "puts_troj");
   idx = elfsh_hijack_function_by_name(host, ELFSH_HIJACK_TYPE_PLT,
 				      "puts", puts_troj->st_value, 
 				      NULL);
+  if (idx < 0)
+    goto err;
+
+  hook_func = elfsh_get_symbol_by_name(host, "hook_func");
+  idx = elfsh_hijack_function_by_name(host, ELFSH_HIJACK_TYPE_FLOW,
+				      "legit_func", hook_func->st_value, 
+				      NULL);
+  if (idx < 0)
+    goto err;
 
   /* Save it */
   idx = elfsh_save_obj(host, OUTPUT_FILE);
@@ -54,6 +67,7 @@ int		main(int argc, char **argv)
   puts("[*] ET_REL injected");
   return (0);
  err:
+  profiler_enable_err();
   elfsh_error();
   return (-1);
 }

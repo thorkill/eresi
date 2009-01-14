@@ -7,7 +7,7 @@
 ** Started : Fri Oct 17 14:29:24 2003
 ** Updated : Thu Nov 27 23:29:29 2003
 **
-** $Id: libbtree.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+** $Id$: libbtree.c,v 1.8 2008-02-16 12:32:27 thor Exp $
 **
 */
 

@@ -7,7 +7,7 @@
 **
 ** December 10 2006 : Merged from modflow to the ELFsh vm -may
 **
-** $Id: inspect.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: inspect.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 

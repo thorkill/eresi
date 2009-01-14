@@ -2,7 +2,7 @@
  * @file op_ud2a.c
  * @ingroup handlers_ia32
  * @brief Handler for instruction ud2a opcode 0x??
- * $Id: op_ud2a.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: op_ud2a.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

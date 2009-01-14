@@ -3,7 +3,7 @@
 ** @ingroup libstderesi
 **
 ** Started on  Sat Jan 25 11:20:49 2003 jfv
-** $Id: switch.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: switch.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 

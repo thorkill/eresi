@@ -2,7 +2,7 @@
 ** sht_rebuild.c for testsuite in ERESI
 ** 
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
-** $Id: sht_rebuild.c,v 1.4 2007-07-31 03:28:48 may Exp $
+** $Id$: sht_rebuild.c,v 1.4 2007-07-31 03:28:48 may Exp $
 */
 #include "libelfsh.h"
 #include <stdio.h>

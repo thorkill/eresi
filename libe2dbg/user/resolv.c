@@ -5,7 +5,7 @@
  *
  * Last Update Thu Oct 13 19:37:26 2005 mm
  *
- * $Id: resolv.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+ * $Id$: resolv.c,v 1.1 2008-02-16 12:32:27 thor Exp $
  *
  */
 #include "libe2dbg.h"

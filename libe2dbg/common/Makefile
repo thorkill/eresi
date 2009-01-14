@@ -2,7 +2,7 @@
 ## Makefile for common (user/kernel code) parts of libe2dbg in the ERESI framework
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 jfv
-## $Id
+## $Id$
 ##
 
 include ../../config.h

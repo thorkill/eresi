@@ -2,7 +2,7 @@
 ## Makefile for modules in ERESI
 ## 
 ## Started on  Wed Feb 19 08:20:54 2003 jfv
-## $Id
+## $Id$
 ##
 
 include ../config.h

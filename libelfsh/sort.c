@@ -9,7 +9,7 @@
 ** Started on  Wed May 21 15:27:15 2003 jfv
 ** 
 **
-** $Id: sort.c,v 1.9 2008-02-16 12:32:27 thor Exp $
+** $Id$: sort.c,v 1.9 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

@@ -6,7 +6,7 @@
 ** Started on  Mon Feb 26 04:09:38 2001 jfv
 ** Last update Mon Apr 21 20:58:41 2003 jfv
 **
-** $Id: elf.c,v 1.19 2008-02-16 12:32:27 thor Exp $
+** $Id$: elf.c,v 1.19 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

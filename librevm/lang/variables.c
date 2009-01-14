@@ -9,7 +9,7 @@
  * Started September 16 2005 04:01:03 jfv
  *
  *
- * $Id: variables.c,v 1.9 2007-11-28 07:56:09 may Exp $
+ * $Id$: variables.c,v 1.9 2007-11-28 07:56:09 may Exp $
  *
  */
 #include "revm.h"

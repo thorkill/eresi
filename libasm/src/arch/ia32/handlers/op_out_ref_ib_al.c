@@ -1,5 +1,5 @@
 /*
-** $Id: op_out_ref_ib_al.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
+** $Id$: op_out_ref_ib_al.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>

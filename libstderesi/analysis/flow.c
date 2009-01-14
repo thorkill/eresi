@@ -3,7 +3,7 @@
 ** @ingroup libstderesi
 ** @brief Various commands related to flow analysis
 **
-** $Id: flow.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$: flow.c,v 1.2 2008-02-16 12:32:27 thor Exp $
 */
 #include "libstderesi.h"
 

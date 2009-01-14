@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 11 20:52:36 2003 jfv
 ** Last update Tue Feb 18 06:17:27 2003 jfv
 **
-** $Id: pax.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$: pax.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

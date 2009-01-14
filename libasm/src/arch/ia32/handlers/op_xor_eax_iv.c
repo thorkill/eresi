@@ -2,7 +2,7 @@
  * @file op_xor_eax_iv.c
  * @ingroup handlers_ia32
  * @brief Handler for instruction xor eax,iv opcode 0x35
- * $Id: op_xor_eax_iv.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
+ * $Id$: op_xor_eax_iv.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
  *
  */
 #include <libasm.h>

@@ -1,7 +1,7 @@
 /*
 ** @file autotypes.c 
 ** @ingroup kernsh
-** $Id: autotypes.c,v 1.4 2007-11-29 15:33:39 may Exp $
+** $Id$: autotypes.c,v 1.4 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "kernsh.h"

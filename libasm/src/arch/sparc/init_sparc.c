@@ -6,7 +6,7 @@
 ** Started : Sun Nov 30 20:13:12 2003
 ** Updated : Thu Dec  4 03:01:07 2003
 **
-** $Id: init_sparc.c,v 1.10 2007/11/28 00:21:37 strauss Exp $
+** $Id$: init_sparc.c,v 1.10 2007/11/28 00:21:37 strauss Exp $
 **
 */
 

@@ -6,7 +6,7 @@
 ** Started on  Mon Jun 23 06:56:04 2003 jfv
 ** Last update Sun Aug 17 17:41:48 2003 jfv
 **
-** $Id: rel.c,v 1.5 2007-07-31 03:28:48 may Exp $
+** $Id$: rel.c,v 1.5 2007-07-31 03:28:48 may Exp $
 **
 */
 #include <stdio.h>

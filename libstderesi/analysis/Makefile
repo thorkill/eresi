@@ -2,7 +2,7 @@
 ## Makefile for analyse in libstderesi for the ERESI project
 ##
 ## Started on  Fri Nov  2 16:32:29 2001 jfv
-## $Id
+## $Id$
 ##
 include ../../config.h
 

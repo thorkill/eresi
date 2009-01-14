@@ -1,7 +1,7 @@
 /**
  * @file op_sub_rb_rmb.c
  * @ingroup handlers_ia32
-** $Id: op_sub_rb_rmb.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
+** $Id$: op_sub_rb_rmb.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
 **
 */
 #include <libasm.h>

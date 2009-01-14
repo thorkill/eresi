@@ -2,7 +2,7 @@
 ## Makefile for kernel part of libe2dbg in the ERESI framework
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 jfv
-## $Id: Makefile,v 1.1 2008-02-16 12:32:27 thor Exp $
+## $Id$: Makefile,v 1.1 2008-02-16 12:32:27 thor Exp $
 ##
 
 ifneq ($(KERNELRELEASE),)

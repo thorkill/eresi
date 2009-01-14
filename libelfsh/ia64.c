@@ -8,7 +8,7 @@
 ** Skeleton cut & pasted from the sparc64 backend
 ** 
 **
-** $Id: ia64.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$: ia64.c,v 1.6 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libelfsh.h"

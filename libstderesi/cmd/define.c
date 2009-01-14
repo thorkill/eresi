@@ -5,7 +5,7 @@
 **
 ** Start on Fri Aug 3 03:55:45 2007 jfv
 **
-** $Id: define.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$: define.c,v 1.1 2007-11-29 14:01:56 may Exp $
 */
 #include "libstderesi.h"
 

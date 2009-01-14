@@ -3,7 +3,7 @@
 ** @file run.c 
 ** Started on  Wed Feb 21 22:02:36 2001 mxatone
 **
-** $Id: run.c,v 1.6 2007-11-29 15:33:39 may Exp $
+** $Id$: run.c,v 1.6 2007-11-29 15:33:39 may Exp $
 **
 */
 #include "etrace.h"

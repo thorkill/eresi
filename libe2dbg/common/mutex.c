@@ -5,7 +5,7 @@
 ** 
 ** Last update Wed Oct 11 18:22:59 2005 jfv
 **
-** $Id: mutex.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+** $Id$: mutex.c,v 1.1 2008-02-16 12:32:27 thor Exp $
 **
 */
 #include "libe2dbg.h"

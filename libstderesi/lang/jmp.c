@@ -7,7 +7,7 @@
 ** Started on  Thu Nov 20 05:09:43 2003 jfv
 ** Last update Thu Nov 20 05:10:03 2003 jfv
 **
-** $Id: jmp.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$: jmp.c,v 1.1 2007-11-29 14:01:56 may Exp $
 **
 */
 #include "libstderesi.h"
