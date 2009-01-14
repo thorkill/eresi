@@ -5,7 +5,7 @@
  * 
  * Started on  Fri Nov  2 15:17:02 2001 jfv
  *
- * $Id$: options.c,v 1.10 2007-08-07 07:13:27 may Exp $
+ * $Id$
  *
  */
 #include "revm.h"

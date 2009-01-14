@@ -6,7 +6,7 @@
 ** Started Jan 20 2007 18:57:03 jfv
 **
 **
-** $Id$: hashes.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

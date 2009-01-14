@@ -4,7 +4,7 @@
  * Started on  Fri Feb  7 20:53:25 2003 jfv
  * Updated on  Fri Mar  5 18:47:41 2007 jfv
  *
- * $Id$: scanner.c,v 1.15 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "revm.h"

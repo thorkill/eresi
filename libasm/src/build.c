@@ -2,7 +2,7 @@
  * @file build.c
  * @ingroup libasm_engine
  * @brief Contains latest build date.
- * $Id$: build.c,v 1.3 2008/01/01 14:55:00 heroine Exp $
+ * $Id$
  */
 
 /**

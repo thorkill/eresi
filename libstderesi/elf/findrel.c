@@ -4,7 +4,7 @@
 ** Started on  Sat Feb 22 17:06:17 2003 jfv
 **
 **
-** $Id$: findrel.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

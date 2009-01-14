@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 27 04:36:53 2001 jfv
 ** 
 **
-** $Id$: dynamic.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

@@ -8,7 +8,7 @@
 ** Started on  Mon Jul 25 21:26:54 2005 ym
 ** 
 **
-** $Id$: linkmap.c,v 1.5 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

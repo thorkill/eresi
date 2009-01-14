@@ -5,7 +5,7 @@
  * 
  * @brief All structures of libmjollnir
  *
- * $Id$: libmjollnir-objects.h,v 1.4 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #if !defined(__MJR_BLOCKS__)

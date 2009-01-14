@@ -7,7 +7,7 @@
 ** Started on  Tue Jun 14 05:23:16 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:39:25 2005 #!HATE#@!
 **
-** $Id$: tables_sparc.c,v 1.5 2007/03/07 16:45:34 thor Exp $
+** $Id$
 **
 */
 

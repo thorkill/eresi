@@ -4,7 +4,7 @@
 * @brief All functions that help to trace content
 *
 * Started Jul 2 2005 00:03:44 mxatone
-* $Id$: trace.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+* $Id$
 *
 */
 #include "libstderesi.h"

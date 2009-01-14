@@ -2,7 +2,7 @@
 ** hash_read.c for testsuite in ERESI
 ** 
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
-** $Id$: hash_read.c,v 1.3 2007-07-31 03:28:48 may Exp $
+** $Id$
 */
 #include	"libelfsh.h"
 

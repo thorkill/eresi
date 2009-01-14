@@ -1,7 +1,7 @@
 /**
  * @file op_repnz.c
  * @ingroup handlers_ia32
-** $Id$: op_repnz.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+** $Id$
 **
 */
 #include <libasm.h>

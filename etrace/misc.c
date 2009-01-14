@@ -3,7 +3,7 @@
 ** @file misc.c
 ** Updated on  Wed Jan 03 17:31:11 2007 mxatone
 **
-** $Id$: misc.c,v 1.4 2008-02-16 12:32:20 thor Exp $
+** $Id$
 **
 */
 #include "etrace.h"

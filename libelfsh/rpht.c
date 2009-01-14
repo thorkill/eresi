@@ -7,7 +7,7 @@
 ** 
 ** Started on  Sat Oct 01 14:37:33 2005  jfv
 **
-** $Id$: rpht.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

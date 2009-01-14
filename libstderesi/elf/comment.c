@@ -6,7 +6,7 @@
  * Started on  Tue Dec 17 06:43:01 2002 jfv
  *
  *
- * $Id$: comment.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libstderesi.h"

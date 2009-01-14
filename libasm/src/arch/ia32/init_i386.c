@@ -1,7 +1,7 @@
 /**
  * @file init_i386.c
  * @ingroup libasm_ia32
- * $Id$: init_i386.c,v 1.13 2007/10/14 00:01:41 heroine Exp $
+ * $Id$
  *
  */
 #ifndef I386_H_

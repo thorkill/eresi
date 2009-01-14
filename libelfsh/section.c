@@ -6,7 +6,7 @@
 ** @brief All handlers and lowlevel routines for sections management.
 ** 
 ** Started on  Mon Feb 26 04:12:42 2001 jfv
-** $Id$: section.c,v 1.19 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

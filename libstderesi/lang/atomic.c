@@ -4,7 +4,7 @@
  ** @brief Implement arithmetic operations
  **
  ** Started on  Sun Feb  9 22:43:34 2003 jfv
- ** $Id$: atomic.c,v 1.4 2008-02-16 12:32:27 thor Exp $
+ ** $Id$
  */
 #include "libstderesi.h"
 

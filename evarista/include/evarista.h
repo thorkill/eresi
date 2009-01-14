@@ -2,7 +2,7 @@
 ** evarista.h for evarista in ERESI
 ** 
 ** Started on Fri Jun 22 14:19:04 2007 jfv
-** $Id$: evarista.h,v 1.3 2007-07-31 03:28:46 may Exp $
+** $Id$
 */
 #ifndef __EVARISTA_H_
  #define __EVARISTA_H_

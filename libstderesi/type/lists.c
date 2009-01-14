@@ -4,7 +4,7 @@
 ** @brief Pretty printing for ERESI lists
 **
 ** Started Jul 13 2007 18:57:03 jfv
-** $Id$: lists.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$
 */
 #include "libstderesi.h"
 

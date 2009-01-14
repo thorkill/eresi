@@ -5,7 +5,7 @@
 ** Started on  Mon Feb 24 15:52:06 2003 jfv
 ** Last update Thu Mar 11 14:39:06 2004 jfv
 **
-** $Id$: commands.c,v 1.6 2007-08-03 18:05:03 may Exp $
+** $Id$
 **
 */
 #include "revm.h"

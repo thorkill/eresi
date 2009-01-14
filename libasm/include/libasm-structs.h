@@ -2,7 +2,7 @@
  * @file libasm-structs.h
  * 
  * Started on  Tue Jun 14 05:00:05 2005 Sebastien Roy
- * $Id$: libasm-structs.h,v 1.15 2007/10/29 11:26:44 heroine Exp $
+ * $Id$
  */
 
 /**

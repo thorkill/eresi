@@ -5,7 +5,7 @@
 ** 
 ** Started on  Mon Feb 26 04:16:18 2001 jfv
 **
-** $Id$: sht.c,v 1.9 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

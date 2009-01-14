@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Feb 22 07:19:04 2001 mxatone
 **
-** $Id$: etrace.h,v 1.5 2007-11-29 14:01:55 may Exp $
+** $Id$
 **
 */
 #ifndef __ETRACE_H_

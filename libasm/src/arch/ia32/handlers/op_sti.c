@@ -2,7 +2,7 @@
  * @file op_sti.c
  * @ingroup handlers_ia32
  *
-** $Id$: op_sti.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
+** $Id$
 **
 */
 #include <libasm.h>

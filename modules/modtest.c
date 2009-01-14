@@ -4,7 +4,7 @@
 ** Started on  Wed Feb 19 08:20:07 2003 jfv
 ** Last update Thu Mar  4 20:21:56 2004 jfv
 **
-** $Id$: modtest.c,v 1.5 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

@@ -7,7 +7,7 @@
 ** Updated Tue Oct 11 19:07:13 2005 mm
 ** 
 **
-** $Id$: bp.c,v 1.7 2007-06-27 11:25:12 heroine Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

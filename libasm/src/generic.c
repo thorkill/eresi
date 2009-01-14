@@ -2,7 +2,7 @@
  * @file generic.c
  * @ingroup libasm_engine
  * Latest edition Author : $Author: may $
- * $Id$: generic.c,v 1.15 2007/12/26 14:21:06 may Exp $
+ * $Id$
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */

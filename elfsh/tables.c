@@ -8,7 +8,7 @@
  *
  * Started on  Sat Jan 25 07:48:41 2003 jfv
  *
- * $Id$: tables.c,v 1.18 2008-02-16 12:31:34 thor Exp $
+ * $Id$
  *
  */
 #include "elfsh.h"

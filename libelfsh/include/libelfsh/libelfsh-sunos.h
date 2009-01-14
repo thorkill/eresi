@@ -4,7 +4,7 @@
 ** Started on  Fri Dec  7 21:29:00 2001 jfv
 ** Last update Mon Feb 26 05:05:27 2005 jfv
 **
-** $Id$: libelfsh-sunos.h 925 2008-03-24 18:25:11Z enioh $
+** $Id$
 **
 */
 

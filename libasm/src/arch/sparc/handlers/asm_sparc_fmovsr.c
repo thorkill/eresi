@@ -1,6 +1,6 @@
 /*
 **
-** $Id$: asm_sparc_fmovsr.c,v 1.9 2007/10/14 00:01:42 heroine Exp $
+** $Id$
 **
 */
 #include "libasm.h"

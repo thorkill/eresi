@@ -6,7 +6,7 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Mon Mar  5 17:26:11 2007 jfv
  *
- * $Id$: prompt.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
 */
 #include "revm.h"

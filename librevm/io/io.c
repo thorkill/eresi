@@ -4,7 +4,7 @@
  * @brief Initialize the IO system.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
- * $Id$: io.c,v 1.14 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  */
 #include "revm.h"
 

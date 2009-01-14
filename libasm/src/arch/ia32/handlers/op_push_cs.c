@@ -1,7 +1,7 @@
 /**
  * @brief Handler for instruction push cs opcode 0x0e
  * @ingroup handlers_ia32
-** $Id$: op_push_cs.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
+** $Id$
 **
 */
 #include <libasm.h>

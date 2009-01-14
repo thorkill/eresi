@@ -7,7 +7,7 @@
 ** Started on  Mon Apr 25 01:01:26 2005 #!HATE#@!
 ** Last update Tue Jun 14 09:18:36 2005 #!HATE#@!
 **
-** $Id$: sparc_convert.c,v 1.6 2007/06/16 20:24:25 strauss Exp $
+** $Id$
 **
 */
 

@@ -4,7 +4,7 @@
 ** Started Dec 25 2006 15:41:35 mxatone
 **
 **
-** $Id$: libedfmt.h,v 1.16 2007-03-07 16:45:35 thor Exp $
+** $Id$
 **
 */
 

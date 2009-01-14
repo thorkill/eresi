@@ -4,7 +4,7 @@
 ** Started on  Sat May 10 07:01:59 2003 jfv
 ** Last update Mon Jun 30 07:38:12 2003 jfv
 **
-** $Id$: etrel_inject.c,v 1.4 2007-11-28 07:56:09 may Exp $
+** $Id$
 **
 */
 #include	"libelfsh.h"

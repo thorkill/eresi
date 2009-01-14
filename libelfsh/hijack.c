@@ -6,7 +6,7 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 ** 
 **
-** $Id$: hijack.c,v 1.12 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

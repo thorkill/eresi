@@ -4,7 +4,7 @@
 ** @brief List the loaded eresi module.
 ** Started on  Wed Feb 19 04:42:47 2003 jfv
 **
-** $Id$: modlist.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "revm.h"

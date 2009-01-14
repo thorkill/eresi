@@ -2,7 +2,7 @@
  * @file op_cmpsb.c
  * @brief Handler for instruction cmpsb opcode 0xa6
  * @ingroup handlers_ia32
- * $Id$: op_cmpsb.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
+ * $Id$
  *
  */
 #include <libasm.h>

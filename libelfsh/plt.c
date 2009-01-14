@@ -6,7 +6,7 @@
 ** Started on  Tue Jul 24 06:40:07 2001 jfv
 ** 
 **
-** $Id$: plt.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

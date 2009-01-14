@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* $Id$: aproxy_arena.c,v 1.2 2007-02-25 22:13:33 may Exp $ */
+/* $Id$
 
 /* Compile-time constants.  */
 

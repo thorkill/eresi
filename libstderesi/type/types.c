@@ -4,7 +4,7 @@
 * Be able to add your own types in runtime
 *
 * Started on  Sun Jan 9 07:23:58 2007 jfv
-* $Id$: types.c,v 1.2 2007-12-06 06:40:16 may Exp $
+* $Id$
 **
 */
 #include "libstderesi.h"

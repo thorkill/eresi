@@ -10,7 +10,7 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 ** 
 **
-** $Id$: runtime.c,v 1.9 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

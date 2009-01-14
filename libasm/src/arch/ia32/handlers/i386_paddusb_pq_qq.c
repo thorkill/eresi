@@ -1,7 +1,7 @@
 /**
  * @file i386_paddusb_pq_qq.c
  * @ingroup handlers_ia32
-* $Id$: i386_paddusb_pq_qq.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+* $Id$
 *
 */
 #include <libasm.h>

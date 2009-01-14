@@ -4,7 +4,7 @@
  *
  * Started on  Thu Apr  3 21:36:55 2003 jfv
  *
- * $Id$: debug.c,v 1.9 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libelfsh.h"

@@ -4,7 +4,7 @@
 ** Started on  Wed Jan  1 07:51:24 2003 jfv
 ** Last update Thu Mar 20 06:19:53 2003 jfv
 **
-** $Id$: libaspect-profiler.h,v 1.9 2007-08-03 11:50:59 heroine Exp $
+** $Id$
 **
 */
 

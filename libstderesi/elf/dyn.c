@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:17:36 2001 jfv
  *
  *
- * $Id$: dyn.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libstderesi.h"

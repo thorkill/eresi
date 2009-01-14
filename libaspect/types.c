@@ -6,7 +6,7 @@
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 **
-** $Id$: types.c,v 1.24 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libaspect.h"

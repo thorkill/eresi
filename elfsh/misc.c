@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Wed Jan 03 17:31:11 2007 jfv
  *
- * $Id$: misc.c,v 1.17 2008-02-16 12:31:34 thor Exp $
+ * $Id$
  *
  */
 #include "elfsh.h"

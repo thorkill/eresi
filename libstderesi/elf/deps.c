@@ -6,7 +6,7 @@
 **
 ** Started on Sat Nov 25 11:21:18 2006 jfv
 **
-** $Id$: deps.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

@@ -10,7 +10,7 @@
 ** Started Jan 11 2004 02:57:03 jfv
 ** 
 **
-** $Id$: hooks.c,v 1.26 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

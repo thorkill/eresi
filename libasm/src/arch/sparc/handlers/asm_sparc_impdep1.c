@@ -1,6 +1,6 @@
 /*
 **
-** $Id$: asm_sparc_impdep1.c,v 1.4 2007/06/16 20:24:25 strauss Exp $
+** $Id$
 **
 */
 #include "libasm.h"

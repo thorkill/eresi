@@ -4,7 +4,7 @@
  * @brief We dont use bison and have our own parser generator.
  *
  * Started on  Sun Feb  9 22:57:58 2003 jfv
- * $Id$: grammar.c,v 1.21 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "revm.h"

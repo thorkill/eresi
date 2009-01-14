@@ -5,7 +5,7 @@
  * 
  * Last update Mon Feb 26 05:05:27 2005 jfv
  *
- * $Id$: libelfsh-bsd.h 1046 2008-07-29 10:42:05Z thorkill $
+ * $Id$
  *
  */
 

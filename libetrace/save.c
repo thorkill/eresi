@@ -4,7 +4,7 @@
 **
 ** @brief This file contain trace save function.
 **
-** $Id$: save.c,v 1.2 2007-11-29 10:25:02 rival Exp $
+** $Id$
 **
 */
 #include "libetrace.h"

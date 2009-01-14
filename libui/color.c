@@ -5,7 +5,7 @@
 **
 ** Started on Sept 11 2005 mxatone
 **
-** $Id$: color.c,v 1.16 2007-08-03 11:51:00 heroine Exp $
+** $Id$
 **
 */
 #include "libui.h"

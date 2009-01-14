@@ -8,7 +8,7 @@
 ** Started Jan 01 2007 21:30:13 mxatone
 **
 **
-** $Id$: stabs.c,v 1.18 2007-06-02 08:28:51 mxatone Exp $
+** $Id$
 **
 */
 

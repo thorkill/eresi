@@ -1,7 +1,7 @@
 /**
  * @file i386_xadd.c
  * @ingroup handlers_ia32
- *  $Id$: i386_xadd.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+ *  $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>

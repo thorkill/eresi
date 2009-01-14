@@ -5,7 +5,7 @@
 *
 * Started on  Sat Jul 1 10:10:53 2006 jfv
 *
-* $Id$: rlheap.c,v 1.5 2008-02-16 12:31:34 thor Exp $
+* $Id$
 *
 */
 #include "elfsh.h"

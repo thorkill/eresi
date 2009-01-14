@@ -4,7 +4,7 @@
 ** Started on  Mon Dec 25 18:08:03 2006 mxatone
 **
 **
-** $Id$: libedfmt-dwarf2.h,v 1.14 2007-07-19 15:20:15 mxatone Exp $
+** $Id$
 **
 */
 

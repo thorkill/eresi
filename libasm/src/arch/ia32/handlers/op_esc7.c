@@ -1,5 +1,5 @@
 /**
- * $Id$: op_esc7.c,v 1.6 2008/01/07 01:32:56 heroine Exp $
+ * $Id$
  * @param 
  */
 #include <libasm.h>

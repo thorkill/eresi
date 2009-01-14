@@ -4,7 +4,7 @@
  * Started on  Mon Feb 26 04:06:38 2001 jfv
  * Last update Wed Mar 10 12:14:24 2004 jfv
  *
- * $Id$: data.c,v 1.1 2007-11-29 14:01:56 may Exp $
+ * $Id$
  *
  */
 #include "libstderesi.h"

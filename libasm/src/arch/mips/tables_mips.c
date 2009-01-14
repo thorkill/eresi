@@ -1,7 +1,7 @@
 /**
  * @file tables_mips.c
  * @brief MIPS processor mnemonic table.
- * $Id$: tables_i386.c,v 1.15 2008/03/13 16:32:56 pi3 Exp $
+ * $Id$
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki

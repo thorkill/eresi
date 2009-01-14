@@ -4,7 +4,7 @@
  * Started on Fri Jan 26 21:00:33 BRST 2007
  *
  *
- * $Id$: core.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libstderesi.h"

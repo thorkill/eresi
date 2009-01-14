@@ -2,7 +2,7 @@
  * @file tables_i386.c
  * @ingroup libasm_ia32
  * @brief Initialization of ia32 processor mnemonic table.
- * $Id$: tables_i386.c,v 1.15 2008/01/07 01:32:56 heroine Exp $
+ * $Id$
  * 
  */
 #include <libasm.h>

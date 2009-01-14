@@ -4,7 +4,7 @@
  * Started on  Sat Jan 25 11:21:52 2003 jfv
  * Last update Thu Mar 11 07:56:36 2004 jfv
  *
- * $Id$: unload.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libstderesi.h"

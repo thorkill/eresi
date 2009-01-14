@@ -6,7 +6,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:22:11 2007 jfv
 **
-** $Id$: screen.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "revm.h"

@@ -3,7 +3,7 @@
 ** 
 ** Started on  Thu Aug 15 07:19:04 2005 jfv
 **
-** $Id$: elfsh-help.h,v 1.15 2007-07-31 03:28:46 may Exp $
+** $Id$
 **
 */
 #ifndef __ELFSH_HELP_H_

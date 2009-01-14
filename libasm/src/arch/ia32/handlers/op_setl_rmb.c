@@ -1,7 +1,7 @@
 /**
  * @file op_setl_rmb.c
  * @ingroup handlers_ia32
- * $Id$: op_setl_rmb.c,v 1.6 2007/10/14 00:01:41 heroine Exp $
+ * $Id$
  *
  */
 #include <libasm.h>

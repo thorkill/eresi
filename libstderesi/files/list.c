@@ -3,7 +3,7 @@
 ** @ingroup libstderesi 
 ** Started on  Sat Jan 25 11:20:20 2003 jfv
 **
-** $Id$: list.c,v 1.2 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

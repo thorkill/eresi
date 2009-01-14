@@ -6,7 +6,7 @@
 ** Started on  Sun Jun 24 21:30:41 2001 jfv
 ** Last update Thu May 15 04:39:15 2003 jfv
 **
-** $Id$: got.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

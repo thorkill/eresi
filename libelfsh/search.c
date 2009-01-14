@@ -8,7 +8,7 @@
 ** 
 ** Started on Sat Nov 25 21:19:53 2006 jfv
 **
-** $Id$: search.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

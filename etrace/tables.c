@@ -6,7 +6,7 @@
  **
  ** Started on  Sat Jan 25 07:48:41 2003 mxatone
  **
- ** $Id$: tables.c,v 1.6 2007-07-17 18:11:24 may Exp $
+ ** $Id$
  **
  */
 #include "etrace.h"

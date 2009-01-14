@@ -20,7 +20,7 @@
 ** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id$: convert.c,v 1.8 2007-12-06 05:11:58 may Exp $
+** $Id$
 **
 */
 #include "revm.h"

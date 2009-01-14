@@ -1,5 +1,5 @@
 /*
-** $Id$: op_mov_segr_rm.c,v 1.7 2007/10/14 00:01:41 heroine Exp $
+** $Id$
 **
 */
 #include <libasm.h>

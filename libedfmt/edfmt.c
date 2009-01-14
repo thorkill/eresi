@@ -5,7 +5,7 @@
 ** Started Dec 25 2006 15:41:35 mxatone
 **
 **
-** $Id$: edfmt.c,v 1.14 2007-11-30 10:13:54 may Exp $
+** $Id$
 **
 */
 

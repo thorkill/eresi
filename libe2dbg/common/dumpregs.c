@@ -4,7 +4,7 @@
 ** Started on  Wed Jul 27 04:08:52 2005 ym
 ** 
 **
-** $Id$: dumpregs.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libe2dbg.h"

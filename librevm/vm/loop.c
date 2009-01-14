@@ -4,7 +4,7 @@
  * @brief This file include the control flow support for scripting.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
- * $Id$: loop.c,v 1.14 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  */
 #include "revm.h"
 

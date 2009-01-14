@@ -6,7 +6,7 @@
  * Started on  Fri Jun 05 15:21:56 2005 jfv
  *
  *
- * $Id$: e2dbg.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libe2dbg.h"

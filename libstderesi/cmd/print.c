@@ -4,7 +4,7 @@
 ** Started on  Sat Jan 25 11:19:53 2003 jfv
 ** 
 **
-** $Id$: print.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

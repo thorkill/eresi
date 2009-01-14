@@ -6,7 +6,7 @@
 ** Started on Fri Mar 5 00:55:40 2004 jfv
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
-** $Id$: select.c,v 1.15 2007-11-29 14:01:56 may Exp $
+** $Id$
 **
 */
 #include "revm.h"

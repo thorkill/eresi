@@ -3,7 +3,7 @@
 **
 ** Started on Wed Jan 03 19:19:04 2007 jfv
 **
-** $Id$: libstderesi-help.h,v 1.3 2007-12-09 23:00:18 may Exp $
+** $Id$
 **
 */
 #ifndef __REVM_HELP_H_

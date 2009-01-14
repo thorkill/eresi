@@ -6,7 +6,7 @@
  * Started on  Fri Jan 11 03:05:37 2003 jfv
  * 
  *
- * $Id$: sparc32.c,v 1.8 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libelfsh.h"

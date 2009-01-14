@@ -4,7 +4,7 @@
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **
 **
-** $Id$: libelfsh.h,v 1.80 2008-02-16 13:44:47 thor Exp $
+** $Id$
 **
 */
 

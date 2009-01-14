@@ -1,6 +1,6 @@
 /*
 **
-** $Id$: test3.c,v 1.1 2007-03-17 13:05:31 may Exp $
+** $Id$
 **
 */
 #include <stdio.h>

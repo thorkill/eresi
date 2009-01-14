@@ -4,7 +4,7 @@
  * @brief Implementation of scripting lookups for meta-language variables.
  *
  * Started Jan 23 2007 23:39:51 jfv
- * $Id$: access.c,v 1.32 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "revm.h"

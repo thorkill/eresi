@@ -1,6 +1,6 @@
 /**
  * @file libasm.h
- * $Id$: libasm.h,v 1.31 2008/02/01 01:56:53 heroine Exp $
+ * $Id$
  * 
  * Author  : <sk at devhell dot org>
  * Started : Sat Oct 26 01:18:46 2002

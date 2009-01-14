@@ -1,7 +1,7 @@
 /**
  * @file op_386sp.c
  * @ingroup handlers_ia32
- * $Id$: op_386sp.c,v 1.8 2007/10/14 00:01:41 heroine Exp $
+ * $Id$
  * ChangeLog:
  * 2007-05-30	Fixed a bug in fetching. The vector used was the previously defined.
  *		strauss set up a new disasm vector and didn't know about it which

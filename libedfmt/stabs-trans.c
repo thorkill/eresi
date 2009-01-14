@@ -5,7 +5,7 @@
 ** Started Fev 02 2007 14:35:03 mxatone
 **
 **
-** $Id$: stabs-trans.c,v 1.11 2007-06-02 19:18:11 mxatone Exp $
+** $Id$
 **
 */
 

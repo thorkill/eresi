@@ -5,7 +5,7 @@
  *
  * Started on  Sat May 31 23:48:41 2005 jfv
  *
- * $Id$: cleanup.c,v 1.6 2008-02-16 12:31:34 thor Exp $
+ * $Id$
  *
  */
 #include "elfsh.h"

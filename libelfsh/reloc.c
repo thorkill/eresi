@@ -6,7 +6,7 @@
 ** Started on  Tue Feb 27 14:34:50 2001 jfv
 ** 
 **
-** $Id$: reloc.c,v 1.6 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

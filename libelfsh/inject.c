@@ -8,7 +8,7 @@
 ** Started on  Thu Jun 09 00:12:42 2005 mm
 ** 
 **
-** $Id$: inject.c,v 1.15 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

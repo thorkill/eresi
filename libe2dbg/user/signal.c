@@ -6,7 +6,7 @@
  * Started on  Tue Feb 11 21:17:33 2003 jfv
  * Last update Wed Aug 13 23:22:59 2005 jfv
  *
- * $Id$: signal.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libe2dbg.h"

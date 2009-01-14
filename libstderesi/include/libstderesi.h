@@ -2,7 +2,7 @@
 ** @file libstderesi.h
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv
-** $Id$: libstderesi.h,v 1.5 2008-02-16 12:32:27 thor Exp $
+** $Id$
 */
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_

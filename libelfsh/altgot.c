@@ -7,7 +7,7 @@
 ** of the ALTGOT technique.
 **
 ** Started on  Wed Jun 08 21:20:07 2005 mm
-** $Id$: altgot.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+** $Id$
 */
 #include "libelfsh.h"
 

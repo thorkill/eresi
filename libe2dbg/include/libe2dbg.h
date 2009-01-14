@@ -5,7 +5,7 @@
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
 **
 **
-** $Id$: libe2dbg.h,v 1.32 2007-12-06 05:11:58 may Exp $
+** $Id$
 **
 */
 #ifndef __E2DBG_H__

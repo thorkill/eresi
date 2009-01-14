@@ -5,7 +5,7 @@
  **
  ** Started on  Sat Jul 1 10:10:53 2006 mxatone
  **
- ** $Id$: rlheap.c,v 1.3 2007-07-17 18:11:24 may Exp $
+ ** $Id$
  **
  */
 #include "etrace.h"

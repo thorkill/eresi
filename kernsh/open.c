@@ -1,7 +1,7 @@
 /*
 ** @file open.c
 ** @ingroup kernsh
-** $Id$: open.c,v 1.10 2007-11-29 15:33:39 may Exp $
+** $Id$
 **
 */
 #include "kernsh.h"

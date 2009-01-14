@@ -6,7 +6,7 @@
 ** Those hooks stay in the debugger and not in libelfsh.
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 jfv
-** $Id$: dbghooks.c,v 1.1 2008-02-16 12:32:27 thor Exp $
+** $Id$
 */
 #include "libe2dbg.h"
 

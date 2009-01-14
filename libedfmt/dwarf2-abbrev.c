@@ -4,7 +4,7 @@
 ** Started Dec 26 2006 10:49:45 mxatone
 **
 **
-** $Id$: dwarf2-abbrev.c,v 1.14 2007-05-20 19:13:57 mxatone Exp $
+** $Id$
 **
 */
 

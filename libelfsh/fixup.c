@@ -6,7 +6,7 @@
 ** Started on  Fri Jul 27 04:56:06 2001 jfv
 ** 
 **
-** $Id$: fixup.c,v 1.13 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

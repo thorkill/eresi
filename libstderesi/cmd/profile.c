@@ -4,7 +4,7 @@
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:26:11 2007 jfv
 **
-** $Id$: profile.c,v 1.1 2007-11-29 14:01:56 may Exp $
+** $Id$
 **
 */
 #include "libstderesi.h"

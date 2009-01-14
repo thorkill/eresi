@@ -1,5 +1,5 @@
 /*
-** $Id$: op_je.c,v 1.5 2007/10/14 00:01:41 heroine Exp $
+** $Id$
 **
 */
 #include <libasm.h>

@@ -5,7 +5,7 @@
  * 
  * Started on  Mon Feb 26 04:11:46 2001 jfv
  *
- * $Id$: symbol.c,v 1.17 2008-02-16 12:32:27 thor Exp $
+ * $Id$
  *
  */
 #include "libelfsh.h"

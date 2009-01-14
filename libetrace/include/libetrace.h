@@ -4,7 +4,7 @@
 ** Libetrace header file in the ERESI project
 **
 ** Started on  Sat Nov 17 12:10:12 2007 eau
-** $Id$: libetrace.h,v 1.2 2007-11-29 10:25:02 rival Exp $
+** $Id$
 **
 */
 

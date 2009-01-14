@@ -4,7 +4,7 @@
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Fri Sep 11 17:26:11 2005 jfv
  *
- * $Id$: misc-revm.c,v 1.13 2007-11-29 14:01:56 may Exp $
+ * $Id$
  *
  */
 #include "revm.h"

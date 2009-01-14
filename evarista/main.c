@@ -4,7 +4,7 @@
 ** The entry point of the static analyzer
 **
 ** Started on  Fri Jun 22 14:42:36 2007 jfv
-** $Id$: main.c,v 1.5 2007-07-31 23:30:35 may Exp $
+** $Id$
 */
 #include "evarista.h"
 

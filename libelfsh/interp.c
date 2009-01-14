@@ -6,7 +6,7 @@
 ** Started on  Sun Jun 10 20:29:18 2001 jfv
 ** 
 **
-** $Id$: interp.c,v 1.7 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

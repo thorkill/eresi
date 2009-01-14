@@ -1,5 +1,5 @@
 /*
-** $Id$: myputs.c,v 1.3 2007-08-03 18:05:03 may Exp $
+** $Id$
 **
 */
 #include <stdio.h>

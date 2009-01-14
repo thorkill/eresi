@@ -6,7 +6,7 @@
 ** Started on  Wed Feb 12 00:07:06 2003 jfv
 ** Last update Sun Mar  4 00:46:13 2007 thorkill
 **
-** $Id$: obj.c,v 1.11 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"

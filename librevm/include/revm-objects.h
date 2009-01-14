@@ -9,7 +9,7 @@
 ** Moved from elfsh to librevm on January 2007 -may
 **
 **
-** $Id$: revm-objects.h,v 1.9 2007-11-30 10:13:54 may Exp $
+** $Id$
 **
 */
 #ifndef __REVM_OBJECTS_H_

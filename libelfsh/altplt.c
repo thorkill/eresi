@@ -9,7 +9,7 @@
 ** Started on  Tue May 26 11:40:07 2001 mm
 **
 **
-** $Id$: altplt.c,v 1.12 2008-02-16 12:32:27 thor Exp $
+** $Id$
 **
 */
 #include "libelfsh.h"
