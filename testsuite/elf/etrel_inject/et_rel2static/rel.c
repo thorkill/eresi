@@ -59,15 +59,8 @@ int	puts_troj(char *str)
 	 glvar_testreloc_bss3,
 	 local);
     
-  free(str2);
-    
-    
+  free(str2);    
   old_puts(str);
-
-  
-  write(1, "calling write\n", 14);
-  
-
   fflush(stdout);
   return (0);
 }
