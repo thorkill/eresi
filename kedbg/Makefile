@@ -1,5 +1,5 @@
 ##
-## Makefile for e2dbg in ERESI
+## Makefile for kedbg in ERESI
 ##
 ## Started on  Tue Aug  16 06:32:29 2005 jfv
 ## $Id$
@@ -8,12 +8,10 @@
 include ../config.h
 
 SRC			= main.c handlers.c cmd.c misc.c register.c
-OBJ			= $(SRC:.c=.o)
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc
 RM			= rm -f
-DBGNAME			= kedbg
 DBGNAME32		= kedbg32
 DBGNAME64		= kedbg64
 
@@ -41,13 +39,41 @@ LDFLAGS32               += -L../libedfmt/ -ledfmt32				\
 			-L../libasm/ -lasm32 $(LDUIOPT32) -g3 $(STATOPT) 	\
                         -L../libaspect/ -laspect32				\
 			-L../librevm/ -lrevm32           			\
-			-L../libgdbwrap/ -lgdbwrap				\
+			-L../libgdbwrap/ -lgdbwrap32				\
                         -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
                         $(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
                         ../libe2dbg/common/libe2dbg-common32.o
 
+CFLAGS64 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
+			-I../libgdbwrap/include/			      	 \
+			-I../libaspect/include/				      	 \
+			-I../librevm/include/				      	 \
+			-I../libelfsh/include/				      	 \
+			-I../libedfmt/include/				      	 \
+			-I../libasm/include/				      	 \
+			-I../libui/include/				      	 \
+			-I../libmjollnir/include/			      	 \
+			-I../libe2dbg/include/ 					 \
+			-I../libstderesi/include				 \
+			-I../libetrace/include/ 				 \
+			-DERESI64 -DJEDBG -DKEDBG
 
-all			: all32 
+LDFLAGS64               += -L../libedfmt/ -ledfmt64				\
+			-L../libelfsh/ -lelfsh64        			\
+			-L../libetrace/ -letrace64				\
+			-L../libstderesi/ -lstderesi64   			\
+                        -L/usr/pkg/lib/ 					\
+			-L../libmjollnir/ -lmjollnir64              		\
+                        -L../libetrace -letrace64 $(LPTHREAD)			\
+			-L../libasm/ -lasm64 $(LDUIOPT32) -g3 $(STATOPT) 	\
+                        -L../libaspect/ -laspect64				\
+			-L../librevm/ -lrevm64           			\
+			-L../libgdbwrap/ -lgdbwrap64				\
+                        -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
+                        $(LDDUMPOPT64) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
+                        ../libe2dbg/common/libe2dbg-common64.o
+
+all			: all32 all64
 
 all32			: ${OBJ32}
 			$(CC) $(OBJ32) $(LDFLAGS32) -o $(DBGNAME32)
@@ -56,14 +82,11 @@ all64			: ${OBJ64}
 			$(CC) $(OBJ64) $(LDFLAGS64) -o $(DBGNAME64)
 
 clean		       :
-		       $(RM) $(OBJ) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
+		       $(RM) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
 		       $(RM) include/*~ include/\#* include/*\# include/.\#*
-		       $(RM) *.??.o
 
 fclean		       : clean
-		       $(RM) $(NAME) $(OBJ_DYN) $(DBGNAME)
-		       $(RM) $(NAME32) $(OBJ_DYN32) $(DBGNAME32)
-		       $(RM) $(NAME64) $(OBJ_DYN64) $(DBGNAME64)
+		       $(RM) $(DBGNAME32) $(DBGNAME64)
 
 %.32.o : %.c
 			$(CC) $(CFLAGS32) -c -o $@ $<

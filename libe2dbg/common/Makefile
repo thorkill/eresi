@@ -8,13 +8,14 @@
 include ../../config.h
 
 LD			?= ld
+CC			?= gcc
+RM			= rm -f
 SRC			= backtrace.c breakpoints.c display.c mode.c stack.c \
 			dumpregs.c dbghooks.c mutex.c common.c delete.c linkmap.c
 OBJ32			= $(SRC:.c=.32.o)
-OBJNAME32		= libe2dbg-common32
 OBJ64			= $(SRC:.c=.64.o)
-CC			?= gcc
-RM			= rm -f
+OBJNAME32		= libe2dbg-common32
+OBJNAME64		= libe2dbg-common64
 
 CFLAGS32		+= -fPIC -g3 -Wall -I../include $(DYNOPT) $(BUILDOP) 	 \
 			-I ../../libgdbwrap/include/ \
