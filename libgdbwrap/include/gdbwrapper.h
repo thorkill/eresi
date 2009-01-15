@@ -2,8 +2,8 @@
 
 #include <sys/socket.h>
 #include <netdb.h>
-#include "revm.h"
-
+#include <errno.h>
+#include "libaspect.h"
 
 typedef struct  gdbwrap_gdbreg32
 {

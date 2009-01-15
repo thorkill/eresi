@@ -1,6 +1,4 @@
 #include "gdbwrapper.h"
-#include "libe2dbg.h"
-
 
 int             gdbwrap_simpleconnect(char *host, int port)
 {
