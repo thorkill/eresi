@@ -573,7 +573,15 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym, int siz
 #endif
 
   /* Get the pointer on relevant data */
-  if (parent)
+  if (parent && !parent->shdr->sh_addr)
+    {
+      buff = parent->data + reqoff;
+      bufarg = NULL;
+      readnow = parent->shdr->sh_size - reqoff;
+      index = reqoff;
+      remain = 0;
+    }
+  else if (parent)
     {
       wheretoread = parent->shdr->sh_addr;
       wheretoread += (vaddr - parent->shdr->sh_addr); 
