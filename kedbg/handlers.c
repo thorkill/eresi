@@ -21,8 +21,9 @@ static Bool     kedbg_isrealmodewmon(void)
   if (strlen(ret) > sizeof(reply) || !strstr(ret, CR0STR))
     {
       if (passed == FALSE)
-	printf("Impossible to detect the mode. Upgrade your VMWare version and"
-	       "use the proc <protected> to switch manually to protected mode.\n");
+	printf("If you are in VMWare: Impossible to detect the mode. Upgrade your"
+	       "VMWare version and use the proc <protected> to switch manually to"
+	       "protected mode.\n");
       passed = TRUE;
       PROFILER_ERRQ("Impossible to determine CPU mode", FALSE);
     }
@@ -171,9 +172,9 @@ void		*kedbg_bt_ia32(void *frame)
   PROFILER_INQ();
 
   if (kedbg_isrealmode())
-    kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, WORD_IN_BYTE);
+    kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, WORD_IN_BYTE);
   else
-    kedbg_readmema(NULL,(eresi_Addr)frame, &ptr, DWORD_IN_BYTE);
+    kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, DWORD_IN_BYTE);
   
   PROFILER_ROUTQ((void *)ptr);
 }
@@ -389,7 +390,8 @@ void            *kedbg_readmem(elfshsect_t *sect)
   void *ptr;
 
   PROFILER_INQ();
-  if(!elfsh_get_section_writableflag(sect->shdr))
+  if(!elfsh_get_section_writableflag(sect->shdr) ||
+     !elfsh_get_section_allocflag(sect->shdr))
     ptr = sect->data;
   else
     {
@@ -397,7 +399,7 @@ void            *kedbg_readmem(elfshsect_t *sect)
       kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr,
 		     sect->shdr->sh_size);
     }
-
+  
   PROFILER_ROUTQ(ptr);
 }
 

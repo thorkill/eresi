@@ -66,7 +66,7 @@ void             gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr);
 char             *gdbwrap_readmem(gdbwrap_t *desc, la32 linaddr, unsigned bytes);
 void             gdbwrap_writemem(gdbwrap_t *desc, la32 linaddr, void *value,
 				  unsigned bytes);
-void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val);
+void             gdbwrap_writereg(gdbwrap_t *desc, ureg32 regnum, la32 val);
 char             *gdbwrap_shipallreg(gdbwrap_t *desc);
 void             gdbwrap_ctrl_c(gdbwrap_t *desc);
 void             gdbwrap_signal(gdbwrap_t *desc, int signal);

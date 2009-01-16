@@ -180,7 +180,7 @@ elfshbp_t	*e2dbg_breakpoint_lookup(char *name)
 		   "\n [!] No breakpoint set at addr " AFMT " \n\n", addr);
 	  e2dbg_output(logbuf);
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			    "No breakpoint at this address", NULL);
+		       "No breakpoint at this address", NULL);
 	}
     }
 

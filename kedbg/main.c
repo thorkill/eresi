@@ -67,19 +67,19 @@ static void     kedbg_find_linkmap(void)
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
   world.curjob->curfile->linkmap = e2dbgworld.syms.map;
-  kedbg_readmema(NULL, (eresi_Addr)e2dbgworld.syms.map,
+  kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) e2dbgworld.syms.map,
 		 &linkmap_copy, sizeof(elfshlinkmap_t));
 
   /* Let's take the first entry, by following the prev. */
   while (linkmap_copy.lprev != NULL)
-    kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lprev,
+    kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lprev,
 		   &linkmap_copy, sizeof(elfshlinkmap_t)); 
   
   /* And now, we read all the entries from the first one. */
   do
     {
       /* We read 40B at a time. It'll accelerate the boot. */
-      kedbg_readmema(NULL, (eresi_Addr) linkmap_copy.lname, lmstring, 40);
+      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lname, lmstring, 40);
       DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
 		       "lmstring: %s\n", linkmap_copy.lnext,
 		       linkmap_copy.laddr, lmstring));
@@ -108,7 +108,7 @@ static void     kedbg_find_linkmap(void)
 	    }
 	}
       linkmap_addr = linkmap_copy.lnext;
-      kedbg_readmema(NULL, (eresi_Addr)linkmap_copy.lnext,
+      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lnext,
 		     &linkmap_copy, sizeof(elfshlinkmap_t));
       
     } while (linkmap_copy.lnext != NULL);
@@ -232,10 +232,12 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
   PROFILER_OUTQ();  
 }
 
+
 /** 
  * There is a mapped symbol table in the kernel that we can try to map,
  * but its format is awkward. This function is never used for now
  */
+#if 0
 static int	kedbg_ksymtab_fixup()
 {
   elfshsect_t   *ksymtab;
@@ -255,7 +257,7 @@ static int	kedbg_ksymtab_fixup()
   elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index); 
   PROFILER_ROUTQ(0);  
 }
-
+#endif
 
 
 /**
@@ -309,6 +311,14 @@ static int      kedbg_main(int argc, char **argv)
     }
   else
     {
+      char          **keys;
+      elfshobj_t    *actual;
+      int           keynbr;
+
+      keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+      actual = hash_get(&world.curjob->loaded, keys[0]);
+      actual->rhdr.base = 0xff000000;
+      
       world.curjob->curfile->linkmap = E2DBG_ABSENT_LINKMAP;
       kedbgworld.run_in_vm = TRUE;
       kedbg_isrealmode();

@@ -13,7 +13,7 @@ char            *kedbg_getstr(void *addr, char *buf, unsigned maxsize)
   
   do
     {
-      kedbg_readmema(NULL, (eresi_Addr)((char *)addr + i), &c, sizeof(char));
+      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t)((char *)addr + i), &c, sizeof(char));
       buf[i] = c;
     } while (c != '\0' && ++i <= maxsize);
 
@@ -28,7 +28,7 @@ elfshlinkmap_t   *kedbg_linkmap_getaddr(void)
   elfshlinkmap_t *lm;
   got           = elfsh_get_gotsct(world.curjob->curfile);
   data          = elfsh_readmem(got);
-  lm            = (elfshlinkmap_t *)(*elfsh_get_got_entry_by_index(data, 1));
+  lm            = (elfshlinkmap_t *)(uintptr_t)(*elfsh_get_got_entry_by_index(data, 1));
   
   DEBUGMSG(fprintf(stderr, "Found got[1]: %#x\n", (eresi_Addr)lm));
   return        lm;

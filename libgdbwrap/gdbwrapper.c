@@ -385,18 +385,26 @@ static void          gdbwrap_send_ack(gdbwrap_t *desc)
 }
 
 
-static void          gdbwrap_check_ack(gdbwrap_t *desc)
+static Bool          gdbwrap_check_ack(gdbwrap_t *desc)
 {
   int                rval;
 
   rval = recv(desc->fd, desc->packet, 1, 0);
   /* The result of the previous recv must be a "+". */
-  if (desc->packet[0] != GDBWRAP_COR_CHECKSUMC)
-    fprintf(stderr, "The server has NOT sent any ACK."
-	    "It probably does not follow exactly the gdb protocol (%s - %d).\n",
-	    desc->packet, rval);
-
-  ASSERT(rval != -1);
+  if (!rval)
+    desc->is_active = FALSE;
+  if (desc->packet[0] == GDBWRAP_COR_CHECKSUMC && rval != -1) 
+    return TRUE;
+  else
+    if (desc->packet[0] != GDBWRAP_BAD_CHECKSUM)
+      return FALSE;
+    else
+      {
+	fprintf(stderr, "The server has NOT sent any ACK."
+		"It probably does not follow exactly the gdb protocol (%s - %d).\n",
+		desc->packet, rval);
+	return FALSE;
+      }
 }
 
 
@@ -408,7 +416,6 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 
   ASSERT(desc != NULL);
 
-  gdbwrap_check_ack(desc);
   desc->packet[0] = GDBWRAP_NULL_CHAR;
   rval = -1;
   sumrval = 0;
@@ -471,8 +478,12 @@ static char          *gdbwrap_send_data(gdbwrap_t *desc, const char *query)
 
   if (gdbwrap_is_active(desc))
     {
-      mes  = gdbwrap_make_message(desc, query);
-      rval = send(desc->fd, mes, strlen(mes), 0);
+      do
+	{
+	  mes  = gdbwrap_make_message(desc, query);
+	  rval = send(desc->fd, mes, strlen(mes), 0);
+	} while(gdbwrap_check_ack(desc) != TRUE);
+
       ASSERT(rval != -1);
       mes  = gdbwrap_get_packet(desc);
       DEBUGMSG(printf("Received: %s\n", mes));
@@ -821,7 +832,7 @@ static void          gdbwrap_writeregister2(gdbwrap_t *desc, ureg32 regNum,
 }
 
 
-void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val)
+void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regnum, la32 val)
 {
   static u_char choice = 0;
   
@@ -830,13 +841,13 @@ void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val)
       switch (choice)
 	{
 	  case 0:
-	    gdbwrap_writeregister(desc, regNum, val);
+	    gdbwrap_writeregister(desc, regnum, val);
 	    if (gdbwrap_cmdnotsup(desc))
 	      choice++;
 	    break;
 
 	  case 1:
-	    gdbwrap_writeregister2(desc, regNum, val);
+	    gdbwrap_writeregister2(desc, regnum, val);
 	    if (gdbwrap_cmdnotsup(desc))
 	      choice++;
 	    break;
@@ -846,6 +857,9 @@ void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regNum, la32 val)
 	    break;
 	}
     } while (gdbwrap_cmdnotsup(desc) && choice < 2);
+
+  if (choice < 2)
+    *(&desc->reg32.eax + regnum) = val;
 }
 
 
