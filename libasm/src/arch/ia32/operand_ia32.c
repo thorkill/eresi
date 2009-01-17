@@ -77,7 +77,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	case ASM_REG_ESP:
 	  if (sidbyte->base == ASM_REG_EBP) 
 	    {
-	      op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
+	      op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
 	      op->regset = ASM_REGSET_R32;
 	      op->len = (pmode ? 6 : 4);				   //	 
 	      op->ptr = opcode;
@@ -94,9 +94,9 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  else 
 	    {
 	      if ((op->indexr = sidbyte->index) != ASM_REG_ESP)
-		op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+		op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	      else
-		op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_SCALE;
+		op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_SCALE;
 	      op->len = 2;
 	      op->ptr = opcode;
 	      op->regset = ASM_REGSET_R32;
@@ -106,7 +106,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  break;
 	  
 	case ASM_REG_EBP:
-	  op->content = ASM_OP_REFERENCE | ASM_OP_VALUE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_VALUE;
 	  op->ptr = opcode;
 	  op->len = (pmode ? 5 : 3);			  //
 	  memcpy(&op->imm, opcode + 1, (pmode ? 4 : 2));	  //
@@ -115,7 +115,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	default:
 	  op->ptr = opcode;
 	  op->len = 1;
-	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_BASE;
 	  op->baser = modrm->m;
 	  op->regset = pmode ? ASM_REGSET_R32 : ASM_REGSET_R16;
 	  break;
@@ -127,9 +127,9 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
       if (modrm->m == ASM_REG_ESP) 
 	{
 	  if ((op->indexr = sidbyte->index) != ASM_REG_ESP)
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	  else
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
 	  op->ptr = opcode;
 	  op->len = (pmode ? 3 : 1);			//
 	  op->regset = ASM_REGSET_R32;
@@ -144,7 +144,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	} 
       else 
 	{
-	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
 	  op->len = 2;								// ?????
 	  op->baser = modrm->m;
 	  op->regset = ASM_REGSET_R32;
@@ -162,9 +162,9 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
       if (modrm->m == ASM_REG_ESP) 
 	{
 	  if (sidbyte->base == ASM_REG_ESP)
-	    op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	  else
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
       
 	  op->regset = ASM_REGSET_R32;
 	  op->baser = sidbyte->base;
@@ -175,7 +175,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	} 
       else 
 	{	  
-	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
 	  op->len = (pmode ? 5 : 3);				//
 	  op->regset = ASM_REGSET_R32;
 	  op->baser = modrm->m;
@@ -186,7 +186,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
     
       /*
 	if (modrm->m == ASM_REG_ESP)
-	op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
+	op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
 	op->len = 5;								
 	op->baser = modrm->m;
 	op->regset = ASM_REGSET_R32;
@@ -199,7 +199,7 @@ int			operand_rmb(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 
     /* mod == 3 */
   case 3:
-    op->content = ASM_OP_BASE;
+    op->type = ASM_OP_BASE;
     op->regset = ASM_REGSET_R8;
     op->len = 1;
     op->ptr = opcode;
@@ -253,7 +253,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	    case ASM_REG_EBP:
 	      
 	      /* pushl 0x8050fe0(,%eax,4) ; opcode = 'ff 34 85 e0 0f 05 08' */
-	      op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
+	      op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_INDEX | ASM_OP_SCALE;
 	      op->regset = ASM_REGSET_R32;
 	      op->len = (pmode ? 6 : 4);					//
 	      op->ptr = opcode;
@@ -264,15 +264,15 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	      break;
 	  
 	    case ASM_REG_ESP:
-	      op->content = ASM_OP_REFERENCE | ASM_OP_SCALE | ASM_OP_BASE;
+	      op->type = ASM_OP_REFERENCE | ASM_OP_SCALE | ASM_OP_BASE;
 	      op->len = 2;
 	      op->baser = sidbyte->base;
 	      op->scale = asm_int_pow2(sidbyte->sid);
 	      break;
 
 	    default:
-	      op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
-	      // op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	      op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	      // op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	      op->len = 2;
 	      op->ptr = opcode;
 	      op->regset = ASM_REGSET_R32;
@@ -285,7 +285,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	  
 	  /* modrm == EBP */
 	case ASM_REG_EBP:
-	  op->content = ASM_OP_REFERENCE | ASM_OP_VALUE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_VALUE;
 	  op->ptr = opcode;
 	  op->len = (pmode ? 5 : 3);					//
 	  memcpy(&op->imm, opcode + 1, (pmode ? 4 : 2));			//
@@ -295,7 +295,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	default:
 	  op->ptr = opcode;
 	  op->len = 1;
-	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_BASE;
 	  op->baser = modrm->m;
 	  break;
 	}
@@ -306,9 +306,9 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
       if (modrm->m == ASM_REG_ESP) 
 	{
 	  if (sidbyte->base == ASM_REG_ESP)
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
 	  else
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	  op->ptr = opcode;
 	  op->len = 3;									// ????
 	  op->regset = ASM_REGSET_R32;
@@ -323,7 +323,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	} 
     else 
       {
-	op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
+	op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
 	op->len = 2;									// ?????
 	op->regset = ASM_REGSET_R32;
 	op->baser = modrm->m;
@@ -340,9 +340,9 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
       if (modrm->m == ASM_REG_ESP) 
 	{
 	  if (sidbyte->base == ASM_REG_ESP)
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE;
 	  else
-	    op->content = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
+	    op->type = ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE;
 	  
 	  op->len = (pmode ? 6 : 4);					//
 	  op->ptr = opcode;
@@ -354,7 +354,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
 	} 
       else 
 	{
-	  op->content = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
+	  op->type = ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_VALUE;
 	  op->len = (pmode ? 5 : 3);					//
 	  op->ptr = opcode;
 	  op->regset = ASM_REGSET_R32;
@@ -365,7 +365,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
       
       /* modrm->mod = 3 */
     case 3:
-      op->content = ASM_OP_BASE;
+      op->type = ASM_OP_BASE;
       op->len = 1;
       op->ptr = opcode;
       op->regset = asm_proc_opsize(proc) ? ASM_REGSET_R16 : ASM_REGSET_R32;
