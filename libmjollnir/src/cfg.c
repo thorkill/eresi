@@ -312,7 +312,7 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
     case ASM_PROC_IA32:
       
       /* The target block is called directly */
-      if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
+      if ((ins->op[0].type & ASM_OP_VALUE) && !(ins->op[0].type & ASM_OP_REFERENCE)) 
 	{    
 	  ilen = asm_instr_len(ins);
 	  asm_operand_get_immediate(ins, 1, 0, &dest);
@@ -320,7 +320,7 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 	}
       /* The target block is called indirectly : if we find a pattern that correspond 
 	 to an easy to predict function pointer, then we compute it */
-      else if (ins->op[0].content & ASM_OP_BASE)
+      else if (ins->op[0].type & ASM_OP_BASE)
 	dest = mjr_compute_fctptr(context);
       else
 	dest = MJR_BLOCK_INVALID;
@@ -330,7 +330,7 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
     case ASM_PROC_SPARC:
       if (ins->instr == ASM_SP_CALL)
 	{
-	  if (ins->op[0].content & ASM_SP_OTYPE_DISP30)
+	  if (ins->op[0].type & ASM_SP_OTYPE_DISP30)
 	    dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
 	  else /* Indirect call (special case of JMPL) */
 	    dest = MJR_BLOCK_INVALID;
@@ -388,7 +388,7 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
     case  ASM_PROC_IA32:
 
       /* The target block is called directly */
-      if ((ins->op[0].content & ASM_OP_VALUE) && !(ins->op[0].content & ASM_OP_REFERENCE)) 
+      if ((ins->op[0].type & ASM_OP_VALUE) && !(ins->op[0].type & ASM_OP_REFERENCE)) 
 	{    
 	  ilen = asm_instr_len(ins);
 	  asm_operand_get_immediate(ins, 1, 0, &dest);
@@ -397,7 +397,7 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
       
       /* The target block is called indirectly : if we find a pattern that correspond 
        to an easy to predict function pointer, then we compute it */
-      else if (ins->op[0].content & ASM_OP_BASE)
+      else if (ins->op[0].type & ASM_OP_BASE)
 	dest = mjr_compute_fctptr(context);
       else
 	dest = MJR_BLOCK_INVALID;

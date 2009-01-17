@@ -7,13 +7,6 @@
 ** Started : Xxx Xxx xx xx:xx:xx 2002
 ** Updated : Thu Mar 11 00:40:31 2004
 */
-
-/*
-  Sat Jul 13 00:15:51 2002
-  removed a bug in scalar output.
-
-*/
-
 #include <libasm.h>
 #include <libasm-int.h>
 
@@ -41,46 +34,9 @@ char	*asm_get_instr_name(asm_instr *i)
 
 void	output_instr(asm_instr *instr) 
 {  
-  printf("%10s  ", instr->proc->instr_table[instr->instr]);
-  if (instr->op[0].type) 
-    {
-      switch(instr->op[0].content) 
-	{
-	  
-	}
-    } /* !instr->op1 */ 
-  else 
-    {
-      
-    }
-
-  /*
-  printf("\t;; len: %5u   ", instr->len);
-  if (instr->type & IS_MEM_WRITE)
-    printf("MW : Y ");
-  else
-    printf("MW : N ");
-
-  if (instr->type & IS_MEM_READ)
-    printf("MR : Y   ");
-  else
-    printf("MR : N   ");
-  if (instr->type & IS_CALL)
-    printf("CALL : Y    ");
-  else 
-    printf("CALL : N    ");
-  if (instr->type & IS_JMP)
-    printf("JMP : Y  ");
-  else
-    printf("JMP : N  ");
-  if (instr->type & IS_COND_BRANCH)
-    printf("CONDBR : Y  "); 
-  else
-    printf("CONDBR : N   ");
-  */
-  puts("");
-    
+  printf("%10s\n", instr->proc->instr_table[instr->instr]);
 }
+
 
 /**
  * Return register ascii string
@@ -168,9 +124,9 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
   asm_operand_get_scale(ins, num, addr, &scale);
     
   /* Resolve target addresses if any, dealing with real/protected mode addressing */
-  if (op->content & ASM_OP_ADDRESS) 
+  if (op->type & ASM_OP_ADDRESS) 
     {
-      if (op->content & ASM_OP_REFERENCE) 
+      if (op->type & ASM_OP_REFERENCE) 
 	ins->proc->resolve_immediate(ins->proc->resolve_data, imm & addr_mask, resolved, 256);
       else
 	{
@@ -184,7 +140,7 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     ins->proc->resolve_immediate(ins->proc->resolve_data, imm, resolved, 256);
 
   /* Resolve any potential encoded information */
-  switch (op->content & ~ASM_OP_FIXED) 
+  switch (op->type & ~ASM_OP_FIXED) 
     {
     case ASM_OP_BASE|ASM_OP_ADDRESS:
       sprintf(buffer, "*%%%s", 
@@ -351,20 +307,20 @@ char	*asm_ia32_display_instr_att(asm_instr *instr,
     }
 
   /* Add spaces */
-  if (instr->op[0].type) 
+  if (instr->op[0].content) 
     {
       len = strlen(buffer);
       margin = (int) config_get_data(CONFIG_ASM_ATT_MARGIN_FLAG);
       while (len++ < margin)
 	strcat(buffer, " ");
       
-      if (instr->op[2].type) 
+      if (instr->op[2].content) 
 	{
 	  asm_operand_get_att(instr, 3, addr, buffer + strlen(buffer));
 	  strcat(buffer, ",");
 	}
  
-    if (instr->op[1].type) 
+    if (instr->op[1].content) 
       {
 	switch(instr->op[1].prefix & ASM_PREFIX_SEG) 
 	  {
