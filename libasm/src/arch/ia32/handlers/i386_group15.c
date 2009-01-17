@@ -21,12 +21,12 @@ int i386_group15(asm_instr *new, u_char *opcode, u_int len,
     {
     case 2:
       new->instr = ASM_LDMXCSR;
-      new->op[0].type = ASM_OTYPE_ENCODED;
+      new->op[0].content = ASM_CONTENT_ENCODED;
 #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
 #else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
 #endif
 #else
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
@@ -38,12 +38,12 @@ int i386_group15(asm_instr *new, u_char *opcode, u_int len,
       new->instr = ASM_STMXCSR;
 #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
 #else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
 #endif
 #else
-      new->op[0].type = ASM_OTYPE_ENCODED;
+      new->op[0].content = ASM_CONTENT_ENCODED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
       new->len += new->op[0].len;
 #endif
@@ -51,7 +51,7 @@ int i386_group15(asm_instr *new, u_char *opcode, u_int len,
 
     case 7:
       new->instr = ASM_CLFLUSH;
-      new->op[0].type = ASM_OTYPE_GENERAL;
+      new->op[0].content = ASM_CONTENT_GENERAL;
       break;
 
     default:

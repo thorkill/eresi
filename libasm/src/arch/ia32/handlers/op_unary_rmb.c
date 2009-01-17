@@ -34,18 +34,18 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len,
       new->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
       new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF | ASM_FLAG_PF |
                           ASM_FLAG_SF | ASM_FLAG_ZF;
-      new->op[0].type = ASM_OTYPE_ENCODED;
+      new->op[0].content = ASM_CONTENT_ENCODED;
 
 #if WIP
       new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                            ASM_OTYPE_ENCODEDBYTE, new, 0));
+                                            ASM_CONTENT_ENCODEDBYTE, new, 0));
       new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                    ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+                                    ASM_CONTENT_IMMEDIATEBYTE, new, 0);
 #else
       new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                            ASM_OTYPE_ENCODEDBYTE, new));
+                                            ASM_CONTENT_ENCODEDBYTE, new));
       new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                    ASM_OTYPE_IMMEDIATEBYTE, new);
+                                    ASM_CONTENT_IMMEDIATEBYTE, new);
 #endif
 
       break;
@@ -80,14 +80,14 @@ int op_unary_rmb(asm_instr *new, u_char *opcode, u_int len,
       break;
   }
 
-  if (!new->op[0].type)
+  if (!new->op[0].content)
   {
 #if WIP
     new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                  ASM_OTYPE_ENCODEDBYTE, new, 0);
+                                  ASM_CONTENT_ENCODEDBYTE, new, 0);
 #else
     new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                  ASM_OTYPE_ENCODEDBYTE, new);
+                                  ASM_CONTENT_ENCODEDBYTE, new);
 #endif
   }
   return (new->len);

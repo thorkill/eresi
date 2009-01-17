@@ -44,16 +44,16 @@ int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len,
 
 #if WIP
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                ASM_OTYPE_ENCODED, new, 0);
-  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_FIXED, new,
+                                ASM_CONTENT_ENCODED, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FIXED, new,
 				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_CL,
 					       ASM_REGSET_R8));
 
 #else
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                ASM_OTYPE_ENCODED, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_FIXED, new);
-  new->op[1].content = ASM_OP_BASE | ASM_OP_FIXED;
+                                ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FIXED, new);
+  new->op[1].type = ASM_OP_BASE | ASM_OP_FIXED;
   new->op[1].regset = ASM_REGSET_R8;
   new->op[1].baser = ASM_REG_CL;
   new->op[1].len = 0;

@@ -51,7 +51,7 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
   /*
   switch(op->type)
     {
-    case ASM_OTYPE_VALUE:
+    case ASM_CONTENT_VALUE:
       switch(op->size)
 	{
 	case ASM_OSIZE_BYTE: memcpy(valptr, &op->imm, 1); break;
@@ -61,7 +61,7 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
 	default: return (-1);
 	}
       break;
-    case ASM_OTYPE_JUMP:
+    case ASM_CONTENT_JUMP:
       switch(op->size)
 	{
 	case ASM_OSIZE_BYTE: c = op->ptr; opt = opt + *c; break;
@@ -220,22 +220,22 @@ int    asm_operand_set_basereg(asm_instr *ins, int num,
       modrm = (asm_modrm *) op->ptr;
     switch(op->type)
       {
-      case ASM_OTYPE_OPMOD:
+      case ASM_CONTENT_OPMOD:
 	modrm->m = *val;
 	break;
-      case ASM_OTYPE_CONTROL:
+      case ASM_CONTENT_CONTROL:
 	modrm->m = *val;
 	break;
-      case ASM_OTYPE_DEBUG:
+      case ASM_CONTENT_DEBUG:
 	modrm->m = *val;
 	break;
-      case ASM_OTYPE_ENCODED:
+      case ASM_CONTENT_ENCODED:
 	modrm->r = *val;
 	break;
-      case ASM_OTYPE_GENERAL:
+      case ASM_CONTENT_GENERAL:
 	modrm->r = *val;
 	break;
-      case ASM_OTYPE_REGISTER:
+      case ASM_CONTENT_REGISTER:
 	modrm->m = *val;
 	break;	
       default:
@@ -272,8 +272,8 @@ int    asm_operand_set_indexreg(asm_instr *ins, int num,
     sidbyte = (struct s_sidbyte *) (op->ptr + 1);
     val = (int *) valptr;
     switch(op->type) {
-    case ASM_OTYPE_ENCODED:
-    case ASM_OTYPE_MEMORY:
+    case ASM_CONTENT_ENCODED:
+    case ASM_CONTENT_MEMORY:
       if (!op->ptr)
 	fprintf(stderr, "ptr field NULL, cannot set index reg\n");
       else

@@ -27,19 +27,19 @@ int op_test_eax_iv(asm_instr *new, u_char *opcode, u_int len,
                           ASM_FLAG_SF | ASM_FLAG_ZF;
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new,
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new,
 				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_EAX,
 					       asm_proc_is_protected(proc) ?
 					       ASM_REGSET_R32 : ASM_REGSET_R16));
 
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_IMMEDIATE, new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_IMMEDIATE, new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new);
-  new->op[0].content = ASM_OP_BASE;
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
+  new->op[0].type = ASM_OP_BASE;
   new->op[0].regset = asm_proc_opsize(proc) ?
     ASM_REGSET_R16 : ASM_REGSET_R32;
   new->op[0].baser = ASM_REG_AX;
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_IMMEDIATE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_IMMEDIATE, new);
 #endif
 
   return (new->len);

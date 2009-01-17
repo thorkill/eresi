@@ -8,7 +8,7 @@
 #include <libasm-int.h>
 
 /**
- * Decode data for operand type ASM_OTYPE_CONTROL
+ * Decode data for operand type ASM_CONTENT_CONTROL
  * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
@@ -28,8 +28,8 @@ int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otyp
   struct s_modrm        *modrm;
 
   modrm = (struct s_modrm *) opcode;
-  operand->type = ASM_OTYPE_CONTROL;
-  operand->content = ASM_OP_BASE;
+  operand->content = ASM_CONTENT_CONTROL;
+  operand->type = ASM_OP_BASE;
   operand->regset = ASM_REGSET_CREG;
   operand->baser = modrm->r;
   operand->ptr = opcode;

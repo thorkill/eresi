@@ -34,13 +34,13 @@ int     op_group6(asm_instr *new, u_char *opcode, u_int len,
 
   #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				new);
 #endif
   new->op[0].regset = ASM_REGSET_R16;
   #else
-  new->op[0].type = ASM_OTYPE_ENCODED;
+  new->op[0].content = ASM_CONTENT_ENCODED;
   new->op[0].size = ASM_OSIZE_VECTOR;
   operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
   new->len += new->op[0].len;

@@ -24,14 +24,14 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
                         ASM_FLAG_PF | ASM_FLAG_SF | ASM_FLAG_ZF;
 
 #if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODEDBYTE, new, 0));
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_CONTENT_ENCODEDBYTE, new, 0));
 #else
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODEDBYTE, new));
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_CONTENT_ENCODEDBYTE, new));
 #endif
 #if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_CONTENT_IMMEDIATEBYTE, new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_OTYPE_IMMEDIATEBYTE, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_CONTENT_IMMEDIATEBYTE, new);
 #endif
 
   switch(modrm->r)
@@ -61,7 +61,7 @@ int op_immed_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
       break;
     case 5:
       new->instr = ASM_SUB;
-      if (new->op[0].content == ASM_OP_BASE &&
+      if (new->op[0].type == ASM_OP_BASE &&
             new->op[0].baser == ASM_REG_ESP)
         new->type |= ASM_TYPE_EPILOG;
       break;

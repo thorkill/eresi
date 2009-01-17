@@ -383,7 +383,7 @@ int			operand_rmv(asm_operand *op, u_char *opcode, u_int len, asm_processor *pro
  * one for the content of the operand, which is a bitfield,
  * and an otype value which is the type of the operand.
  * This type is related to the sandpile.org reference and
- * to the enum ASM_OTYPE_* (!!add link to enum!!)
+ * to the enum ASM_CONTENT_* (!!add link to enum!!)
  */
 
 /**

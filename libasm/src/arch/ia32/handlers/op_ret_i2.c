@@ -27,10 +27,10 @@ int op_ret_i2(asm_instr *new, u_char *opcode, u_int len,
 
 #if WIP
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                ASM_OTYPE_IMMEDIATEWORD, new, 0);
+                                ASM_CONTENT_IMMEDIATEWORD, new, 0);
 #else
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                ASM_OTYPE_IMMEDIATEWORD, new);
+                                ASM_CONTENT_IMMEDIATEWORD, new);
 #endif
 
   return (new->len);

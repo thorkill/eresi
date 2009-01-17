@@ -51,17 +51,17 @@ int op_shift_rmb_cl(asm_instr *instr, u_char *opcode, u_int len,
   }
 
 #if WIP
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE,
                                 instr, 0);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_FIXED, instr,
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_FIXED, instr,
 				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_CL,
 					       ASM_REGSET_R8));
 
 #else
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE,
                                 instr);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_FIXED, instr);
-  instr->op[1].content = ASM_OP_BASE;
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_FIXED, instr);
+  instr->op[1].type = ASM_OP_BASE;
   instr->op[1].regset = ASM_REGSET_R8;
   instr->op[1].baser = ASM_REG_CL;
 #endif

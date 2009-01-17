@@ -40,9 +40,9 @@ int op_incdec_rmb(asm_instr *new, u_char *opcode, u_int len,
   }
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,                                new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE,                                new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE,                                new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE,                                new);
 #endif
 
   return (new->len);

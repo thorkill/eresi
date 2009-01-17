@@ -19,11 +19,11 @@ int op_stosb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_STORE;
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_YDEST, new, 0);
-  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_XSRC, new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_YDEST, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_XSRC, new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_YDEST, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_OTYPE_XSRC, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_YDEST, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_XSRC, new);
 #endif
 
   return (new->len);

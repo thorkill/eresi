@@ -23,10 +23,10 @@ int op_pop_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->spdiff = 4;
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
                                 new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
                                 new);
 #endif
 

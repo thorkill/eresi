@@ -7,7 +7,7 @@
 #include <libasm-int.h>
 
 /**
- * @brief Decode data for operand type ASM_OTYPE_YDEST
+ * @brief Decode data for operand type ASM_CONTENT_YDEST
  * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
@@ -29,10 +29,10 @@ int     asm_operand_fetch_segment(asm_operand *operand, u_char *opcode,
   modrm = (struct s_modrm *) opcode;
   
 #if WIP
-  asm_content_pack(operand, ASM_OP_BASE, ASM_OTYPE_SEGMENT);
+  asm_content_pack(operand, ASM_OP_BASE, ASM_CONTENT_SEGMENT);
 #else
-  operand->type = ASM_OTYPE_SEGMENT;
-  operand->content = ASM_OP_BASE;
+  operand->content = ASM_CONTENT_SEGMENT;
+  operand->type = ASM_OP_BASE;
 #endif
 
   operand->regset = ASM_REGSET_SREG;

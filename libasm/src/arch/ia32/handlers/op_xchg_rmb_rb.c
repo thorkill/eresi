@@ -26,14 +26,14 @@ int op_xchg_rmb_rb(asm_instr *instr, u_char *opcode, u_int len,
   instr->type = ASM_TYPE_LOAD | ASM_TYPE_STORE;
 
 #if WIP
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE, 
                                 instr, 0);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_GENERALBYTE, 
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_GENERALBYTE, 
                                 instr, 0);
 #else
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE, 
                                 instr);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_GENERALBYTE, 
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_GENERALBYTE, 
                                 instr);
 #endif
 

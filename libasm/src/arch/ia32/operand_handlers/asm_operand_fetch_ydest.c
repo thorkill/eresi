@@ -8,7 +8,7 @@
 #include <libasm-int.h>
 
 /**
- * @brief Decode data for operand type ASM_OTYPE_YDEST
+ * @brief Decode data for operand type ASM_CONTENT_YDEST
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -25,10 +25,10 @@ int     asm_operand_fetch_ydest(asm_operand *operand, u_char *opcode, int otype,
 #endif
 {
 #if WIP
-  asm_content_pack(operand, ASM_OP_BASE|ASM_OP_REFERENCE,ASM_OTYPE_YDEST);
+  asm_content_pack(operand, ASM_OP_BASE|ASM_OP_REFERENCE,ASM_CONTENT_YDEST);
 #else
-  operand->type = ASM_OTYPE_YDEST;
-  operand->content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  operand->content = ASM_CONTENT_YDEST;
+  operand->type = ASM_OP_BASE | ASM_OP_REFERENCE;
 #endif
   //asm_content_pack()
   operand->baser = ASM_REG_EDI;

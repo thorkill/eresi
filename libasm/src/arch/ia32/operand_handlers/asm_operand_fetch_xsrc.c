@@ -8,7 +8,7 @@
 
 
 /**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * Decode data for operand type ASM_CONTENT_YDEST
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -25,10 +25,10 @@ int     asm_operand_fetch_xsrc(asm_operand *operand, u_char *opcode,
 #endif
 {
 #if WIP
-  asm_content_pack(operand, ASM_OP_BASE | ASM_OP_REFERENCE, ASM_OTYPE_XSRC);
+  asm_content_pack(operand, ASM_OP_BASE | ASM_OP_REFERENCE, ASM_CONTENT_XSRC);
 #else
-  operand->type = ASM_OTYPE_XSRC;
-  operand->content = ASM_OP_BASE | ASM_OP_REFERENCE;
+  operand->content = ASM_CONTENT_XSRC;
+  operand->type = ASM_OP_BASE | ASM_OP_REFERENCE;
 #endif
   operand->baser = ASM_REG_ESI;
   operand->regset = asm_proc_opsize(ins->proc) ? 

@@ -10,7 +10,7 @@
  *
  */
 /**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * Decode data for operand type ASM_CONTENT_YDEST
  * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
@@ -29,8 +29,8 @@ int     asm_operand_fetch_offset(asm_operand *operand, u_char *opcode,
 {
   u_int	len;
 
-  operand->type = ASM_OTYPE_OFFSET;
-  operand->content = ASM_OP_VALUE | ASM_OP_REFERENCE;
+  operand->content = ASM_CONTENT_OFFSET;
+  operand->type = ASM_OP_VALUE | ASM_OP_REFERENCE;
   operand->ptr = opcode;
   operand->imm = 0;
   operand->regset = asm_proc_is_protected(ins->proc) ? ASM_REGSET_R32 : ASM_REGSET_R16;

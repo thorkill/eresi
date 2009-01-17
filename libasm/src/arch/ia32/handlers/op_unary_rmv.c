@@ -64,19 +64,19 @@ int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len,
 
 #if WIP
   new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                        ASM_OTYPE_ENCODED, new, 0));
+                                        ASM_CONTENT_ENCODED, new, 0));
 
   if (new->instr == ASM_TEST) {
     new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                  ASM_OTYPE_IMMEDIATE, new, 0);
+                                  ASM_CONTENT_IMMEDIATE, new, 0);
   }
 #else
   new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                        ASM_OTYPE_ENCODED, new));
+                                        ASM_CONTENT_ENCODED, new));
 
   if (new->instr == ASM_TEST) {
     new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                  ASM_OTYPE_IMMEDIATE, new);
+                                  ASM_CONTENT_IMMEDIATE, new);
   }
 #endif
   return (new->len);

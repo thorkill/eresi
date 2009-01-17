@@ -6,7 +6,7 @@
  * Main function, dispatch processing to handler.
  * @param op Pointer to operand to fill
  * @param opcode Pointer to operand data.
- * @param otype Content of operand to fetch : ASM_OTYPE_*
+ * @param otype Content of operand to fetch : ASM_CONTENT_*
  * @param proc Pointer to processor structure.
  * @return Operand length or -1 on error (should currently never occur)
  */

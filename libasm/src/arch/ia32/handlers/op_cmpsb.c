@@ -28,14 +28,14 @@ int op_cmpsb(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
                         ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF;
 
 #if WIP
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_XSRC, instr, 0);
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_XSRC, instr, 0);
 #else
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_XSRC, instr);
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_XSRC, instr);
 #endif
 #if WIP
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_YDEST, instr, 0);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_YDEST, instr, 0);
 #else
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_YDEST, instr);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_YDEST, instr);
 #endif
 
   return (instr->len);

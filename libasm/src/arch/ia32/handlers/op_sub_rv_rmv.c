@@ -29,11 +29,11 @@ int op_sub_rv_rmv(asm_instr *instr, u_char *opcode, u_int len,
                         ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF;
 
 #if WIP
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_GENERAL, instr, 0);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_ENCODED, instr, 0);
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_GENERAL, instr, 0);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_ENCODED, instr, 0);
 #else
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_GENERAL, instr);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_OTYPE_ENCODED, instr);
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_GENERAL, instr);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_ENCODED, instr);
 #endif
 
   return (instr->len);

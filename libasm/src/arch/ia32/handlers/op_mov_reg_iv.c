@@ -28,14 +28,14 @@ asm_processor *proc)
   new->len += 1;
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 0, ASM_OTYPE_OPMOD,                                new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 0, ASM_CONTENT_OPMOD,                                new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 0, ASM_OTYPE_OPMOD,                                new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 0, ASM_CONTENT_OPMOD,                                new);
 #endif
 #if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_IMMEDIATE,                                new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE,                                new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_IMMEDIATE,                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE,                                new);
 #endif
 
   return (new->len);

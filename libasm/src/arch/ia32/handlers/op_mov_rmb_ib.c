@@ -24,14 +24,14 @@ int op_mov_rmb_ib(asm_instr *new, u_char *opcode, u_int len,
   new->ptr_instr = opcode;
 
 #if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODEDBYTE, new, 0));
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_CONTENT_ENCODEDBYTE, new, 0));
 #else
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_OTYPE_ENCODEDBYTE, new));
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_CONTENT_ENCODEDBYTE, new));
 #endif
 #if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen ,                                ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen ,                                ASM_CONTENT_IMMEDIATEBYTE, new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen ,                                ASM_OTYPE_IMMEDIATEBYTE, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen ,                                ASM_CONTENT_IMMEDIATEBYTE, new);
 #endif
 
   return (new->len);

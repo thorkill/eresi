@@ -21,10 +21,10 @@ int op_retf_i2(asm_instr *instr, u_char *opcode, u_int len,
 
 #if WIP
   instr->len += asm_operand_fetch(&instr->op[0], opcode + 1,
-                                ASM_OTYPE_IMMEDIATEWORD, instr, 0);
+                                ASM_CONTENT_IMMEDIATEWORD, instr, 0);
 #else
   instr->len += asm_operand_fetch(&instr->op[0], opcode + 1,
-                                ASM_OTYPE_IMMEDIATEWORD, instr);
+                                ASM_CONTENT_IMMEDIATEWORD, instr);
 #endif
   return (instr->len);
 }

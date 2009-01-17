@@ -127,7 +127,7 @@ int			cmd_flowjack(void)
 
       /* Patch the immediate operand */
       asm_operand_get_immediate(&ins, 1, 0, &value);
-      if (ins.op[0].type == ASM_OTYPE_JUMP)
+      if (ins.op[0].content == ASM_CONTENT_JUMP)
 	{	
 	  value = cal->vaddr + cal->size;
 	  value = new_addr - value;

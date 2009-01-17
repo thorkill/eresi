@@ -10,7 +10,7 @@
  *
  */
 /**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * Decode data for operand type ASM_CONTENT_YDEST
  * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
@@ -30,9 +30,9 @@ int     asm_operand_fetch_memory(asm_operand *operand, u_char *opcode,
   struct s_modrm        *modrm;
 
   modrm = (struct s_modrm *) opcode;
-  operand->type = ASM_OTYPE_MEMORY;
+  operand->content = ASM_CONTENT_MEMORY;
 
-  operand->content = ASM_OP_BASE;
+  operand->type = ASM_OP_BASE;
   operand->regset = ASM_REGSET_R32;
   operand->baser = modrm->r;
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);

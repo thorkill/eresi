@@ -75,32 +75,32 @@ char	*asm_operand_type_string(int type)
 {
   switch (type)
     {
-    case ASM_OTYPE_FIXED: return ("fixed");
-    case ASM_OTYPE_OPMOD: return ("opmod");
-    case ASM_OTYPE_ADDRESS: return ("address");
-    case ASM_OTYPE_CONTROL: return ("control");
-    case ASM_OTYPE_DEBUG: return ("debug");
-    case ASM_OTYPE_ENCODED: return ("encoded");
-    case ASM_OTYPE_ENCODEDBYTE: return ("encodedbyte");
-    case ASM_OTYPE_FLAGS: return ("flags");
-    case ASM_OTYPE_GENERAL: return ("general");
-    case ASM_OTYPE_GENERALBYTE: return ("generalbyte");
-    case ASM_OTYPE_IMMEDIATE: return ("immediate");
-    case ASM_OTYPE_IMMEDIATEWORD: return ("immediateword");
-    case ASM_OTYPE_IMMEDIATEBYTE: return ("immediatebyte");
-    case ASM_OTYPE_SHORTJUMP: return ("shortjump");
-    case ASM_OTYPE_JUMP: return ("jump");
-    case ASM_OTYPE_MEMORY: return ("memory");
-    case ASM_OTYPE_OFFSET: return ("offset");
-    case ASM_OTYPE_PMMX: return ("pmmx");
-    case ASM_OTYPE_QMMX: return ("qmmx");
-    case ASM_OTYPE_REGISTER: return ("register");
-    case ASM_OTYPE_SEGMENT: return ("segment");
-    case ASM_OTYPE_TEST: return ("test");
-    case ASM_OTYPE_VSFP: return ("vsfp");
-    case ASM_OTYPE_WSFP: return ("wsfp");
-    case ASM_OTYPE_XSRC: return ("xsrc");
-    case ASM_OTYPE_YDEST: return ("ydest");
+    case ASM_CONTENT_FIXED: return ("fixed");
+    case ASM_CONTENT_OPMOD: return ("opmod");
+    case ASM_CONTENT_ADDRESS: return ("address");
+    case ASM_CONTENT_CONTROL: return ("control");
+    case ASM_CONTENT_DEBUG: return ("debug");
+    case ASM_CONTENT_ENCODED: return ("encoded");
+    case ASM_CONTENT_ENCODEDBYTE: return ("encodedbyte");
+    case ASM_CONTENT_FLAGS: return ("flags");
+    case ASM_CONTENT_GENERAL: return ("general");
+    case ASM_CONTENT_GENERALBYTE: return ("generalbyte");
+    case ASM_CONTENT_IMMEDIATE: return ("immediate");
+    case ASM_CONTENT_IMMEDIATEWORD: return ("immediateword");
+    case ASM_CONTENT_IMMEDIATEBYTE: return ("immediatebyte");
+    case ASM_CONTENT_SHORTJUMP: return ("shortjump");
+    case ASM_CONTENT_JUMP: return ("jump");
+    case ASM_CONTENT_MEMORY: return ("memory");
+    case ASM_CONTENT_OFFSET: return ("offset");
+    case ASM_CONTENT_PMMX: return ("pmmx");
+    case ASM_CONTENT_QMMX: return ("qmmx");
+    case ASM_CONTENT_REGISTER: return ("register");
+    case ASM_CONTENT_SEGMENT: return ("segment");
+    case ASM_CONTENT_TEST: return ("test");
+    case ASM_CONTENT_VSFP: return ("vsfp");
+    case ASM_CONTENT_WSFP: return ("wsfp");
+    case ASM_CONTENT_XSRC: return ("xsrc");
+    case ASM_CONTENT_YDEST: return ("ydest");
     }
   return ("undocumented type");
 }

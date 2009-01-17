@@ -16,7 +16,7 @@
  * @ingroup operand_handler
  * @param op Pointer to operand to fill
  * @param opcode Pointer to operand data.
- * @param otype Type of operand to fetch : ASM_OTYPE_*
+ * @param otype Type of operand to fetch : ASM_CONTENT_*
  * @param proc Pointer to processor structure.
  * @return Operand length or -1 on error (should currently never occur)
  */
@@ -54,9 +54,9 @@ int     asm_operand_fetch(asm_operand *operand, u_char *opcode, int otype,
     }
   else
     {
-      operand->sbaser = ((operand->content & ASM_OP_BASE) ? 
+      operand->sbaser = ((operand->type & ASM_OP_BASE) ? 
 		    get_reg_intel(operand->baser, operand->regset) : "");
-      operand->sindex = ((operand->content & ASM_OP_BASE) ? 
+      operand->sindex = ((operand->type & ASM_OP_BASE) ? 
 		    get_reg_intel(operand->indexr, operand->regset) : "");
     }
   return (to_ret);

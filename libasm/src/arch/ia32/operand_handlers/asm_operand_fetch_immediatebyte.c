@@ -8,7 +8,7 @@
 #include <libasm-int.h>
 
 /**
- * Handler to fetch ASM_OTYPE_IMMEDIATEBYTE operand.
+ * Handler to fetch ASM_CONTENT_IMMEDIATEBYTE operand.
  * @ingroup operand_handler
  * @param operand Pointer to operand structure.
  * @param opcode Pointer to data to disassemble.
@@ -27,8 +27,8 @@ int     asm_operand_fetch_immediatebyte(asm_operand *operand, u_char *opcode,
 { 
   u_int	len;
 
-  operand->type = ASM_OTYPE_IMMEDIATE;
-  operand->content = ASM_OP_VALUE;
+  operand->content = ASM_CONTENT_IMMEDIATE;
+  operand->type = ASM_OP_VALUE;
   operand->ptr = opcode;
   operand->imm = 0;
   operand->len = 1;

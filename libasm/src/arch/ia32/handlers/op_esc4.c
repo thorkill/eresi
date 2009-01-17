@@ -50,53 +50,53 @@ int op_esc4(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
     {
 #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_FIXED, new, 
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FIXED, new, 
 				    asm_fixed_pack(0, ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE, 
 						   modrm->m, 0));
       
 #else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_FIXED, new);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FIXED, new);
 #endif
-      new->op[0].type = ASM_OTYPE_FIXED;
-      new->op[0].content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
+      new->op[0].content = ASM_CONTENT_FIXED;
+      new->op[0].type = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
       new->op[0].len = 1;
       new->op[0].scale = modrm->m;
 #if WIP
-      new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_FIXED, 0,
+      new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_FIXED, 0,
 				    asm_fixed_pack(0, ASM_OP_FPU | ASM_OP_BASE, 0,
 						   asm_proc_is_protected(proc) ?
 						   ASM_REGSET_R32 : ASM_REGSET_R16));
 #else
-      new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_FIXED, new);
+      new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_FIXED, new);
 #endif
-      new->op[1].type = ASM_OTYPE_FIXED;
-      new->op[1].content = ASM_OP_FPU | ASM_OP_BASE;
+      new->op[1].content = ASM_CONTENT_FIXED;
+      new->op[1].type = ASM_OP_FPU | ASM_OP_BASE;
       new->len += 1;
 #else
-      new->op[0].type = ASM_OTYPE_FIXED;
-      new->op[0].content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
+      new->op[0].content = ASM_CONTENT_FIXED;
+      new->op[0].type = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
       new->op[0].len = 1;
       new->op[0].scale = modrm->m;
-      new->op[1].type = ASM_OTYPE_FIXED;
-      new->op[1].content = ASM_OP_FPU | ASM_OP_BASE;
+      new->op[1].content = ASM_CONTENT_FIXED;
+      new->op[1].type = ASM_OP_FPU | ASM_OP_BASE;
 #endif
     }
   else
     {
 #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED, new, 0);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new, 0);
 #else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
 #endif
 #else
-      new->op[0].type = ASM_OTYPE_FIXED;
+      new->op[0].content = ASM_CONTENT_FIXED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
 #endif
     }
 #if LIBASM_USE_OPERAND_VECTOR
 #else
-  if (new->op[0].type)
+  if (new->op[0].content)
     new->len += new->op[0].len;
 #endif
   return (new->len);

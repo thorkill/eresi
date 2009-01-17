@@ -29,8 +29,8 @@ int op_esc7(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
       instr->instr = ASM_FNSTSW;
     else
       instr->instr = ASM_FSTSW;
-    instr->op[0].type = ASM_OTYPE_FIXED;
-    instr->op[0].content = ASM_OP_BASE;
+    instr->op[0].content = ASM_CONTENT_FIXED;
+    instr->op[0].type = ASM_OP_BASE;
     instr->op[0].regset = ASM_REGSET_R16;
     instr->op[0].baser = ASM_REG_EAX;
   } 
@@ -65,14 +65,14 @@ int op_esc7(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
   if (*(opcode + 1) != 0xe0) {
 #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODED,
 				  instr, 0);
 #else
-    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_OTYPE_ENCODED,
+    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODED,
 				  instr);
 #endif
 #else
-    instr->op[0].type = ASM_OTYPE_ENCODED;
+    instr->op[0].content = ASM_CONTENT_ENCODED;
     operand_rmv(&instr->op[0], opcode + 1, len - 1, proc);
     instr->len += instr->op[0].len;
 #endif

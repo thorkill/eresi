@@ -24,29 +24,29 @@ int op_in_al_ref_ib(asm_instr *new, u_char *opcode, u_int len,
   new->type = ASM_TYPE_LOAD | ASM_TYPE_IO;
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_FIXED, new, 
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FIXED, new, 
 				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_AL,
 					       ASM_REGSET_R8));
 
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_FIXED, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FIXED, new);
 #endif
-  new->op[0].content = ASM_OP_BASE;
+  new->op[0].type = ASM_OP_BASE;
   new->op[0].regset = ASM_REGSET_R8;
   new->op[0].baser = ASM_REG_AL;
 #if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_IMMEDIATEBYTE, new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_IMMEDIATEBYTE, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new);
 #endif
 
-  new->op[0].type = ASM_OTYPE_FIXED;
-  new->op[0].content = ASM_OP_BASE;
+  new->op[0].content = ASM_CONTENT_FIXED;
+  new->op[0].type = ASM_OP_BASE;
   new->op[0].regset = ASM_REGSET_R8;
   new->op[0].baser = ASM_REG_AL;
 
-  new->op[1].type = ASM_OTYPE_IMMEDIATE;
-  new->op[1].content = ASM_OP_VALUE;
+  new->op[1].content = ASM_CONTENT_IMMEDIATE;
+  new->op[1].type = ASM_OP_VALUE;
 
   new->len += 1;
   new->op[1].imm = 0;

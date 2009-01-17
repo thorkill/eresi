@@ -13,7 +13,7 @@
  *
  */
 /**
- * Decode data for operand type ASM_OTYPE_YDEST
+ * Decode data for operand type ASM_CONTENT_YDEST
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -32,8 +32,8 @@ int     asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int otype,
   struct s_modrm        *modrm;
   
   modrm = (struct s_modrm *) opcode;
-  operand->type = ASM_OTYPE_DEBUG;
-  operand->content = ASM_OP_BASE;
+  operand->content = ASM_CONTENT_DEBUG;
+  operand->type = ASM_OP_BASE;
   operand->regset = ASM_REGSET_CREG;
   operand->baser = modrm->r;
   operand->ptr = opcode;

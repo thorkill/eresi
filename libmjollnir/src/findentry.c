@@ -91,7 +91,7 @@ eresi_Addr	   mjr_find_main(elfshobj_t	*obj,
   	  {
     	  case ASM_PUSH:
     	    if (*dis && (arch_bin == MJR_BIN_LINUX) && 
-		ins.op[0].type == ASM_OTYPE_IMMEDIATE)
+		ins.op[0].content == ASM_CONTENT_IMMEDIATE)
     	      asm_operand_get_immediate(&ins, 1, 0, &main_addr);
     	    break;
     	  case ASM_CALL:

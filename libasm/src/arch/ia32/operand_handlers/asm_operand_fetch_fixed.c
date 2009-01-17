@@ -13,7 +13,7 @@
  */
 /**
  * @ingroup operand_handler
- * Decode data for operand type ASM_OTYPE_YDEST
+ * Decode data for operand type ASM_CONTENT_YDEST
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -29,11 +29,11 @@ int     asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode,
 				int otype, asm_instr *ins)
 #endif
 {
-  operand->type = ASM_OTYPE_FIXED;
+  operand->content = ASM_CONTENT_FIXED;
   #if WIP
   /**
    * @todo extract fields.
-  operand->content = asm_fixed_unpack_content();
+  operand->type = asm_fixed_unpack_content();
   operand->regset = asm_fixed_unpack_regset();
   operand->
   */

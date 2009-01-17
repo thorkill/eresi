@@ -8,7 +8,7 @@
 #include <libasm-int.h>
 
 /**
- * Decode data for operand type ASM_OTYPE_GENERALBYTE
+ * Decode data for operand type ASM_CONTENT_GENERALBYTE
  * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
@@ -27,8 +27,8 @@ int     asm_operand_fetch_generalbyte(asm_operand *operand, u_char *opcode,
 { 
   struct s_modrm        *modrm;
   
-  operand->type = ASM_OTYPE_GENERAL;
-  operand->content = ASM_OP_BASE;
+  operand->content = ASM_CONTENT_GENERAL;
+  operand->type = ASM_OP_BASE;
   operand->regset = ASM_REGSET_R8;
   modrm = (struct s_modrm *) opcode;
   operand->baser = modrm->r;

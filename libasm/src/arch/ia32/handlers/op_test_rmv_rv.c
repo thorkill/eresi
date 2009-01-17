@@ -27,14 +27,14 @@ int op_test_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *pro
 
 #if WIP
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                ASM_OTYPE_ENCODED, new, 0);
+                                ASM_CONTENT_ENCODED, new, 0);
   new->len += asm_operand_fetch(&new->op[1], opcode + 1,
-                                ASM_OTYPE_GENERAL, new, 0);
+                                ASM_CONTENT_GENERAL, new, 0);
 #else
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,
-                                ASM_OTYPE_ENCODED, new);
+                                ASM_CONTENT_ENCODED, new);
   new->len += asm_operand_fetch(&new->op[1], opcode + 1,
-                                ASM_OTYPE_GENERAL, new);
+                                ASM_CONTENT_GENERAL, new);
 #endif
   return (new->len);
 }

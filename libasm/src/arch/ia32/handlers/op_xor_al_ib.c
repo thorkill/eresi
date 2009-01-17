@@ -27,19 +27,19 @@ int op_xor_al_ib(asm_instr *instr, u_char *opcode, u_int len, asm_processor *pro
     ASM_FLAG_ZF | ASM_FLAG_SF;
 
 #if WIP
-  instr->len += asm_operand_fetch(&instr->op[0], opcode, ASM_OTYPE_FIXED, instr,
+  instr->len += asm_operand_fetch(&instr->op[0], opcode, ASM_CONTENT_FIXED, instr,
 				  asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_AL,
 						 ASM_REGSET_R8));
   instr->len += asm_operand_fetch(&instr->op[1], opcode + 1,
-				  ASM_OTYPE_IMMEDIATEBYTE, instr, 0);
+				  ASM_CONTENT_IMMEDIATEBYTE, instr, 0);
 #else
-  instr->len += asm_operand_fetch(&instr->op[0], opcode, ASM_OTYPE_FIXED, instr);
+  instr->len += asm_operand_fetch(&instr->op[0], opcode, ASM_CONTENT_FIXED, instr);
   instr->op[0].ptr = opcode;
   instr->op[0].len = 0;
   instr->op[0].baser = ASM_REG_AL;
   instr->op[0].regset = ASM_REGSET_R8;
   instr->len += asm_operand_fetch(&instr->op[1], opcode + 1,
-				  ASM_OTYPE_IMMEDIATEBYTE, instr);
+				  ASM_CONTENT_IMMEDIATEBYTE, instr);
 #endif
 
   return (instr->len);

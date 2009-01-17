@@ -22,23 +22,23 @@ int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len,
 
   #if LIBASM_USE_OPERAND_VECTOR
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				new);
 #endif
 #if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_MEMORY,				new, 0);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_MEMORY,				new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_OTYPE_MEMORY,				new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_MEMORY,				new);
 #endif
 #else
 
   modrm = (struct s_modrm *) (opcode + 1);
-  new->op[0].type = ASM_OTYPE_GENERAL;
-  new->op[1].type = ASM_OTYPE_MEMORY;
+  new->op[0].content = ASM_CONTENT_GENERAL;
+  new->op[1].content = ASM_CONTENT_MEMORY;
   operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
 
-  new->op[1].content = ASM_OP_BASE;
+  new->op[1].type = ASM_OP_BASE;
   new->op[1].regset = ASM_REGSET_R32;
   new->op[1].baser = modrm->r;
   new->len += new->op[0].len;

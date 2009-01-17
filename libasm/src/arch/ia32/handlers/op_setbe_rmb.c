@@ -22,10 +22,10 @@ int op_setbe_rmb(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->instr = ASM_SET_U_LESS_EQUAL;
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE, 
 				new, 0);
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODEDBYTE, 
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE, 
 				new);
 #endif
   return (new->len);

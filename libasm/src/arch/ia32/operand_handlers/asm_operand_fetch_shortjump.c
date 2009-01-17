@@ -7,7 +7,7 @@
 #include <libasm-int.h>
 
 /**
- * @brief Decode data for operand type ASM_OTYPE_SHORTJUMP
+ * @brief Decode data for operand type ASM_CONTENT_SHORTJUMP
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -25,10 +25,10 @@ int     asm_operand_fetch_shortjump(asm_operand *operand, u_char *opcode,
   u_int	len;
 
 #if WIP
-  asm_content_pack(operand, ASM_OP_VALUE | ASM_OP_ADDRESS, ASM_OTYPE_JUMP);
+  asm_content_pack(operand, ASM_OP_VALUE | ASM_OP_ADDRESS, ASM_CONTENT_JUMP);
 #else
-  operand->content = ASM_OP_VALUE |ASM_OP_ADDRESS;
-  operand->type = ASM_OTYPE_JUMP;
+  operand->type = ASM_OP_VALUE |ASM_OP_ADDRESS;
+  operand->content = ASM_CONTENT_JUMP;
 #endif
   operand->len = 1;
   operand->imm = 0;

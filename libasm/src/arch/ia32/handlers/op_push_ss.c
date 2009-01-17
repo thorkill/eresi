@@ -19,13 +19,13 @@ int     op_push_ss(asm_instr *new, u_char *opcode, u_int len,
   new->spdiff = -4;
 
 #if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new, 
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new, 
 				asm_fixed_pack(0, ASM_OP_BASE, ASM_REG_SS,
 					       ASM_REGSET_SREG));
 
 #else
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_FIXED, new);
-  new->op[0].content = ASM_OP_BASE;
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
+  new->op[0].type = ASM_OP_BASE;
   new->op[0].regset = ASM_REGSET_SREG;
   new->op[0].baser = ASM_REG_SS;
 #endif
