@@ -58,10 +58,17 @@ struct		s_asm_proc_i386
 #define ASM_OP_INDEX		4	/*!< index register present	*/
 #define ASM_OP_SCALE		8	/*!< scale factor present	*/
 
-#define ASM_OP_FIXED		16
-#define ASM_OP_REFERENCE	32	/*!< reference			*/
-#define ASM_OP_ADDRESS		64	/*!< reference to a reference	*/
-#define ASM_OP_FPU		128	/*!< operand is a FPU reference	*/
+#define ASM_OP_REFERENCE	16	/*!< reference			*/
+#define ASM_OP_ADDRESS		32	/*!< reference to a reference	*/
+#define ASM_OP_FPU		64	/*!< operand is a FPU reference	*/
+
+
+// address + reference
+// base + address
+// value + address
+// reference + value
+// reference + value + address
+
 
 
 /**

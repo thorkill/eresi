@@ -311,7 +311,7 @@ int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr)
  * @param valptr is a filestream : FILE *
  * @return 1 on success, 0 on error.
  */
-int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) 
+int		asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) 
 {
   asm_operand	*op;
   FILE		*fp;

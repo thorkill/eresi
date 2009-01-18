@@ -58,7 +58,6 @@ int	asm_debug_operand(asm_operand * op)
 	  (op->type & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
 	  (op->type & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
 	  (op->type & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
-	  (op->type & ASM_OP_FIXED) ? "ASM_OP_FIXED" : ".",
 	  (op->type & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
 	  (op->type & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
   
@@ -75,7 +74,6 @@ char	*asm_operand_content_string(int content)
 {
   switch (content)
     {
-    case ASM_CONTENT_FIXED: return ("fixed");
     case ASM_CONTENT_OPMOD: return ("opmod");
     case ASM_CONTENT_ADDRESS: return ("address");
     case ASM_CONTENT_CONTROL: return ("control");
