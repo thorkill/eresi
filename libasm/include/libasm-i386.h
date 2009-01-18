@@ -25,16 +25,17 @@ enum e_asm_proc_mode
   INTEL_PROT
 };
 
+
 /** IA32 related functions */
 int	asm_content_pack(asm_operand *, int, int);
 int	asm_fixed_pack(int, int, int, int);
+
 
 /**
  * this structure is internal and may not be accessed by user
  * directly. it contains reference to each table describing i386 opcodes
  * refer to sandpile.org
  */
-
 struct		s_asm_proc_i386 
 {
   int		mode;		/*!< processor state: opsize actived or not	*/  
@@ -42,13 +43,11 @@ struct		s_asm_proc_i386
   int		addsize;	/*!< WIPcurrent state of the processor addsize prefix */
   int		opsize;		/*!< WIPcurrent state of the processor addsize prefix */
   int		type;		/*!< WIPcurrent state of the processor addsize prefix */
-  //int		(*get_vect_size)(asm_processor *); /*!< Internal handler unused */
 };
 
 
 /** 
- * Content of the operand.
- * Those flags are stored in asm_operand.content field.
+ * Operand type : Those flags are stored in asm_operand.type field
  *
  * FIXME: MUST BE UNIFIED WITH libasm.h:156 e_op_types
  * WARNING: used for pretty printing in libasm/ia32/
@@ -63,6 +62,7 @@ struct		s_asm_proc_i386
 #define ASM_OP_REFERENCE	32	/*!< reference			*/
 #define ASM_OP_ADDRESS		64	/*!< reference to a reference	*/
 #define ASM_OP_FPU		128	/*!< operand is a FPU reference	*/
+
 
 /**
  * prefix
@@ -136,10 +136,10 @@ enum e_ia32_flags
 
 
 /**
- * Content of the struct s_operand type field
+ * Content of the struct s_operand content field
  */
-
-enum e_asm_operand_type {
+enum e_asm_operand_content 
+{
   /* no operand				
    */
   ASM_CONTENT_NONE,	
@@ -258,11 +258,11 @@ enum e_asm_operand_type {
   ASM_CONTENT_NUM
 };
 
+
 /**
  * Content of the struct s_operand size field
  *
  */
-
 enum e_asm_operand_size {
   ASM_OSIZE_NONE,
   ASM_OSIZE_BYTE,

@@ -384,7 +384,7 @@ void		asm_set_resolve_handler(asm_processor *,
 /**
  *
  */
-char    *asm_operand_type_string(int type);
+char    *asm_operand_content_string(int type);
 
 /**
  * IA32 related : should be moved in libasm-ia32.h

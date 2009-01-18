@@ -1,15 +1,16 @@
 /**
+ * @brief ASCII Output wrappers.
  * @file output.c
  * @ingroup libasm_engine
  * $Id$
  *  
  * Author  : <sk at devhell dot org>
- * Started : Xxx Xxx xx xx:xx:xx 2002
- * Updated : Thu Mar 11 00:40:31 2004
- * @brief ASCII Output wrappers.
+ * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>
+
+
 /**
  * @brief Wrapper to internal resolving handler for immediate values.
  * @param proc Pointer to processor structure
@@ -43,7 +44,6 @@ char	*asm_display_instr_att(asm_instr *instr, eresi_Addr addr)
 
 
 /**
- * merged from mjollnir
  * @brief Debug dump to stderr of an operand
  * @param op Pointer to operand structure.
  * @return Always returns 0.
@@ -53,27 +53,27 @@ int	asm_debug_operand(asm_operand * op)
   fprintf(stderr, "[*] Operand Dump\n[*] len: %d type: %d size: %d content: %d\n",
 	  op->len, op->type, op->size, op->content);
   
-  fprintf(stderr, "[*] Content: %s %s %s %s %s %s %s\n",
-	  (op->content & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
-	  (op->content & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
-	  (op->content & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
-	  (op->content & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
-	  (op->content & ASM_OP_FIXED) ? "ASM_OP_FIXED" : ".",
-	  (op->content & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
-	  (op->content & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
+  fprintf(stderr, "[*] Type: %s %s %s %s %s %s %s\n",
+	  (op->type & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
+	  (op->type & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
+	  (op->type & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
+	  (op->type & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
+	  (op->type & ASM_OP_FIXED) ? "ASM_OP_FIXED" : ".",
+	  (op->type & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
+	  (op->type & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
   
   return 0;
 }
 
 /**
- * @brief Return a string describing otype
- * @param type Instruction type
+ * @brief Return a string describing the instruction content flag
+ * @param content Instruction type
  * @return A pointer to a static string
  */
 
-char	*asm_operand_type_string(int type)
+char	*asm_operand_content_string(int content)
 {
-  switch (type)
+  switch (content)
     {
     case ASM_CONTENT_FIXED: return ("fixed");
     case ASM_CONTENT_OPMOD: return ("opmod");
@@ -102,7 +102,7 @@ char	*asm_operand_type_string(int type)
     case ASM_CONTENT_XSRC: return ("xsrc");
     case ASM_CONTENT_YDEST: return ("ydest");
     }
-  return ("undocumented type");
+  return ("undocumented content");
 }
 
 

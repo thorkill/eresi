@@ -210,7 +210,7 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
       break;
     }
 
-  if (op->ptr && (op->content & ASM_OP_VALUE)) {
+  if (op->ptr && (op->type & ASM_OP_VALUE)) {
     switch (op->len) {
     case 0:
       break;
@@ -274,9 +274,11 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
  * return Return the mnemonic.
 */
 
-char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
+char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) 
+{
   return (proc->instr_table[ins->instr]);
 }
+
 
 /**
  * @brief Return content field of an operand.
@@ -286,7 +288,6 @@ char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
  * @param valptr Currently not used.
  * @return Return operand content field.
  */
-
 int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) 
 {
   switch(num)
@@ -322,17 +323,18 @@ int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr)
     case 3: op = &ins->op[2]; break;
     default: return (-1);
     }
-  if (op->type)
+  if (op->content)
     {
       fp = (FILE *) valptr;
 
-      fprintf(fp, "o%i type=[%s] content=[%c%c%c%c]\n",
+      fprintf(fp, "o%i content=[%s] type=[%c%c%c%c]\n",
 	      num,
-	      asm_operand_type_string(op->type),
-	      op->content & ASM_OP_BASE ? 'B' : ' ',
-	      op->content & ASM_OP_INDEX ? 'I' : ' ',
-	      op->content & ASM_OP_SCALE ? 'S' : ' ',
-	      op->content & ASM_OP_VALUE ? 'V' : ' ');
+	      asm_operand_content_string(op->content),
+	      op->type & ASM_OP_BASE ? 'B' : ' ',
+	      op->type & ASM_OP_INDEX ? 'I' : ' ',
+	      op->type & ASM_OP_SCALE ? 'S' : ' ',
+	      op->type & ASM_OP_VALUE ? 'V' : ' ');
+
       /*
       fprintf(fp, "o%i len       = %i\n", num, op->len);
       fprintf(fp, "o%i ptr       = %8p\n", num, op->ptr);
