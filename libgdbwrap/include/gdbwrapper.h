@@ -1,5 +1,6 @@
 /* File to include to use the wrapper. */
 
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <errno.h>
