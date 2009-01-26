@@ -8,36 +8,40 @@
 include ../../../../config.h
 
 SRC	= etrel_inject.c
-OBJ	= $(SRC:.c=.o)
 CC	= gcc
-
-LIB	= -L../../../../libelfsh/ -lelfsh32 -L../../../../libasm -lasm32    \
-	-L../../../../libaspect/ -laspect32 -lpthread
-OPT	= -O2 -I../../../../libelfsh/include/ -I../../../../libmjollnir/include/ \
-	-I../../../../libaspect/include/ $(BITS) -DERESI32 -g3
-
-NAM	= etrel_injecter
-HOSTSRC	= host.c
+RM	= rm -f 
+VULN	= host.c
 RELSRC	= rel.c
-RELOBJ	= rel.o
 
-RM	= rm -f
-CFLAGS	= $(OPT)
-PAXCTL	= /sbin/paxctl
+RELOBJ32  = $(RELSRC:.c=.32.o)
+RELOBJ64  = $(RELSRC:.c=.64.o)
+OBJ32	  = $(SRC:.c=.32.o)
+OBJ64	  = $(SRC:.c=.64.o)
+CFLAGS32  =$(shell eresi-config32 libelfsh --cflags)
+LDFLAGS32 =$(shell eresi-config32 libelfsh --libs)
+CFLAGS64  =$(shell eresi-config64 libelfsh --cflags)
+LDFLAGS64 =$(shell eresi-config64 libelfsh --libs)
+NAME32	  = relinject32
+NAME64	  = relinject64
 
-all32: all
-all	: $(OBJ)
-	$(CC) $(OPT) $(OBJ) $(LIB) -o $(NAM)
-	$(CC) $(OPT) $(HOSTSRC)
-	$(CC) $(OPT) $(RELSRC) -o $(RELOBJ) -c
+all: all32 all64
 
-	@$(PAXCTL) -m -s -p -r -x ../../../../vm/elfsh 2>/dev/null || \
-	echo Test compiled succesfully. You can also install paxctl for pax tests.
-	@$(PAXCTL) -v ../../../../vm/elfsh 2>/dev/null || true
+all32: $(OBJ32) $(RELOBJ32)
+	$(CC) $(LDFLAGS32) $(OBJ32) -o $(NAME32)
+	$(CC) $(VULN) -o hijackme32
 
-clean	:
-	$(RM) $(OBJ) *~ \#* *\# $(RELOBJ)
+all64: $(OBJ64) $(RELOBJ64)
+	$(CC) $(LDFLAGS64) $(OBJ64) -o $(NAME64)
+	$(CC) -m64 $(VULN) -o hijackme64
 
+fclean: clean
+	$(RM) $(NAME32) $(NAME64) hijackme* fake_aout*
 
-fclean	: clean
-	$(RM) $(NAM) a.out fake_aout
+clean:
+	$(RM) $(OBJ32) $(OBJ64) $(RELOBJ32) $(RELOBJ64) *~
+
+%.32.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS32) -g
+
+%.64.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS64) -g

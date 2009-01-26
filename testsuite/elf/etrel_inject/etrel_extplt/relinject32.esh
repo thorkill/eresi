@@ -1,0 +1,12 @@
+#!../../../../elfsh/elfsh32
+
+load hijackme32
+load rel.32.o
+
+reladd 1 2
+
+redir puts puts_troj
+redir legit_func hook_func
+
+save fake_aout32
+quit

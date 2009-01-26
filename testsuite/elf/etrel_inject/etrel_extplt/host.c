@@ -30,14 +30,13 @@ int main()
   fflush(stdout);
   puts("First_puts");
   printf("Second_printf %s\n", str);
-
   free(str);
-
   puts("Second_puts");
 
   fflush(stdout);
   legit_func("test");
   return (0);
+
  err:
   printf("Malloc problem\n");
   return (-1);

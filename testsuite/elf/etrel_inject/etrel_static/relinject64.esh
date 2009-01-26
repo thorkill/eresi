@@ -1,0 +1,9 @@
+#!../../../../elfsh/elfsh32
+
+load a.out
+load rel.o
+reladd 1 2
+redir puts puts_troj
+redir legit_func hook_func
+save fake_aout
+quit
