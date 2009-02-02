@@ -306,7 +306,7 @@ int    asm_operand_set_scale(asm_instr *ins, int num,
   val = (int *) valptr;
   if (op && op->type & ASM_OP_SCALE) {
     
-    if (op->type & ASM_OP_FPU)
+    if (op->content & ASM_CONTENT_FPU)
       sidbyte->sid = *val;
     else
       switch(*val) {

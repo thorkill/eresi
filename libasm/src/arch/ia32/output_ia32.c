@@ -140,6 +140,20 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     ins->proc->resolve_immediate(ins->proc->resolve_data, imm, resolved, 256);
 
   /* Resolve any potential encoded information */
+  if (op->content & ASM_CONTENT_FPU)
+  {
+    switch (op->type)
+    {
+      case ASM_OP_BASE:
+        sprintf(buffer, "%%st");
+        break;
+      case ASM_OP_BASE | ASM_OP_SCALE:
+        sprintf(buffer, "%%st(%d)", scale);
+        break;
+    }
+    return;
+  }
+
   switch (op->type) 
     {
     case ASM_OP_BASE|ASM_OP_ADDRESS:
@@ -237,12 +251,6 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
       sprintf(buffer, "(,%%%s,%d)",
 	      get_reg_intel(indexr, op->regset),
 	      scale);
-      break;
-    case ASM_OP_FPU | ASM_OP_BASE:
-      sprintf(buffer, "%%st");
-      break;
-    case ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE:
-      sprintf(buffer, "%%st(%d)", scale);
       break;
       
     case 0:

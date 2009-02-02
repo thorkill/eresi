@@ -60,7 +60,6 @@ struct		s_asm_proc_i386
 
 #define ASM_OP_REFERENCE	16	/*!< reference			*/
 #define ASM_OP_ADDRESS		32	/*!< reference to a reference	*/
-#define ASM_OP_FPU		64	/*!< operand is a FPU reference	*/
 
 
 // address + reference
@@ -225,7 +224,10 @@ enum e_asm_operand_content
   ASM_CONTENT_REGISTER,
   /* reg field of mod R/M byte selects a segment register
    */
-  ASM_CONTENT_SEGMENT,	
+  ASM_CONTENT_SEGMENT,
+  /* operand is a FPU operand 
+   */
+  ASM_CONTENT_FPU,
   /* no operand				
    */
   ASM_CONTENT_TEST,	
