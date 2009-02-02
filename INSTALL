@@ -28,3 +28,5 @@ from the root directory of the project. This will change your
 LD_LIBRARY_PATH variable for using uninstalled libraries.
 
 Read each directory README file for more information.
+
+Have fun!
