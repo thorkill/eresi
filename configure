@@ -8,6 +8,7 @@
 CHOSENBIT="0"
 STATIC="0"
 READLN="0"
+KERNSH="0"
 ERESI_NET="0"
 LIBMJOLLNIR="1"
 TESTING="0"
@@ -802,7 +803,9 @@ echo "	@ln -sf \$(LIBPATH)librevm64.so     \$(LIBPATH)librevm.so"     >> Makefil
 echo "	@ln -sf \$(LIBPATH)libstderesi64.so \$(LIBPATH)libstderesi.so" >> Makefile
 echo "	@ln -sf \$(LIBPATH)libedfmt64.so    \$(LIBPATH)libedfmt.so"    >> Makefile
 echo "	@ln -sf \$(LIBPATH)libui64.so       \$(LIBPATH)libui.so"       >> Makefile
+if [ "$KERNSH" = "1" ]; then
 echo "	@ln -sf \$(LIBPATH)libkernsh64.so   \$(LIBPATH)libkernsh.so"   >> Makefile
+fi
 echo "	@ln -sf \$(LIBPATH)libgdbwrap64.so  \$(LIBPATH)libgdbwrap.so"  >> Makefile
 
 echo "install : prepareDir #mod_install "			>> Makefile
@@ -816,7 +819,9 @@ fi
 echo "	@cp kedbg/kedbg?? \$(BINPATH)/ "			>> Makefile
 echo "	@cp eresi-config?? \$(BINPATH)/ "			>> Makefile
 
+if [ "$KERNSH" = "1" ]; then
 echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile
+fi
 echo "	@cp libgdbwrap/libgdbwrap*.a libgdbwrap/libgdbwrap*.so \$(LIBPATH) " >> Makefile
 echo "	@cp libaspect/libaspect*.a libaspect/libaspect*.so \$(LIBPATH) " >> Makefile
 echo "	@cp liballocproxy/liballocproxy.a \$(LIBPATH) "		>> Makefile
@@ -835,7 +840,6 @@ if [ "$KERNSH" = "1" ]; then
 echo "	@cp libkernsh/libkernsh*.a libkernsh/libkernsh*.so \$(LIBPATH) " >> Makefile
 echo "	@cp kernsh/kernsh?? \$(BINPATH)/ "                      >> Makefile
 fi
-
 
 # Create links
 echo "	@ln -sf \$(BINPATH)elfsh32         \$(BINPATH)elfsh"	      >> Makefile
