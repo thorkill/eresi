@@ -46,6 +46,8 @@ struct s_asm_op
   int address_space;
   /* scale factor (ia32 only) */
   unsigned int scale;
+  /* shift type (arm only) */
+  u_int shift_type;
 };
 
 

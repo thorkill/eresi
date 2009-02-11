@@ -107,8 +107,8 @@ PACKED_ARCH += packed_arm
 SRCS_libasm += 	src/arch/arm/init_arm.c	\
 		src/arch/arm/register_arm.c	\
 		src/arch/arm/tables_arm.c	\
-		src/arch/arm/output_arm.c	#\
-		#src/arch/sparc/sparc_convert.c
+		src/arch/arm/output_arm.c	\
+		src/arch/arm/arm_convert.c
 ifeq ($(LIBASM_PACKED_HANDLERS),1)
 $(info ARM Packed)
 PACKED_ARCH += packed_arm
@@ -117,8 +117,8 @@ else
 $(info ARM Unpacked)
 SRCS_libasm    += $(foreach dir,src/arch/arm/handlers/,\
 	$(wildcard $(dir)/*.c))
-#SRCS_libasm    += $(foreach dir,src/arch/arm/operand_handlers/,\
-#	$(wildcard $(dir)/*.c))
+SRCS_libasm    += $(foreach dir,src/arch/arm/operand_handlers/,\
+	$(wildcard $(dir)/*.c))
 endif
 CFLAGS += -DLIBASM_ENABLE_ARM
 endif
@@ -235,8 +235,7 @@ packed_sparc:
 packed_mips:
 	cat src/arch/mips/handlers/*.c src/arch/mips/operand_handlers/*.c > src/arch/mips/packed_handlers.c
 packed_arm:
-	cat src/arch/arm/handlers/*.c > src/arch/arm/packed_handlers.c
-#src/arch/arm/operand_handlers/*.c
+	cat src/arch/arm/handlers/*.c src/arch/arm/operand_handlers/*.c > src/arch/arm/packed_handlers.c
 %.32.o 		: %.c
 		$(CC) $(CFLAGS32) -c -o $@ $<
 

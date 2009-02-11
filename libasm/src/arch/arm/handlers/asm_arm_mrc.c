@@ -7,5 +7,7 @@ int     asm_arm_mrc(asm_instr * ins, u_char * buf, u_int len,
 
   ins->instr = ASM_ARM_MRC;
 
+  ins->name = ins->proc->instr_table[ins->instr];
+
   LIBASM_PROFILE_FOUT(4);
 }

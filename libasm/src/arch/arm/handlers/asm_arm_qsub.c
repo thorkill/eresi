@@ -7,5 +7,7 @@ int     asm_arm_qsub(asm_instr * ins, u_char * buf, u_int len,
 
   ins->instr = ASM_ARM_QSUB;
 
+  ins->name = ins->proc->instr_table[ins->instr];
+
   LIBASM_PROFILE_FOUT(4);
 }

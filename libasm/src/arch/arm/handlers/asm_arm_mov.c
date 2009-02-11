@@ -3,9 +3,57 @@
 int     asm_arm_mov(asm_instr * ins, u_char * buf, u_int len,
                     asm_processor * proc)
 {
+  struct s_arm_decode_dataproc opcode;
+  struct s_asm_proc_arm *inter;
+
   LIBASM_PROFILE_FIN();
 
-  ins->instr = ASM_ARM_MOV;
+  inter = proc->internals;
+  arm_convert_dataproc(&opcode, buf);
+
+  ins->instr = inter->dataproc_table[(opcode.op2 << 5) | (opcode.cond << 1) | opcode.s];
+
+  ins->name = ins->proc->instr_table[ins->instr];
+
+  ins->type = ASM_TYPE_ASSIGN; //TODO
+
+  ins->nb_op = 2;
+
+  /* Decode operands */
+  ins->op[0].baser = opcode.rd;
+  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
+
+  if (opcode.i)
+    {
+      u_int64_t temp;
+
+      temp = opcode.immed << (32 - opcode.rotate_imm*2);
+      temp = temp | (temp >> 32);
+      ins->op[1].imm = (u_int32_t) temp;
+      asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_IMMEDIATE, ins);
+    }
+  else
+    {
+      ins->op[1].baser = opcode.rm;
+      ins->op[1].shift_type = opcode.shift;
+
+      if (opcode.reg_shift)
+        {
+          /* Shifted by register */
+          ins->op[1].indexr = opcode.rs;
+          asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REG_SHIFTED_REG, ins);
+        }
+      else
+        {
+          /* Shifted by immediate */
+          ins->op[1].imm = opcode.shift_imm;
+
+          if (opcode.shift_imm == 0 && opcode.shift == ASM_ARM_SHIFT_LSL)
+            asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
+          else
+            asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REG_SHIFTED_IMM, ins);
+        }
+    }
 
   LIBASM_PROFILE_FOUT(4);
 }

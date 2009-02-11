@@ -26,11 +26,13 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   
   int           converted;  
 
-  /* TODO: check if endianess conversion is needed */
-  /* TODO: it seems to have another way of verifying endianess */
+  LIBASM_PROFILE_FIN();
 
-  /*
 #if __BYTE_ORDER == __LITTLE_ENDIAN
+
+  memcpy(&converted, buf, 4);
+
+#else
   u_char        *ptr;
   int           i;
 
@@ -39,14 +41,7 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   for (i = 0; i < 4; i++)
     *(ptr + i) = *(buf + 3 - i);
 
-#else
-  */
-  memcpy(&converted, buf, 4);
-  /*
 #endif
-  */
-
-  LIBASM_PROFILE_FIN();
 
   ins->proc = proc;
   ins->len = 4;
@@ -97,8 +92,7 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
 
 int     asm_init_arm(asm_processor *proc)
 {
-  /* TODO: check if it'll be needed to create an internal structure */
-  /*  struct s_asm_proc_sparc	*inter; */
+  struct s_asm_proc_arm *inter;
 
   LIBASM_PROFILE_FIN();
   
@@ -109,25 +103,10 @@ int     asm_init_arm(asm_processor *proc)
   proc->display_handle = asm_arm_display_instr;
   proc->type = ASM_PROC_ARM;
   
-  /*
-  proc->internals = inter = malloc(sizeof (struct s_asm_proc_sparc)); 
-  
-  inter->bcc_table = sparc_bcc_list;
-  inter->brcc_table = sparc_brcc_list;
-  inter->fbcc_table = sparc_fbcc_list;
-  inter->shift_table = sparc_shift_list;
-  inter->movcc_table = sparc_movcc_list;
-  inter->movfcc_table = sparc_movfcc_list;
-  inter->movr_table = sparc_movr_list;
-  inter->fpop1_table = sparc_fpop1_list;
-  inter->fmovcc_table = sparc_fmovcc_list;
-  inter->fmovfcc_table = sparc_fmovfcc_list;
-  inter->fmovr_table = sparc_fmovr_list;
-  inter->fcmp_table = sparc_fcmp_list;
-  inter->tcc_table = sparc_tcc_list; 
-  inter->op2_table = sparc_op2_table;
-  inter->op3_table = sparc_op3_table;
-  */
+
+  proc->internals = inter = malloc(sizeof (struct s_asm_proc_arm)); 
+
+  inter->dataproc_table = arm_dataproc_table;  
 
   asm_arch_register(proc, 0);
 

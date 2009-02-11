@@ -7,5 +7,7 @@ int     asm_arm_strt(asm_instr * ins, u_char * buf, u_int len,
 
   ins->instr = ASM_ARM_STRT;
 
+  ins->name = ins->proc->instr_table[ins->instr];
+
   LIBASM_PROFILE_FOUT(4);
 }

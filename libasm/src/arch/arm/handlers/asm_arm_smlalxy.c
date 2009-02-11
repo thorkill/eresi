@@ -5,7 +5,9 @@ int     asm_arm_smlalxy(asm_instr * ins, u_char * buf, u_int len,
 {
   LIBASM_PROFILE_FIN();
 
-  ins->instr = ASM_ARM_SMLALXY;
+  ins->instr = ASM_ARM_SMLALBB;
+
+  ins->name = ins->proc->instr_table[ins->instr];
 
   LIBASM_PROFILE_FOUT(4);
 }

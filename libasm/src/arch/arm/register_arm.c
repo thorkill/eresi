@@ -5,14 +5,14 @@
  */
 
 #include <libasm.h>
-//#include <libasm-int.h>
 
 /* Helper function prototypes */
 static int asm_register_arm_instructions();
-/* int asm_register_arm_operands(); TODO */
+static int asm_register_arm_operands();
 
 static int asm_register_arm_opcode(int type, int subtype,
                                    int instruction, unsigned long fcn);
+static int asm_register_arm_operand(int operand_type, unsigned long fcn);
 
 /**
  * Initialize arm vector.
@@ -49,7 +49,6 @@ int     asm_register_arm()
 			 dims, dimstr, 3, ASPECT_TYPE_CADDR);
 
   /* Initializing ARM operand handler vector */
-  /* TODO
   dims = malloc(1 * sizeof (u_int));
 
   if (!dims)
@@ -62,22 +61,20 @@ int     asm_register_arm()
       goto out;
     }
   
-  dims[0] = ASM_SP_OTYPE_NUM;
+  dims[0] = ASM_ARM_OTYPE_NUM;
 
   dimstr[0] = "OPERAND";
   
-  aspect_register_vector(LIBASM_VECTOR_OPERAND_SPARC,  asm_operand_fetch_default,
+  aspect_register_vector(LIBASM_VECTOR_OPERAND_ARM,  asm_operand_fetch_default,
 			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
-  */
 
   asm_register_arm_instructions();
-  /*asm_register_sparc_operands(); TODO */
+  asm_register_arm_operands();
   
-  out:
+ out:
   LIBASM_PROFILE_FOUT(1);
 }
 
-/* TODO: modify the folliwing comments */
 /**
  * @brief Create the instruction vector
  * @param opcode First opcode
@@ -216,37 +213,29 @@ int     asm_register_arm_instructions()
 }
 
 /**
- * Register an handler for a arm operand content.
+ * Register an handler for an ARM operand content.
  * @param operand_type Content of the operand to register
  * @param fcn Function pointer.
  * @return 1 on success, 0 on error.
  */
-/* TODO
-int asm_register_sparc_operand(int operand_type, unsigned long fcn)
+int asm_register_arm_operand(int operand_type, unsigned long fcn)
 {
   LIBASM_PROFILE_FIN();
-  asm_register_operand(LIBASM_VECTOR_OPERAND_SPARC, operand_type, fcn);
+  asm_register_operand(LIBASM_VECTOR_OPERAND_ARM, operand_type, fcn);
   LIBASM_PROFILE_FOUT(1);
 }
-*/
+
 /**
  * Register operands.
  *
  */
- /* TODO
-int asm_register_sparc_operands()
+int asm_register_arm_operands()
 {
-  asm_register_sparc_operand(ASM_SP_OTYPE_REGISTER, (unsigned long) asm_sparc_op_fetch_register);
-  asm_register_sparc_operand(ASM_SP_OTYPE_IMMEDIATE, (unsigned long) asm_sparc_op_fetch_immediate);
-  asm_register_sparc_operand(ASM_SP_OTYPE_DISPLACEMENT, (unsigned long) asm_sparc_op_fetch_displacement);
-  asm_register_sparc_operand(ASM_SP_OTYPE_DISP30, (unsigned long) asm_sparc_op_fetch_disp30);
-  asm_register_sparc_operand(ASM_SP_OTYPE_SETHI, (unsigned long) asm_sparc_op_fetch_sethi);
-  asm_register_sparc_operand(ASM_SP_OTYPE_FREGISTER, (unsigned long) asm_sparc_op_fetch_fregister);
-  asm_register_sparc_operand(ASM_SP_OTYPE_SREGISTER, (unsigned long) asm_sparc_op_fetch_sregister);
-  asm_register_sparc_operand(ASM_SP_OTYPE_PREGISTER, (unsigned long) asm_sparc_op_fetch_pregister);
-  asm_register_sparc_operand(ASM_SP_OTYPE_CC, (unsigned long) asm_sparc_op_fetch_cc);
-  asm_register_sparc_operand(ASM_SP_OTYPE_IMM_ADDRESS, (unsigned long) asm_sparc_op_fetch_imm_address);
-  asm_register_sparc_operand(ASM_SP_OTYPE_REG_ADDRESS, (unsigned long) asm_sparc_op_fetch_reg_address);
+  asm_register_arm_operand(ASM_ARM_OTYPE_REGISTER, (unsigned long) asm_arm_op_fetch_register);
+  asm_register_arm_operand(ASM_ARM_OTYPE_IMMEDIATE, (unsigned long) asm_arm_op_fetch_immediate);
+  asm_register_arm_operand(ASM_ARM_OTYPE_REG_SHIFTED_REG, (unsigned long) asm_arm_op_fetch_reg_shf_reg);
+  asm_register_arm_operand(ASM_ARM_OTYPE_REG_SHIFTED_IMM, (unsigned long) asm_arm_op_fetch_reg_shf_imm);
+  /* WIP */
+
   return (1);
 }
- */
