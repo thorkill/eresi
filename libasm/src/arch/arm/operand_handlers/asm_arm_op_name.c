@@ -28,7 +28,7 @@ char 	*asm_arm_get_op_name(asm_operand *op)
   switch (op->content)
     {
     case ASM_ARM_OTYPE_REGISTER:
-      return get_arm_register(op->baser);
+      return asm_arm_get_register(op->baser);
       // TODO:
     default:
       return NULL;

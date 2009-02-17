@@ -1,5 +1,7 @@
 #include <libasm.h>
 
+// TODO: put the function prototypes in libasm-arm.h
+
 void	arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf)
 {
 

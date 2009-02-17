@@ -108,6 +108,7 @@ SRCS_libasm += 	src/arch/arm/init_arm.c	\
 		src/arch/arm/register_arm.c	\
 		src/arch/arm/tables_arm.c	\
 		src/arch/arm/output_arm.c	\
+		src/arch/arm/decode_arm.c	\
 		src/arch/arm/arm_convert.c
 ifeq ($(LIBASM_PACKED_HANDLERS),1)
 $(info ARM Packed)

@@ -23,8 +23,6 @@ int     asm_arm_ldr(asm_instr * ins, u_char * buf, u_int len,
   ins->op[1].baser = opcode.rn;
   asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
-  // TODO: continue from HERE!!
-
   if (!opcode.reg_offset)
     {
 

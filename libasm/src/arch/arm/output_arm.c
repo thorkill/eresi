@@ -1,7 +1,7 @@
 #include <libasm.h>
 #include <libasm-arm.h>
 
-char *get_arm_register(int reg)
+char *asm_arm_get_register(int reg)
 {
   switch (reg)
     {
@@ -27,7 +27,7 @@ char *get_arm_register(int reg)
     }
 }
 
-char *get_arm_shift_type(u_int shift_type)
+char *asm_arm_get_shift_type(u_int shift_type)
 {
   switch (shift_type)
     {
@@ -61,22 +61,27 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
   switch (op->content) 
     {
     case ASM_ARM_OTYPE_REGISTER:
-      sprintf(buf, "%s", get_arm_register(op->baser));
+      sprintf(buf, "%s", asm_arm_get_register(op->baser));
       break;
     case ASM_ARM_OTYPE_IMMEDIATE:
       sprintf(buf, "#%i", op->imm);
       break;
-    case ASM_ARM_OTYPE_REG_SHIFTED_REG:
-      sprintf(buf, "%s, %s %s",
-              get_arm_register(op->baser),
-              get_arm_shift_type(op->shift_type),
-              get_arm_register(op->indexr));
-      break;
-    case ASM_ARM_OTYPE_REG_SHIFTED_IMM:
-      sprintf(buf, "%s, %s #%i",
-              get_arm_register(op->baser),
-              get_arm_shift_type(op->shift_type),
-              op->imm);
+    case ASM_ARM_OTYPE_REG_SCALED:
+      if (op->indexr != ASM_ARM_REG_NUM)
+        /* Scaled by register */
+        sprintf(buf, "%s, %s %s",
+                asm_arm_get_register(op->baser),
+                asm_arm_get_shift_type(op->shift_type),
+                asm_arm_get_register(op->indexr));
+      else
+        /* Scaled by immediate */
+        {
+          sprintf(buf, "%s, %s",
+                  asm_arm_get_register(op->baser),
+                  asm_arm_get_shift_type(op->shift_type));
+          if (op->shift_type !=  ASM_ARM_SHIFT_RRX)
+            sprintf(buf + strlen(buf), " #%i", op->imm);
+        }
       break;
     default:
       sprintf(buf, "err");
@@ -91,8 +96,6 @@ char		*asm_arm_display_instr(asm_instr *instr, eresi_Addr addr)
 
   memset(buffer,0,sizeof(buffer));
   sprintf(buffer,"%s",instr->name);
-
-  // TODO: put condition and S
 
   strcat(buffer, " ");
   for (i = 0; i < instr->nb_op; i++)

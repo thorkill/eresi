@@ -9,7 +9,13 @@
 /* Registration functions */
 int asm_register_arm();
 
+/* Output functions */
 char *asm_arm_display_instr(asm_instr *instr, eresi_Addr addr);
+char *asm_arm_get_op_name(asm_operand *op);
+
+char *asm_arm_get_register(int reg);
+char *asm_arm_get_shift_type(u_int shift_type);
+void asm_arm_dump_operand(asm_instr *ins, int num, eresi_Addr addr, char *buf);
 
 /* Instruction handlers */
 int asm_arm_adc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -79,18 +85,15 @@ int asm_arm_tst(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_umlal(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_umull(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 
+/* Decoding helper functions */
 void arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf);
-
-// TODO: 
-char *asm_arm_get_op_name(asm_operand *op);
-char *get_arm_register(int reg);
+void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_dataproc *opcode);
 
 /* ARM operand handlers */
 int asm_arm_op_fetch(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_immediate(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
-int asm_arm_op_fetch_reg_shf_reg(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
-int asm_arm_op_fetch_reg_shf_imm(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_reg_scaled(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 
 struct s_asm_proc_arm
 {
@@ -104,14 +107,16 @@ enum e_arm_shift
     ASM_ARM_SHIFT_ASR,
     ASM_ARM_SHIFT_ROR,
     ASM_ARM_SHIFT_RRX,
+
+    ASM_ARM_SHIFT_NUM
   };
 
 enum e_arm_operand
   {
     ASM_ARM_OTYPE_REGISTER,
     ASM_ARM_OTYPE_IMMEDIATE,
-    ASM_ARM_OTYPE_REG_SHIFTED_REG,
-    ASM_ARM_OTYPE_REG_SHIFTED_IMM,
+    ASM_ARM_OTYPE_REG_SCALED,
+    ASM_ARM_OTYPE_REG_OFFSET,
 
     ASM_ARM_OTYPE_NUM
   };
@@ -135,7 +140,9 @@ enum e_arm_registers
     ASM_ARM_REG_R14,
     ASM_ARM_REG_PC,
     ASM_ARM_REG_CPSR,
-    ASM_ARM_REG_SPSR
+    ASM_ARM_REG_SPSR,
+
+    ASM_ARM_REG_NUM
   };
 
 /***
