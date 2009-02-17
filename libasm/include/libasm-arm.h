@@ -87,13 +87,16 @@ int asm_arm_umull(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc
 
 /* Decoding helper functions */
 void arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf);
+void arm_convert_ldst(struct s_arm_decode_ldst *opcode, u_char *buf);
 void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_dataproc *opcode);
+void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
 
 /* ARM operand handlers */
 int asm_arm_op_fetch(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_immediate(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_reg_scaled(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_reg_offset(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 
 struct s_asm_proc_arm
 {
@@ -109,6 +112,15 @@ enum e_arm_shift
     ASM_ARM_SHIFT_RRX,
 
     ASM_ARM_SHIFT_NUM
+  };
+
+enum e_arm_addressing
+  {
+    ASM_ARM_ADDRESSING_OFFSET,
+    ASM_ARM_ADDRESSING_PRE,
+    ASM_ARM_ADDRESSING_POST,
+
+    ASM_ARM_ADDRESSING_NUM
   };
 
 enum e_arm_operand

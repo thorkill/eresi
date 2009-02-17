@@ -234,6 +234,7 @@ int asm_register_arm_operands()
   asm_register_arm_operand(ASM_ARM_OTYPE_REGISTER, (unsigned long) asm_arm_op_fetch_register);
   asm_register_arm_operand(ASM_ARM_OTYPE_IMMEDIATE, (unsigned long) asm_arm_op_fetch_immediate);
   asm_register_arm_operand(ASM_ARM_OTYPE_REG_SCALED, (unsigned long) asm_arm_op_fetch_reg_scaled);
+  asm_register_arm_operand(ASM_ARM_OTYPE_REG_OFFSET, (unsigned long) asm_arm_op_fetch_reg_offset);
   /* WIP */
 
   return (1);

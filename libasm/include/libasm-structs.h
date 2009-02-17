@@ -48,6 +48,10 @@ struct s_asm_op
   unsigned int scale;
   /* shift type (arm only) */
   u_int shift_type;
+  /* indexing type (arm only) */
+  u_int addressing_type;
+  /* determines if offset is added or subtracted from the base (arm only) */
+  int offset_added;
 };
 
 

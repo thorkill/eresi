@@ -15,18 +15,13 @@ int     asm_arm_ldr(asm_instr * ins, u_char * buf, u_int len,
 
   ins->type = ASM_TYPE_LOAD;
 
-  ins->nb_op = 3;
+  ins->nb_op = 2;
 
   /* Decode operands */
   ins->op[0].baser = opcode.rd;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
-  ins->op[1].baser = opcode.rn;
-  asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
-  if (!opcode.reg_offset)
-    {
-
-    }
+  arm_decode_ldst_offop(ins, buf, 1, &opcode);
 
   LIBASM_PROFILE_FOUT(4);
 }

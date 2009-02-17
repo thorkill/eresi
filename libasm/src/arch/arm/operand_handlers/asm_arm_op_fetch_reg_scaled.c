@@ -11,10 +11,12 @@ int asm_arm_op_fetch_reg_scaled(asm_operand *operand, u_char *opcode,
   if (operand->indexr == ASM_ARM_REG_NUM)
     {
       if (operand->imm == 0)
-        if (operand->shift_type == ASM_ARM_SHIFT_ROR)
-          operand->shift_type = ASM_ARM_SHIFT_RRX;
-        else
-          operand->imm = 32;
+        {
+          if (operand->shift_type == ASM_ARM_SHIFT_ROR)
+            operand->shift_type = ASM_ARM_SHIFT_RRX;
+          else
+            operand->imm = 32;
+        }
     }
 
   LIBASM_PROFILE_FOUT(0);

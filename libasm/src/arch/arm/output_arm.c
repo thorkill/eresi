@@ -67,21 +67,49 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
       sprintf(buf, "#%i", op->imm);
       break;
     case ASM_ARM_OTYPE_REG_SCALED:
+      sprintf(buf, "%s, %s",
+              asm_arm_get_register(op->baser),
+              asm_arm_get_shift_type(op->shift_type));
       if (op->indexr != ASM_ARM_REG_NUM)
         /* Scaled by register */
-        sprintf(buf, "%s, %s %s",
-                asm_arm_get_register(op->baser),
-                asm_arm_get_shift_type(op->shift_type),
+        sprintf(buf + strlen(buf), " %s",
                 asm_arm_get_register(op->indexr));
-      else
+      else if (op->shift_type !=  ASM_ARM_SHIFT_RRX)
         /* Scaled by immediate */
+        sprintf(buf + strlen(buf), " #%i", op->imm);
+      break;
+    case ASM_ARM_OTYPE_REG_OFFSET:
+      sprintf(buf, "[%s", asm_arm_get_register(op->baser));
+
+      if (op->addressing_type == ASM_ARM_ADDRESSING_POST)
+        sprintf(buf + strlen(buf), "]");
+
+      if (op->indexr == ASM_ARM_REG_NUM)
+        /* Immediate offset */
+        sprintf(buf + strlen(buf), ", #%c%i",
+                (op->offset_added ? '+' : '-'),
+                op->imm);
+      else
         {
-          sprintf(buf, "%s, %s",
-                  asm_arm_get_register(op->baser),
-                  asm_arm_get_shift_type(op->shift_type));
-          if (op->shift_type !=  ASM_ARM_SHIFT_RRX)
-            sprintf(buf + strlen(buf), " #%i", op->imm);
+          sprintf(buf + strlen(buf), ", %c%s",
+                  (op->offset_added ? '+' : '-'),
+                  asm_arm_get_register(op->indexr));
+          if (op->shift_type != ASM_ARM_SHIFT_NUM)
+            /* Scaled register offset */
+            {
+              sprintf(buf + strlen(buf), ", %s",
+                      asm_arm_get_shift_type(op->shift_type));
+              if (op->shift_type != ASM_ARM_SHIFT_RRX)
+                sprintf(buf + strlen(buf), " #%i",
+                        op->imm);
+            }
         }
+
+      if (op->addressing_type == ASM_ARM_ADDRESSING_OFFSET)
+        sprintf(buf + strlen(buf), "]");
+      else if (op->addressing_type == ASM_ARM_ADDRESSING_PRE)
+        sprintf(buf + strlen(buf), "]!");
+
       break;
     default:
       sprintf(buf, "err");
