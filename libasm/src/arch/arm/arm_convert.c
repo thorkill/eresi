@@ -11,7 +11,7 @@ void	arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf)
   memcpy(&converted,buf,4);
 
   opcode->cond = (converted >> 28) & 0x0F;
-  opcode->op = (converted >> 26) & 0x02;
+  opcode->op = (converted >> 26) & 0x03;
   opcode->i = (converted >> 25) & 0x01;
   opcode->op2 = (converted >> 21) & 0x0F;
   opcode->s = (converted >> 20) & 0x01;
@@ -39,15 +39,15 @@ void	arm_convert_ldst(struct s_arm_decode_ldst *opcode, u_char *buf)
   memcpy(&converted,buf,4);
 
   opcode->cond = (converted >> 28) & 0x0F;
-  opcode->op = (converted >> 26) & 0x02;
+  opcode->op = (converted >> 26) & 0x03;
   opcode->reg_offset = (converted >> 25) & 0x01;
   opcode->p = (converted >> 24) & 0x01;
   opcode->u = (converted >> 23) & 0x01;
   opcode->b = (converted >> 22) & 0x01;
   opcode->w = (converted >> 21) & 0x01;
   opcode->l = (converted >> 20) & 0x01;
-  opcode->rn = (converted >> 16) & 0x01;
-  opcode->rd = (converted >> 12) & 0x01;
+  opcode->rn = (converted >> 16) & 0x0F;
+  opcode->rd = (converted >> 12) & 0x0F;
   opcode->imm_offset = converted & 0xFFF;
 
 #else
@@ -58,3 +58,26 @@ void	arm_convert_ldst(struct s_arm_decode_ldst *opcode, u_char *buf)
   opcode->shift_imm = (opcode->imm_offset >> 7) & 0x1F;
   opcode->shift = (opcode->imm_offset >> 5) & 0x03;
 }
+
+void	arm_convert_ldst_mult(struct s_arm_decode_ldst_mult *opcode, u_char *buf)
+{
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  int 	converted;
+
+  memcpy(&converted,buf,4);
+
+  opcode->cond = (converted >> 28) & 0x0F;
+  opcode->op = (converted >> 25) & 0x07;
+  opcode->p = (converted >> 24) & 0x01;
+  opcode->u = (converted >> 23) & 0x01;
+  opcode->s = (converted >> 22) & 0x01;
+  opcode->w = (converted >> 21) & 0x01;
+  opcode->l = (converted >> 20) & 0x01;
+  opcode->rn = (converted >> 16) & 0x0F;
+  opcode->reg_list = converted & 0xFFFF;
+
+#else
+  memcpy(opcode,buf,4);
+#endif
+}
+

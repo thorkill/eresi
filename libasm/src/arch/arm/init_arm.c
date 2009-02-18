@@ -9,6 +9,8 @@ static void fill_dim_vector_type2(int inst, u_int *dim_vec);
 static void fill_dim_vector_type3(int inst, u_int *dim_vec);
 static void fill_dim_vector_type4(int inst, u_int *dim_vec);
 
+static void clear_operands(asm_instr *ins);
+
 /* TODO: function comments */
 
 /**
@@ -48,6 +50,7 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   ins->ptr_instr = buf;
   ins->nb_op = 0;
   ins->type = ASM_TYPE_NONE;
+  clear_operands(ins);
 
   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_ARM);
   dim[0] = (converted & 0x0C000000) >> 26;
@@ -106,7 +109,9 @@ int     asm_init_arm(asm_processor *proc)
 
   proc->internals = inter = malloc(sizeof (struct s_asm_proc_arm)); 
 
-  inter->dataproc_table = arm_dataproc_table;  
+  inter->dataproc_table = arm_dataproc_table;
+  inter->ldst_table = arm_ldst_table;
+  inter->ldst_mult_table = arm_ldst_mult_table;
 
   asm_arch_register(proc, 0);
 
@@ -302,5 +307,19 @@ void    fill_dim_vector_type4(int inst, u_int *dim_vec)
       /* SWI */
       dim_vec[1] = 0x04;
       dim_vec[2] = 0x00;
+    }
+}
+
+void	clear_operands(asm_instr *ins)
+{
+  u_int	i;
+
+  memset(ins->op, 0, sizeof(ins->op));
+
+  for (i = 0; i < 4; i++)
+    {
+      ins->op[i].baser = ASM_ARM_REG_NUM;
+      ins->op[i].indexr = ASM_ARM_REG_NUM;
+      ins->op[i].shift_type = ASM_ARM_SHIFT_NUM;
     }
 }

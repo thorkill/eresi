@@ -56,13 +56,8 @@ void	arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr,
   op->shift_type = opcode->shift;
 
   op->offset_added = opcode->u;
-  if (!opcode->p)
-    op->addressing_type = ASM_ARM_ADDRESSING_POST;
-  else
-    if (opcode->w)
-      op->addressing_type = ASM_ARM_ADDRESSING_PRE;
-    else
-      op->addressing_type = ASM_ARM_ADDRESSING_OFFSET;
+  op->preindexed = opcode->p;
+  op->writeback = opcode->w;
 
   if (!opcode->reg_offset)
     /* Immediate offset */

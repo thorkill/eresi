@@ -76,11 +76,10 @@ struct s_arm_decode_ldstmisc
   u_int32_t	immedL_rm:4;
 };
 
-struct s_arm_decode_ldstmul
+struct s_arm_decode_ldst_mult
 {
   u_int32_t	cond:4;
-  u_int32_t	op:2;
-  u_int32_t	zero:1; //XXX
+  u_int32_t	op:3;
   u_int32_t	p:1;
   u_int32_t	u:1;
   u_int32_t	s:1;

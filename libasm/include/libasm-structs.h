@@ -49,9 +49,11 @@ struct s_asm_op
   /* shift type (arm only) */
   u_int shift_type;
   /* indexing type (arm only) */
-  u_int addressing_type;
+  u_int preindexed;
   /* determines if offset is added or subtracted from the base (arm only) */
-  int offset_added;
+  u_int offset_added;
+  /* determines if the value is written back to the register (arm only) */
+  u_int writeback;
 };
 
 

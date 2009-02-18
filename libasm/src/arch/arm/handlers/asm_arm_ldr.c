@@ -4,12 +4,14 @@ int     asm_arm_ldr(asm_instr * ins, u_char * buf, u_int len,
                    asm_processor * proc)
 {
   struct s_arm_decode_ldst opcode;
+  struct s_asm_proc_arm *inter;
 
   LIBASM_PROFILE_FIN();
 
+  inter = proc->internals;
   arm_convert_ldst(&opcode,buf);
 
-  ins->instr = ASM_ARM_LDR;
+  ins->instr = inter->ldst_table[(opcode.l << 6) | ((!opcode.p && opcode.w) << 5) | opcode.b << 4 | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];
 

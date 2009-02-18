@@ -85,22 +85,25 @@ int asm_arm_tst(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_umlal(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_umull(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 
-/* Decoding helper functions */
-void arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf);
-void arm_convert_ldst(struct s_arm_decode_ldst *opcode, u_char *buf);
-void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_dataproc *opcode);
-void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
-
 /* ARM operand handlers */
 int asm_arm_op_fetch(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_immediate(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_reg_scaled(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_reg_offset(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+
+/* Decoding helper functions */
+void arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf);
+void arm_convert_ldst(struct s_arm_decode_ldst *opcode, u_char *buf);
+void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_dataproc *opcode);
+void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
 
 struct s_asm_proc_arm
 {
   int *dataproc_table;
+  int *ldst_table;
+  int *ldst_mult_table;
 };
 
 enum e_arm_shift
@@ -114,6 +117,7 @@ enum e_arm_shift
     ASM_ARM_SHIFT_NUM
   };
 
+/*
 enum e_arm_addressing
   {
     ASM_ARM_ADDRESSING_OFFSET,
@@ -122,6 +126,7 @@ enum e_arm_addressing
 
     ASM_ARM_ADDRESSING_NUM
   };
+*/
 
 enum e_arm_operand
   {
@@ -129,6 +134,7 @@ enum e_arm_operand
     ASM_ARM_OTYPE_IMMEDIATE,
     ASM_ARM_OTYPE_REG_SCALED,
     ASM_ARM_OTYPE_REG_OFFSET,
+    ASM_ARM_OTYPE_REG_LIST,
 
     ASM_ARM_OTYPE_NUM
   };
@@ -1829,5 +1835,7 @@ enum e_arm_instr
 
 extern char 	*arm_instr_list[ASM_ARM_BAD + 1];
 extern int	arm_dataproc_table[512];
+extern int	arm_ldst_table[128];
+extern int	arm_ldst_mult_table[128];
 
 #endif /* _LIBASM_ARM_H_ */

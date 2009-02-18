@@ -52,6 +52,8 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
 			       eresi_Addr addr, char *buf)
 {
   asm_operand *op;
+  u_int i, temp;
+  u_char first;
 
   if (num > ins->nb_op)
     return;
@@ -62,6 +64,8 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
     {
     case ASM_ARM_OTYPE_REGISTER:
       sprintf(buf, "%s", asm_arm_get_register(op->baser));
+      if (op->writeback)
+        strcat(buf, "!");
       break;
     case ASM_ARM_OTYPE_IMMEDIATE:
       sprintf(buf, "#%i", op->imm);
@@ -81,18 +85,18 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
     case ASM_ARM_OTYPE_REG_OFFSET:
       sprintf(buf, "[%s", asm_arm_get_register(op->baser));
 
-      if (op->addressing_type == ASM_ARM_ADDRESSING_POST)
-        sprintf(buf + strlen(buf), "]");
+      if (!op->preindexed)
+        strcat(buf, "]");
 
       if (op->indexr == ASM_ARM_REG_NUM)
         /* Immediate offset */
-        sprintf(buf + strlen(buf), ", #%c%i",
-                (op->offset_added ? '+' : '-'),
+        sprintf(buf + strlen(buf), ", #%s%i",
+                (op->offset_added ? "" : "-"),
                 op->imm);
       else
         {
-          sprintf(buf + strlen(buf), ", %c%s",
-                  (op->offset_added ? '+' : '-'),
+          sprintf(buf + strlen(buf), ", %s%s",
+                  (op->offset_added ? "" : "-"),
                   asm_arm_get_register(op->indexr));
           if (op->shift_type != ASM_ARM_SHIFT_NUM)
             /* Scaled register offset */
@@ -105,11 +109,29 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
             }
         }
 
-      if (op->addressing_type == ASM_ARM_ADDRESSING_OFFSET)
-        sprintf(buf + strlen(buf), "]");
-      else if (op->addressing_type == ASM_ARM_ADDRESSING_PRE)
-        sprintf(buf + strlen(buf), "]!");
+      if (op->preindexed)
+        strcat(buf, "]");
+      if (op->writeback)
+        strcat(buf, "!");
 
+      break;
+    case ASM_ARM_OTYPE_REG_LIST:
+      strcat(buf, "{");
+      temp = op->imm;
+      first = 1;
+      for (i = 0; i < 16; i++)
+        {
+          if (temp & 0x01)
+            {
+              if (!first)
+                strcat(buf, ",");
+              sprintf(buf + strlen(buf), "%s",
+                      asm_arm_get_register(i));
+              first = 0;
+            }
+          temp = temp >> 1;
+        }
+      strcat(buf, "}");
       break;
     default:
       sprintf(buf, "err");
