@@ -111,7 +111,11 @@ int     asm_init_arm(asm_processor *proc)
 
   inter->dataproc_table = arm_dataproc_table;
   inter->ldst_table = arm_ldst_table;
+  inter->ldst_misc_table = arm_ldst_misc_table;
   inter->ldst_mult_table = arm_ldst_mult_table;
+  inter->multiply_table = arm_multiply_table;
+  inter->dsp_multiply_table = arm_dsp_multiply_table;
+  inter->dsp_arith_table = arm_dsp_arith_table;
 
   asm_arch_register(proc, 0);
 

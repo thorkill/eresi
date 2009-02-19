@@ -69,3 +69,43 @@ void	arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr,
 
   asm_arm_op_fetch(op, buf, ASM_ARM_OTYPE_REG_OFFSET, ins);
 }
+
+void	arm_decode_ldst_misc_offop(asm_instr *ins, u_char *buf, u_int op_nr,
+                                   struct s_arm_decode_ldst_misc *opcode)
+{
+  asm_operand *op;
+
+  op = &ins->op[op_nr];
+
+  op->baser = opcode->rn;
+
+  op->offset_added = opcode->u;
+  op->preindexed = opcode->p;
+  op->writeback = opcode->w;
+
+  if (opcode->i)
+    /* Immediate offset */
+    op->imm = (opcode->immedH << 4) | (opcode->immedL_rm);
+  else
+    op->indexr = opcode->immedL_rm;
+
+  asm_arm_op_fetch(op, buf, ASM_ARM_OTYPE_REG_OFFSET, ins);
+}
+
+
+// XXX: this can become the handler for smlal, smull, umlal and umull */
+void	arm_decode_multiply_long(asm_instr *ins, u_char *buf,
+                                 struct s_arm_decode_multiply *opcode)
+{
+  ins->op[0].baser = opcode->r2; /* This is RdLo */
+  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
+
+  ins->op[1].baser = opcode->r1; /* This is RdHi */
+  asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
+
+  ins->op[2].baser = opcode->r4; /* This is Rs */
+  asm_arm_op_fetch(&ins->op[2], buf, ASM_ARM_OTYPE_REGISTER, ins);
+
+  ins->op[3].baser = opcode->r3; /* This is Rm */
+  asm_arm_op_fetch(&ins->op[3], buf, ASM_ARM_OTYPE_REGISTER, ins);
+}
