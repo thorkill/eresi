@@ -4,4 +4,5 @@ load test-calls
 analyse
 graph
 
+graph bloc .text
 

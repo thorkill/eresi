@@ -36,27 +36,28 @@ CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP) \
 			 -I../libedfmt/include/  $(STATOPT2)                        \
 			 $(ASMOPT) -DERESI64 $(NCURSESLNOPT) $(READLNOPT)
 
-LDFLAGS32		+= -L../libedfmt/ -ledfmt32 -L../libelfsh/ -lelfsh32        \
-			-L../libetrace/ -letrace32 -L../libstderesi/ -lstderesi32   \
+LDFLAGS32		+= -L../libstderesi/ -lstderesi32 -L../librevm/ -lrevm32    \
+			-L../libedfmt/ -ledfmt32  				    \
+			-L../libelfsh/ -lelfsh32 -L../libetrace/ -letrace32         \
 			-L/usr/pkg/lib/ -L../libmjollnir/ -lmjollnir32              \
-                        -L../libetrace -letrace32 $(LPTHREAD) -L../libasm/ -lasm32  \
-                        $(LDUIOPT32) -g3 $(STATOPT) -L../liballocproxy -lallocproxy \
-                        -L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
+			-L../libetrace -letrace32 $(LPTHREAD) -L../libasm/ -lasm32  \
+			$(LDUIOPT32) -g3 $(STATOPT) -L../liballocproxy -lallocproxy \
+			-L../libaspect/ -laspect32  -lcrypto                        \
 			$(LDMJOLLNIR) $(DLOPT)			                    \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	    \
 			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT)
 
-LDFLAGS64		+= -L../libelfsh/ -lelfsh64 -L../libdump/ -L/usr/pkg/lib/ \
-			-L../libetrace/ -letrace64 -L../libstderesi/ -lstderesi64 \
-			-L../libmjollnir/ -lmjollnir64 $(LPTHREAD) $(LDUIOPT64)   \
-			-L../libasm/ -lasm64 -L../libetrace/ -letrace64           \
-			-L../liballocproxy -L../libmjollnir/          		  \
-			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64         \
-			-lallocproxy -L../libedfmt/ -ledfmt64 $(LDMJOLLNIR)       \
-			-g3 $(STATOPT)						  \
-			$(DLOPT)  -L/usr/freeware/lib32/ $(DYNOPT) $(BITS)        \
-			$(EXTRAOPT) $(LDDUMPOPT64) $(LDNCURSESLNOPT)		  \
-			$(LDREADLNOPT) $(READLNOPT)
+
+LDFLAGS64		+= -L../libstderesi/ -lstderesi64 -L../librevm/ -lrevm64    \
+			-L../libedfmt/ -ledfmt64  				    \
+			-L../libelfsh/ -lelfsh64 -L../libetrace/ -letrace64         \
+			-L/usr/pkg/lib/ -L../libmjollnir/ -lmjollnir64              \
+			-L../libetrace -letrace64 $(LPTHREAD) -L../libasm/ -lasm64  \
+			$(LDUIOPT32) -g3 $(STATOPT) -L../liballocproxy -lallocproxy \
+			-L../libaspect/ -laspect64  -lcrypto                        \
+			$(LDMJOLLNIR) $(DLOPT)			                    \
+			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	    \
+			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT)
 
 all			: all32 all64
 

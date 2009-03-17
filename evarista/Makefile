@@ -36,13 +36,14 @@ CFLAGS64		+= -fPIC -g3 $(GSTABS) -Wall -Iinclude $(DYNOPT) $(BUILDOP)\
 			-I../libedfmt/include/  $(STATOPT2) \
 			$(ASMOPT) -DERESI64 $(NCURSESLNOPT) $(READLNOPT)
 
-LDFLAGS32		+= -L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32      \
+LDFLAGS32		+= -L../libstderesi -lstderesi32 -L../librevm/ -lrevm32	  \
+			-L../libedfmt/ -L../libelfsh/ -ledfmt32 -lelfsh32         \
 			-L../libetrace/ -letrace32				  \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libmjollnir/		  \
 			-lmjollnir32 $(LPTHREAD) -L../libstderesi -lstderesi32    \
-			-L../libasm/ -lasm32 $(LDUIOPT32) -g3		          \
+			-L../libasm/ -lasm32 $(LDUIOPT32) -g3 -lcrypto	          \
 			-L../liballocproxy -L../libmjollnir/          		  \
-			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32         \
+			-L../libaspect/ -laspect32          \
 			-lallocproxy $(LDMJOLLNIR) $(DLOPT)  			  \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	  \
 			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT)

@@ -29,20 +29,20 @@ CFLAGS32 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libetrace/include/ 				 \
 			-DERESI32 -DJEDBG -DKEDBG
 
-LDFLAGS32               += -L../libedfmt/ -ledfmt32				\
+LDFLAGS32               += -L../libstderesi/ -lstderesi32   			\
+			-L../librevm/ -lrevm32           			\
+			-L../libedfmt/ -ledfmt32				\
 			-L../libelfsh/ -lelfsh32        			\
 			-L../libetrace/ -letrace32				\
-			-L../libstderesi/ -lstderesi32   			\
-                        -L/usr/pkg/lib/ 					\
-			-L../libmjollnir/ -lmjollnir32              		\
-                        -L../libetrace -letrace32 $(LPTHREAD)			\
+			-L/usr/pkg/lib/ 					\
+			-L../libmjollnir/ -lmjollnir32 -lcrypto        		\
+			-L../libetrace -letrace32 $(LPTHREAD)			\
 			-L../libasm/ -lasm32 $(LDUIOPT32) -g3 $(STATOPT) 	\
-                        -L../libaspect/ -laspect32				\
-			-L../librevm/ -lrevm32           			\
+			-L../libaspect/ -laspect32				\
 			-L../libgdbwrap/ -lgdbwrap32				\
-                        -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
-                        $(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
-                        ../libe2dbg/common/libe2dbg-common32.o
+			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
+			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
+			../libe2dbg/common/libe2dbg-common32.o
 
 CFLAGS64 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libgdbwrap/include/			      	 \
@@ -58,20 +58,20 @@ CFLAGS64 		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-I../libetrace/include/ 				 \
 			-DERESI64 -DJEDBG -DKEDBG
 
-LDFLAGS64               += -L../libedfmt/ -ledfmt64				\
+LDFLAGS64               += -L../libstderesi/ -lstderesi64   			\
+			-L../librevm/ -lrevm64           			\
+			-L../libedfmt/ -ledfmt64				\
 			-L../libelfsh/ -lelfsh64        			\
 			-L../libetrace/ -letrace64				\
-			-L../libstderesi/ -lstderesi64   			\
-                        -L/usr/pkg/lib/ 					\
+			-L/usr/pkg/lib/ 					\
 			-L../libmjollnir/ -lmjollnir64              		\
-                        -L../libetrace -letrace64 $(LPTHREAD)			\
+			-L../libetrace -letrace64 $(LPTHREAD)			\
 			-L../libasm/ -lasm64 $(LDUIOPT32) -g3 $(STATOPT) 	\
-                        -L../libaspect/ -laspect64				\
-			-L../librevm/ -lrevm64           			\
+			-L../libaspect/ -laspect64				\
 			-L../libgdbwrap/ -lgdbwrap64				\
-                        -L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
-                        $(LDDUMPOPT64) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
-                        ../libe2dbg/common/libe2dbg-common64.o
+			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
+			$(LDDUMPOPT64) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT) \
+			../libe2dbg/common/libe2dbg-common64.o
 
 all			: all32 all64
 

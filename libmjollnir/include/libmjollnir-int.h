@@ -31,4 +31,3 @@
 #define mjrHahsXXL	 1024000
 
 #define MJR_MAX_FUNCTION_LEN 1024000
-

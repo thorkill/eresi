@@ -47,7 +47,7 @@ int		mjr_init_session(mjrsession_t *sess)
 int		mjr_set_current_context(mjrsession_t *sess, char *name) 
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  if ((sess->cur = hash_get(&sess->ctx,name)) == NULL)
+  if ((sess->cur = hash_get(&sess->ctx, name)) == NULL)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
@@ -92,6 +92,7 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  char		buff[BUFSIZ];
 
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+ XALLOC(__FILE__, __FUNCTION__, __LINE__, lname, BSIZE_SMALL, NULL);
  XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx, sizeof(mjrcontext_t), NULL);
  bzero(ctx, sizeof(mjrcontext_t));
  ctx->obj = obj;
@@ -107,7 +108,6 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
  hash_init(&ctx->goto_hash, strdup(buff), mjrHashVerySmall, ASPECT_TYPE_STR);
 
  XALLOC(__FILE__, __FUNCTION__, __LINE__, ctx->func_stack, sizeof(list_t), NULL);
- XALLOC(__FILE__, __FUNCTION__, __LINE__, lname, BSIZE_SMALL, NULL);
 
  snprintf(lname, BSIZE_SMALL, "%s"AFMT, (char *) "funcpath_", obj->id);
  elist_init(ctx->func_stack, lname, ASPECT_TYPE_FUNC);

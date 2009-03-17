@@ -16,14 +16,14 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
 {
   elfshsect_t		*sect;
   int			cnt;
-	
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
- /* Parse arguments, load binary and resolve symbol */
+
+  /* Parse arguments, load binary and resolve symbol */
   sect = elfsh_get_section_by_name(ctxt->obj, ELFSH_SECTION_NAME_EDFMT_BLOCKS, 0, 0, 0);
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "No control flow section : use analyse command", 0);
+		 "No control flow section : use analyse command", 0);
 
   /* Retreive information */
   cnt = hash_size(&ctxt->blkhash);
@@ -34,8 +34,9 @@ int			mjr_blocks_get(mjrcontext_t *ctxt)
   /* Return result */
   if (cnt != 0)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Flow analysis failed", -1);
+	       "Flow analysis failed", -1);
 }
 
 

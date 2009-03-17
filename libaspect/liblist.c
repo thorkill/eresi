@@ -13,7 +13,7 @@
 hash_t  *hash_lists = NULL;
 
 /**
- * @brief Initialize the hash table 
+ * @brief Initialize the hash table
  */
 int elist_init(list_t *h, char *name, u_int type)
 {
@@ -75,7 +75,7 @@ int		elist_register(list_t *list, char *name)
 	h = elist_empty(name);
       elist_merge(h, list);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-    }  
+    }
   XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(list_t), -1);
   elist_init(h, name, h->type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

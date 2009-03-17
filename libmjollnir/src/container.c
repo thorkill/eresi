@@ -1,5 +1,5 @@
 /**
- * 2001-2007 Devhell Labs, Rfdslabs, Asgardlabs
+ * 2001-2008 Devhell Labs, Rfdslabs, Asgardlabs
  *
  * @file container.c
  * @brief An API for generic containers data structures
