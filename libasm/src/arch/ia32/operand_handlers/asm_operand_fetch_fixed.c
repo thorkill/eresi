@@ -21,22 +21,9 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode, 
 				int otype, asm_instr *ins)
-#endif
 {
   operand->content = ASM_CONTENT_FIXED;
-  #if WIP
-  /**
-   * @todo extract fields.
-  operand->type = asm_fixed_unpack_content();
-  operand->regset = asm_fixed_unpack_regset();
-  operand->
-  */
-#endif
   return (0);
 }

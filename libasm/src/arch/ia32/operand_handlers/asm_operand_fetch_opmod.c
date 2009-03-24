@@ -16,13 +16,8 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_opmod(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_opmod(asm_operand *operand, u_char *opcode, 
 				int type, asm_instr *ins)
-#endif
 {
   struct s_modrm        *modrm;
   operand->regset = asm_proc_opsize(ins->proc) ? 

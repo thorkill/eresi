@@ -79,8 +79,7 @@ int op_esc5(asm_instr *new, u_char *opcode, u_int len,
 
   if (modrm->mod == 3)
     {
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FIXED, new);
-      new->op[0].content = ASM_CONTENT_FPU;
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FPU, new);
       new->op[0].type = ASM_OP_BASE | ASM_OP_SCALE;
       new->op[0].len = 1;
       new->op[0].ptr = opcode + 1;

@@ -21,19 +21,13 @@
  * @param ins Pointer to instruction structure.
  * @return Operand length
  */
-#if WIP
-int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode, 
-				  int otype, 
-                                  asm_instr *ins)
-#endif
+				  int otype, asm_instr *ins)
 {
   u_int	len;
 
   operand->content = ASM_CONTENT_ADDRESS;
-  operand->type = ASM_OP_VALUE;
+  operand->type = ASM_OPTYPE_IMM;
   operand->ptr = opcode;
   operand->imm = 0;
   len = asm_proc_opsize(ins->proc) ? 2 : 4;

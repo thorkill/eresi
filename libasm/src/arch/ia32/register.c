@@ -84,29 +84,10 @@ int	asm_register_ia32_operands()
   asm_register_ia32_operand(ASM_CONTENT_QMMX, (unsigned long) asm_operand_fetch_default);
   asm_register_ia32_operand(ASM_CONTENT_REGISTER, (unsigned long) asm_operand_fetch_register);
   asm_register_ia32_operand(ASM_CONTENT_SEGMENT, (unsigned long) asm_operand_fetch_segment);
-  asm_register_ia32_operand(ASM_CONTENT_TEST, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_VSFP, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_WSFP, (unsigned long) asm_operand_fetch_default);
   asm_register_ia32_operand(ASM_CONTENT_XSRC, (unsigned long) asm_operand_fetch_xsrc);
   asm_register_ia32_operand(ASM_CONTENT_YDEST, (unsigned long) asm_operand_fetch_ydest);
+  asm_register_ia32_operand(ASM_CONTENT_FPU, (unsigned long) asm_operand_fetch_fpu);
   asm_register_ia32_operand(ASM_CONTENT_VALUE, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG0, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG1, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG2, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG3, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG4, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG5, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG6, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_REG7, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_0, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_1, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_2, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_3, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_4, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_5, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_6, (unsigned long) asm_operand_fetch_default);
-  asm_register_ia32_operand(ASM_CONTENT_ST_7, (unsigned long) asm_operand_fetch_default);
   return (1);
 }
 

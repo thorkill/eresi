@@ -23,23 +23,11 @@ int i386_shrd_rmv_rv_ib(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_SHRD;
   new->len += 1;
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,					ASM_CONTENT_ENCODED, new, 0));
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new));
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL, new);
+  new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen, ASM_CONTENT_IMMEDIATEBYTE, new);
 #else
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,					ASM_CONTENT_ENCODED, new));
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_CONTENT_GENERAL, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_CONTENT_GENERAL, new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen,				ASM_CONTENT_IMMEDIATEBYTE, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen,				ASM_CONTENT_IMMEDIATEBYTE, new);
-#endif
-#else
-    new->op[0].content = ASM_CONTENT_ENCODED;
+  new->op[0].content = ASM_CONTENT_ENCODED;
   new->op[0].size = ASM_OSIZE_VECTOR;
   new->op[1].content = ASM_CONTENT_GENERAL;
   new->op[1].size = ASM_OSIZE_VECTOR;
@@ -47,7 +35,7 @@ int i386_shrd_rmv_rv_ib(asm_instr *new, u_char *opcode, u_int len,
   new->op[2].size = ASM_OSIZE_BYTE;
   operand_rmv_rv(new, opcode + 1, len - 1, proc);
   new->op[2].content = ASM_CONTENT_IMMEDIATE;
-  new->op[2].type = ASM_OP_VALUE;
+  new->op[2].type = ASM_OPTYPE_IMM;
   new->op[2].ptr = opcode + 2;
   new->op[2].len = 1;
 

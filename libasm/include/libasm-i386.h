@@ -201,23 +201,23 @@ enum e_asm_operand_content
   /* mod R/M only refer to memory		
    */
   ASM_CONTENT_MEMORY,	
-  /* instruction has no mod R/M byte;                                                                                                            |   
+  /* instruction has no mod R/M byte 
    * offset of operand is coded as a word or double word (depending on 
-   * address size attribute) in instruction;                                   |   
-   * no base register, index register, or scaling factor can be applied; 
+   * address size attribute) in instruction
+   * no base register, index register, or scaling factor can be applied;
    * eg. MOV (A0..A3h)                          
    */
   ASM_CONTENT_OFFSET,	
   /* reg field of mod R/M byte selects a packed quadword MMX register
    */
-  ASM_CONTENT_PMMX,	
+  ASM_CONTENT_PMMX,
   /* mod R/M byte follows opcode and specifies operand; operand is 
    * either an MMX register or a memory address;
    * if it is a memory address, the address is computed 
    * from a segment register and any of the following values:
    * |a base register, an index register, a scaling factor, a displacement
    */
-  ASM_CONTENT_QMMX,	
+  ASM_CONTENT_QMMX,
   /*
    * mod field of mod R/M byte may refer only to a general register
    */
@@ -225,45 +225,18 @@ enum e_asm_operand_content
   /* reg field of mod R/M byte selects a segment register
    */
   ASM_CONTENT_SEGMENT,
-  /* operand is a FPU operand 
+  /* operand is a FPU operand
    */
   ASM_CONTENT_FPU,
-  /* no operand				
-   */
-  ASM_CONTENT_TEST,	
-  /* no operand				
-   */
-  ASM_CONTENT_VSFP,	
-  /* no operand				
-   */
-  ASM_CONTENT_WSFP,	
   /* memory addressed by ds:si		
    */
-  ASM_CONTENT_XSRC,	
+  ASM_CONTENT_XSRC,
   /* memory addressed by es:di		
    */
   ASM_CONTENT_YDEST,
   /* immediate value encoded in instruction
    */
   ASM_CONTENT_VALUE,
-  ASM_CONTENT_REG0,
-  ASM_CONTENT_REG1,
-  ASM_CONTENT_REG2,
-  ASM_CONTENT_REG3,
-  ASM_CONTENT_REG4,
-  ASM_CONTENT_REG5,
-  ASM_CONTENT_REG6,
-  ASM_CONTENT_REG7,
-  
-  ASM_CONTENT_ST,
-  ASM_CONTENT_ST_0,
-  ASM_CONTENT_ST_1,
-  ASM_CONTENT_ST_2,
-  ASM_CONTENT_ST_3,
-  ASM_CONTENT_ST_4,
-  ASM_CONTENT_ST_5,
-  ASM_CONTENT_ST_6,
-  ASM_CONTENT_ST_7,
   ASM_CONTENT_NUM
 };
 

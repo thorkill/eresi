@@ -46,11 +46,7 @@ int op_esc0(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   if (modrm->mod < 3)
     {
       #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1,				    ASM_CONTENT_ENCODED, new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1,				    ASM_CONTENT_ENCODED, new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
       #else
       new->op[0].content = ASM_CONTENT_FIXED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
@@ -68,19 +64,16 @@ int op_esc0(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 	case 1:
 	case 4:
 	case 7:
-	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED,					new);
-    new->op[0].content |= ASM_CONTENT_FPU; 
+	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FPU, new);
 	  new->op[0].type = ASM_OP_BASE;
-	  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FIXED,					new);
-    new->op[1].content |= ASM_CONTENT_FPU;
+	  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FPU, new);
 	  new->op[1].type = ASM_OP_SCALE | ASM_OP_BASE;
 	  new->op[1].scale = modrm->m;
 	  break;
 
 	case 2:
 	case 3:
-	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
-    new->op[0].content = ASM_CONTENT_FPU;
+	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FPU, new);
 	  new->op[0].type = ASM_OP_SCALE | ASM_OP_BASE;
 	  new->op[0].scale = modrm->m;
 	  break;

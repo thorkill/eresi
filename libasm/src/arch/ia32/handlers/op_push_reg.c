@@ -28,11 +28,7 @@ int op_push_reg(asm_instr *new, u_char *opcode, u_int len,
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
   new->spdiff = -4;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_OPMOD, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_OPMOD, new);
-#endif
 
   if (new->op[0].baser == ASM_REG_EBP)
     new->type |= ASM_TYPE_PROLOG;

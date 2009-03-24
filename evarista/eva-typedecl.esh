@@ -15,6 +15,6 @@ type bloc::container  = vaddr:caddr size:int symoff:int seen:byte
 type func::container  = vaddr:caddr size:int name:byte[64] first:*bloc md5:byte[34]
 type link             = id:oid type:byte scope:byte
 
-source lir-definition.esh
+#source lir-definition.esh
 
 type

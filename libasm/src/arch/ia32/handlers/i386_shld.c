@@ -26,21 +26,9 @@ int i386_shld(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_SHLD;
 
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_CONTENT_REGISTER, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_CONTENT_REGISTER, new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_CONTENT_GENERAL, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_CONTENT_GENERAL, new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[2], opcode + 2,				ASM_CONTENT_IMMEDIATEBYTE, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[2], opcode + 2,				ASM_CONTENT_IMMEDIATEBYTE, new);
-#endif
   new->len += 1;
 #else
 
@@ -59,7 +47,7 @@ int i386_shld(asm_instr *new, u_char *opcode, u_int len,
   new->op[1].baser = modrm->r;
 
   new->op[2].content = ASM_CONTENT_IMMEDIATE;
-  new->op[2].type = ASM_OP_VALUE;
+  new->op[2].type = ASM_OP_IMM;
   new->op[2].ptr = opcode + 2;
   new->op[2].len = 1;
   new->op[2].imm = 0;

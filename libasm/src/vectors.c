@@ -59,21 +59,12 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
  * @return -1
  *
  */
-#if WIP
-int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
-				  asm_instr *ins, int opt)
-{
-  LIBASM_PROFILE_FIN();
-  LIBASM_PROFILE_FOUT(-1);
-}
-#else
 int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
 				  asm_instr *ins)
 {
   LIBASM_PROFILE_FIN();
   LIBASM_PROFILE_FOUT(-1);
 }
-#endif
 
 /**
  * @brief Return handler associated with an opcode

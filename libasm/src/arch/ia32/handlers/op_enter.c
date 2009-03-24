@@ -21,15 +21,10 @@ int op_enter(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_TOUCHSP;
 
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_CONTENT_IMMEDIATEWORD, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_CONTENT_IMMEDIATEWORD, new);
-#endif
 #else
-
   new->op[0].content = ASM_CONTENT_IMMEDIATE;
-  new->op[0].type = ASM_OP_VALUE;
+  new->op[0].type = ASM_OPTYPE_IMM;
   new->op[0].len = 2;
   new->op[0].ptr = opcode + 1;
 

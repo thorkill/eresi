@@ -21,16 +21,11 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, 
 				    int otype, asm_instr *ins)
-#endif
 {
   operand->content = ASM_CONTENT_IMMEDIATE;
-  operand->type = ASM_OP_VALUE;
+  operand->type = ASM_OPTYPE_IMM;
   operand->ptr = opcode;
   operand->imm = 0;
   operand->len = asm_proc_opsize(ins->proc) ? 2 : 4;

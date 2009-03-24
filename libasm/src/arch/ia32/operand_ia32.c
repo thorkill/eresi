@@ -23,7 +23,7 @@ int			operand_rmb_ib(asm_instr *ins, u_char *opcode,
   
   modrm = (struct s_modrm *) opcode;
   operand_rmb(&ins->op[0], opcode, len, proc);
-  ins->op[1].content = ASM_OP_VALUE;
+  ins->op[1].type = ASM_OPTYPE_IMM;
   ins->op[1].len = 1;
   ins->op[1].ptr = opcode + (ins->op[0].len ? ins->op[0].len : 1);
   // if (*(opcode + ins->op1.len) >= 0x80u)
