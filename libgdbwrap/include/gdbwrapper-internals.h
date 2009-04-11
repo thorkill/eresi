@@ -6,7 +6,7 @@
               assert(_tocmp);                                   \
               _ptr = (strstr(_tocmp, GDBWRAP_BEGIN_PACKET) + 1)
 
-#define     __DEBUG_GDBWRAP__   FALSE
+#define     __DEBUG_GDBWRAP__      FALSE
 #define     MSG_BUF                80
 
 #if __DEBUG_GDBWRAP__

@@ -13,7 +13,6 @@
 #include             "gdbwrapper-internals.h"
 #include             "gdbwrapper.h"
 
-
 gdbwrapworld_t       gdbwrapworld;
 
 
@@ -426,7 +425,8 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
       sumrval += rval;
       if (errno == EINTR)
 	break;
-    } while (desc->packet[sumrval - 3] != GDBWRAP_END_PACKETC && rval);
+    } while (sumrval >= 3 &&
+	     desc->packet[sumrval - 3] != GDBWRAP_END_PACKETC && rval);
   
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval)
@@ -762,7 +762,6 @@ static void          *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr,
 
 void                 gdbwrap_writemem(gdbwrap_t *desc, la32 linaddr,
 				       void *value, unsigned bytes)
-
 {
   static u_char      choice = 0;
 
