@@ -48,7 +48,6 @@ static void     kedbg_step_over_bp(eresi_Addr addr)
       gdbwrap_stepi(loc);
       e2dbg_setbreak(world.curjob->curfile, bp);
     }
-
 }
 
 

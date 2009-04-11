@@ -25,6 +25,6 @@ int main(void)
   plop();
   foo(rand());
   puts("");
-
+  sleep(10);
   return 0;
 }

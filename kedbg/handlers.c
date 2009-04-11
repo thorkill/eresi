@@ -349,6 +349,7 @@ void            kedbg_sigint(int sig)
   PROFILER_INQ();
   NOT_USED(sig);
   gdbwrap_ctrl_c(loc);
+  fflush(stdout);
   kedbgworld.interrupted = TRUE;
   PROFILER_OUTQ();
 }

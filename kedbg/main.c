@@ -34,8 +34,8 @@ static int	kedbg_curthread_init(void)
   gdbwrap_t     *loc = gdbwrap_current_get();
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(e2dbgthread_t), -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,key, 15, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, new, sizeof(e2dbgthread_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, key, 15, -1);
   snprintf(key, 15, "%u", (u_int) getpid());
   new->tid     = 0;
   new->entry   = (void *) e2dbgworld.real_main;
@@ -79,7 +79,8 @@ static void     kedbg_find_linkmap(void)
   do
     {
       /* We read 40B at a time. It'll accelerate the boot. */
-      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lname, lmstring, 40);
+      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lname,
+		     lmstring, 40);
       DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
 		       "lmstring: %s\n", linkmap_copy.lnext,
 		       linkmap_copy.laddr, lmstring));
@@ -266,6 +267,7 @@ static int	kedbg_ksymtab_fixup()
 static int      kedbg_main(int argc, char **argv)
 {
   int           ret;
+  struct        sigaction sa;
 
   PROFILER_INQ();  
   /* The "1" stands for interactive. */
@@ -317,18 +319,21 @@ static int      kedbg_main(int argc, char **argv)
 
       keys = hash_get_keys(&world.curjob->loaded, &keynbr);
       actual = hash_get(&world.curjob->loaded, keys[0]);
-      actual->rhdr.base = 0xff000000;
-      
+
       world.curjob->curfile->linkmap = E2DBG_ABSENT_LINKMAP;
       kedbgworld.run_in_vm = TRUE;
       kedbg_isrealmode();
-      /* If we have not loaded the bios but the kernel, load the BIOS map */
+      /* If we have not loaded the bios but the kernel, load the BIOS map. */
       if (!ret)
 	kedbg_biosmap_load();
     }
 
-  /* Signal handler */
-  signal(SIGINT, kedbg_sigint);  
+  /* Signal handler: We want primitives to return EINTR, hence sa_flags = 0. */
+  sa.sa_handler = kedbg_sigint;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
+
   revm_run_no_handler(argc, argv);
   PROFILER_ROUTQ(0);  
 }
