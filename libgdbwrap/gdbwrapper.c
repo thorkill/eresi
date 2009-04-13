@@ -15,6 +15,7 @@
 
 gdbwrapworld_t       gdbwrapworld;
 
+/******************** Internal functions ********************/
 
 static char          *gdbwrap_lastmsg(gdbwrap_t *desc)
 {
@@ -58,54 +59,9 @@ static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
       desc->is_active = FALSE;
     }
 
-/*   if (error[0] == GDBWRAP_NULL_CHAR) */
-/*     fprintf(stdout, "Command not supported\n"); */
-
   desc->erroroccured = TRUE;
   fflush(stdout);
   return TRUE;
-}
-
-
-/**
- * Returns the last signal. We return the signal number or 0 if no
- * signal was returned.
- **/
-unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
-{
-  unsigned           ret = 0;
-  char               *lastmsg = gdbwrap_lastmsg(desc);
-
-  /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
-     next 2 characters reprensent the signal number. */
-  if (lastmsg != NULL && (lastmsg[0] == GDBWRAP_SIGNAL_RECV ||
-			  lastmsg[0] == GDBWRAP_SIGNAL_RECV2))
-    ret = gdbwrap_atoh(lastmsg + 1, BYTE_IN_CHAR * sizeof(char));
-
-  return ret;
-}
-
-
-u_char               gdbwrap_lasterror(gdbwrap_t *desc)
-{
-  u_char             ret = 0;
-  char               *lastmsg = gdbwrap_lastmsg(desc);
-
-  /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
-     next 2 characters reprensent the signal number. */
-  if (lastmsg != NULL && lastmsg[0] == GDBWRAP_REPLAY_ERROR)
-    ret = gdbwrap_atoh(lastmsg + 1, BYTE_IN_CHAR * sizeof(char));
-
-  return ret;
-}
-
-
-Bool                 gdbwrap_is_active(gdbwrap_t *desc)
-{
-  if (desc->is_active)
-    return TRUE;
-  else
-    return FALSE;
 }
 
 
@@ -193,45 +149,11 @@ static la32          gdbwrap_little_endian(la32 addr)
 }
 
 
-/* If the last command is not supported, we return TRUE. */
-Bool                 gdbwrap_cmdnotsup(gdbwrap_t *desc)
-{
-  char               *lastmsg = gdbwrap_lastmsg(desc);
-
-  if (lastmsg[0] == GDBWRAP_NULL_CHAR)
-    return TRUE;
-  else
-    return FALSE;
-}
-
-
-Bool                 gdbwrap_erroroccured(gdbwrap_t *desc)
-{
-  return desc->erroroccured;
-}
-
-
-unsigned             gdbwrap_atoh(const char * str, unsigned size)
-{
-  unsigned           i;
-  unsigned           hex;
-
-  for (i = 0, hex = 0; i < size; i++)
-    if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
-      hex += (str[i] - 0x57) << 4 * (size - i - 1);
-    else if (str != NULL && str[i] >= '0' && str[i] <= '9')
-      hex += (str[i] - 0x30) << 4 * (size - i - 1);
-    else
-      return 0;
-  return hex;
-}
-
-
 static uint8_t       gdbwrap_calc_checksum(gdbwrap_t *desc, const char *str)
 {
   unsigned           i;
   uint8_t            sum;
-  char               *result;
+  char              *result;
 
   result = gdbwrap_extract_from_packet(str, desc->packet, GDBWRAP_BEGIN_PACKET,
                                        GDBWRAP_END_PACKET,
@@ -251,11 +173,11 @@ static uint8_t       gdbwrap_calc_checksum(gdbwrap_t *desc, const char *str)
 
 static char          *gdbwrap_make_message(gdbwrap_t *desc, const char *query)
 {
-  uint8_t            checksum       = gdbwrap_calc_checksum(desc, query);
-  unsigned           max_query_size = (desc->max_packet_size -
-				       strlen(GDBWRAP_BEGIN_PACKET)
-				       - strlen(GDBWRAP_END_PACKET)
-				       - sizeof(checksum));
+  uint8_t             checksum       = gdbwrap_calc_checksum(desc, query);
+  unsigned            max_query_size = (desc->max_packet_size -
+					strlen(GDBWRAP_BEGIN_PACKET)
+					- strlen(GDBWRAP_END_PACKET)
+					- sizeof(checksum));
 
   /* Sometimes C sucks... Basic source and destination checking. We do
      not check the overlapping tho.*/
@@ -288,7 +210,7 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
   /* Protocol specifies to take the following value and substract 29
      and repeat by this number the previous character.  Note that the
      compression may be used multiple times in a packet. */
-  char               *encodestr;
+  char              *encodestr;
   char               valuetocopy;
   uint8_t            numberoftimes;
   unsigned           iter;
@@ -299,10 +221,12 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
   	 srcpacket[0] != GDBWRAP_START_ENCODC);
   if (srcpacket != dstpacket)
     strncpy(dstpacket, srcpacket, maxsize);
-  encodestr   = strstr(dstpacket, GDBWRAP_START_ENCOD);
+  encodestr = strstr(dstpacket, GDBWRAP_START_ENCOD);
   check = strlen(dstpacket);
   while (encodestr != NULL)
     {
+      /* This    is    OK   to    take    encodestr[-1],   since    we
+	 assert(srcpacket[0] != GDBWRAP_START_ENCODC). */
       valuetocopy    = encodestr[-1];
       numberoftimes  = encodestr[1] - 29;
       ASSERT((check += numberoftimes) < maxsize);
@@ -334,8 +258,8 @@ static char          *gdbwrap_run_length_decode(char *dstpacket, const char *src
  */
 static void         gdbwrap_populate_reg(gdbwrap_t *desc, char *packet)
 {
-  const char        *nextpacket;
-  char              *nextupacket;
+  const char       *nextpacket;
+  char             *nextupacket;
   char              packetsemicolon[MSG_BUF];
   char              packetcolon[MSG_BUF];
   unsigned          packetoffset = 0;
@@ -409,9 +333,9 @@ static Bool          gdbwrap_check_ack(gdbwrap_t *desc)
 
 static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 {
-  int                rval;
-  int                sumrval;
-  char               checksum[3];
+  int                 rval;
+  int                 sumrval;
+  char                checksum[3];
 
   ASSERT(desc != NULL);
 
@@ -469,7 +393,7 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 
 static char          *gdbwrap_send_data(gdbwrap_t *desc, const char *query)
 {
-  int                rval = 0;
+  int                 rval = 0;
   char               *mes;
 
   ASSERT(desc != NULL && query != NULL);
@@ -496,6 +420,87 @@ static char          *gdbwrap_send_data(gdbwrap_t *desc, const char *query)
   
   return mes;
 }
+
+
+/******************** External functions ********************/
+
+
+/**
+ * Returns the last signal. We return the signal number or 0 if no
+ * signal was returned.
+ **/
+unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
+{
+  unsigned           ret = 0;
+  char               *lastmsg = gdbwrap_lastmsg(desc);
+
+  /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
+     next 2 characters reprensent the signal number. */
+  if (lastmsg != NULL && (lastmsg[0] == GDBWRAP_SIGNAL_RECV ||
+			  lastmsg[0] == GDBWRAP_SIGNAL_RECV2))
+    ret = gdbwrap_atoh(lastmsg + 1, BYTE_IN_CHAR * sizeof(char));
+
+  return ret;
+}
+
+
+u_char               gdbwrap_lasterror(gdbwrap_t *desc)
+{
+  u_char             ret = 0;
+  char               *lastmsg = gdbwrap_lastmsg(desc);
+
+  /* When we receive a packet starting with GDBWRAP_SIGNAL_RECV, the
+     next 2 characters reprensent the signal number. */
+  if (lastmsg != NULL && lastmsg[0] == GDBWRAP_REPLAY_ERROR)
+    ret = gdbwrap_atoh(lastmsg + 1, BYTE_IN_CHAR * sizeof(char));
+
+  return ret;
+}
+
+
+Bool                 gdbwrap_is_active(gdbwrap_t *desc)
+{
+  if (desc->is_active)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+
+/* If the last command is not supported, we return TRUE. */
+Bool                 gdbwrap_cmdnotsup(gdbwrap_t *desc)
+{
+  char               *lastmsg = gdbwrap_lastmsg(desc);
+
+  if (lastmsg[0] == GDBWRAP_NULL_CHAR)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+
+Bool                 gdbwrap_erroroccured(gdbwrap_t *desc)
+{
+  return desc->erroroccured;
+}
+
+
+unsigned             gdbwrap_atoh(const char * str, unsigned size)
+{
+  unsigned           i;
+  unsigned           hex;
+
+  for (i = 0, hex = 0; i < size; i++)
+    if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
+      hex += (str[i] - 0x57) << 4 * (size - i - 1);
+    else if (str != NULL && str[i] >= '0' && str[i] <= '9')
+      hex += (str[i] - 0x30) << 4 * (size - i - 1);
+    else
+      return 0;
+  return hex;
+}
+
+
 
 
 /**
