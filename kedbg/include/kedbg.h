@@ -16,6 +16,11 @@
 #define  HLP_IVT           "Displays the IVT of the remote VM"
 #define  HLP_HOOKIVT       "Adds breakpoints to all addresses defined in the IVT"
 
+/* State definitions */
+#define KEDBG_USERLAND     0
+#define KEDBG_VM           1
+#define KEDBG_EMBEDDED     2
+
 /* Various defined values */
 #define  KERBASEADDR       0xc0000000
 #define  BPCODE            0xcc
@@ -42,7 +47,7 @@ typedef struct
   /* Offset for the bp (see cmd_kedbgcont). */
   u_char offset;
   Bool   interrupted;
-  Bool   run_in_vm;
+  u_char state;
   Bool   pmode;
 } kedbgworld_t;
 

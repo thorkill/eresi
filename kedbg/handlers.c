@@ -99,7 +99,7 @@ Bool           kedbg_isrealmode(void)
   PROFILER_INQ();
 
   /* If we are not running in a VM, we've nothing to do here. */
-  if (kedbgworld.run_in_vm == FALSE)
+  if (kedbgworld.state != KEDBG_VM)
     {
       asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
       PROFILER_ROUTQ(FALSE);

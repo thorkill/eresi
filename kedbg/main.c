@@ -306,7 +306,7 @@ static int      kedbg_main(int argc, char **argv)
     {
       /* The process might already be running. If the got[1] is
 	 filled, we don't run to the entry point. */
-      kedbgworld.run_in_vm = FALSE;
+      kedbgworld.state = KEDBG_USERLAND;
       if (kedbg_linkmap_getaddr() == NULL)
 	kedbg_run_to_entrypoint(world.curjob->curfile);
       kedbg_find_linkmap();
@@ -321,7 +321,7 @@ static int      kedbg_main(int argc, char **argv)
       actual = hash_get(&world.curjob->loaded, keys[0]);
 
       world.curjob->curfile->linkmap = E2DBG_ABSENT_LINKMAP;
-      kedbgworld.run_in_vm = TRUE;
+      kedbgworld.state = KEDBG_VM;
       kedbg_isrealmode();
       /* If we have not loaded the bios but the kernel, load the BIOS map. */
       if (!ret)
@@ -333,7 +333,7 @@ static int      kedbg_main(int argc, char **argv)
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = 0;
   sigaction(SIGINT, &sa, NULL);
-
+  
   revm_run_no_handler(argc, argv);
   PROFILER_ROUTQ(0);  
 }
