@@ -39,6 +39,21 @@ typedef struct gdbwrap_t
   Bool             pmode;
 } gdbwrap_t;
 
+typedef struct meminfo_t
+{
+  char             *type;
+  u_int              start;
+  u_int              length;
+  u_int              blocksize;
+} meminfo_t;
+
+typedef struct gdbmemap_t
+{
+  meminfo_t        ram;
+  meminfo_t        rom;
+  meminfo_t        flash;
+} gdbmemap_t;
+
 
 typedef struct
 {
@@ -74,4 +89,5 @@ void             gdbwrap_signal(gdbwrap_t *desc, int signal);
 void             gdbwrap_stepi(gdbwrap_t *desc);
 char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 u_char           gdbwrap_lasterror(gdbwrap_t *desc);
+gdbmemap_t       gdbwrap_memorymap_get();
 

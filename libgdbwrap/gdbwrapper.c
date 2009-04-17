@@ -982,3 +982,27 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 
   return ret;
 }
+
+/**
+ * Get a memory map from the gdb server and
+ * and return the information parsed on a gdbmemap_t.
+ *
+ */
+gdbmemap_t          gdbwrap_memorymap_get(gdbwrap_t *desc)
+{
+  char              qXfer_msg[30]; //msg size
+  gdbmemap_t        result;
+  char              *received    = NULL;
+
+  snprintf(qXfer_msg, sizeof(qXfer_msg), "%s::%d,%d",
+	    GDBWRAP_MEMORYMAP_READ, 0, 0xfff);
+
+  received = gdbwrap_send_data(desc, qXfer_msg);
+
+  if (received != NULL)
+    {
+      //XXX: parse it and return gdbmemap_t
+    }
+
+  return result;
+}
