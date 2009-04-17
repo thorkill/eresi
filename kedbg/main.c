@@ -24,7 +24,7 @@ static void	kedbg_create_prompt(char *buf, u_int size)
 
 
 /**
- * Only called when running a monothread program 
+ * Only called when running a monothread program
  * @return
  */
 static int	kedbg_curthread_init(void)
@@ -32,7 +32,7 @@ static int	kedbg_curthread_init(void)
   e2dbgthread_t	*new;
   char		*key;
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, new, sizeof(e2dbgthread_t), -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, key, 15, -1);
@@ -46,7 +46,7 @@ static int	kedbg_curthread_init(void)
   e2dbgworld.curthread = new;
   e2dbgworld.threadnbr = 1;
   e2dbgworld.curthread->stacksize = 0xffffffff;
-  
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -63,7 +63,7 @@ static void     kedbg_find_linkmap(void)
   char		*base1;
   char		*base2;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
   world.curjob->curfile->linkmap = e2dbgworld.syms.map;
@@ -73,8 +73,8 @@ static void     kedbg_find_linkmap(void)
   /* Let's take the first entry, by following the prev. */
   while (linkmap_copy.lprev != NULL)
     kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lprev,
-		   &linkmap_copy, sizeof(elfshlinkmap_t)); 
-  
+		   &linkmap_copy, sizeof(elfshlinkmap_t));
+
   /* And now, we read all the entries from the first one. */
   do
     {
@@ -84,7 +84,7 @@ static void     kedbg_find_linkmap(void)
       DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
 		       "lmstring: %s\n", linkmap_copy.lnext,
 		       linkmap_copy.laddr, lmstring));
-      
+
       if (lmstring != NULL && lmstring[0] != '\0')
 	{
 	  for (i = 0; i < keynbr; i++)
@@ -96,11 +96,11 @@ static void     kedbg_find_linkmap(void)
 	      base2 = revm_basename(actual->name);
 	      if (!strcmp(base1, base2))
 		{
-		  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+		  XALLOC(__FILE__, __FUNCTION__, __LINE__,
 			 actual->linkmap, sizeof(linkmap_copy), );
 		  memcpy(actual->linkmap, &linkmap_copy, sizeof(linkmap_copy));
 		  actual->rhdr.base = linkmap_copy.laddr;
-		  
+
 		  DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
 				   "the base addr: %#x\n\n", actual->name,
 				   actual->rhdr.base));
@@ -111,7 +111,7 @@ static void     kedbg_find_linkmap(void)
       linkmap_addr = linkmap_copy.lnext;
       kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lnext,
 		     &linkmap_copy, sizeof(elfshlinkmap_t));
-      
+
     } while (linkmap_copy.lnext != NULL);
   hash_free_keys(keys);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -119,7 +119,7 @@ static void     kedbg_find_linkmap(void)
 
 
 /**
- * Propagate the hostype and iotype to all loaded files. 
+ * Propagate the hostype and iotype to all loaded files.
  */
 static void     kedbg_propagate_type(void)
 {
@@ -127,7 +127,7 @@ static void     kedbg_propagate_type(void)
   char          **keys;
   int           index;
   elfshobj_t    *actual;
-  
+
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
   for (index = 0; index < keynbr; index++)
     {
@@ -164,7 +164,7 @@ static void	kedbg_biosmap_load()
 static Bool       kedbg_file_is_kernel(elfshobj_t *file)
 {
   elfshsect_t     *textsct;
-  
+
   textsct = elfsh_get_section_by_name(file, "__ksymtab", NULL, NULL, NULL);
   if (textsct != NULL)
     return TRUE;
@@ -179,12 +179,12 @@ static Bool       kedbg_file_is_kernel(elfshobj_t *file)
 static Bool     kedbg_file_is_bios(elfshobj_t *file)
 {
   elfsh_Phdr	*phdr;
-  
+
   phdr = elfsh_get_segment_by_type(file, PT_LOAD, 0);
   if (phdr	    == NULL		||
       phdr->p_memsz != 0x100000		||
       !elfsh_segment_is_writable(phdr)	||
-      !elfsh_segment_is_readable(phdr)	|| 
+      !elfsh_segment_is_readable(phdr)	||
       !elfsh_segment_is_executable(phdr))
     return FALSE;
   else
@@ -221,7 +221,7 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
   gdbwrap_t     *loc = gdbwrap_current_get();
   uint8_t       eip_pos;
 
-  PROFILER_INQ();  
+  PROFILER_INQ();
   memset(bp.savedinstr, 0, 16);
   bp.addr = kedbg_find_entrypoint(file);
   kedbg_setbp(file, &bp);
@@ -230,11 +230,11 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
   eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
   gdbwrap_writereg(loc, eip_pos, bp.addr);
   kedbg_get_regvars_ia32();
-  PROFILER_OUTQ();  
+  PROFILER_OUTQ();
 }
 
 
-/** 
+/**
  * There is a mapped symbol table in the kernel that we can try to map,
  * but its format is awkward. This function is never used for now
  */
@@ -244,19 +244,19 @@ static int	kedbg_ksymtab_fixup()
   elfshsect_t   *ksymtab;
   elfshsect_t   *ksymtab_strings;
 
-  PROFILER_INQ();  
-  ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab", 
-				      NULL, NULL, NULL); 
-  ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile, 
+  PROFILER_INQ();
+  ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab",
+				      NULL, NULL, NULL);
+  ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile,
 					      "__ksymtab_strings",
-					      NULL, NULL, NULL); 
+					      NULL, NULL, NULL);
   if (!ksymtab_strings || !ksymtab)
     PROFILER_ERRQ("[E] Unable to find mapped kernel symtab\n", -1);
-  elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM); 
-  elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB); 
-  elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index); 
-  elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index); 
-  PROFILER_ROUTQ(0);  
+  elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM);
+  elfsh_set_section_type(ksymtab_strings->shdr, SHT_STRTAB);
+  elfsh_set_section_link(ksymtab->shdr, ksymtab_strings->index);
+  elfsh_set_section_link(ksymtab_strings->shdr, ksymtab->index);
+  PROFILER_ROUTQ(0);
 }
 #endif
 
@@ -269,7 +269,7 @@ static int      kedbg_main(int argc, char **argv)
   int           ret;
   struct        sigaction sa;
 
-  PROFILER_INQ();  
+  PROFILER_INQ();
   /* The "1" stands for interactive. */
   revm_setup(1, argv, REVM_STATE_INTERACTIVE, REVM_SIDE_CLIENT);
   revm_config(".kedbgrc");
@@ -280,7 +280,7 @@ static int      kedbg_main(int argc, char **argv)
   kedbg_register_command();
   hash_init(&e2dbgworld.threads, "threads", 5, ASPECT_TYPE_UNKNOW);
   hash_init(&e2dbgworld.bp, "breakpoints", 51, ASPECT_TYPE_UNKNOW);
-  kedbg_curthread_init();	
+  kedbg_curthread_init();
   e2dbg_setup_hooks();
   kedbg_register_vector();
   ret = revm_file_load(argv[2], 0, NULL);
@@ -294,7 +294,7 @@ static int      kedbg_main(int argc, char **argv)
   e2dbg_presence_set();
   world.curjob->curfile->hostype = ELFSH_HOST_GDB;
   world.curjob->curfile->iotype  = ELFSH_IOTYPE_GDBPROT;
-  
+
   /* Put all files as being debugged within a VM */
   kedbg_propagate_type();
 
@@ -333,9 +333,9 @@ static int      kedbg_main(int argc, char **argv)
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = 0;
   sigaction(SIGINT, &sa, NULL);
-  
+
   revm_run_no_handler(argc, argv);
-  PROFILER_ROUTQ(0);  
+  PROFILER_ROUTQ(0);
 }
 
 
@@ -352,15 +352,15 @@ int             main(int argc, char **argv)
       printf(USAGE);
       return -1;
     }
-  
+
   a = strtok(argv[1], ":");
   b = strtok(NULL, ":");
-  
+
   if (b == NULL)
     fd = gdbwrap_simpleconnect("127.0.0.1", atoi(a));
   else
     fd = gdbwrap_simpleconnect(a, atoi(b));
-  
+
   if (fd == -1)
     {
       fprintf(stderr, ERROR_CONNECTION);
