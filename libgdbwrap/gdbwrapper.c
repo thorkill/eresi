@@ -316,7 +316,7 @@ static Bool          gdbwrap_check_ack(gdbwrap_t *desc)
   /* The result of the previous recv must be a "+". */
   if (!rval)
     desc->is_active = FALSE;
-  if (desc->packet[0] == GDBWRAP_COR_CHECKSUMC && rval != -1) 
+  if (desc->packet[0] == GDBWRAP_COR_CHECKSUMC && rval != -1)
     return TRUE;
   else
     if (desc->packet[0] != GDBWRAP_BAD_CHECKSUM)
@@ -991,17 +991,61 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 gdbmemap_t          gdbwrap_memorymap_get(gdbwrap_t *desc)
 {
   char              qXfer_msg[30]; //msg size
+  char              *memtype;
   gdbmemap_t        result;
+  char              temp[50];
   char              *received    = NULL;
 
-  snprintf(qXfer_msg, sizeof(qXfer_msg), "%s::%d,%d",
-	    GDBWRAP_MEMORYMAP_READ, 0, 0xfff);
+  snprintf(qXfer_msg, sizeof(qXfer_msg), "%s::0,0xfff",
+	    GDBWRAP_MEMORYMAP_READ);
 
   received = gdbwrap_send_data(desc, qXfer_msg);
 
   if (received != NULL)
     {
-      //XXX: parse it and return gdbmemap_t
+      memtype = strstr(received, "<memory type");
+      while(memtype != NULL)
+      {
+        memtype = strstr(received, "memory type");
+        gdbwrap_extract_from_packet(memtype, temp, "type=\"", "\"", 5);
+
+        if(strncmp(temp, "flash", 5))
+        {
+          result.flash.type = FLASH;
+
+          //XXX: maxsize is hardcoded here. fix this!
+          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 3);
+          //result.flash.start = atoi(temp);
+          gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 7);
+          //result.flash.length = atoi(temp);
+          gdbwrap_extract_from_packet(memtype, temp, "blocksize\">", "</", 6);
+          //result.flash.blocksize = atoi(temp);
+      
+        }
+        else if(strncmp(temp, "ram", 3))
+        {
+          result.ram.type = RAM;
+          
+          //XXX: maxsize is hardcoded here. fix this!
+          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 7);
+          //result.ram.start = atoi(temp);
+          gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
+          //result.ram.length = atoi(temp);
+        }
+        else if(strncmp(temp, "rom", 3))
+        {
+          result.rom.type = ROM;
+
+          //XXX: maxsize is hardcoded here. fix this!
+          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 7);
+          //result.rom.start = atoi(temp);
+          gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
+          //result.rom.length = atoi(temp);
+        }
+
+        //gdbwrap_extract_from_packet(toParse,return,begin,end,max);
+        memtype = strstr(received, "<memory type");
+      }
     }
 
   return result;

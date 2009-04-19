@@ -41,10 +41,10 @@ typedef struct gdbwrap_t
 
 typedef struct meminfo_t
 {
-  char             *type;
-  u_int              start;
-  u_int              length;
-  u_int              blocksize;
+  int              type;
+  u_int            start;
+  u_int            length;
+  u_int            blocksize;
 } meminfo_t;
 
 typedef struct gdbmemap_t

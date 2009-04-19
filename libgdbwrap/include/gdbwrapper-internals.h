@@ -16,8 +16,12 @@
          _command;					\
       } while(0)
 #else
-#define DEBUGMSG(_command)				
+#define DEBUGMSG(_command)
 #endif
+
+#define     FLASH 10
+#define     ROM   11
+#define     RAM   12
 
 #define     CONSTSTRDEC(_name, _value)  const char * const  _name = _value
 #define     CONSTCHRDEC(_name, _value)  const char          _name = _value
