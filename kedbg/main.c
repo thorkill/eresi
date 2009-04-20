@@ -191,6 +191,20 @@ static Bool     kedbg_file_is_bios(elfshobj_t *file)
     return TRUE;
 }
 
+/**
+ * If the memory map is not empty, then we are
+ * debugging embedded (JTAG).
+ */
+static Bool       kedbg_file_is_embedded(gdbwrap_t *desc)
+{
+  gdbmemap_t     *memap = NULL;
+
+  memap = gdbwrap_memorymap_get(desc);
+  if (memap != NULL)
+    return TRUE;
+  else
+    return FALSE;
+}
 
 static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 {
