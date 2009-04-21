@@ -65,16 +65,16 @@ int op_esc0(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 	case 4:
 	case 7:
 	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FPU, new);
-	  new->op[0].type = ASM_OP_BASE;
-	  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FPU, new);
-	  new->op[1].type = ASM_OP_SCALE | ASM_OP_BASE;
+	  new->op[0].type = ASM_OPTYPE_REG;
+	  new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FPU_SCALED, new);
+	  new->op[1].type = ASM_OPTYPE_REG;
 	  new->op[1].scale = modrm->m;
 	  break;
 
 	case 2:
 	case 3:
-	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FPU, new);
-	  new->op[0].type = ASM_OP_SCALE | ASM_OP_BASE;
+	  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FPU_SCALED, new);
+	  new->op[0].type = ASM_OPTYPE_REG;
 	  new->op[0].scale = modrm->m;
 	  break;
 	}

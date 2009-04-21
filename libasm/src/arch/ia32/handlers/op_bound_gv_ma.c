@@ -38,7 +38,7 @@ int     op_bound_gv_ma(asm_instr *new, u_char *opcode, u_int len,
   new->op[1].content = ASM_CONTENT_MEMORY;
   operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
 
-  new->op[1].type = ASM_OP_BASE;
+  new->op[1].type = ASM_OPTYPE_REG;
   new->op[1].regset = ASM_REGSET_R32;
   new->op[1].baser = modrm->r;
   new->len += new->op[0].len;

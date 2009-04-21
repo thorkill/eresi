@@ -21,20 +21,15 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int otype,
 				asm_instr *ins)
-#endif
 { 
   struct s_modrm        *modrm;
   
   modrm = (struct s_modrm *) opcode;
   operand->content = ASM_CONTENT_DEBUG;
-  operand->type = ASM_OP_BASE;
-  operand->regset = ASM_REGSET_CREG;
+  operand->type = ASM_OPTYPE_REG;
+  operand->regset = ASM_REGSET_DREG;
   operand->baser = modrm->r;
   operand->ptr = opcode;
   operand->imm = 0;

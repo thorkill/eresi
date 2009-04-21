@@ -34,7 +34,7 @@ int op_test_al_rb(asm_instr *new, u_char *opcode, u_int len,
                                 ASM_CONTENT_IMMEDIATEBYTE, new, 0);
 #else
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
-  new->op[0].type = ASM_OP_BASE;
+  new->op[0].type = ASM_OPTYPE_REG;
   new->op[0].baser = ASM_REG_AL;
   new->op[0].regset = ASM_REGSET_R8;
   new->len += asm_operand_fetch(&new->op[1], opcode + 1,

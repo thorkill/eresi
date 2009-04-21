@@ -62,14 +62,6 @@ struct		s_asm_proc_i386
 #define ASM_OP_ADDRESS		32	/*!< reference to a reference	*/
 
 
-// address + reference
-// base + address
-// value + address
-// reference + value
-// reference + value + address
-
-
-
 /**
  * prefix
  * |F|E|D|C|B|A|9|8|7|6|5|4|3|2|1|0| 
@@ -228,6 +220,9 @@ enum e_asm_operand_content
   /* operand is a FPU operand
    */
   ASM_CONTENT_FPU,
+  /* operand is a scaled FPU operand
+   */
+  ASM_CONTENT_FPU_SCALED,
   /* memory addressed by ds:si		
    */
   ASM_CONTENT_XSRC,

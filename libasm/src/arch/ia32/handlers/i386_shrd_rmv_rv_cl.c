@@ -34,7 +34,7 @@ int i386_shrd_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len,
 #else
     new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FIXED,				  new);
 #endif
-    new->op[2].type = ASM_OP_BASE;
+    new->op[2].type = ASM_OPTYPE_REG;
     new->op[2].regset = ASM_REGSET_R8;
     new->op[2].ptr = opcode;
     new->op[2].len = 0;
@@ -46,7 +46,7 @@ int i386_shrd_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len,
     new->op[1].size = ASM_OSIZE_VECTOR;
     operand_rmv_rv(new, opcode + 1, len - 1, proc);
     new->op[2].content = ASM_CONTENT_FIXED;
-    new->op[2].type = ASM_OP_BASE;
+    new->op[2].type = ASM_OPTYPE_REG;
     new->op[2].regset = ASM_REGSET_R8;
     new->op[2].ptr = opcode;
     new->op[2].len = 0;

@@ -18,17 +18,12 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_encoded(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_encoded(asm_operand *operand, u_char *opcode, 
 				  int otype, asm_instr *ins)
-#endif
 {
   int	len;
   operand->content = ASM_CONTENT_ENCODED;
-  len = operand_rmv(operand, opcode, 4, ins->proc);
+  len = operand_rmv(operand, opcode, ins->proc);
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   operand->sindex = get_reg_intel(operand->indexr, operand->regset);
   return (len);

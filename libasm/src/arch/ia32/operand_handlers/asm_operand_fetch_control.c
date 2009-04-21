@@ -29,7 +29,7 @@ int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otyp
 
   modrm = (struct s_modrm *) opcode;
   operand->content = ASM_CONTENT_CONTROL;
-  operand->type = ASM_OP_BASE;
+  operand->type = ASM_OPTYPE_REG;
   operand->regset = ASM_REGSET_CREG;
   operand->baser = modrm->r;
   operand->ptr = opcode;

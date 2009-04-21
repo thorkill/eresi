@@ -20,13 +20,8 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_jump(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_jump(asm_operand *operand, u_char *opcode, 
 			       int otype, asm_instr *ins)
-#endif
 { 
   u_int	len;
 

@@ -28,11 +28,11 @@ int i386_mov_rm_cr(asm_instr *new, u_char *opcode, u_int len,
 
     new->instr = ASM_MOV;
     new->op[0].content = ASM_CONTENT_REGISTER;
-    new->op[0].type = ASM_OP_BASE;
+    new->op[0].type = ASM_OPTYPE_REG;
     new->op[0].regset = ASM_REGSET_R32;
     new->op[0].baser = modrm->m;
     new->op[1].content = ASM_CONTENT_SEGMENT;
-    new->op[1].type = ASM_OP_BASE;
+    new->op[1].type = ASM_OPTYPE_REG;
     new->op[1].regset = ASM_REGSET_CREG;
     new->op[1].baser = modrm->r;
     new->len += 1;

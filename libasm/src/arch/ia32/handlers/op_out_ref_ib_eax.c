@@ -33,7 +33,7 @@ int op_out_ref_ib_eax(asm_instr *new, u_char *opcode, u_int len,
                                 ASM_CONTENT_IMMEDIATEBYTE, new);
   new->len += asm_operand_fetch(&new->op[1], opcode, 
                                 ASM_CONTENT_FIXED, new);
-  new->op[1].type = ASM_OP_BASE;
+  new->op[1].type = ASM_OPTYPE_REG;
   new->op[1].regset = ASM_REGSET_R32;
   new->op[1].baser = ASM_REG_EAX;
 #endif

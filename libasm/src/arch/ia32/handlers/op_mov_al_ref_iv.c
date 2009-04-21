@@ -25,7 +25,7 @@ int op_mov_al_ref_iv(asm_instr *new, u_char *opcode, u_int len,
 #else
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
 #endif
-  new->op[0].type = ASM_OP_BASE;
+  new->op[0].type = ASM_OPTYPE_REG;
   new->op[0].baser = ASM_REG_AL;
   new->op[0].regset = ASM_REGSET_R8;
 #if WIP

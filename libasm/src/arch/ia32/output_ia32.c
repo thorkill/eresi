@@ -125,33 +125,40 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     
   /* Resolve target addresses if any, dealing with real/protected mode addressing */
   if (op->type & ASM_OP_ADDRESS) 
-    {
-      if (op->type & ASM_OP_REFERENCE) 
-	ins->proc->resolve_immediate(ins->proc->resolve_data, imm & addr_mask, resolved, 256);
-      else
-	{
-	  addr = asm_dest_resolve(ins->proc, addr, imm + ins->len);
-	  ins->proc->resolve_immediate(ins->proc->resolve_data, addr, resolved, 256);
-	}
-    } 
+  {
+    if (op->type & ASM_OP_REFERENCE) 
+      ins->proc->resolve_immediate(ins->proc->resolve_data, imm & addr_mask, resolved, 256);
+    else
+	  {
+	    addr = asm_dest_resolve(ins->proc, addr, imm + ins->len);
+	    ins->proc->resolve_immediate(ins->proc->resolve_data, addr, resolved, 256);
+	  }
+  } 
   else if (op->len == 1)
     snprintf(resolved, sizeof(resolved), "0x%02X", (u_char) imm);
   else
     ins->proc->resolve_immediate(ins->proc->resolve_data, imm, resolved, 256);
 
   /* Resolve any potential encoded information */
-  if (op->content == ASM_CONTENT_FPU)
+  switch (op->type)
   {
-    switch(op->type)
-    {
-      case ASM_OP_BASE:
-        sprintf(buffer, "%%st");
-        break;
-      case ASM_OP_BASE | ASM_OP_SCALE:
-        sprintf(buffer, "%%st(%d)", scale);
-        break;
-    }
-    return;
+    case ASM_OPTYPE_REG:
+      switch (op->content)
+      {
+        case ASM_CONTENT_FPU:
+          sprintf(buffer, "%%st");
+          return; break;
+        case ASM_CONTENT_FPU_SCALED:
+          sprintf(buffer, "%%st(%d)", scale);
+          return; break;
+        default:
+          sprintf(buffer, "%%%s", get_reg_intel(baser, op->regset));
+          return; break;
+      }
+      break;
+    case ASM_OPTYPE_IMM:
+      sprintf(buffer, "$%s", resolved);
+      return; break;
   }
 
   switch (op->type) 
@@ -159,14 +166,6 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     case ASM_OP_BASE|ASM_OP_ADDRESS:
       sprintf(buffer, "*%%%s", 
 	      get_reg_intel(baser, op->regset));
-      break;
-    case ASM_OP_BASE:
-      sprintf(buffer, "%%%s", 
-	      get_reg_intel(baser, op->regset));
-      break;
-    case ASM_OPTYPE_IMM:
-      sprintf(buffer, "$%s", 
-	      resolved);
       break;
     case ASM_OP_VALUE | ASM_OP_ADDRESS:
       sprintf(buffer, "%s", 
@@ -211,7 +210,7 @@ void		att_dump_operand(asm_instr *ins, int num, eresi_Addr addr, void *bufptr)
     case ASM_OP_REFERENCE | ASM_OP_BASE | ASM_OP_INDEX | ASM_OP_SCALE:
       sprintf(buffer, "(%%%s,%%%s,%d)",
 	      get_reg_intel(baser, op->regset),
-	    get_reg_intel(indexr, op->regset), 
+  	    get_reg_intel(indexr, op->regset), 
 	      scale);
       break;
     case ASM_OP_REFERENCE | ASM_OP_VALUE | ASM_OP_BASE | ASM_OP_SCALE:

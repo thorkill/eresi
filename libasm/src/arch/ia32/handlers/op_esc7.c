@@ -30,7 +30,7 @@ int op_esc7(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
     else
       instr->instr = ASM_FSTSW;
     instr->op[0].content = ASM_CONTENT_FIXED;
-    instr->op[0].type = ASM_OP_BASE;
+    instr->op[0].type = ASM_OPTYPE_REG;
     instr->op[0].regset = ASM_REGSET_R16;
     instr->op[0].baser = ASM_REG_EAX;
   } 

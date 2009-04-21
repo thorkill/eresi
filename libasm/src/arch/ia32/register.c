@@ -87,6 +87,7 @@ int	asm_register_ia32_operands()
   asm_register_ia32_operand(ASM_CONTENT_XSRC, (unsigned long) asm_operand_fetch_xsrc);
   asm_register_ia32_operand(ASM_CONTENT_YDEST, (unsigned long) asm_operand_fetch_ydest);
   asm_register_ia32_operand(ASM_CONTENT_FPU, (unsigned long) asm_operand_fetch_fpu);
+  asm_register_ia32_operand(ASM_CONTENT_FPU_SCALED, (unsigned long) asm_operand_fetch_fpu_scaled);
   asm_register_ia32_operand(ASM_CONTENT_VALUE, (unsigned long) asm_operand_fetch_default);
   return (1);
 }

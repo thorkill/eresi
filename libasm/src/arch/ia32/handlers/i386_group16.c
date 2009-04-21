@@ -33,35 +33,19 @@ int i386_group16(asm_instr *new, u_char *opcode, u_int len,
     {
     case 0:
       new->instr = ASM_FXSAVE;
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
       break;
     case 1:
       new->instr = ASM_FXRSTORE;
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
       break;
     case 2:
       new->instr = ASM_LDMXCSR;
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
       break;
     case 3:
       new->instr = ASM_STMXCSR;
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
       break;
     case 4:
       new->instr = ASM_BAD;
@@ -78,7 +62,5 @@ int i386_group16(asm_instr *new, u_char *opcode, u_int len,
       break;
     }
 
-#if LIBASM_USE_OPERAND_VECTOR
-#endif
   return (new->len);
 }

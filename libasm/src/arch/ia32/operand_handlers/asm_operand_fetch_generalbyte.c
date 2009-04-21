@@ -17,18 +17,13 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_generalbyte(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_generalbyte(asm_operand *operand, u_char *opcode, 
 				      int type, asm_instr *ins)
-#endif
 { 
   struct s_modrm        *modrm;
   
   operand->content = ASM_CONTENT_GENERAL;
-  operand->type = ASM_OP_BASE;
+  operand->type = ASM_OPTYPE_REG;
   operand->regset = ASM_REGSET_R8;
   modrm = (struct s_modrm *) opcode;
   operand->baser = modrm->r;

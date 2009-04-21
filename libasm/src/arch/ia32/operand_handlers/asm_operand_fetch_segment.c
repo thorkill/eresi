@@ -16,24 +16,15 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_segment(asm_operand *operand, u_char *opcode, 
-				  int otype, asm_instr *ins, int opt)
-#else
 int     asm_operand_fetch_segment(asm_operand *operand, u_char *opcode, 
 				  int otype, asm_instr *ins)
-#endif
 {
   struct s_modrm        *modrm;
 
   modrm = (struct s_modrm *) opcode;
   
-#if WIP
-  asm_content_pack(operand, ASM_OP_BASE, ASM_CONTENT_SEGMENT);
-#else
   operand->content = ASM_CONTENT_SEGMENT;
-  operand->type = ASM_OP_BASE;
-#endif
+  operand->type = ASM_OPTYPE_REG;
 
   operand->regset = ASM_REGSET_SREG;
   operand->baser = modrm->r;

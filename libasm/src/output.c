@@ -94,11 +94,11 @@ char	*asm_operand_content_string(int content)
     case ASM_CONTENT_QMMX: return ("qmmx");
     case ASM_CONTENT_REGISTER: return ("register");
     case ASM_CONTENT_SEGMENT: return ("segment");
-    case ASM_CONTENT_TEST: return ("test");
-    case ASM_CONTENT_VSFP: return ("vsfp");
-    case ASM_CONTENT_WSFP: return ("wsfp");
+    case ASM_CONTENT_FPU: return ("fpu");
+    case ASM_CONTENT_FPU_SCALED: return ("fpu_scaled");
     case ASM_CONTENT_XSRC: return ("xsrc");
     case ASM_CONTENT_YDEST: return ("ydest");
+    case ASM_CONTENT_VALUE: return ("value");
     }
   return ("undocumented content");
 }

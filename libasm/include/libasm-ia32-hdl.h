@@ -36,6 +36,8 @@ int	asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode, int type,
 				asm_instr *ins);
 int	asm_operand_fetch_fpu(asm_operand *operand, u_char *opcode, int type,
 				asm_instr *ins);
+int	asm_operand_fetch_fpu_scaled(asm_operand *operand, u_char *opcode, int type,
+				asm_instr *ins);
 int	asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode, int type,
 				asm_instr *ins);
 int	asm_operand_fetch_immediatebyte(asm_operand *operand, u_char *opcode, int type,

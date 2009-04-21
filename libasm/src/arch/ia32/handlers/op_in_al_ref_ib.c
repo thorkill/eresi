@@ -28,12 +28,12 @@ int op_in_al_ref_ib(asm_instr *new, u_char *opcode, u_int len,
   new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new);
 #else
 
-  new->op[0].type = ASM_OP_BASE;
+  new->op[0].type = ASM_OPTYPE_REG;
   new->op[0].regset = ASM_REGSET_R8;
   new->op[0].baser = ASM_REG_AL;
 
   new->op[0].content = ASM_CONTENT_FIXED;
-  new->op[0].type = ASM_OP_BASE;
+  new->op[0].type = ASM_OPTYPE_REG;
   new->op[0].regset = ASM_REGSET_R8;
   new->op[0].baser = ASM_REG_AL;
 
