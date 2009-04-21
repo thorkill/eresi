@@ -2,7 +2,6 @@
 
 kedbgworld_t    kedbgworld;
 
-
 /**************** Main stuff ****************/
 static void	kedbg_create_prompt(char *buf, u_int size)
 {
@@ -156,6 +155,25 @@ static void	kedbg_biosmap_load()
   file->id       = ++world.state.lastid;
 }
 
+//elfshobj_t      *elfsh_create_obj(char *name, eresi_Addr start, u_int size, elfsh_Half arch, elfsh_Half type, u_char enc, u_char clas)
+
+/**
+ * Load the Embedded MEMORY  map
+ */
+static void	kedbg_jtagmap_load()
+{
+  elfshobj_t    *file;
+
+//XXX: THIS FUNCTION IS NOT READY YET
+  file = elfsh_create_obj("MEMORY", 0, 0x100000, EM_386, ET_EXEC,
+			  ELFDATA2LSB, ELFCLASS32);
+  world.curjob->curfile = file;
+  hash_add(&world.curjob->loaded, file->name, file);
+  file->loadtime = time(&file->loadtime);
+  file->iotype   = ELFSH_IOTYPE_GDBPROT;
+  file->hostype  = ELFSH_HOST_GDB;
+  file->id       = ++world.state.lastid;
+}
 
 /**
  * If the symbol __ksymtab is found in the file we are analyzing, then
@@ -192,24 +210,33 @@ static Bool     kedbg_file_is_bios(elfshobj_t *file)
 }
 
 /**
- * If the memory map is not empty, then we are
- * debugging embedded (JTAG).
+ * If there is a memory map, we are embedded.
+ */
+static Bool       kedbg_is_embedded()
+{
+  if (kedbgworld.gdbmemap != NULL)
+    return TRUE;
+  else
+    return FALSE;
+}
+/**
+ * If the memory map is not empty, and the elf file has
+ * a .vectors_ram section, then we are debugging embedded (JTAG).
  */
 static Bool       kedbg_file_is_embedded(elfshobj_t *file)
 {
-  gdbmemap_t     *memap = NULL;
+  elfshsect_t     *textsct;
 
-  if (file == NULL)
+  if (kedbg_is_embedded())
   {
-    memap = gdbwrap_memorymap_get(gdbwrap_current_get());
-    if (memap != NULL)
+    textsct = elfsh_get_section_by_name(file, ".vectors_ram", NULL, NULL, NULL);
+    if (textsct != NULL)
       return TRUE;
     else
       return FALSE;
   }
   else
-    // check if the elf file has section or segment
-    // pointing that it's a memorymap.
+    return FALSE;
 }
 
 static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
@@ -331,10 +358,12 @@ static int      kedbg_main(int argc, char **argv)
 	kedbg_run_to_entrypoint(world.curjob->curfile);
       kedbg_find_linkmap();
     }
-  else if(kedbg_file_is_embedded(world.curjob->curfile))
+  else if(kedbg_is_embedded())
     {
+      world.curjob->curfile->linkmap = E2DBG_ABSENT_LINKMAP;
       kedbgworld.state = KEDBG_EMBEDDED;
-      //kedbg_jtagmap_load();
+      if(!kedbg_file_is_embedded(world.curjob->curfile))
+        kedbg_jtagmap_load();
     }
   else
     {
@@ -397,6 +426,9 @@ int             main(int argc, char **argv)
 
   /* Let's say hello to the server, gdbstyle 8) */
   gdbwrap_hello(gdbwrap_current_get());
+  kedbgworld.gdbmemap = gdbwrap_memorymap_get();
+  //XXX: ADD SOME MEMORYMAP INFO PRINT HERE
+
 
   /* Why did it stop ? */
   gdbwrap_reason_halted(gdbwrap_current_get());

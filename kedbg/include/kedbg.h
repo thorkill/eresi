@@ -49,6 +49,7 @@ typedef struct
   Bool   interrupted;
   u_char state;
   Bool   pmode;
+  gdbmemap_t   *gdbmemap;
 } kedbgworld_t;
 
 extern          kedbgworld_t kedbgworld;

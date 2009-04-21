@@ -57,7 +57,8 @@ typedef struct gdbmemap_t
 
 typedef struct
 {
-  gdbwrap_t *gdbwrapptr;
+  gdbwrap_t   *gdbwrapptr;
+  gdbmemap_t  *gdbmemapptr;
 } gdbwrapworld_t;
 
 Bool             gdbwrap_erroroccured(gdbwrap_t *desc);
@@ -90,4 +91,6 @@ void             gdbwrap_stepi(gdbwrap_t *desc);
 char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 u_char           gdbwrap_lasterror(gdbwrap_t *desc);
 gdbmemap_t       *gdbwrap_memorymap_get();
+void             *gdbwrap_memorymap_read(gdbwrap_t *desc);
+
 

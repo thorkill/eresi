@@ -589,6 +589,9 @@ void                gdbwrap_hello(gdbwrap_t *desc)
       /* We set the last bit to a NULL char to avoid getting out of the
 	 weeds with a (unlikely) bad strlen. */
       desc->packet[desc->max_packet_size] = GDBWRAP_NULL_CHAR;
+
+      /* Let's get memorymap info */
+      gdbwrap_memorymap_read(desc);
     }
 }
 
@@ -984,17 +987,16 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 }
 
 /**
- * Get a memory map from the gdb server and
- * and return the information parsed on a gdbmemap_t.
+ * Read the memory map from the gdb server and
+ * and keep it on gdbwrapworld.gdbmemapptr.
  *
  */
-gdbmemap_t          *gdbwrap_memorymap_get(gdbwrap_t *desc)
+void          *gdbwrap_memorymap_read(gdbwrap_t *desc)
 {
   char              qXfer_msg[30]; //msg size
   char              *memtype;
   char              temp[50];
   char              *received;
-  gdbmemap_t        *result = NULL;
 
   received = NULL;
   memtype = NULL;
@@ -1002,11 +1004,12 @@ gdbmemap_t          *gdbwrap_memorymap_get(gdbwrap_t *desc)
 	    GDBWRAP_MEMORYMAP_READ);
 
   received = gdbwrap_send_data(desc, qXfer_msg);
+  gdbwrapworld.gdbmemapptr = NULL;
 
   if (received != NULL)
   {
       memtype = strstr(received, "<memory type");
-      result = (gdbmemap_t *) malloc(sizeof(gdbmemap_t));
+      gdbwrapworld.gdbmemapptr = (gdbmemap_t *) malloc(sizeof(gdbmemap_t));
 
       while(memtype != NULL)
       {
@@ -1015,43 +1018,50 @@ gdbmemap_t          *gdbwrap_memorymap_get(gdbwrap_t *desc)
 
         if(strncmp(temp, "flash", 5))
         {
-          result->flash.type = FLASH;
+          gdbwrapworld.gdbmemapptr->flash.type = FLASH;
 
           //XXX: maxsize is hardcoded here. fix this!
           gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 3);
           //We must avoid the 0x from all hex strings, ptr+2 solves this ;)
-          result->flash.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->flash.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
 
           gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 7);
-          result->flash.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->flash.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
 
           gdbwrap_extract_from_packet(memtype, temp, "blocksize\">", "</", 6);
-          result->flash.blocksize = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->flash.blocksize = gdbwrap_atoh(temp+2, strlen(temp)-2);
         }
         else if(strncmp(temp, "ram", 3))
         {
-          result->ram.type = RAM;
+          gdbwrapworld.gdbmemapptr->ram.type = RAM;
 
           //XXX: maxsize is hardcoded here. fix this!
           gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 7);
-          result->ram.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->ram.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
           gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
-          result->ram.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->ram.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
         }
         else if(strncmp(temp, "rom", 3))
         {
-          result->rom.type = ROM;
+          gdbwrapworld.gdbmemapptr->rom.type = ROM;
 
           //XXX: maxsize is hardcoded here. fix this!
           gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 7);
-          result->rom.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->rom.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
           gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
-          result->rom.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
+          gdbwrapworld.gdbmemapptr->rom.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
         }
 
         memtype = strstr(received, "<memory type");
       }
   }
+}
 
-  return result;
+/**
+ * Returns a ptr to gdbwrapworld.gdbmemapptr.
+ *
+ */
+gdbmemap_t          *gdbwrap_memorymap_get(gdbwrap_t *desc)
+{
+    return gdbwrapworld.gdbmemapptr;
 }
