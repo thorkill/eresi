@@ -97,7 +97,8 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
   const char         *charbegin;
   const char         *charend;
   unsigned           strtorem;
-  ptrdiff_t          strsize;
+//  ptrdiff_t          strsize;
+  unsigned int          strsize; //XXX: REVERT THIS!!!
 
   ASSERT(strtoparse != NULL);
 
@@ -1014,6 +1015,7 @@ void          *gdbwrap_memorymap_read(gdbwrap_t *desc)
       while(memtype != NULL)
       {
         memtype = strstr(received, "memory type");
+        received = memtype; //avoiding loop
         gdbwrap_extract_from_packet(memtype, temp, "type=\"", "\"", 5);
 
         if(strncmp(temp, "flash", 5))
@@ -1053,6 +1055,7 @@ void          *gdbwrap_memorymap_read(gdbwrap_t *desc)
         }
 
         memtype = strstr(received, "<memory type");
+        received = memtype; //avoiding loop
       }
   }
 }
