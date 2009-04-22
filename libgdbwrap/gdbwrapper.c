@@ -118,7 +118,9 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
     charend = charbegin + strlen(charbegin);
   else
     {
-      charend = strstr(charbegin, end);
+      u_int off = (begin == NULL) ? 0 : strlen(begin);
+      
+      charend = strstr(charbegin + off, end);
       if (charend == NULL)
 	return NULL;
     }
@@ -132,7 +134,6 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
 
   return strret;
 }
-
 
 static la32          gdbwrap_little_endian(la32 addr)
 {
@@ -923,15 +924,15 @@ void                gdbwrap_ctrl_c(gdbwrap_t *desc)
  * (default behavior).
  */
 void                 gdbwrap_signal(gdbwrap_t *desc, int signal)
- {
-   char              *rec;
-   char              signalpacket[MSG_BUF];
+{
+  char              *rec;
+  char              signalpacket[MSG_BUF];
 
-   ASSERT(desc != NULL);
-   snprintf(signalpacket, sizeof(signalpacket), "%s;C%.2x",
-	    GDBWRAP_CONTINUEWITH, signal);
-   rec = gdbwrap_send_data(desc, signalpacket);
- }
+  ASSERT(desc != NULL);
+  snprintf(signalpacket, sizeof(signalpacket), "%s;C%.2x",
+	   GDBWRAP_CONTINUEWITH, signal);
+  rec = gdbwrap_send_data(desc, signalpacket);
+}
 
 
 void                 gdbwrap_stepi(gdbwrap_t *desc)

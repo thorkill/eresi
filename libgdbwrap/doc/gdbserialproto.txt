@@ -1258,8 +1258,7 @@ D.7 Host I/O Packets
           are escaped in the normal way (see Binary Data). See the
           individual packet documentation for the interpretation of result
           and attachment.
-   `'
-          An empty response indicates that this operation is not
+   `'          An empty response indicates that this operation is not
           recognized.
 
    These are the supported Host I/O operations:
