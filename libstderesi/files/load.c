@@ -104,6 +104,7 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   char		logbuf[BUFSIZ];
   char		*timec;
   hash_t	*filehash;
+  u_char        arch;
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
   if (!name)
@@ -178,7 +179,11 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   elfsh_init_symbol_hashtables(new);
 
   /* Parse debugging informations */
-  revm_edfmt_parse(new);
+  arch = elfsh_get_archtype(world.curjob);
+  if (arch == ELFSH_ARCH_IA32     ||
+      arch == ELFSH_ARCH_SPARC32  ||
+      arch == ELFSH_ARCH_SPARC64)
+    revm_edfmt_parse(new);
 
   /* Load dependances */
   if (new->hdr->e_type == ET_EXEC)
@@ -202,7 +207,6 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 
 
