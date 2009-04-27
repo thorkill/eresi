@@ -349,7 +349,7 @@ static int      kedbg_main(int argc, char **argv)
   asm_ia32_switch_mode(&world.proc_ia32, INTEL_REAL);
 
   ret = kedbg_file_is_bios(world.curjob->curfile);
-  if (!kedbg_file_is_kernel(world.curjob->curfile) && !ret)
+  if (!kedbg_file_is_kernel(world.curjob->curfile) && !ret && !kedbg_is_embedded())
     {
       /* The process might already be running. If the got[1] is
 	 filled, we don't run to the entry point. */
