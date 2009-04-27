@@ -1019,37 +1019,35 @@ void          *gdbwrap_memorymap_read(gdbwrap_t *desc)
         received = memtype; //avoiding loop
         gdbwrap_extract_from_packet(memtype, temp, "type=\"", "\"", 5);
 
-        if(strncmp(temp, "flash", 5))
+        if(!strncmp(temp, "flash", 5))
         {
           gdbwrapworld.gdbmemapptr->flash.type = FLASH;
 
-          //XXX: maxsize is hardcoded here. fix this!
-          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 3);
+          //maxsize=10 because 0xffffffff has 10 chars ;)
+          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 10);
           //We must avoid the 0x from all hex strings, ptr+2 solves this ;)
           gdbwrapworld.gdbmemapptr->flash.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
 
-          gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 7);
+          gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
           gdbwrapworld.gdbmemapptr->flash.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
 
-          gdbwrap_extract_from_packet(memtype, temp, "blocksize\">", "</", 6);
+          gdbwrap_extract_from_packet(memtype, temp, "blocksize\">", "</", 10);
           gdbwrapworld.gdbmemapptr->flash.blocksize = gdbwrap_atoh(temp+2, strlen(temp)-2);
         }
-        else if(strncmp(temp, "ram", 3))
+        else if(!strncmp(temp, "ram", 3))
         {
           gdbwrapworld.gdbmemapptr->ram.type = RAM;
 
-          //XXX: maxsize is hardcoded here. fix this!
-          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 7);
+          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 10);
           gdbwrapworld.gdbmemapptr->ram.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
           gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
           gdbwrapworld.gdbmemapptr->ram.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
         }
-        else if(strncmp(temp, "rom", 3))
+        else if(!strncmp(temp, "rom", 3))
         {
           gdbwrapworld.gdbmemapptr->rom.type = ROM;
 
-          //XXX: maxsize is hardcoded here. fix this!
-          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 7);
+          gdbwrap_extract_from_packet(memtype, temp, "start=\"", "\"", 10);
           gdbwrapworld.gdbmemapptr->rom.start = gdbwrap_atoh(temp+2, strlen(temp)-2);
           gdbwrap_extract_from_packet(memtype, temp, "length=\"", "\"", 10);
           gdbwrapworld.gdbmemapptr->rom.length = gdbwrap_atoh(temp+2, strlen(temp)-2);
