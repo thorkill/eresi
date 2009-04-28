@@ -120,7 +120,7 @@ static char          *gdbwrap_extract_from_packet(const char *strtoparse,
   else
     {
       u_int off = (begin == NULL) ? 0 : strlen(begin);
-      
+
       charend = strstr(charbegin + off, end);
       if (charend == NULL)
 	return NULL;
@@ -987,6 +987,22 @@ char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 
   return ret;
 }
+/**
+ * Init memap struct with NULL (clean) values
+ *
+ */
+static void         gdbwrap_init_memap()
+{
+  gdbwrapworld.gdbmemapptr = (gdbmemap_t *) malloc(sizeof(gdbmemap_t));
+
+  gdbwrapworld.gdbmemapptr->flash.start = 0;
+  gdbwrapworld.gdbmemapptr->flash.length = 0;
+  gdbwrapworld.gdbmemapptr->flash.blocksize = 0;
+  gdbwrapworld.gdbmemapptr->ram.start = 0;
+  gdbwrapworld.gdbmemapptr->ram.length = 0;
+  gdbwrapworld.gdbmemapptr->rom.start = 0;
+  gdbwrapworld.gdbmemapptr->rom.length = 0;
+}
 
 /**
  * Read the memory map from the gdb server and
@@ -1011,7 +1027,7 @@ void          *gdbwrap_memorymap_read(gdbwrap_t *desc)
   if (received != NULL)
   {
       memtype = strstr(received, "<memory type");
-      gdbwrapworld.gdbmemapptr = (gdbmemap_t *) malloc(sizeof(gdbmemap_t));
+      gdbwrap_init_memap();
 
       while(memtype != NULL)
       {
@@ -1063,7 +1079,7 @@ void          *gdbwrap_memorymap_read(gdbwrap_t *desc)
  * Returns a ptr to gdbwrapworld.gdbmemapptr.
  *
  */
-gdbmemap_t          *gdbwrap_memorymap_get(gdbwrap_t *desc)
+gdbmemap_t          *gdbwrap_memorymap_get()
 {
     return gdbwrapworld.gdbmemapptr;
 }
