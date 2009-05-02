@@ -96,10 +96,18 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   for (index = 0; 
        index < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym)); 
        index++, actual++)
-    if (elfsh_get_symbol_type(actual) != STT_BLOCK && 
-	actual->st_value && !actual->st_size && 
-	index + 1 < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym)))
+    if ((elfsh_get_symbol_type(actual) != STT_SECTION) && 
+        (actual->st_shndx != SHN_ABS) &&
+        (actual->st_shndx != SHN_UNDEF) &&
+        (actual->st_shndx != SHN_COMMON) &&
+        (actual->st_value != 0) &&
+        (actual->st_size == 0) && 
+        (index + 1 < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym))) &&
+        (actual->st_shndx == actual[1].st_shndx) &&
+        (actual->st_value < actual[1].st_value))
+    {   
       actual->st_size = actual[1].st_value - actual->st_value;
+    }
 
   /* Fixup _start symbol value [and create it if unexistant] */
   actual = elfsh_get_symbol_by_name(symtab->parent, ELFSH_STARTSYM);
