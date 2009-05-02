@@ -29,13 +29,13 @@ static Bool     kedbg_isrealmodewmon(void)
     }
   if (gdbwrap_cmdnotsup(loc))
     PROFILER_ROUTQ(FALSE);
- 
+
   /* We add +1 to discard the first char.*/
   for (i = 0; ret[i] != '\0'; i++)
     reply[i] = (char)gdbwrap_atoh(ret + BYTE_IN_CHAR * i + 1, 2);
 
-  
-  /* Last bit is 0. */  
+
+  /* Last bit is 0. */
   if (!(gdbwrap_atoh(reply + strlen(reply) - 2, 1) & 0x1))
     {
       kedbgworld.pmode = FALSE;
@@ -62,9 +62,9 @@ static Bool     kedbg_isrealmodeinject(void)
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          code[]="\x0f\x20\xc0";
   gdbwrap_gdbreg32 regs;
-  
+
   PROFILER_INQ();
-  
+
   kedbg_writemem(NULL, MEMINJECT, code, strlen(code));
 
   if (gdbwrap_erroroccured(loc))
@@ -81,10 +81,10 @@ static Bool     kedbg_isrealmodeinject(void)
     kedbgworld.pmode = TRUE;
   else
     kedbgworld.pmode = FALSE;
-  
+
   memcpy(&loc->reg32, &regs, sizeof(regs));
   gdbwrap_shipallreg(loc);
-  
+
   PROFILER_ROUTQ(kedbgworld.pmode);
 }
 
@@ -95,7 +95,7 @@ Bool           kedbg_isrealmode(void)
   static Bool   first_time = TRUE;
   gdbwrap_t     *loc = gdbwrap_current_get();
   Bool          ret;
-  
+
   PROFILER_INQ();
 
   /* If we are not running in a VM, we've nothing to do here. */
@@ -104,7 +104,7 @@ Bool           kedbg_isrealmode(void)
       asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
       PROFILER_ROUTQ(FALSE);
     }
-  
+
   do
     {
       switch (choice)
@@ -158,7 +158,7 @@ void            kedbg_resetstep(void)
 
 void            kedbg_setstep(void)
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   e2dbgworld.curthread->step = TRUE;
 
   PROFILER_OUTQ();
@@ -175,7 +175,7 @@ void		*kedbg_bt_ia32(void *frame)
     kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, WORD_IN_BYTE);
   else
     kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, DWORD_IN_BYTE);
-  
+
   PROFILER_ROUTQ((void *)ptr);
 }
 
@@ -309,7 +309,7 @@ int             kedbg_delbp(elfshbp_t *bp)
     kedbg_delbpwint3(bp);
   else
     ASSERT(FALSE);
-  
+
   PROFILER_ROUTQ(0);
 }
 
@@ -318,7 +318,7 @@ void            kedbg_print_reg(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   gdbwrap_gdbreg32 *reg;
-    
+
   PROFILER_INQ();
   reg = &loc->reg32;
   e2dbg_register_dump("EAX", reg->eax);
@@ -345,7 +345,7 @@ void            kedbg_print_reg(void)
 void            kedbg_sigint(int sig)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
+
   PROFILER_INQ();
   NOT_USED(sig);
   gdbwrap_ctrl_c(loc);
@@ -375,13 +375,14 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 	PROFILER_ERRQ("buf is NULL !", buf);
       ASSERT(buf != NULL);
       ret = gdbwrap_readmem(loc, addr, size);
+      revm_output(ret);
 
       /* gdbserver sends a string, we need to convert it. Note that 2
 	 characters = 1 real Byte.*/
-      for (i = 0; i < size; i++) 
+      for (i = 0; i < size; i++)
 	charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
     }
-  
+
   PROFILER_ROUTQ(charbuf);
 }
 
@@ -400,7 +401,7 @@ void            *kedbg_readmem(elfshsect_t *sect)
       kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr,
 		     sect->shdr->sh_size);
     }
-  
+
   PROFILER_ROUTQ(ptr);
 }
 
@@ -462,7 +463,7 @@ void            kedbg_get_regvars_ia32(void)
 
   PROFILER_INQ();
   gdbwrap_readgenreg(loc);
-  
+
 
   E2DBG_GETREG(E2DBG_EAX_VAR, loc->reg32.eax);
   E2DBG_GETREG(E2DBG_EBX_VAR, loc->reg32.ebx);
@@ -499,7 +500,7 @@ void            kedbg_shipallreg(void)
 int             kedbg_writereg(ureg32 regNum, la32 val)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
+
   PROFILER_INQ();
   gdbwrap_writereg(loc, regNum, val);
   PROFILER_ROUTQ(0);

@@ -2,9 +2,9 @@
  * @file fixup.c
  * @ingroup libelfsh
 ** fixup.c for elfsh
-** 
+**
 ** Started on  Fri Jul 27 04:56:06 2001 jfv
-** 
+**
 **
 ** $Id$
 **
@@ -15,7 +15,7 @@
 
 /**
  * TERMINAL FUNCTION ! Fixup size for section symbols, if symtab doesnt exist, create it
- * This function only works on FILE and is not e2dbg safe 
+ * This function only works on FILE and is not e2dbg safe
  *
  * @param file
  * @param strindex
@@ -38,7 +38,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Invalid NULL parameter", NULL);
 
   /* Create symbol table if it does not exist */
@@ -47,10 +47,10 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
       XALLOC(__FILE__, __FUNCTION__, __LINE__,symtab, sizeof (elfshsect_t), NULL);
       hdr = elfsh_create_shdr(0, SHT_SYMTAB, 0, 0, 0, 0, 0, 0, 0, sizeof(elfsh_Sym));
       symtab->name = strdup(ELFSH_SECTION_NAME_SYMTAB);
- 
+
       index = elfsh_insert_unmapped_section(file, symtab, hdr, NULL);
       if (index < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			  "Unable to insert SYMTAB", NULL);
       file->secthash[ELFSH_SECTION_SYMTAB] = symtab;
     }
@@ -75,7 +75,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
       /* Create STT_SECTION symbol if unexistant */
       actual = elfsh_get_sym_from_shtentry(file, list->shdr);
       if (actual == NULL)
-        elfsh_insert_sectsym(file, list);  
+        elfsh_insert_sectsym(file, list);
 
       /* Fixup STT_SECTION symbol */
       else
@@ -93,13 +93,21 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 
   /* Fixup all 0 length non-section-typed symbols */
   actual = symtab->data;
-  for (index = 0; 
-       index < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym)); 
+  for (index = 0;
+       index < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym));
        index++, actual++)
-    if (elfsh_get_symbol_type(actual) != STT_BLOCK && 
-	actual->st_value && !actual->st_size && 
-	index + 1 < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym)))
+    if ((elfsh_get_symbol_type(actual) != STT_SECTION) &&
+        (actual->st_shndx != SHN_ABS) &&
+        (actual->st_shndx != SHN_UNDEF) &&
+        (actual->st_shndx != SHN_COMMON) &&
+        (actual->st_value != 0) &&
+        (actual->st_size == 0) &&
+        (index + 1 < (int) (symtab->shdr->sh_size / sizeof(elfsh_Sym))) &&
+        (actual->st_shndx == actual[1].st_shndx) &&
+        (actual->st_value < actual[1].st_value))
+    {
       actual->st_size = actual[1].st_value - actual->st_value;
+    }
 
   /* Fixup _start symbol value [and create it if unexistant] */
   actual = elfsh_get_symbol_by_name(symtab->parent, ELFSH_STARTSYM);
@@ -121,7 +129,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
     }
 
   /* _GLOBAL_OFFSET_TABLE_ injection if not present */
-  got = elfsh_get_section_by_name(symtab->parent, ELFSH_SECTION_NAME_GOT, 
+  got = elfsh_get_section_by_name(symtab->parent, ELFSH_SECTION_NAME_GOT,
 				  NULL, NULL, NULL);
   actual = elfsh_get_symbol_by_name(symtab->parent, ELFSH_GOTSYM);
   if (actual == NULL && got != NULL)
@@ -133,9 +141,9 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 
   /* Fix sctndx */
   if (elfsh_fixup_sctndx(symtab) == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Unable to fixup sctndx", NULL);
-  
+
   /* Resynchronize cached sorted symtab and return */
   elfsh_sync_sorted_symtab(symtab);
 
@@ -146,7 +154,7 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
 
 
 /**
- * Recompute .dynsym symbols address which are zeroed by new versions of ld 
+ * Recompute .dynsym symbols address which are zeroed by new versions of ld
  *
  * @param file
  * @param plt
@@ -154,9 +162,9 @@ elfshsect_t	*elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
  * @param dynsym
  * @return
  */
-elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt, 
+elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 				      u_int off, elfshsect_t *dynsym)
-				     
+
 {
   u_int		entsz;
   uint32_t	index;
@@ -175,7 +183,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
   name = IS_REL(plt) ? ELFSH_SECTION_NAME_RELPLT : ELFSH_SECTION_NAME_RELAPLT;
   relplt = elfsh_get_section_by_name(plt->parent, name, 0, 0, 0);
   if (!relplt)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Cannot find RELPLT", NULL);
 
   /* On Sparc, some of the first entries are reserved */
@@ -186,26 +194,26 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
       printf("[DEBUG_COPYPLT] Passing reserved PLT entry on SPARC\n");
 #endif
 
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Not patching reserved PLT entry", NULL);
     }
-  
+
   /* On some architecture the first plt entry size is different than entsz */
   index = (off - elfsh_get_first_pltentsz(file) + entsz) / entsz;
   if (!index)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		      "Not patching first PLT entry", NULL);
   index--;
-  
+
 #if __DEBUG_COPYPLT__
   printf("[DEBUG_COPYPLT] New gnu-ld detected -> looking for reloc index = %u \n", index);
 #endif
-  
+
   /* Necessary for get_relent_by_index who does not know about IS_REL */
   elfsh_setrel(IS_REL(plt));
-  
-  if (IS_REL(plt) ? 
-      (sizeof(elfsh_Rel)  * index) >= relplt->shdr->sh_size : 
+
+  if (IS_REL(plt) ?
+      (sizeof(elfsh_Rel)  * index) >= relplt->shdr->sh_size :
       (sizeof(elfsh_Rela) * index) >= relplt->shdr->sh_size)
     {
 
@@ -216,7 +224,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			"Not patching PLT entry without relocation entry", NULL);
     }
-  
+
   /* Fixup missing .dynsym value */
   reldyn = elfsh_get_relent_by_index(relplt->data, index);
   index = elfsh_get_relsym(reldyn);
@@ -226,13 +234,13 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
       if (sym && !sym->st_value)
 	sym->st_value = plt->shdr->sh_addr + off;
     }
-  
+
   /* If still not found */
   if (sym == NULL || sym->st_value == NULL)
     {
-      
+
 #if __DEBUG_COPYPLT__
-      printf("[DEBUG_COPYPLT] Cannot find symbol at PLT OFFSET + %u (.plt + off = " XFMT " ) object %s \n", 
+      printf("[DEBUG_COPYPLT] Cannot find symbol at PLT OFFSET + %u (.plt + off = " XFMT " ) object %s \n",
 	     off, (eresi_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
@@ -241,7 +249,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
     }
 
 #if __DEBUG_COPYPLT__
-      printf("[DEBUG_COPYPLT] Found symbol [%s] for PLT OFFSET + %u (.plt + off = " XFMT " ) object %s\n", 
+      printf("[DEBUG_COPYPLT] Found symbol [%s] for PLT OFFSET + %u (.plt + off = " XFMT " ) object %s\n",
 	     elfsh_get_dynsymbol_name(file, sym), off, (eresi_Addr) plt->shdr->sh_addr + off, plt->parent->name);
 #endif
 
@@ -254,7 +262,7 @@ elfsh_Sym	*elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
 
 /**
  * Fixup the dynamic symbol table (recompute all zeroed symbols)
- * Useful on recent versions of ld 
+ * Useful on recent versions of ld
  *
  * @param dynsym
  * @return
@@ -291,7 +299,7 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
 	  off = off - entsz + elfsh_get_first_pltentsz(dynsym->parent);
 	  continue;
 	}
-      
+
       /* Get the existing symbol name for this plt entry ... */
       sym = elfsh_get_sym_by_value(dynsym->data,
 				   dynsym->shdr->sh_size / sizeof(elfsh_Sym),
@@ -303,19 +311,19 @@ int			elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
       if (sym == NULL)
 	{
 	  sym = elfsh_restore_dynsym(dynsym->parent, plt, off, dynsym);
-	  
+
 	  if (sym != NULL)
 	    {
 	      name = elfsh_get_dynsymbol_name(plt->parent, sym);
-	      
-	      /* __gmon_start__ should not be resolved 
+
+	      /* __gmon_start__ should not be resolved
 		 if it was not already done by gcc */
 	      if (name && !strcmp(name, "__gmon_start__"))
 		sym->st_value = 0x0;
 	    }
 	}
     }
-  
+
   elfsh_set_mode(mode);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

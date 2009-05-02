@@ -50,7 +50,7 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_FLOWJACK  , cmd_flowjack      , revm_getoption2,   1, HLP_FLOWJACK);
   revm_command_add(CMD_ADDGOTO   , cmd_addgoto       , revm_getoption2,   1, HLP_ADDGOTO);
   revm_command_add(CMD_SETGVL    , cmd_setgvl        , revm_getoption,    1, HLP_SETGVL);
-  revm_command_add(CMD_RENAME     , cmd_rename        , revm_getoption2,   1, HLP_RENAME);  
+  revm_command_add(CMD_RENAME     , cmd_rename        , revm_getoption2,   1, HLP_RENAME);
   revm_command_add(CMD_CONTROL   , cmd_control       , NULL,            1, HLP_CONTROL);
 
   revm_command_add(CMD_ITRACE, cmd_kedbgitrace, NULL, 0, HLP_ITRACE);
@@ -67,6 +67,9 @@ void     kedbg_register_vector(void)
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_readmema);
   elfsh_register_readmem(ELFSH_OS_LINUX,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
   elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
+  elfsh_register_readmema(ELFSH_OS_ARM, ELFSH_IOTYPE_GDBPROT, kedbg_readmema);
+  elfsh_register_readmem(ELFSH_OS_ARM,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
+  elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
   e2dbg_register_pregshook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_print_reg);
   e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
