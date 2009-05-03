@@ -25,8 +25,12 @@
 #define  KERBASEADDR       0xc0000000
 #define  BPCODE            0xcc
 #define  MEMINJECT         0x500
-#define	 CR0STR		   "637230"
+#define	 CR0STR		       "637230"
 #define  MONITOREMUL       "r cr0"
+#define  MONITORSTEP       "step"
+#define  MONITORHALT       "halt"
+#define  MONITORRESUME     "resume"
+#define  MONITORRESETHALT  "reset halt"
 
 
 /* Debug flags */
