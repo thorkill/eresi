@@ -39,10 +39,10 @@ do						\
   _command;					\
 } while(0)
 #else
-#define DEBUGMSG(_command)				
+#define DEBUGMSG(_command)
 #endif
 
-typedef struct 
+typedef struct
 {
   /* Offset for the bp (see cmd_kedbgcont). */
   u_char offset;

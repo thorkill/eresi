@@ -375,7 +375,6 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
 	PROFILER_ERRQ("buf is NULL !", buf);
       ASSERT(buf != NULL);
       ret = gdbwrap_readmem(loc, addr, size);
-      revm_output(ret);
 
       /* gdbserver sends a string, we need to convert it. Note that 2
 	 characters = 1 real Byte.*/

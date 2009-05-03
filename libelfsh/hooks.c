@@ -621,7 +621,6 @@ void		elfsh_setup_hooks()
   /* It appears that the OS field of some binary is set to 'ELF_OSABI_ARM' ... */
   elfsh_register_readmem(ELFSH_OS_ARM, ELFSH_IOTYPE_EMBEDDED   , elfsh_get_raw);
   elfsh_register_readmem(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_get_raw);
-  elfsh_register_readmem(ELFSH_OS_ARM, ELFSH_IOTYPE_GDBPROT     , elfsh_get_raw);
 
   /* Register handlers for READMEMA hook */
   elfsh_register_readmema(ELFSH_OS_LINUX, ELFSH_IOTYPE_EMBEDDED  , elfsh_get_raw_by_addr);
@@ -642,7 +641,6 @@ void		elfsh_setup_hooks()
   elfsh_register_readmema(ELFSH_OS_HPUX, ELFSH_IOTYPE_STATIC     , elfsh_get_raw_by_addr);
   elfsh_register_readmema(ELFSH_OS_ARM, ELFSH_IOTYPE_EMBEDDED   , elfsh_get_raw_by_addr);
   elfsh_register_readmema(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_get_raw_by_addr);
-  elfsh_register_readmema(ELFSH_OS_ARM, ELFSH_IOTYPE_GDBPROT     , elfsh_get_raw_by_addr);
 
   /* Register handlers for WRITEMEM hook */
   elfsh_register_writemem(ELFSH_OS_LINUX, ELFSH_IOTYPE_EMBEDDED  , elfsh_memcpy);
@@ -663,7 +661,6 @@ void		elfsh_setup_hooks()
   elfsh_register_writemem(ELFSH_OS_HPUX, ELFSH_IOTYPE_STATIC     , elfsh_memcpy);
   elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_EMBEDDED   , elfsh_memcpy);
   elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_STATIC     , elfsh_memcpy);
-  elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_GDBPROT     , elfsh_memcpy);
 
   /* Register handlers for READMEMF/WRITEMEMF hook */
   elfsh_register_readmemf(ELFSH_HOST_USER, LIBELFSH_MODE_STATIC, elfsh_raw_read);
