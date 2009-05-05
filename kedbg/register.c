@@ -33,6 +33,8 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_PROC, cmd_kedbgproc , NULL, 0, HLP_PROC);
   revm_command_add(CMD_GRAPH, cmd_kedbggraph, revm_getvarparams, 1, HLP_GRAPH);
 
+  revm_command_add(CMD_MONITOR, cmd_kedbgmonitor, revm_getvarparams, 1, HLP_MONITOR);
+
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
   revm_command_add(CMD_UNION    , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
@@ -86,5 +88,7 @@ void     kedbg_register_vector(void)
 			   ELFSH_OS_LINUX, kedbg_getpc_ia32);
   e2dbg_register_breakhook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_setbp);
+//  e2dbg_register_breakhook(ELFSH_ARCH_ARM, ELFSH_HOST_GDB, ELFSH_OS_ARM,
+//			   kedbg_setbp);
   e2dbg_register_delbreakhook(ELFSH_HOST_GDB, kedbg_delbp);
 }

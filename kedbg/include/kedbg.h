@@ -22,16 +22,19 @@
 #define KEDBG_EMBEDDED     2
 
 /* Various defined values */
-#define  KERBASEADDR       0xc0000000
-#define  BPCODE            0xcc
-#define  MEMINJECT         0x500
-#define	 CR0STR		       "637230"
-#define  MONITOREMUL       "r cr0"
-#define  MONITORSTEP       "step"
-#define  MONITORHALT       "halt"
-#define  MONITORRESUME     "resume"
-#define  MONITORRESETHALT  "reset halt"
-
+#define  KERBASEADDR            0xc0000000
+#define  BPCODE                 0xcc
+#define  MEMINJECT              0x500
+#define	 CR0STR		            "637230"
+#define  MONITOREMUL            "r cr0"
+#define  MONITORSTEP            "step"
+#define  MONITORBREAK           "break"
+#define  MONITORHALT            "halt"
+#define  MONITORRESUME          "resume"
+#define  MONITORRESETHALT       "reset halt"
+#define  CMD_MONITOR            "monitor"
+#define  CMD_MONITOR_RESETHALT  "reset_halt"
+#define  HLP_MONITOR            "Runs remote monitor commands on GDB servers."
 
 /* Debug flags */
 #define __DEBUG_KEDBG__	   FALSE
@@ -70,3 +73,4 @@ int             cmd_kedbghookivt(void);
 int             cmd_kedbgitrace(void);
 int             cmd_kedbgproc(void);
 int             cmd_kedbggraph(void);
+int             cmd_kedbgmonitor(void);

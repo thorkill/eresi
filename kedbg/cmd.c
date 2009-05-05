@@ -283,3 +283,47 @@ int             cmd_kedbggraph(void)
   PROFILER_ROUTQ(0);
 }
 
+int            cmd_kedbgmonitor(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  char          *ret;
+  char          cmd_bp[30];
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  switch (world.curjob->curcmd->argc)
+  {
+    case 0:
+      printf("\n Usage: monitor <sub_cmd>\n");
+      break;
+
+    default:
+      if (!strcmp(MONITORRESUME, world.curjob->curcmd->param[0]))
+        ret = gdbwrap_remotecmd(loc, MONITORRESUME);
+      else if (!strcmp(CMD_MONITOR_RESETHALT, world.curjob->curcmd->param[0]))
+        ret = gdbwrap_remotecmd(loc, MONITORRESETHALT);
+      else if (!strcmp(MONITORSTEP, world.curjob->curcmd->param[0]))
+        ret = gdbwrap_remotecmd(loc, MONITORSTEP);
+      else if (!strcmp(MONITORHALT, world.curjob->curcmd->param[0]))
+        ret = gdbwrap_remotecmd(loc, MONITORHALT);
+      else if (!strcmp(MONITORBREAK, world.curjob->curcmd->param[0]))
+      {
+        if (!world.curjob->curcmd->param[1] || !world.curjob->curcmd->param[2])
+  		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			     "Correct Usage: monitor break <address> <size>", -1);
+        else
+        {
+          snprintf(cmd_bp, sizeof(cmd_bp), "bp %s %s",
+              world.curjob->curcmd->param[1], world.curjob->curcmd->param[2]);
+              
+          ret = gdbwrap_remotecmd(loc, cmd_bp);
+        }
+      }
+      else
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			     "Requested Monitor <sub_cmd> not implemented.", -1);
+      break;
+  }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
