@@ -25,7 +25,8 @@ int asm_arm_b(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_bic(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_bkpt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_bl(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
-int asm_arm_blx(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_blx1(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_blx2(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_bx(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_cdp(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_clz(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -99,21 +100,26 @@ void arm_convert_ldst(struct s_arm_decode_ldst *opcode, u_char *buf);
 void arm_convert_ldst_misc(struct s_arm_decode_ldst_misc *opcode, u_char *buf);
 void arm_convert_ldst_mult(struct s_arm_decode_ldst_mult *opcode, u_char *buf);
 void arm_convert_multiply(struct s_arm_decode_multiply *opcode, u_char *buf);
+void arm_convert_branch1(struct s_arm_decode_branch1 *opcode, u_char *buf);
+void arm_convert_branch2(struct s_arm_decode_branch2 *opcode, u_char *buf);
 
 void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_dataproc *opcode);
 void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
 void arm_decode_ldst_misc_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst_misc *opcode);
 void arm_decode_multiply_long(asm_instr *ins, u_char *buf, struct s_arm_decode_multiply *opcode);
+void arm_decode_branch1_imm(asm_instr *ins, u_char *buf, struct s_arm_decode_branch1 *opcode);
 
-struct	s_asm_proc_arm
+struct  s_asm_proc_arm
 {
-  int	*dataproc_table;
-  int	*ldst_table;
-  int	*ldst_mult_table;
-  int	*ldst_misc_table;
-  int	*multiply_table;
-  int	*dsp_arith_table;
-  int	*dsp_multiply_table;
+  int   *dataproc_table;
+  int   *ldst_table;
+  int   *ldst_mult_table;
+  int   *ldst_misc_table;
+  int   *multiply_table;
+  int   *dsp_arith_table;
+  int   *dsp_multiply_table;
+  int   *branch1_table;
+  int   *branch2_table;
 };
 
 enum e_arm_shift
@@ -1851,5 +1857,7 @@ extern int	arm_ldst_mult_table[128];
 extern int	arm_multiply_table[256];
 extern int	arm_dsp_multiply_table[256];
 extern int	arm_dsp_arith_table[64];
+extern int	arm_branch1_table[32];
+extern int	arm_branch2_table[32];
 
 #endif /* _LIBASM_ARM_H_ */

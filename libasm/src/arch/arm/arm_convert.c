@@ -134,3 +134,37 @@ void	arm_convert_ldst_mult(struct s_arm_decode_ldst_mult *opcode, u_char *buf)
 #endif
 }
 
+void    arm_convert_branch1(struct s_arm_decode_branch1 *opcode, u_char *buf)
+{
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  int   converted;
+
+  memcpy(&converted,buf,4);
+
+  opcode->cond = (converted >> 28) & 0x0F;
+  opcode->op = (converted >> 25) & 0x07;
+  opcode->l_h = (converted >> 24) & 0x01;
+  opcode->signed_imm = converted & 0x00FFFFFF;
+
+#else
+  memcpy(opcode,buf,4);
+#endif
+}
+
+void    arm_convert_branch2(struct s_arm_decode_branch2 *opcode, u_char *buf)
+{
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  int   converted;
+
+  memcpy(&converted,buf,4);
+
+  opcode->cond = (converted >> 28) & 0x0F;
+  opcode->none1 = (converted >> 6) & 0x03FFFFF;
+  opcode->op = (converted >> 5) & 0x01;
+  opcode->none2 = (converted >> 4) & 0x01;
+  opcode->rm = converted & 0x0F;
+
+#else
+  memcpy(opcode,buf,4);
+#endif
+}

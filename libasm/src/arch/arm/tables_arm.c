@@ -1601,6 +1601,86 @@ int	arm_dsp_arith_table[64] =
 
   };
 
+/* l_h (1bit) | cond (4bit)  */
+int	arm_branch1_table[32] =
+  {
+    /* B */
+    ASM_ARM_BEQ,
+    ASM_ARM_BNE,
+    ASM_ARM_BCS,
+    ASM_ARM_BCC,
+    ASM_ARM_BMI,
+    ASM_ARM_BPL,
+    ASM_ARM_BVS,
+    ASM_ARM_BVC,
+    ASM_ARM_BHI,
+    ASM_ARM_BLS,
+    ASM_ARM_BGE,
+    ASM_ARM_BLT,
+    ASM_ARM_BGT,
+    ASM_ARM_BLE,
+    ASM_ARM_B,
+    ASM_ARM_BLX1,
+
+    /* BL */
+    ASM_ARM_BLEQ,
+    ASM_ARM_BLNE,
+    ASM_ARM_BLCS,
+    ASM_ARM_BLCC,
+    ASM_ARM_BLMI,
+    ASM_ARM_BLPL,
+    ASM_ARM_BLVS,
+    ASM_ARM_BLVC,
+    ASM_ARM_BLHI,
+    ASM_ARM_BLLS,
+    ASM_ARM_BLGE,
+    ASM_ARM_BLLT,
+    ASM_ARM_BLGT,
+    ASM_ARM_BLLE,
+    ASM_ARM_BL,
+    ASM_ARM_BLX1
+  };
+
+/* op (1bit) | cond (4bit)  */
+int	arm_branch2_table[32] =
+  {
+    /* BX */
+    ASM_ARM_BXEQ,
+    ASM_ARM_BXNE,
+    ASM_ARM_BXCS,
+    ASM_ARM_BXCC,
+    ASM_ARM_BXMI,
+    ASM_ARM_BXPL,
+    ASM_ARM_BXVS,
+    ASM_ARM_BXVC,
+    ASM_ARM_BXHI,
+    ASM_ARM_BXLS,
+    ASM_ARM_BXGE,
+    ASM_ARM_BXLT,
+    ASM_ARM_BXGT,
+    ASM_ARM_BXLE,
+    ASM_ARM_BX,
+    ASM_ARM_,
+
+    /* BLX(2) */
+    ASM_ARM_BLX2EQ,
+    ASM_ARM_BLX2NE,
+    ASM_ARM_BLX2CS,
+    ASM_ARM_BLX2CC,
+    ASM_ARM_BLX2MI,
+    ASM_ARM_BLX2PL,
+    ASM_ARM_BLX2VS,
+    ASM_ARM_BLX2VC,
+    ASM_ARM_BLX2HI,
+    ASM_ARM_BLX2LS,
+    ASM_ARM_BLX2GE,
+    ASM_ARM_BLX2LT,
+    ASM_ARM_BLX2GT,
+    ASM_ARM_BLX2LE,
+    ASM_ARM_BLX2,
+    ASM_ARM_
+  };
+
 char 	*arm_instr_list[ASM_ARM_BAD + 1] = 
   {
     "(unimpl)",

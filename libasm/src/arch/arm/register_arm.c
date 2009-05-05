@@ -150,7 +150,7 @@ int     asm_register_arm_instructions()
 
   asm_register_arm_opcode(0x00, 0x06, 0x03, (unsigned long) asm_arm_bx);
   asm_register_arm_opcode(0x00, 0x06, 0x07, (unsigned long) asm_arm_clz);
-  asm_register_arm_opcode(0x00, 0x06, 0x00, (unsigned long) asm_arm_blx); /* BLX(2) */
+  asm_register_arm_opcode(0x00, 0x06, 0x00, (unsigned long) asm_arm_blx2); /* BLX(2) */
   asm_register_arm_opcode(0x00, 0x06, 0x09, (unsigned long) asm_arm_bkpt);
   /* data processing */
   asm_register_arm_opcode(0x00, 0x07, 0x00, (unsigned long) asm_arm_and);
@@ -191,7 +191,7 @@ int     asm_register_arm_instructions()
   /* branch */
   asm_register_arm_opcode(0x02, 0x01, 0x00, (unsigned long) asm_arm_b);
   asm_register_arm_opcode(0x02, 0x01, 0x01, (unsigned long) asm_arm_bl);
-  asm_register_arm_opcode(0x02, 0x01, 0x02, (unsigned long) asm_arm_blx); /* BLX(1) */
+  asm_register_arm_opcode(0x02, 0x01, 0x02, (unsigned long) asm_arm_blx1); /* BLX(1) */
 
   /* coprocessor */
   asm_register_arm_opcode(0x03, 0x00, 0x00, (unsigned long) asm_arm_mcrr);
