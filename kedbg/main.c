@@ -426,10 +426,16 @@ int             main(int argc, char **argv)
 
   /* Let's say hello to the server, gdbstyle 8) */
   gdbwrap_hello(gdbwrap_current_get());
-  kedbgworld.gdbmemap = gdbwrap_memorymap_get();
-  //XXX: ADD SOME MEMORYMAP INFO PRINT HERE
 
-  snprintf(memap, 500, "\n---MemoryMap---\n--Flash--\n-start:0x%X\n-length:%u\n-blocksize:%u\n\n--RAM--\n-start:0x%X\n-length:%u\n\n--ROM--\n-start:0x%X\n-length:%u\n", kedbgworld.gdbmemap->flash.start, kedbgworld.gdbmemap->flash.length, kedbgworld.gdbmemap->flash.blocksize, kedbgworld.gdbmemap->ram.start, kedbgworld.gdbmemap->ram.length, kedbgworld.gdbmemap->rom.start, kedbgworld.gdbmemap->rom.length);
+  kedbgworld.gdbmemap = gdbwrap_memorymap_get();
+
+  snprintf(memap, 500, "\n---MemoryMap---\n--Flash--\n-start:0x%X\n"
+         "-length:%u\n-blocksize:%u\n\n--RAM--\n-start:0x%X\n-length:%u\n\n"
+         "--ROM--\n-start:0x%X\n-length:%u\n",
+         kedbgworld.gdbmemap->flash.start, kedbgworld.gdbmemap->flash.length,
+         kedbgworld.gdbmemap->flash.blocksize, kedbgworld.gdbmemap->ram.start,
+         kedbgworld.gdbmemap->ram.length, kedbgworld.gdbmemap->rom.start,
+         kedbgworld.gdbmemap->rom.length);
 
   revm_output(memap);
 

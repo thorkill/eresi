@@ -67,7 +67,7 @@ int             cmd_kedbgcont(void)
   revm_output("[*] Continuing process\n");
 
   kedbg_step_over_bp(loc->reg32.eip);
-  
+
   if (!e2dbgworld.curthread->step)
     {
       gdbwrap_continue(loc);
@@ -83,7 +83,7 @@ int             cmd_kedbgcont(void)
 	  else
 	    if (gdbwrap_lastsignal(loc) == SIGTRAP)
 	      {
-		
+
 		if (kedbgworld.offset)
 		  {
 		    eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
@@ -117,7 +117,7 @@ int             cmd_kedbgcont(void)
     }
   else
     kedbg_stepandprint();
-  
+
   if (!gdbwrap_is_active(loc))
     cmd_quit();
 
@@ -149,7 +149,7 @@ int             cmd_kedbgstep(void)
 
 int             cmd_kedbgquit(void)
 {
-  gdbwrap_t     *loc = gdbwrap_current_get(); 
+  gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
   gdbwrap_bye(loc);
@@ -162,12 +162,12 @@ int             cmd_kedbgprintivt(void)
 {
   uint32_t      ivt[256];
   short         i;
-  
+
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
   e2dbg_output(" .:: IVT ::. \n\n");
   for (i = 0; i < 256; i++)
-    {    
+    {
       if (!(i % 8))
 	printf("\n0x%02x | ", i);
       printf("0x%08x ", ivt[i]);
@@ -201,7 +201,7 @@ int             cmd_kedbghookivt(void)
   u_short       ivtinc;
   uint32_t      finaladdr;
   elfshbp_t	*bp;
-  
+
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
   for (ivtinc = 0; ivtinc < 256; ivtinc++)
@@ -235,7 +235,7 @@ void            kedbg_itracesigint(int sig)
 
 
 /**
- * Do steppig until we reach a known breakpoint. 
+ * Do steppig until we reach a known breakpoint.
  **/
 int             cmd_kedbgitrace(void)
 {
@@ -286,7 +286,7 @@ int             cmd_kedbggraph(void)
 int            cmd_kedbgmonitor(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  char          *ret;
+  char          *ret = NULL;
   char          cmd_bp[30];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -309,19 +309,21 @@ int            cmd_kedbgmonitor(void)
       else if (!strcmp(MONITORBREAK, world.curjob->curcmd->param[0]))
       {
         if (!world.curjob->curcmd->param[1] || !world.curjob->curcmd->param[2])
-  		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+  		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			     "Correct Usage: monitor break <address> <size>", -1);
         else
         {
           snprintf(cmd_bp, sizeof(cmd_bp), "bp %s %s",
               world.curjob->curcmd->param[1], world.curjob->curcmd->param[2]);
-              
+
           ret = gdbwrap_remotecmd(loc, cmd_bp);
         }
       }
       else
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			     "Requested Monitor <sub_cmd> not implemented.", -1);
+      if (ret)
+        printf("\n%s\n", ret);
       break;
   }
 
