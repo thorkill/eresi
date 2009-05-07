@@ -427,6 +427,7 @@ int             main(int argc, char **argv)
   /* Let's say hello to the server, gdbstyle 8) */
   gdbwrap_hello(gdbwrap_current_get());
 
+  /* Let's get a memory map and print it */
   kedbgworld.gdbmemap = gdbwrap_memorymap_get();
 
   snprintf(memap, 500, "\n---MemoryMap---\n--Flash--\n-start:0x%X\n"
@@ -444,6 +445,8 @@ int             main(int argc, char **argv)
   gdbwrap_reason_halted(gdbwrap_current_get());
   kedbg_get_regvars_ia32();
   kedbg_present_set();
+
+
   return kedbg_main(argc, argv);
 }
 

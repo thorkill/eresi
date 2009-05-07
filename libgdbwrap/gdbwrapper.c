@@ -306,7 +306,8 @@ static void         gdbwrap_populate_reg(gdbwrap_t *desc, char *packet)
 
 static void          gdbwrap_send_ack(gdbwrap_t *desc)
 {
-  send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM), 0x0);
+  if (gdbwrapworld.is_no_ack_mode == FALSE)
+    send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM), 0x0);
 }
 
 
@@ -404,11 +405,19 @@ static char          *gdbwrap_send_data(gdbwrap_t *desc, const char *query)
 
   if (gdbwrap_is_active(desc))
     {
-      do
-	{
+    if (gdbwrapworld.is_no_ack_mode)
+    {
 	  mes  = gdbwrap_make_message(desc, query);
 	  rval = send(desc->fd, mes, strlen(mes), 0);
-	} while(gdbwrap_check_ack(desc) != TRUE);
+    }
+    else
+    {
+      do
+	  {
+        mes  = gdbwrap_make_message(desc, query);
+        rval = send(desc->fd, mes, strlen(mes), 0);
+	  } while(gdbwrap_check_ack(desc) != TRUE);
+    }
 
       ASSERT(rval != -1);
       mes  = gdbwrap_get_packet(desc);
@@ -540,6 +549,8 @@ gdbwrap_t            *gdbwrap_init(int fd)
   desc->interrupted       = FALSE;
   ASSERT(desc->packet != NULL);
 
+
+  gdbwrapworld.is_no_ack_mode = FALSE;
   return desc;
 }
 
@@ -563,14 +574,25 @@ void                gdbwrap_hello(gdbwrap_t *desc)
   char              *result      = NULL;
   unsigned          previousmax  = 0;
 
+  gdbwrapworld.is_no_ack_mode = FALSE;
   received = gdbwrap_send_data(desc, GDBWRAP_QSUPPORTED);
 
   if (received != NULL)
     {
+
+      /* Check if the server is in NoAckMode */
+      if (strstr(received, "QStartNoAckMode+"))
+      {
+        gdbwrapworld.is_no_ack_mode = TRUE;
+        gdbwrap_send_data(desc, "QStartNoAckMode");
+      }
+
       result   = gdbwrap_extract_from_packet(received, desc->packet,
 					     GDBWRAP_PACKETSIZE,
 					     GDBWRAP_SEP_SEMICOLON,
 					     desc->max_packet_size);
+
+
 
       /* If we receive the info, we update gdbwrap_max_packet_size. */
       if (result != NULL)

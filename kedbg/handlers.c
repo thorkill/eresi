@@ -376,10 +376,20 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
       ASSERT(buf != NULL);
       ret = gdbwrap_readmem(loc, addr, size);
 
+
+      //FIXME: THIS IS A WORKAROUND. NEED TO FIX THIS LATER.
+      //For somehow, sometimes ret=0 and when we reach the
+      //loop i=1 in the for below, we call gdbwrap_atoh(0x2, 2)
+      //0x2 is considered out of bounds and so we have a SEGFAULT.
+      //Still not sure why this happen, but this solve it in the meanwhile.
+      if (ret == 0)
+        charbuf[0] = (u_char) '0';
+      else{
       /* gdbserver sends a string, we need to convert it. Note that 2
 	 characters = 1 real Byte.*/
       for (i = 0; i < size; i++)
 	charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
+    }
     }
 
   PROFILER_ROUTQ(charbuf);

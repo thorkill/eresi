@@ -26,17 +26,40 @@ typedef struct  gdbwrap_gdbreg32
   ureg32   gs;
 } gdbwrap_gdbreg32;
 
+typedef struct  gdbwrap_gdbARMreg32
+{
+  ureg32   r0;
+  ureg32   r1;
+  ureg32   r2;
+  ureg32   r3;
+  ureg32   r4;
+  ureg32   r5;
+  ureg32   r6;
+  ureg32   r7;
+  ureg32   r8;
+  ureg32   r9;
+  ureg32   r10;
+  ureg32   r11;
+  ureg32   r12;
+  ureg32   r13; //SP reg (XXX: add pointers with these names also?!
+  ureg32   r14; //LR reg
+  ureg32   r15; //PC reg
+  ureg32   cspr;
+  ureg32   spsr;
+} gdbwrap_gdbARMreg32;
+
 
 typedef struct gdbwrap_t
 {
-  char             *packet;
-  int              fd;
-  unsigned         max_packet_size;
-  gdbwrap_gdbreg32 reg32;
-  Bool             is_active;
-  Bool             erroroccured;
-  Bool             interrupted;
-  Bool             pmode;
+  char                 *packet;
+  int                  fd;
+  unsigned             max_packet_size;
+  gdbwrap_gdbreg32     reg32;
+  gdbwrap_gdbARMreg32  reg32_ARM;
+  Bool                 is_active;
+  Bool                 erroroccured;
+  Bool                 interrupted;
+  Bool                 pmode;
 } gdbwrap_t;
 
 typedef struct meminfo_t
@@ -59,6 +82,7 @@ typedef struct
 {
   gdbwrap_t   *gdbwrapptr;
   gdbmemap_t  *gdbmemapptr;
+  Bool        is_no_ack_mode;
 } gdbwrapworld_t;
 
 Bool             gdbwrap_erroroccured(gdbwrap_t *desc);
