@@ -38,14 +38,33 @@ typedef struct  gdbwrap_gdbARMreg32
   ureg32   r7;
   ureg32   r8;
   ureg32   r9;
-  ureg32   r10;
-  ureg32   r11;
+  ureg32   r10; //SL reg
+  ureg32   r11; //FP reg
   ureg32   r12;
-  ureg32   r13; //SP reg (XXX: add pointers with these names also?!
-  ureg32   r14; //LR reg
+  ureg32   r13_usr; //SP reg (XXX: add pointers with these names also?!)
+  ureg32   r14_usr; //LR reg
   ureg32   r15; //PC reg
-  ureg32   cspr;
-  ureg32   spsr;
+  ureg32   r8_fiq;
+  ureg32   r9_fiq;
+  ureg32   r10_fiq;
+  ureg32   r11_fiq;
+  ureg32   r12_fiq;
+  ureg32   r13_fiq;
+  ureg32   r14_fiq;
+  ureg32   r13_irq;
+  ureg32   r14_irq;
+  ureg32   r13_svc;
+  ureg32   r14_svc;
+  ureg32   r13_abt;
+  ureg32   r14_abt;
+  ureg32   r13_und;
+  ureg32   r14_und;
+  ureg32   cpsr;
+  ureg32   spsr_fiq;
+  ureg32   spsr_irq;
+  ureg32   spsr_svc;
+  ureg32   spsr_abt;
+  ureg32   spsr_und;
 } gdbwrap_gdbARMreg32;
 
 
@@ -116,5 +135,6 @@ char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 u_char           gdbwrap_lasterror(gdbwrap_t *desc);
 gdbmemap_t       *gdbwrap_memorymap_get();
 void             *gdbwrap_memorymap_read(gdbwrap_t *desc);
+gdbwrap_gdbARMreg32     *gdbwrap_readgenARMreg(gdbwrap_t *desc);
 
 

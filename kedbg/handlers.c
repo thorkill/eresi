@@ -341,6 +341,33 @@ void            kedbg_print_reg(void)
   PROFILER_OUTQ();
 }
 
+void            kedbg_print_ARMreg(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  gdbwrap_gdbARMreg32 *reg;
+
+  PROFILER_INQ();
+  reg = &loc->reg32_ARM;
+  e2dbg_register_dump("r0", reg->r0);
+  e2dbg_register_dump("r1", reg->r1);
+  e2dbg_register_dump("r2", reg->r2);
+  e2dbg_register_dump("r3", reg->r3);
+  e2dbg_register_dump("r4", reg->r4);
+  e2dbg_register_dump("r5", reg->r5);
+  e2dbg_register_dump("r6", reg->r6);
+  e2dbg_register_dump("r7", reg->r7);
+  e2dbg_register_dump("r8", reg->r8);
+  e2dbg_register_dump("r9", reg->r9);
+  e2dbg_register_dump("r10", reg->r10);
+  e2dbg_register_dump("r11", reg->r11);
+  e2dbg_register_dump("r12", reg->r12);
+//FIXME: add all r13 and r14, for all arm states
+//  e2dbg_register_dump("r13", reg->es);
+//  e2dbg_register_dump("r14", reg->fs);
+  e2dbg_register_dump("PC (r15)", reg->r15);
+
+  PROFILER_OUTQ();
+}
 
 void            kedbg_sigint(int sig)
 {
@@ -437,6 +464,15 @@ eresi_Addr      *kedbg_getpc_ia32(void)
   PROFILER_ROUTQ((eresi_Addr *)&loc->reg32.eip);
 }
 
+eresi_Addr      *kedbg_getpc_ARM(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  PROFILER_INQ();
+  /* First update all the reg. */
+  gdbwrap_readgenARMreg(loc);
+  PROFILER_ROUTQ((eresi_Addr *)&loc->reg32_ARM.r15);
+}
 
 /**
  * We first sync the registers with the server, then we write the new
@@ -465,6 +501,23 @@ void            kedbg_set_regvars_ia32(void)
   PROFILER_OUTQ();
 }
 
+void            kedbg_set_regvars_ARM(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+  gdbwrap_gdbARMreg32   *reg;
+
+  PROFILER_INQ();
+  reg =  gdbwrap_readgenARMreg(loc);
+  if (reg != NULL)
+    {
+    //FIXME: ADD E2DBG_ for all ARM registers ?!
+    // then, finish this
+//      E2DBG_SETREG(E2DBG_R0_VAR, reg->r0);
+      E2DBG_SETREG(E2DBG_SP_VAR,  reg->r13_usr);
+      E2DBG_SETREG(E2DBG_PC_VAR,  reg->r15);
+    }
+  PROFILER_OUTQ();
+}
 
 void            kedbg_get_regvars_ia32(void)
 {
@@ -487,6 +540,18 @@ void            kedbg_get_regvars_ia32(void)
   PROFILER_OUTQ();
 }
 
+void            kedbg_get_regvars_ARM(void)
+{
+  gdbwrap_t     *loc = gdbwrap_current_get();
+
+  PROFILER_INQ();
+  gdbwrap_readgenARMreg(loc);
+
+//FIXME: ADD E2DBG_ for all ARM registers ?!
+// then, finish this
+//  E2DBG_GETREG(E2DBG_R0_VAR, loc->reg32_ARM.r0);
+  PROFILER_OUTQ();
+}
 
 void            kedbg_shipallreg(void)
 {

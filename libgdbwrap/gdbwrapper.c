@@ -672,6 +672,30 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
     return NULL;
 }
 
+gdbwrap_gdbARMreg32     *gdbwrap_readgenARMreg(gdbwrap_t *desc)
+{
+  char               *rec;
+  unsigned           i;
+  ureg32             regvalue;
+
+  rec = gdbwrap_remotecmd(desc, "reg");
+  //FIXME: The below calcs are wrong for monitor reg command!
+  if (gdbwrap_is_active(desc))
+    {
+      for (i = 0; i < sizeof(gdbwrap_gdbARMreg32) / sizeof(ureg32); i++)
+	{
+	  /* 1B = 2 characters */
+	  regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
+	  regvalue = gdbwrap_little_endian(regvalue);
+	  *(&desc->reg32_ARM.r0 + i) = regvalue;
+	  rec += 2 * DWORD_IN_BYTE;
+	}
+
+      return &desc->reg32_ARM;
+    }
+  else
+    return NULL;
+}
 
 void                 gdbwrap_continue(gdbwrap_t *desc)
 {
