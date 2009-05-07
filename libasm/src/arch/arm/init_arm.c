@@ -116,6 +116,8 @@ int     asm_init_arm(asm_processor *proc)
   inter->multiply_table = arm_multiply_table;
   inter->dsp_multiply_table = arm_dsp_multiply_table;
   inter->dsp_arith_table = arm_dsp_arith_table;
+  inter->branch1_table = arm_branch1_table;
+  inter->branch2_table = arm_branch2_table;
 
   asm_arch_register(proc, 0);
 

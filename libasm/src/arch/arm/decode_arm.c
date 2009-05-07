@@ -109,3 +109,14 @@ void	arm_decode_multiply_long(asm_instr *ins, u_char *buf,
   ins->op[3].baser = opcode->r3; /* This is Rm */
   asm_arm_op_fetch(&ins->op[3], buf, ASM_ARM_OTYPE_REGISTER, ins);
 }
+
+void    arm_decode_branch1_imm(asm_instr *ins, u_char *buf,
+                               struct s_arm_decode_branch1 *opcode)
+{
+  /* Address = PC + 8 + (SignExt(imm) << 2) */
+  if (opcode->signed_imm & 0x0800000)
+    /* Sign extend */
+    ins->op[0].imm |= 0xFF000000;
+  ins->op[0].imm <<= 2;
+  ins->op[0].imm += 8;
+}

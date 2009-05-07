@@ -1,7 +1,7 @@
 #ifndef LIBASM_ARM_DECODE_H
 #define LIBASM_ARM_DECODE_H
 
-/* B, BL, BLX(2) */
+/* B, BL, BLX(1) */
 struct s_arm_decode_branch1
 {
   u_int32_t	cond:4;
@@ -9,12 +9,15 @@ struct s_arm_decode_branch1
   u_int32_t	l_h:1;
   u_int32_t	signed_imm:24;
 };
+
 /* BLX(2), BX */
 struct s_arm_decode_branch2
 {
-  u_int32_t	cond:4;
-  u_int32_t	none:24;
-  u_int32_t	rm:4;
+  u_int32_t     cond:4;
+  u_int32_t     none1:22;
+  u_int32_t     op:1;
+  u_int32_t     none2:1;
+  u_int32_t     rm:4;
 };
 
 struct s_arm_decode_dataproc
