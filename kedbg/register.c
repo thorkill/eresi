@@ -73,9 +73,9 @@ void     kedbg_register_vector(void)
   elfsh_register_readmem(ELFSH_OS_ARM,  ELFSH_IOTYPE_GDBPROT, kedbg_readmem);
   elfsh_register_writemem(ELFSH_OS_ARM, ELFSH_IOTYPE_GDBPROT, kedbg_writemem);
   e2dbg_register_pregshook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
-			   kedbg_print_reg);
+			   kedbg_print_reg_ia32);
   e2dbg_register_pregshook(ELFSH_ARCH_ARM, ELFSH_HOST_GDB, ELFSH_OS_ARM,
-			   kedbg_print_ARMreg);
+			   kedbg_print_reg_arm);
   e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_getfp);
   e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,

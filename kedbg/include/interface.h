@@ -26,7 +26,8 @@ void            *kedbg_readmem(elfshsect_t *base);
 eresi_Addr      *kedbg_getpc_ia32(void);
 void            kedbg_set_regvars_ia32(void);
 void            kedbg_get_regvars_ia32(void);
-void            kedbg_print_reg(void);
+void            kedbg_print_reg_ia32(void);
+void            kedbg_print_reg_arm(void);
 void            kedbg_sigint(int sig);
 void            kedbg_continue(void);
 void            kedbg_shipallreg(void);
@@ -35,7 +36,6 @@ Bool            kedbg_isrealmode(void);
 eresi_Addr      kedbg_realmode_memalloc(u_int sizem, u_int prot);
 
 eresi_Addr      *kedbg_getpc_ARM(void);
-void            kedbg_print_ARMreg(void);
 void            kedbg_set_regvars_ARM(void);
 void            kedbg_get_regvars_ARM(void);
 

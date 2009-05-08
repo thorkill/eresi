@@ -24,6 +24,7 @@ extern char **environ;
 #include "revm.h"
 #include "aproxy.h"
 #include "libstderesi.h"
+#include "libe2dbg-arm.h"
 
 #if defined(__FreeBSD__)
  #include <pthread_np.h>

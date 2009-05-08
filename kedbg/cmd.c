@@ -24,10 +24,10 @@ static void     kedbg_stepandprint(void)
 
 int             cmd_kedbg_dump_regs(void)
 {
-  //FIXME: ADD ARM REGs VERSION
   PROFILER_INQ();
   e2dbg_output(" .:: Registers ::. \n\n");
-  kedbg_get_regvars_ia32();
+//  kedbg_get_regvars_ia32();
+  e2dbg_getregs(); //this shall call the right get_regvars
   e2dbg_printregs();
   e2dbg_output("\n");
   PROFILER_ROUTQ(0);

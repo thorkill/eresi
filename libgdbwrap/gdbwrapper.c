@@ -502,7 +502,9 @@ unsigned             gdbwrap_atoh(const char * str, unsigned size)
   unsigned           hex;
 
   for (i = 0, hex = 0; i < size; i++)
-    if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
+    if (str[i] == '\n')
+      continue;
+    else if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
     else if (str != NULL && str[i] >= '0' && str[i] <= '9')
       hex += (str[i] - 0x30) << 4 * (size - i - 1);
@@ -674,22 +676,38 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
 
 gdbwrap_gdbARMreg32     *gdbwrap_readgenARMreg(gdbwrap_t *desc)
 {
-  char               *rec;
-  unsigned           i;
-  ureg32             regvalue;
+  char         *rec;
+  char         b[3000];
+  char         *temp;
+  int          i;
+//  ureg32             regvalue;
 
   rec = gdbwrap_remotecmd(desc, "reg");
-  //FIXME: The below calcs are wrong for monitor reg command!
+  strcpy(b, "");
+
+  for (i=0; i<(strlen(rec)/2); i++)
+  {
+      temp = rec + (2*i);
+      sprintf(b, "%s%c", b, gdbwrap_atoh(temp, 2));
+  }
+
   if (gdbwrap_is_active(desc))
     {
       for (i = 0; i < sizeof(gdbwrap_gdbARMreg32) / sizeof(ureg32); i++)
 	{
+      temp = strstr(b, "0x");
+      if (temp)
+	    *(&desc->reg32_ARM.r0 + i) = gdbwrap_atoh(temp+2, strlen(temp)-2);
+
+      temp += 1; //let's move on :P
+    }
+//        printf("string:%shex:%x\n", temp+2, atoh(temp+2, strlen(temp)-2));
+
 	  /* 1B = 2 characters */
-	  regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
-	  regvalue = gdbwrap_little_endian(regvalue);
-	  *(&desc->reg32_ARM.r0 + i) = regvalue;
-	  rec += 2 * DWORD_IN_BYTE;
-	}
+//	  regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
+//	  regvalue = gdbwrap_little_endian(regvalue);
+//	  rec += 2 * DWORD_IN_BYTE;
+//	}
 
       return &desc->reg32_ARM;
     }
