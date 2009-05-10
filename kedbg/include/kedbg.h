@@ -32,6 +32,7 @@
 #define  MONITORHALT            "halt"
 #define  MONITORRESUME          "resume"
 #define  MONITORRESETHALT       "reset halt"
+#define  MONITORREG             "reg"
 #define  CMD_MONITOR            "monitor"
 #define  CMD_MONITOR_RESETHALT  "reset_halt"
 #define  HLP_MONITOR            "Runs remote monitor commands on GDB servers."

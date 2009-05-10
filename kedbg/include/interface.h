@@ -11,9 +11,11 @@ int             cmd_kedbgprintivt(void);
 
 /* #include "gdbwrapper.h" */
 int             gdbwrap_simpleconnect(char *host, int port);
-eresi_Addr	*kedbg_getfp(void);
+eresi_Addr	*kedbg_getfp_ia32(void);
+eresi_Addr	*kedbg_getfp_ARM(void);
 void            *kedbg_bt_ia32(void *frame);
 void            *kedbg_getret_ia32(void *frame);
+void            *kedbg_getret_ARM(void *frame);
 void            kedbg_setstep(void);
 void            kedbg_resetstep(void);
 int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp);
