@@ -1,3 +1,4 @@
+#include "arm-flags.h"
 #include "kedbg.h"
 #include "interface.h"
 
@@ -75,13 +76,25 @@ eresi_Addr	*kedbg_getfp_ARM(void)
 
 void            *kedbg_getret_ARM(void *frame)
 {
-  la32          ptr = 0;
+  ureg32     ptr = 0;
+  ureg32     cpsr;
+  gdbwrap_t  *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
-  if (kedbg_isrealmode())
-    kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, WORD_IN_BYTE);
-  else
-    kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
+  /* First update all the reg. */
+  gdbwrap_readgenreg(loc);
+
+  cpsr = loc->reg32_ARM.r14_cpsr;
+
+  switch (cpsr & ARM_MODE)
+    {
+      case ARM_USR: ptr = loc->reg32_ARM.r14_usr; break;
+      case ARM_FIQ: ptr = loc->reg32_ARM.r14_fiq; break;
+      case ARM_IRQ: ptr = loc->reg32_ARM.r14_irq; break;
+      case ARM_SVC: ptr = loc->reg32_ARM.r14_svc; break;
+      case ARM_ABT: ptr = loc->reg32_ARM.r14_abt; break;
+      case ARM_UND: ptr = loc->reg32_ARM.r14_und; break;
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
