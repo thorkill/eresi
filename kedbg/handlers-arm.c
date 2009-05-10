@@ -84,7 +84,7 @@ void            *kedbg_getret_ARM(void *frame)
   /* First update all the reg. */
   gdbwrap_readgenreg(loc);
 
-  cpsr = loc->reg32_ARM.r14_cpsr;
+  cpsr = loc->reg32_ARM.cpsr;
 
   switch (cpsr & ARM_MODE)
     {
