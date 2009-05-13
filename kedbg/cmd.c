@@ -323,8 +323,9 @@ int            cmd_kedbgmonitor(void)
       else
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			     "Requested Monitor <sub_cmd> not implemented.", -1);
-      if (ret)
-        printf("\n%s\n", ret);
+// For debugging
+//      if (ret)
+//        printf("\n%s\n", ret);
       break;
   }
 

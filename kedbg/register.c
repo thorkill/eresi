@@ -78,14 +78,14 @@ void     kedbg_register_vector(void)
 			   kedbg_print_reg_ARM);
   e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			   kedbg_getfp_ia32);
-  e2dbg_register_getfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
+  e2dbg_register_getfphook(ELFSH_ARCH_ARM, ELFSH_HOST_GDB, ELFSH_OS_ARM,
 			   kedbg_getfp_ARM);
   e2dbg_register_nextfphook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			    kedbg_bt_ia32);
   e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
 			    kedbg_getret_ia32);
-  e2dbg_register_getrethook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB, ELFSH_OS_LINUX,
-			    kedbg_getret_ARM);
+//  e2dbg_register_getrethook(ELFSH_ARCH_ARM, ELFSH_HOST_GDB, ELFSH_OS_ARM,
+//			    kedbg_getret_ARM);
   e2dbg_register_sregshook(ELFSH_ARCH_IA32, ELFSH_HOST_GDB,
 			   ELFSH_OS_LINUX, kedbg_set_regvars_ia32);
   e2dbg_register_sregshook(ELFSH_ARCH_ARM, ELFSH_HOST_GDB,

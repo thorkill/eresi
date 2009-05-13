@@ -74,7 +74,7 @@ eresi_Addr	*kedbg_getfp_ARM(void)
 }
 
 
-void            *kedbg_getret_ARM(void *frame)
+void            *kedbg_get_latest_ret_ARM()
 {
   ureg32     ptr = 0;
   ureg32     cpsr;

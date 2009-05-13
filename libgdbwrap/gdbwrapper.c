@@ -339,6 +339,7 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
   int                 rval;
   int                 sumrval;
   char                checksum[3];
+  Bool                is_remote_output = FALSE;
 
   ASSERT(desc != NULL);
 
@@ -349,11 +350,22 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
     {
       /* In case the packet is splitted into many others. */
       rval = recv(desc->fd, desc->packet + sumrval, desc->max_packet_size, 0);
+
+      if (strstr(desc->packet, "$O#") && gdbwrapworld.is_no_ack_mode)
+        {
+          is_remote_output = TRUE;
+          break;
+        }
+
       sumrval += rval;
       if (errno == EINTR)
 	break;
     } while (sumrval >= 3 &&
 	     desc->packet[sumrval - 3] != GDBWRAP_END_PACKETC && rval);
+
+  /* If is remote output we have a very long packet starting with $O#4f */
+  if (is_remote_output)
+    return (desc->packet + 5);
 
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval)
@@ -678,37 +690,65 @@ gdbwrap_gdbARMreg32     *gdbwrap_readgenARMreg(gdbwrap_t *desc)
 {
   char         *rec;
   char         b[3000];
+  char         tempPacket[20000];
   char         *temp;
-  int          i;
-//  ureg32             regvalue;
+  int          i, j;
 
-  rec = gdbwrap_remotecmd(desc, "reg");
+//  XXX:change this back
+//  rec = gdbwrap_remotecmd(desc, "reg");
+  rec = gdbwrap_send_data(desc, "qRcmd,726567");
+  strcpy(b, "");
+  strcpy(tempPacket, "");
+
+  temp = rec;
+  j = 0;
+
+  while (strstr(temp, "$O"))
+    {
+      temp = strstr(temp, "$O");
+      if (strstr(temp, "$O#"))
+        {
+          temp = strstr(temp, "$O#");
+          temp += 1;
+          continue;
+        }
+      gdbwrap_extract_from_packet(temp, b, "$O", "#", strlen(temp));
+
+      if (strstr(b, "$O"))
+        rec = strstr(b, "$O");
+        *rec = '\0';
+
+      if (b != NULL && b[0] != '\0' && b[0] != 'K')
+        {
+          j += strlen(b);
+          strncat(tempPacket, b, 20000-j);
+        }
+
+      temp += 1; //let's move on
+    }
+
   strcpy(b, "");
 
-  for (i=0; i<(strlen(rec)/2); i++)
+  for (i=0; i<(strlen(tempPacket)/2); i++)
   {
-      temp = rec + (2*i);
+      temp = tempPacket + (2*i);
       sprintf(b, "%s%c", b, gdbwrap_atoh(temp, 2));
   }
 
   if (gdbwrap_is_active(desc))
     {
+      temp = b;
       for (i = 0; i < sizeof(gdbwrap_gdbARMreg32) / sizeof(ureg32); i++)
-	{
-      temp = strstr(b, "0x");
-      if (temp)
-	    *(&desc->reg32_ARM.r0 + i) = gdbwrap_atoh(temp+2, strlen(temp)-2);
-
-      temp += 1; //let's move on :P
-    }
-//        printf("string:%shex:%x\n", temp+2, atoh(temp+2, strlen(temp)-2));
-
-	  /* 1B = 2 characters */
-//	  regvalue = gdbwrap_atoh(rec, 2 * DWORD_IN_BYTE);
-//	  regvalue = gdbwrap_little_endian(regvalue);
-//	  rec += 2 * DWORD_IN_BYTE;
-//	}
-
+	    {
+          temp = strstr(temp, "0x");
+          if (temp)
+            {
+              *(&desc->reg32_ARM.r0 + i) = gdbwrap_atoh(temp+2, 8);
+              temp += 1; //let's move on :P
+            }
+          else
+            break;
+        }
       return &desc->reg32_ARM;
     }
   else
