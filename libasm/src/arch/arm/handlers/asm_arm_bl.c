@@ -22,9 +22,7 @@ int     asm_arm_bl(asm_instr * ins, u_char * buf, u_int len,
 
   /* Decode operands */
   ins->op[0].imm = opcode.signed_imm;
-  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_IMMEDIATE, ins);
-
-  arm_decode_branch1_imm(ins, buf, &opcode);
+  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_DISP, ins);
 
   LIBASM_PROFILE_FOUT(4);
 }

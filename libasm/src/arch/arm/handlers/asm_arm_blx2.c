@@ -21,7 +21,7 @@ int     asm_arm_blx2(asm_instr * ins, u_char * buf, u_int len,
 
   /* Decode operands */
   ins->op[0].baser = opcode.rm;
-  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_IMMEDIATE, ins);
+  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   LIBASM_PROFILE_FOUT(4);
 }

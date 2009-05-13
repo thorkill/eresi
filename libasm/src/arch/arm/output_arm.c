@@ -1,5 +1,29 @@
 #include <libasm.h>
-#include <libasm-arm.h>
+
+static eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half)
+{
+  int off;
+
+  /* Addr = PC + (SignExtend(disp) << 2) */
+  off = (int) disp;
+  if (off & 0x0800000)
+    /* Sign extend */
+    off |= 0xFF000000;
+  off <<= 2;
+  if (half)
+    off |= 0x02;
+  addr += off + 8; /* PC points to current instruction + 8 */
+
+  return (addr);
+}
+
+void asm_resolve_arm(void *d, eresi_Addr val, char *buf, u_int len)
+{
+  uint32_t addr;
+  
+  addr = (uint32_t) val;
+  snprintf(buf, len, "0x%X", addr);
+}
 
 char *asm_arm_get_register(int reg)
 {
@@ -49,9 +73,10 @@ char *asm_arm_get_shift_type(u_int shift_type)
  */
 
 void	asm_arm_dump_operand(asm_instr *ins, int num, 
-			       eresi_Addr addr, char *buf)
+                             eresi_Addr addr, char *buf, u_int len)
 {
   asm_operand *op;
+  eresi_Addr address;
   u_int i, temp;
   u_char first;
 
@@ -133,6 +158,14 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
         }
       strcat(buf, "}");
       break;
+    case ASM_ARM_OTYPE_DISP:
+      address = asm_dest_resolve_arm(addr, op->imm, 0);
+      ins->proc->resolve_immediate(ins->proc->resolve_data, address, buf, len);
+      break;
+    case ASM_ARM_OTYPE_DISP_HALF:
+      address = asm_dest_resolve_arm(addr, op->imm, 1);
+      ins->proc->resolve_immediate(ins->proc->resolve_data, address, buf, len);
+      break;
     default:
       sprintf(buf, "err");
       break;
@@ -150,7 +183,7 @@ char		*asm_arm_display_instr(asm_instr *instr, eresi_Addr addr)
   strcat(buffer, " ");
   for (i = 0; i < instr->nb_op; i++)
     {
-      asm_arm_dump_operand(instr, i+1, addr, buffer + strlen(buffer));
+      asm_arm_dump_operand(instr, i+1, addr, buffer + strlen(buffer), 1024 - strlen(buffer));
       if (i < instr->nb_op -1)
         strcat(buffer, ", ");
     }
