@@ -486,12 +486,14 @@ Bool                 gdbwrap_erroroccured(gdbwrap_t *desc)
 }
 
 
-unsigned             gdbwrap_atoh(const char * str, unsigned size)
+unsigned             gdbwrap_atoh(const char *str, unsigned size)
 {
   unsigned           i;
   unsigned           hex;
 
   for (i = 0, hex = 0; i < size; i++)
+    if (str != NULL && str[i] >= 'A' && str[i] <= 'F')
+      hex += (str[i] - 0x37) << 4 * (size - i - 1);
     if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
     else if (str != NULL && str[i] >= '0' && str[i] <= '9')
