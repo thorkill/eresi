@@ -11,6 +11,7 @@ int asm_register_arm();
 
 /* Resolve address */
 void asm_resolve_arm(void *d, eresi_Addr val, char *buf, u_int len);
+eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half);
 
 /* Output functions */
 char *asm_arm_display_instr(asm_instr *instr, eresi_Addr addr);

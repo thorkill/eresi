@@ -1,22 +1,5 @@
 #include <libasm.h>
 
-static eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half)
-{
-  int off;
-
-  /* Addr = PC + (SignExtend(disp) << 2) */
-  off = (int) disp;
-  if (off & 0x0800000)
-    /* Sign extend */
-    off |= 0xFF000000;
-  off <<= 2;
-  if (half)
-    off |= 0x02;
-  addr += off + 8; /* PC points to current instruction + 8 */
-
-  return (addr);
-}
-
 void asm_resolve_arm(void *d, eresi_Addr val, char *buf, u_int len)
 {
   uint32_t addr;

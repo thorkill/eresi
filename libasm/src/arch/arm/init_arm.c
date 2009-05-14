@@ -124,6 +124,23 @@ int     asm_init_arm(asm_processor *proc)
   LIBASM_PROFILE_FOUT(1);
 }
 
+eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half)
+{
+  int off;
+
+  /* Addr = PC + (SignExtend(disp) << 2) */
+  off = (int) disp;
+  if (off & 0x0800000)
+    /* Sign extend */
+    off |= 0xFF000000;
+  off <<= 2;
+  if (half)
+    off |= 0x02;
+  addr += off + 8; /* PC points to current instruction + 8 */
+
+  return (addr);
+}
+
 // TODO: function doc
 /* Helper functions */
 void    fill_dim_vector_type1(int inst, u_int *dim_vec)
