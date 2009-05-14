@@ -100,7 +100,7 @@ int     asm_init_arm(asm_processor *proc)
   LIBASM_PROFILE_FIN();
   
   proc->instr_table = arm_instr_list;
-  /* proc->resolve_immediate = asm_resolve_arm; TODO: create this function */
+  proc->resolve_immediate = asm_resolve_arm;
   proc->resolve_data = 0;
   proc->fetch = asm_fetch_arm;
   proc->display_handle = asm_arm_display_instr;
@@ -122,6 +122,23 @@ int     asm_init_arm(asm_processor *proc)
   asm_arch_register(proc, 0);
 
   LIBASM_PROFILE_FOUT(1);
+}
+
+eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half)
+{
+  int off;
+
+  /* Addr = PC + (SignExtend(disp) << 2) */
+  off = (int) disp;
+  if (off & 0x0800000)
+    /* Sign extend */
+    off |= 0xFF000000;
+  off <<= 2;
+  if (half)
+    off |= 0x02;
+  addr += off + 8; /* PC points to current instruction + 8 */
+
+  return (addr);
 }
 
 // TODO: function doc

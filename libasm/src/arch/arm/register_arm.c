@@ -150,7 +150,7 @@ int     asm_register_arm_instructions()
 
   asm_register_arm_opcode(0x00, 0x06, 0x03, (unsigned long) asm_arm_bx);
   asm_register_arm_opcode(0x00, 0x06, 0x07, (unsigned long) asm_arm_clz);
-  asm_register_arm_opcode(0x00, 0x06, 0x00, (unsigned long) asm_arm_blx2); /* BLX(2) */
+  asm_register_arm_opcode(0x00, 0x06, 0x05, (unsigned long) asm_arm_blx2); /* BLX(2) */
   asm_register_arm_opcode(0x00, 0x06, 0x09, (unsigned long) asm_arm_bkpt);
   /* data processing */
   asm_register_arm_opcode(0x00, 0x07, 0x00, (unsigned long) asm_arm_and);
@@ -236,6 +236,8 @@ int asm_register_arm_operands()
   asm_register_arm_operand(ASM_ARM_OTYPE_REG_SCALED, (unsigned long) asm_arm_op_fetch_reg_scaled);
   asm_register_arm_operand(ASM_ARM_OTYPE_REG_OFFSET, (unsigned long) asm_arm_op_fetch_reg_offset);
   asm_register_arm_operand(ASM_ARM_OTYPE_REG_LIST, (unsigned long) asm_arm_op_fetch_reg_list);
+  asm_register_arm_operand(ASM_ARM_OTYPE_DISP, (unsigned long) asm_arm_op_fetch_disp);
+  asm_register_arm_operand(ASM_ARM_OTYPE_DISP_HALF, (unsigned long) asm_arm_op_fetch_disp_half);
   /* WIP */
 
   return (1);

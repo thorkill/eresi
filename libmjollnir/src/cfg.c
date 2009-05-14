@@ -356,6 +356,21 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 	  break;
 	}
       break;
+
+      /* ARM architecture */
+    case ASM_PROC_ARM:
+      switch(ins->instr)
+        {
+        case ASM_ARM_BL:
+        case ASM_ARM_BLX1:
+          dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
+                                      (ins->op[0].content & ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
+          break;
+        default:
+          dest = MJR_BLOCK_INVALID;
+          break;
+        }
+      break;
       
       /* Unknown architecture */
     default:
@@ -443,6 +458,20 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 	  ((((context->hist[MJR_HISTORY_CUR].vaddr + 8) >> 28) & 0xF) << 28);
       else
         dest = MJR_BLOCK_INVALID; /* Jump to register - not yet */
+      break;
+
+      /* ARM architecture */
+    case ASM_PROC_ARM:
+      switch(ins->instr)
+        {
+        case ASM_ARM_B:
+          dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
+                                      (ins->op[0].content & ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
+          break;
+        default:
+          dest = MJR_BLOCK_INVALID;
+          break;
+        }
       break;
 
       /* Unknown architecture */

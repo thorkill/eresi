@@ -9,13 +9,17 @@
 /* Registration functions */
 int asm_register_arm();
 
+/* Resolve address */
+void asm_resolve_arm(void *d, eresi_Addr val, char *buf, u_int len);
+eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half);
+
 /* Output functions */
 char *asm_arm_display_instr(asm_instr *instr, eresi_Addr addr);
 char *asm_arm_get_op_name(asm_operand *op);
 
 char *asm_arm_get_register(int reg);
 char *asm_arm_get_shift_type(u_int shift_type);
-void asm_arm_dump_operand(asm_instr *ins, int num, eresi_Addr addr, char *buf);
+void asm_arm_dump_operand(asm_instr *ins, int num, eresi_Addr addr, char *buf, u_int len);
 
 /* Instruction handlers */
 int asm_arm_adc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -93,6 +97,8 @@ int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode, int otype, a
 int asm_arm_op_fetch_reg_scaled(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_reg_offset(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_disp(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_disp_half(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 
 /* Decoding helper functions */
 void arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf);
@@ -107,7 +113,6 @@ void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct 
 void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
 void arm_decode_ldst_misc_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst_misc *opcode);
 void arm_decode_multiply_long(asm_instr *ins, u_char *buf, struct s_arm_decode_multiply *opcode);
-void arm_decode_branch1_imm(asm_instr *ins, u_char *buf, struct s_arm_decode_branch1 *opcode);
 
 struct  s_asm_proc_arm
 {
@@ -151,6 +156,8 @@ enum e_arm_operand
     ASM_ARM_OTYPE_REG_SCALED,
     ASM_ARM_OTYPE_REG_OFFSET,
     ASM_ARM_OTYPE_REG_LIST,
+    ASM_ARM_OTYPE_DISP,
+    ASM_ARM_OTYPE_DISP_HALF,
 
     ASM_ARM_OTYPE_NUM
   };
