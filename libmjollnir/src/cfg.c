@@ -359,17 +359,8 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 
       /* ARM architecture */
     case ASM_PROC_ARM:
-      switch(ins->instr)
-        {
-        case ASM_ARM_BL:
-        case ASM_ARM_BLX1:
-          dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
-                                      (ins->op[0].content & ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
-          break;
-        default:
-          dest = MJR_BLOCK_INVALID;
-          break;
-        }
+      dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
+                                  (ins->op[0].content == ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
       break;
       
       /* Unknown architecture */
@@ -462,16 +453,8 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 
       /* ARM architecture */
     case ASM_PROC_ARM:
-      switch(ins->instr)
-        {
-        case ASM_ARM_B:
-          dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
-                                      (ins->op[0].content & ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
-          break;
-        default:
-          dest = MJR_BLOCK_INVALID;
-          break;
-        }
+      dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
+                                  (ins->op[0].content == ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
       break;
 
       /* Unknown architecture */
