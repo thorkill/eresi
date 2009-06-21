@@ -1,9 +1,9 @@
 #!../../../../elfsh/elfsh32
 
-load a.out
-load rel.o
+load hijackme64
+load rel.64.o
 reladd 1 2
 redir puts puts_troj
 redir legit_func hook_func
-save fake_aout
+save fake_aout64
 quit
