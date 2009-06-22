@@ -1,0 +1,20 @@
+#!../../../elfsh/elfsh32
+## 
+## patch-both32.esh in testsuite for ERESI
+## 
+
+load recur32
+analyse
+load infected.32.o
+switch 1
+reladd 1 2
+flowjack subfunc hijacked
+save recur32.hijacked
+
+load target32
+analyse
+reladd 3 2
+flowjack subfunc hijacked
+save target32.hijacked
+
+quit

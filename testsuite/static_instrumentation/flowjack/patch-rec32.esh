@@ -3,12 +3,12 @@
 ## patch.esh in testsuite for ERESI
 ## 
 
-load target.rec
+load recur32
 analyse
-load infected.o
+load infected.32.o
 switch 1
 reladd 1 2
 flowjack subfunc hijacked
-save target.hijacked.rec
+save recur32.hijacked
 
 quit

@@ -1,20 +1,20 @@
 #!../../../elfsh/elfsh32
 ## 
-## patch-both.esh in testsuite for ERESI
+## patch-both64.esh in testsuite for ERESI
 ## 
 
-load target.rec
+load recur64
 analyse
-load infected.o
+load infected.64.o
 switch 1
 reladd 1 2
 flowjack subfunc hijacked
-save target.hijacked.rec
+save recur64.hijacked
 
-load target
+load target64
 analyse
 reladd 3 2
 flowjack subfunc hijacked
-save target.hijacked
+save target64.hijacked
 
 quit
