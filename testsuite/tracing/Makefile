@@ -7,32 +7,43 @@
 include ../../config.h
 
 SRC 	= tracer.c
-OBJ	= $(SRC:.c=.o)
-CC	= gcc
-LIB	= -L/usr/pkg/lib -L../../librevm/ -lrevm32 -L../../libelfsh/ -lelfsh32 \
-	-L../../libetrace/ -letrace32 -L../../libaspect/ -laspect32 \
-	-L../../libstderesi -lstderesi32 $(LDDUMPOPT32)
-NAM	= tracer
-RM	= rm -f 
-OPT	= -gdwarf-2 -g3 -O2 -I../../librevm/include/ -I../../libelfsh/include/ 	\
-	$(BITS) -DERESI32 -I../../libstderesi/include/ -I../../libdump/include/ \
-	-I../../libasm/include/ -I../../libaspect/include/ -I../../libmjollnir/include/ \
-	-I../../libedfmt/include/ $(BITS) -DERESI32 -I../../libetrace/include/ 
-CFLAGS	= $(OPT)
-
-HOSTSRC	= host.c
-HOSTOBJ	= host.o
+OBJ32	= $(SRC:.c=.32.o)
+OBJ64	= $(SRC:.c=.64.o)
+HOSTSRC	  = host.c
+HOSTOBJ32 = host.32.o
+HOSTNAM32 = host32
+HOSTOBJ64 = host.64.o
+HOSTNAM64 = host64
 HOSTLIB = -lcrypt
+NAM32	= tracer32
+NAM64	= tracer64
+RM	= rm -f 
+CC	= gcc
 
-all32: all
+LIB32    =$(shell eresi-config32 libstderesi --libs)
+LIB64	 =$(shell eresi-config64 libstderesi --libs)
+CFLAGS32 =$(shell eresi-config32 libstderesi --cflags) -gdwarf-2
+CFLAGS64 =$(shell eresi-config64 libstderesi --cflags) -gdwarf-2
 
-all	: $(OBJ)
-	$(CC) $(HOSTLIB) $(HOSTSRC)
-	$(CC) $(OBJ) $(LIB) -o $(NAM)
+all: all32 all64
+
+all32	: $(OBJ32)
+	$(CC) $(HOSTLIB) $(HOSTSRC) -o $(HOSTNAM32)
+	$(CC) $(OBJ32) $(LIB32) -o $(NAM32)
+
+all64	: $(OBJ64)
+	$(CC) $(HOSTLIB) $(HOSTSRC) -o $(HOSTNAM64)
+	$(CC) $(OBJ64) $(LIB64) -o $(NAM64)
 
 clean	:
-	$(RM) $(OBJ) $(HOSTOBJ) *~ \#* *\#
-
+	$(RM) $(OBJ32) $(HOSTOBJ32) $(OBJ64) $(HOSTOBJ64) *~ \#* *\#
 
 fclean	: clean
-	$(RM) $(NAM) a.out fake_aout
+	$(RM) $(NAM32) $(NAM64) $(HOSTNAM32) $(HOSTNAM64)
+
+%.32.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS32) -g
+
+%.64.o:	%.c
+	$(CC) -c $< -o $@ $(CFLAGS64) -g
+
