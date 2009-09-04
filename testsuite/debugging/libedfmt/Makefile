@@ -6,13 +6,13 @@ CFLAGS = -I../../../libedfmt/include	\
 	-I../../../libaspect/include	\
 	-I../../../libelfsh/include	\
 	-DERESI32			\
-	-ggdb
+	-gdwarf-2
 
 LDFLAGS = -L../../../libedfmt/ -ledfmt32	\
 	-L../../../libelfsh -lelfsh32	\
 	-L../../../libaspect -laspect32	\
 	-L../../../libasm/ -lasm32		\
-	-L../../../libetrace -letrace32
+	-L../../../libetrace -letrace32 -g-dwarf2
 
 RM	= rm -fr
 CC	?= gcc
