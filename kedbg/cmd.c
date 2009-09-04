@@ -1,7 +1,14 @@
+/**
+ * @ingroup kedbg
+ * @file kedbg/cmd.c
+ */
+
 #include "kedbg.h"
 #include "interface.h"
 
-
+/**
+ * @ingroup kedbg
+ */
 static void     kedbg_stepandprint(void)
 {
   char          *instr;
@@ -15,13 +22,15 @@ static void     kedbg_stepandprint(void)
   gdbwrap_readgenreg(loc);
   e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
   name   = revm_resolve(world.curjob->curfile,
-			(eresi_Addr)(uintptr_t) loc->reg32.eip, (elfsh_SAddr *)&off);
+                        (eresi_Addr)(uintptr_t) loc->reg32.eip, (elfsh_SAddr *)&off);
   instr  = alloca(20);
   kedbg_readmema(NULL, (eresi_Addr)(uintptr_t)loc->reg32.eip, instr, 20);
   revm_instr_display(-1, loc->reg32.eip, 0, 20, name, off, instr);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             cmd_kedbg_dump_regs(void)
 {
   PROFILER_INQ();
@@ -32,7 +41,9 @@ int             cmd_kedbg_dump_regs(void)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static void     kedbg_step_over_bp(eresi_Addr addr)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -51,7 +62,10 @@ static void     kedbg_step_over_bp(eresi_Addr addr)
 }
 
 
-/* Continue command. */
+/**
+ * Continue command.
+ * @ingroup kedbg
+ */
 int             cmd_kedbgcont(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -67,57 +81,57 @@ int             cmd_kedbgcont(void)
   revm_output("[*] Continuing process\n");
 
   kedbg_step_over_bp(loc->reg32.eip);
-  
+
   if (!e2dbgworld.curthread->step)
     {
       gdbwrap_continue(loc);
       if (gdbwrap_is_active(loc))
-	{
-	  if (kedbgworld.interrupted)
-	    {
-	      name = revm_resolve(world.curjob->curfile, loc->reg32.eip,
-				  (elfsh_SAddr *) &off);
-	      printf("\n[*] Stopped at %#x <%s + %u>\n", loc->reg32.eip, name, off);
-	      kedbgworld.interrupted = FALSE;
-	    }
-	  else
-	    if (gdbwrap_lastsignal(loc) == SIGTRAP)
-	      {
-		
-		if (kedbgworld.offset)
-		  {
-		    eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
-		    kedbg_writereg(eip_pos, loc->reg32.eip - kedbgworld.offset);
-		  }
-		snprintf(addr, sizeof(addr), XFMT, (eresi_Addr)loc->reg32.eip);
-		bp = e2dbg_breakpoint_lookup(addr);
-		if (bp != NULL)
-		  {
-		    revm_clean();
-		    if (bp->cmdnbr)
-		      e2dbg_display(bp->cmd, bp->cmdnbr);
-		    else
-		      e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
+        {
+          if (kedbgworld.interrupted)
+            {
+              name = revm_resolve(world.curjob->curfile, loc->reg32.eip,
+                                  (elfsh_SAddr *) &off);
+              printf("\n[*] Stopped at %#x <%s + %u>\n", loc->reg32.eip, name, off);
+              kedbgworld.interrupted = FALSE;
+            }
+          else
+            if (gdbwrap_lastsignal(loc) == SIGTRAP)
+              {
 
-		    name = revm_resolve(world.curjob->curfile, loc->reg32.eip,
-					(elfsh_SAddr *)&off);
-		    if (!off)
-		      printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip, name);
-		    else
-		      printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip,
-			     name, off);
-		  }
-		else
-		  printf("[W] SIGTRAP received but not defined.\n");
-	      }
-	  else
-	    printf("Signal received: %s (IP: %#x) \n",
-		   get_signal(gdbwrap_lastsignal(loc)), loc->reg32.eip);
-	}
+                if (kedbgworld.offset)
+                  {
+                    eip_pos = offsetof(struct gdbwrap_gdbreg32, eip) / sizeof(ureg32);
+                    kedbg_writereg(eip_pos, loc->reg32.eip - kedbgworld.offset);
+                  }
+                snprintf(addr, sizeof(addr), XFMT, (eresi_Addr)loc->reg32.eip);
+                bp = e2dbg_breakpoint_lookup(addr);
+                if (bp != NULL)
+                  {
+                    revm_clean();
+                    if (bp->cmdnbr)
+                      e2dbg_display(bp->cmd, bp->cmdnbr);
+                    else
+                      e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
+
+                    name = revm_resolve(world.curjob->curfile, loc->reg32.eip,
+                                        (elfsh_SAddr *)&off);
+                    if (!off)
+                      printf("[*] Breakpoint found at %#x <%s>\n", loc->reg32.eip, name);
+                    else
+                      printf("[*] Breakpoint found at %#x <%s + %u>\n", loc->reg32.eip,
+                             name, off);
+                  }
+                else
+                  printf("[W] SIGTRAP received but not defined.\n");
+              }
+          else
+            printf("Signal received: %s (IP: %#x) \n",
+                   get_signal(gdbwrap_lastsignal(loc)), loc->reg32.eip);
+        }
     }
   else
     kedbg_stepandprint();
-  
+
   if (!gdbwrap_is_active(loc))
     cmd_quit();
 
@@ -125,7 +139,9 @@ int             cmd_kedbgcont(void)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             cmd_kedbgstep(void)
 {
   static Bool   enable;
@@ -146,10 +162,12 @@ int             cmd_kedbgstep(void)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             cmd_kedbgquit(void)
 {
-  gdbwrap_t     *loc = gdbwrap_current_get(); 
+  gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
   gdbwrap_bye(loc);
@@ -157,19 +175,21 @@ int             cmd_kedbgquit(void)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             cmd_kedbgprintivt(void)
 {
   uint32_t      ivt[256];
   short         i;
-  
+
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
   e2dbg_output(" .:: IVT ::. \n\n");
   for (i = 0; i < 256; i++)
-    {    
+    {
       if (!(i % 8))
-	printf("\n0x%02x | ", i);
+        printf("\n0x%02x | ", i);
       printf("0x%08x ", ivt[i]);
     }
   printf("\n\n");
@@ -180,7 +200,8 @@ int             cmd_kedbgprintivt(void)
 /**
  * Wrapper to cmd_disasm, but checks wether we are in realmode or
  * not. It will set internal variable in case we change mode.
- **/
+ * @ingroup kedbg
+ */
 int             cmd_kedbgdisasm(void)
 {
   PROFILER_INQ();
@@ -193,7 +214,8 @@ int             cmd_kedbgdisasm(void)
 /**
  * Hooks all the IVT entries. Since a lot of entries are the same, we
  * check before adding the breakpoint on the server side.
- **/
+ * @ingroup kedbg
+ */
 int             cmd_kedbghookivt(void)
 {
   char          addr[50];
@@ -201,7 +223,7 @@ int             cmd_kedbghookivt(void)
   u_short       ivtinc;
   uint32_t      finaladdr;
   elfshbp_t	*bp;
-  
+
   PROFILER_INQ();
   kedbg_readmema(NULL, 0, ivt, 256 * sizeof(uint32_t));
   for (ivtinc = 0; ivtinc < 256; ivtinc++)
@@ -213,7 +235,7 @@ int             cmd_kedbghookivt(void)
       bp = hash_get(&e2dbgworld.bp, addr);
 
       if (bp == NULL && finaladdr != 0x0)
-	e2dbg_breakpoint_add((eresi_Addr)(uintptr_t) finaladdr);
+        e2dbg_breakpoint_add((eresi_Addr)(uintptr_t) finaladdr);
 
     }
 
@@ -224,7 +246,8 @@ int             cmd_kedbghookivt(void)
 
 /**
  * In case you get pissed of with the itrace...
- **/
+ * @ingroup kedbg
+ */
 void            kedbg_itracesigint(int sig)
 {
   PROFILER_INQ();
@@ -235,8 +258,9 @@ void            kedbg_itracesigint(int sig)
 
 
 /**
- * Do steppig until we reach a known breakpoint. 
- **/
+ * Do steppig until we reach a known breakpoint.
+ * @ingroup kedbg
+ */
 int             cmd_kedbgitrace(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -253,19 +277,21 @@ int             cmd_kedbgitrace(void)
       bp = hash_get(&e2dbgworld.bp, addr);
 
       if (bp != NULL)
-	{
-	  e2dbg_deletebreak(bp);
-	  gdbwrap_stepi(loc);
-	  e2dbg_setbreak(world.curjob->curfile, bp);
-	  e2dbgworld.curthread->trace = FALSE;
-	  printf("[*] Breakpoint found at %#x\n", loc->reg32.eip);
-	}
+        {
+          e2dbg_deletebreak(bp);
+          gdbwrap_stepi(loc);
+          e2dbg_setbreak(world.curjob->curfile, bp);
+          e2dbgworld.curthread->trace = FALSE;
+          printf("[*] Breakpoint found at %#x\n", loc->reg32.eip);
+        }
     }
   signal(SIGINT, kedbg_sigint);
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             cmd_kedbgproc(void)
 {
   PROFILER_INQ();
@@ -274,7 +300,9 @@ int             cmd_kedbgproc(void)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             cmd_kedbggraph(void)
 {
   PROFILER_INQ();
@@ -282,4 +310,3 @@ int             cmd_kedbggraph(void)
   cmd_graph();
   PROFILER_ROUTQ(0);
 }
-

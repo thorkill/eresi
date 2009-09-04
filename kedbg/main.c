@@ -1,3 +1,8 @@
+/**
+ * @file kedbg/main.c
+ * @ingroup kedbg
+ */
+
 #include "kedbg.h"
 
 kedbgworld_t    kedbgworld;
@@ -7,18 +12,18 @@ kedbgworld_t    kedbgworld;
 static void	kedbg_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
-	   "%s%s%s%s%s%s%s%s%s%s%s ",
-	   revm_colorget("%s", "pspecial", "("),
-	   revm_colorget("%s", "psname" , KEDBGNAME),
-	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pversion", REVM_VERSION),
-	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "prelease", REVM_RELEASE),
-	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pedition", REVM_EDITION),
-	   revm_colorget("%s", "pspecial", "@"),
-	   revm_colorget("%s", "psname", world.curjob->ws.name),
-	   revm_colorget("%s", "pspecial", ")"));
+           "%s%s%s%s%s%s%s%s%s%s%s ",
+           revm_colorget("%s", "pspecial", "("),
+           revm_colorget("%s", "psname" , KEDBGNAME),
+           revm_colorget("%s", "pspecial", "-"),
+           revm_colorget("%s", "pversion", REVM_VERSION),
+           revm_colorget("%s", "pspecial", "-"),
+           revm_colorget("%s", "prelease", REVM_RELEASE),
+           revm_colorget("%s", "pspecial", "-"),
+           revm_colorget("%s", "pedition", REVM_EDITION),
+           revm_colorget("%s", "pspecial", "@"),
+           revm_colorget("%s", "psname", world.curjob->ws.name),
+           revm_colorget("%s", "pspecial", ")"));
   revm_endline();
 }
 
@@ -26,6 +31,7 @@ static void	kedbg_create_prompt(char *buf, u_int size)
 /**
  * Only called when running a monothread program
  * @return
+ * @ingroup kedbg
  */
 static int	kedbg_curthread_init(void)
 {
@@ -50,7 +56,9 @@ static int	kedbg_curthread_init(void)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static void     kedbg_find_linkmap(void)
 {
   elfshlinkmap_t linkmap_copy;
@@ -68,49 +76,49 @@ static void     kedbg_find_linkmap(void)
   e2dbgworld.syms.map = kedbg_linkmap_getaddr();
   world.curjob->curfile->linkmap = e2dbgworld.syms.map;
   kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) e2dbgworld.syms.map,
-		 &linkmap_copy, sizeof(elfshlinkmap_t));
+                 &linkmap_copy, sizeof(elfshlinkmap_t));
 
   /* Let's take the first entry, by following the prev. */
   while (linkmap_copy.lprev != NULL)
     kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lprev,
-		   &linkmap_copy, sizeof(elfshlinkmap_t));
+                   &linkmap_copy, sizeof(elfshlinkmap_t));
 
   /* And now, we read all the entries from the first one. */
   do
     {
       /* We read 40B at a time. It'll accelerate the boot. */
       kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lname,
-		     lmstring, 40);
+                     lmstring, 40);
       DEBUGMSG(fprintf(stderr, "linkmap->lnext: %p, linkmap->laddr: %#x, "
-		       "lmstring: %s\n", linkmap_copy.lnext,
-		       linkmap_copy.laddr, lmstring));
+                       "lmstring: %s\n", linkmap_copy.lnext,
+                       linkmap_copy.laddr, lmstring));
 
       if (lmstring != NULL && lmstring[0] != '\0')
-	{
-	  for (i = 0; i < keynbr; i++)
-	    {
-	      actual = hash_get(&world.curjob->loaded, keys[i]);
-	      if (!actual)
-		continue;
-	      base1 = revm_basename(lmstring);
-	      base2 = revm_basename(actual->name);
-	      if (!strcmp(base1, base2))
-		{
-		  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-			 actual->linkmap, sizeof(linkmap_copy), );
-		  memcpy(actual->linkmap, &linkmap_copy, sizeof(linkmap_copy));
-		  actual->rhdr.base = linkmap_copy.laddr;
+        {
+          for (i = 0; i < keynbr; i++)
+            {
+              actual = hash_get(&world.curjob->loaded, keys[i]);
+              if (!actual)
+                continue;
+              base1 = revm_basename(lmstring);
+              base2 = revm_basename(actual->name);
+              if (!strcmp(base1, base2))
+                {
+                  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+                         actual->linkmap, sizeof(linkmap_copy), );
+                  memcpy(actual->linkmap, &linkmap_copy, sizeof(linkmap_copy));
+                  actual->rhdr.base = linkmap_copy.laddr;
 
-		  DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
-				   "the base addr: %#x\n\n", actual->name,
-				   actual->rhdr.base));
-		  break;
-		}
-	    }
-	}
+                  DEBUGMSG(fprintf(stderr, "file->name: %s, is gonna take "
+                                   "the base addr: %#x\n\n", actual->name,
+                                   actual->rhdr.base));
+                  break;
+                }
+            }
+        }
       linkmap_addr = linkmap_copy.lnext;
       kedbg_readmema(NULL, (eresi_Addr)(uintptr_t) linkmap_copy.lnext,
-		     &linkmap_copy, sizeof(elfshlinkmap_t));
+                     &linkmap_copy, sizeof(elfshlinkmap_t));
 
     } while (linkmap_copy.lnext != NULL);
   hash_free_keys(keys);
@@ -120,6 +128,7 @@ static void     kedbg_find_linkmap(void)
 
 /**
  * Propagate the hostype and iotype to all loaded files.
+ * @ingroup kedbg
  */
 static void     kedbg_propagate_type(void)
 {
@@ -141,13 +150,14 @@ static void     kedbg_propagate_type(void)
 
 /**
  * Load the BIOS map
+ * @ingroup kedbg
  */
 static void	kedbg_biosmap_load()
 {
   elfshobj_t    *file;
 
   file = elfsh_create_obj("BIOS", 0, 0x100000, EM_386, ET_EXEC,
-			  ELFDATA2LSB, ELFCLASS32);
+                          ELFDATA2LSB, ELFCLASS32);
   world.curjob->curfile = file;
   hash_add(&world.curjob->loaded, file->name, file);
   file->loadtime = time(&file->loadtime);
@@ -160,6 +170,7 @@ static void	kedbg_biosmap_load()
 /**
  * If the symbol __ksymtab is found in the file we are analyzing, then
  * we are analyzing a kernel.
+ * @ingroup kedbg
  */
 static Bool       kedbg_file_is_kernel(elfshobj_t *file)
 {
@@ -175,13 +186,14 @@ static Bool       kedbg_file_is_kernel(elfshobj_t *file)
 
 /**
  * If the file has only one segment of 1MB, we have loaded the biosmap.
+ * @ingroup kedbg
  */
 static Bool     kedbg_file_is_bios(elfshobj_t *file)
 {
   elfsh_Phdr	*phdr;
 
   phdr = elfsh_get_segment_by_type(file, PT_LOAD, 0);
-  if (phdr	    == NULL		||
+  if (phdr          == NULL		||
       phdr->p_memsz != 0x100000		||
       !elfsh_segment_is_writable(phdr)	||
       !elfsh_segment_is_readable(phdr)	||
@@ -191,7 +203,9 @@ static Bool     kedbg_file_is_bios(elfshobj_t *file)
     return TRUE;
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
 {
   eresi_Addr      addr;
@@ -213,6 +227,7 @@ static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
  * breakpoint on the entry point, then "start" and stop when getting
  * the SIGTRAP. We don't use the cmd_bp to avoid extra messages that
  * might seem suspicious.
+ * @ingroup kedbg
  */
 static void     kedbg_run_to_entrypoint(elfshobj_t *file)
 {
@@ -237,6 +252,7 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
 /**
  * There is a mapped symbol table in the kernel that we can try to map,
  * but its format is awkward. This function is never used for now
+ * @ingroup kedbg
  */
 #if 0
 static int	kedbg_ksymtab_fixup()
@@ -246,10 +262,10 @@ static int	kedbg_ksymtab_fixup()
 
   PROFILER_INQ();
   ksymtab = elfsh_get_section_by_name(world.curjob->curfile, "__ksymtab",
-				      NULL, NULL, NULL);
+                                      NULL, NULL, NULL);
   ksymtab_strings = elfsh_get_section_by_name(world.curjob->curfile,
-					      "__ksymtab_strings",
-					      NULL, NULL, NULL);
+                                              "__ksymtab_strings",
+                                              NULL, NULL, NULL);
   if (!ksymtab_strings || !ksymtab)
     PROFILER_ERRQ("[E] Unable to find mapped kernel symtab\n", -1);
   elfsh_set_section_type(ksymtab->shdr, SHT_DYNSYM);
@@ -263,6 +279,7 @@ static int	kedbg_ksymtab_fixup()
 
 /**
  * Shell related stuff.
+ * @ingroup kedbg
  */
 static int      kedbg_main(int argc, char **argv)
 {
@@ -305,10 +322,10 @@ static int      kedbg_main(int argc, char **argv)
   if (!kedbg_file_is_kernel(world.curjob->curfile) && !ret)
     {
       /* The process might already be running. If the got[1] is
-	 filled, we don't run to the entry point. */
+         filled, we don't run to the entry point. */
       kedbgworld.state = KEDBG_USERLAND;
       if (kedbg_linkmap_getaddr() == NULL)
-	kedbg_run_to_entrypoint(world.curjob->curfile);
+        kedbg_run_to_entrypoint(world.curjob->curfile);
       kedbg_find_linkmap();
     }
   else
@@ -325,7 +342,7 @@ static int      kedbg_main(int argc, char **argv)
       kedbg_isrealmode();
       /* If we have not loaded the bios but the kernel, load the BIOS map. */
       if (!ret)
-	kedbg_biosmap_load();
+        kedbg_biosmap_load();
     }
 
   /* Signal handler: We want primitives to return EINTR, hence sa_flags = 0. */
@@ -338,7 +355,9 @@ static int      kedbg_main(int argc, char **argv)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             main(int argc, char **argv)
 {
   int           fd;
@@ -379,6 +398,3 @@ int             main(int argc, char **argv)
   kedbg_present_set();
   return kedbg_main(argc, argv);
 }
-
-
-

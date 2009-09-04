@@ -1,16 +1,17 @@
-/*
-** main.c for etrace
-** @file main.c
-** Updated on  Wed Jan 03 17:51:04 2007 mxatone
-**
-** $Id$
-**
-*/
+/**
+ * @file etrace/main.c
+ * @ingroup etrace
+ * Updated on  Wed Jan 03 17:51:04 2007 mxatone
+ *
+ * $Id$
+ *
+ */
 #include "etrace.h"
 
 /**
  * Prompt related functions 
-*/
+ * @ingroup etrace
+ */
 void		etrace_setup_quit_msg()
 {
   char		logbuf[BUFSIZ];
@@ -24,6 +25,7 @@ void		etrace_setup_quit_msg()
  * Create etrace prompt.
  * @param buf
  * @param size
+ * @ingroup etrace
  */
 void		etrace_create_prompt(char *buf, u_int size)
 {
@@ -45,6 +47,7 @@ void		etrace_create_prompt(char *buf, u_int size)
 
 /**
  * Setup etrace prompt
+ * @ingroup etrace
  */
 void 		etrace_setup_prompt()
 {
@@ -53,6 +56,7 @@ void 		etrace_setup_prompt()
 
 /**
  * Print the etrace banner
+ * @ingroup etrace
  */
 void		etrace_banner_print()
 {
@@ -81,6 +85,7 @@ void		etrace_banner_print()
  * The real main function 
  * @param ac Number of arguments
  * @param av Array of arguments
+ * @ingroup etrace
  */
 int		etrace_main(int ac, char **av)
 {
@@ -208,6 +213,7 @@ int		etrace_main(int ac, char **av)
  *  The main Etrace routine 
  * @param ac Number of arguments
  * @param av Array of arguments
+ * @ingroup etrace
  */
 int		main(int ac, char **av)
 {

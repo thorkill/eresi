@@ -1,9 +1,9 @@
 /**
- * @file op_shr_ib.c
+ * @file libasm/src/arch/ia32/handlers/op_shr_rmb_ib.c
  * @ingroup handlers_ia32
-** $Id$
-**
-*/
+ * $Id$
+ *
+ */
 #include <libasm.h>
 #include <libasm-int.h>
 

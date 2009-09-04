@@ -1,8 +1,10 @@
-/*
-** (C) 2001-2008 Devhell Labs / Asgard Labs : thorolf / sk / jfv
-** @file history.c
-** 
-*/
+/**
+ * @file history.c
+ * @ingroup libmjollnir
+ *
+ * (C) 2001-2008 Devhell Labs / Asgard Labs : thorolf / sk / jfv
+ * 
+ */
 
 #include "libmjollnir.h"
 

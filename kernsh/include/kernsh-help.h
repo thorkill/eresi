@@ -1,9 +1,9 @@
-/*
-** kernsh-help.h for kernsh
-**
-** $Id$
-**
-*/
+/**
+ * @file kernsh/include/kernsh-help.h
+ * @ingroup kernsh
+ * $Id$
+ *
+ */
 #ifndef __KERNSH_HELP_H_
  #define __KERNSH_HELP_H_
 

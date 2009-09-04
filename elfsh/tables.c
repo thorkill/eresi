@@ -1,8 +1,9 @@
 /**
  * @defgroup elfsh Elfsh
  */
+
 /**
- * @file tables.c
+ * @file elfsh/tables.c
  * @ingroup elfsh
  * This file contains all command and objects definitions for scripting
  *
@@ -16,7 +17,7 @@
 
 /**
  * Setup the command hash table 
- *
+ * @ingroup elfsh
  */
 void	setup_local_cmdhash()
 {

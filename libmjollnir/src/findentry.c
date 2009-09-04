@@ -1,10 +1,11 @@
-/*
-** @file control.c
-**
-** Started : Thu May 29 20:44:39 2003 sk
-** Updated : Sun Dec 30 16:45:48 2006 jfv
-**
-*/
+/**
+ * @file control.c
+ * @ingroup libmjollnir
+ *
+ * Started : Thu May 29 20:44:39 2003 sk
+ * Updated : Sun Dec 30 16:45:48 2006 jfv
+ *
+ */
 
 #include "libmjollnir.h"
 

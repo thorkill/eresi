@@ -1,5 +1,7 @@
 /**
  * @file libmjollnir-int.h
+ * @ingroup libmjollnir
+ * @{
  * (C) 2006-2008 Asgard Labs, thorolf
  *     2008      ERESI Team
  *
@@ -25,9 +27,11 @@
 #define D_DESC		stderr
 
 #define mjrHashVerySmall 64
-#define mjrHashSmall 	 1024
-#define mjrHashMedium 	 10240
-#define mjrHashLarge  	 102400
-#define mjrHahsXXL	 1024000
+#define mjrHashSmall     1024
+#define mjrHashMedium    10240
+#define mjrHashLarge     102400
+#define mjrHahsXXL       1024000
 
 #define MJR_MAX_FUNCTION_LEN 1024000
+
+/** @} */

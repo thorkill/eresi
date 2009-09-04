@@ -1,9 +1,8 @@
 /**
- * @file libmjollnir.h
+ * @file libmjollnir/include/libmjollnir.h
+ * @defgroup libmjollnir Libmjollnir: The control flow analysis and fingerprinting component
  * 
- * (C) Devhell Labs / Asgard Labs 2001-2007
- *
- * $id: Libmjollnir.H,V 1.8 2006/07/27 16:50:48 thor Exp $
+ * (C) Devhell Labs / Asgard Labs 2001-2009
  *
  * December 2006 : Merged the modflow API and the mjollnir API to make a 
  * unified component. Adapted the data structures. Unified prefixing. -may

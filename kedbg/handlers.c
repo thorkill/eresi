@@ -1,3 +1,8 @@
+/**
+ * @file kedbg/handlers.c
+ * @ingroup kedbg
+ */
+
 #include "kedbg.h"
 #include "interface.h"
 
@@ -6,6 +11,7 @@
  * This function emulates the "monitor r cr0" we can send in VMWare to
  * check the cr0 register. However, when the server replies, the first
  * 0 has to be discarded.
+ * @ingroup kedbg
  */
 static Bool     kedbg_isrealmodewmon(void)
 {
@@ -21,21 +27,21 @@ static Bool     kedbg_isrealmodewmon(void)
   if (strlen(ret) > sizeof(reply) || !strstr(ret, CR0STR))
     {
       if (passed == FALSE)
-	printf("If you are in VMWare: Impossible to detect the mode. Upgrade your"
-	       "VMWare version and use the proc <protected> to switch manually to"
-	       "protected mode.\n");
+        printf("If you are in VMWare: Impossible to detect the mode. Upgrade your"
+               "VMWare version and use the proc <protected> to switch manually to"
+               "protected mode.\n");
       passed = TRUE;
       PROFILER_ERRQ("Impossible to determine CPU mode", FALSE);
     }
   if (gdbwrap_cmdnotsup(loc))
     PROFILER_ROUTQ(FALSE);
- 
+
   /* We add +1 to discard the first char.*/
   for (i = 0; ret[i] != '\0'; i++)
     reply[i] = (char)gdbwrap_atoh(ret + BYTE_IN_CHAR * i + 1, 2);
 
-  
-  /* Last bit is 0. */  
+
+  /* Last bit is 0. */
   if (!(gdbwrap_atoh(reply + strlen(reply) - 2, 1) & 0x1))
     {
       kedbgworld.pmode = FALSE;
@@ -56,15 +62,16 @@ static Bool     kedbg_isrealmodewmon(void)
  * inject the code at address 0x500 to be less intrusive. If we cannot
  * access this memory area, it means that we already are un protected
  * mode.
- **/
+ * @ingroup kedbg
+ */
 static Bool     kedbg_isrealmodeinject(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          code[]="\x0f\x20\xc0";
   gdbwrap_gdbreg32 regs;
-  
+
   PROFILER_INQ();
-  
+
   kedbg_writemem(NULL, MEMINJECT, code, strlen(code));
 
   if (gdbwrap_erroroccured(loc))
@@ -81,21 +88,23 @@ static Bool     kedbg_isrealmodeinject(void)
     kedbgworld.pmode = TRUE;
   else
     kedbgworld.pmode = FALSE;
-  
+
   memcpy(&loc->reg32, &regs, sizeof(regs));
   gdbwrap_shipallreg(loc);
-  
+
   PROFILER_ROUTQ(kedbgworld.pmode);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 Bool           kedbg_isrealmode(void)
 {
   static u_char choice = 0;
   static Bool   first_time = TRUE;
   gdbwrap_t     *loc = gdbwrap_current_get();
   Bool          ret;
-  
+
   PROFILER_INQ();
 
   /* If we are not running in a VM, we've nothing to do here. */
@@ -104,37 +113,37 @@ Bool           kedbg_isrealmode(void)
       asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
       PROFILER_ROUTQ(FALSE);
     }
-  
+
   do
     {
       switch (choice)
-	{
-	  case 0:
-	    ret = kedbg_isrealmodewmon();
-	    if (gdbwrap_cmdnotsup(loc))
-	      {
-		if (first_time == TRUE)
-		  choice++;
-		else
-		  goto exit;
-	      }
-	    break;
+        {
+          case 0:
+            ret = kedbg_isrealmodewmon();
+            if (gdbwrap_cmdnotsup(loc))
+              {
+                if (first_time == TRUE)
+                  choice++;
+                else
+                  goto exit;
+              }
+            break;
 
-	  case 1:
-	    ret = kedbg_isrealmodeinject();
-	    if (gdbwrap_cmdnotsup(loc))
-	      {
-		if (first_time == TRUE)
-		  choice++;
-		else
-		  goto exit;
-	      }
-	    break;
+          case 1:
+            ret = kedbg_isrealmodeinject();
+            if (gdbwrap_cmdnotsup(loc))
+              {
+                if (first_time == TRUE)
+                  choice++;
+                else
+                  goto exit;
+              }
+            break;
 
-	  default:
-	    fprintf(stderr, "Impossible to determine the mode.\n");
-	    break;
-	}
+          default:
+            fprintf(stderr, "Impossible to determine the mode.\n");
+            break;
+        }
     } while (gdbwrap_cmdnotsup(loc));
 
  exit:
@@ -146,7 +155,9 @@ Bool           kedbg_isrealmode(void)
   PROFILER_ROUTQ(ret);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            kedbg_resetstep(void)
 {
   PROFILER_INQ();
@@ -156,15 +167,20 @@ void            kedbg_resetstep(void)
 }
 
 
+/**
+ * @ingroup kedbg
+ */
 void            kedbg_setstep(void)
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   e2dbgworld.curthread->step = TRUE;
 
   PROFILER_OUTQ();
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void		*kedbg_bt_ia32(void *frame)
 {
   la32          ptr = 0;
@@ -175,11 +191,13 @@ void		*kedbg_bt_ia32(void *frame)
     kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, WORD_IN_BYTE);
   else
     kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, DWORD_IN_BYTE);
-  
+
   PROFILER_ROUTQ((void *)ptr);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 eresi_Addr	*kedbg_getfp(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -190,7 +208,9 @@ eresi_Addr	*kedbg_getfp(void)
   PROFILER_ROUTQ((eresi_Addr *)loc->reg32.ebp);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            *kedbg_getret_ia32(void *frame)
 {
   la32          ptr = 0;
@@ -204,7 +224,9 @@ void            *kedbg_getret_ia32(void *frame)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static int      kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -216,7 +238,9 @@ static int      kedbg_simplesetbp(elfshobj_t *f, elfshbp_t *bp)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static int      kedbg_setbpwint3(elfshobj_t *f, elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -228,7 +252,9 @@ static int      kedbg_setbpwint3(elfshobj_t *f, elfshbp_t *bp)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -239,35 +265,35 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
   do
     {
       switch (choice)
-	{
-	  case 0:
-	    kedbg_simplesetbp(f, bp);
-	    kedbgworld.offset = 0;
-	    if (gdbwrap_cmdnotsup(loc))
-	      {
-		if (first_time == TRUE)
-		  choice++;
-		else
-		  goto exit;
-	      }
-	    break;
+        {
+          case 0:
+            kedbg_simplesetbp(f, bp);
+            kedbgworld.offset = 0;
+            if (gdbwrap_cmdnotsup(loc))
+              {
+                if (first_time == TRUE)
+                  choice++;
+                else
+                  goto exit;
+              }
+            break;
 
-	  case 1:
-	    kedbg_setbpwint3(f, bp);
-	    kedbgworld.offset = 1;
-	    if (gdbwrap_cmdnotsup(loc))
-	      {
-		if (first_time == TRUE)
-		  choice++;
-		else
-		  goto exit;
-	      }
-	    break;
+          case 1:
+            kedbg_setbpwint3(f, bp);
+            kedbgworld.offset = 1;
+            if (gdbwrap_cmdnotsup(loc))
+              {
+                if (first_time == TRUE)
+                  choice++;
+                else
+                  goto exit;
+              }
+            break;
 
-	  default:
-	    /* Should not occur */
-	    PROFILER_ERRQ("Bp not supported", -1);
-	}
+          default:
+            /* Should not occur */
+            PROFILER_ERRQ("Bp not supported", -1);
+        }
     } while (gdbwrap_cmdnotsup(loc));
 
  exit:
@@ -276,7 +302,9 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static int      kedbg_delbpwint3(elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -287,7 +315,9 @@ static int      kedbg_delbpwint3(elfshbp_t *bp)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 static int      kedbg_simpledelbp(elfshbp_t *bp)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -298,7 +328,9 @@ static int      kedbg_simpledelbp(elfshbp_t *bp)
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             kedbg_delbp(elfshbp_t *bp)
 {
   PROFILER_INQ();
@@ -309,16 +341,18 @@ int             kedbg_delbp(elfshbp_t *bp)
     kedbg_delbpwint3(bp);
   else
     ASSERT(FALSE);
-  
+
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            kedbg_print_reg(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   gdbwrap_gdbreg32 *reg;
-    
+
   PROFILER_INQ();
   reg = &loc->reg32;
   e2dbg_register_dump("EAX", reg->eax);
@@ -341,11 +375,13 @@ void            kedbg_print_reg(void)
   PROFILER_OUTQ();
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            kedbg_sigint(int sig)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
+
   PROFILER_INQ();
   NOT_USED(sig);
   gdbwrap_ctrl_c(loc);
@@ -357,9 +393,10 @@ void            kedbg_sigint(int sig)
 
 /**
  * Reads the content of the memory and returns it as binary.
- **/
+ * @ingroup kedbg
+ */
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
-				void *buf, u_int size)
+                                void *buf, u_int size)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
   char          *ret;
@@ -372,20 +409,22 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
   if (size)
     {
       if (buf == NULL)
-	PROFILER_ERRQ("buf is NULL !", buf);
+        PROFILER_ERRQ("buf is NULL !", buf);
       ASSERT(buf != NULL);
       ret = gdbwrap_readmem(loc, addr, size);
 
       /* gdbserver sends a string, we need to convert it. Note that 2
-	 characters = 1 real Byte.*/
-      for (i = 0; i < size; i++) 
-	charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
+         characters = 1 real Byte.*/
+      for (i = 0; i < size; i++)
+        charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
     }
-  
+
   PROFILER_ROUTQ(charbuf);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            *kedbg_readmem(elfshsect_t *sect)
 {
   void *ptr;
@@ -398,15 +437,17 @@ void            *kedbg_readmem(elfshsect_t *sect)
     {
       ptr = malloc(sect->shdr->sh_size);
       kedbg_readmema(sect->parent, sect->shdr->sh_addr, ptr,
-		     sect->shdr->sh_size);
+                     sect->shdr->sh_size);
     }
-  
+
   PROFILER_ROUTQ(ptr);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
-			       u_int size)
+                               u_int size)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -416,7 +457,9 @@ int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 eresi_Addr      *kedbg_getpc_ia32(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -431,6 +474,7 @@ eresi_Addr      *kedbg_getpc_ia32(void)
 /**
  * We first sync the registers with the server, then we write the new
  * set ones. They'll be sent to the server when we'll do a "cont".
+ * @ingroup kedbg
  */
 void            kedbg_set_regvars_ia32(void)
 {
@@ -455,14 +499,16 @@ void            kedbg_set_regvars_ia32(void)
   PROFILER_OUTQ();
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            kedbg_get_regvars_ia32(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
   PROFILER_INQ();
   gdbwrap_readgenreg(loc);
-  
+
 
   E2DBG_GETREG(E2DBG_EAX_VAR, loc->reg32.eax);
   E2DBG_GETREG(E2DBG_EBX_VAR, loc->reg32.ebx);
@@ -477,7 +523,9 @@ void            kedbg_get_regvars_ia32(void)
   PROFILER_OUTQ();
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 void            kedbg_shipallreg(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
@@ -487,25 +535,29 @@ void            kedbg_shipallreg(void)
     {
       gdbwrap_shipallreg(loc);
       if (gdbwrap_erroroccured(loc))
-	{
-	  fprintf(stderr, "Desactivating the set registers"
-		  "(not supported by the server).\n");
-	  activated = FALSE;
-	}
+        {
+          fprintf(stderr, "Desactivating the set registers"
+                  "(not supported by the server).\n");
+          activated = FALSE;
+        }
     }
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 int             kedbg_writereg(ureg32 regNum, la32 val)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  
+
   PROFILER_INQ();
   gdbwrap_writereg(loc, regNum, val);
   PROFILER_ROUTQ(0);
 }
 
-
+/**
+ * @ingroup kedbg
+ */
 eresi_Addr      kedbg_realmode_memalloc(u_int size, u_int prot)
 {
   char          *ret = alloca(size + 1);
@@ -519,9 +571,9 @@ eresi_Addr      kedbg_realmode_memalloc(u_int size, u_int prot)
     {
       kedbg_readmema(NULL, addr, ret, size);
       for (i = 0; i < size; i++)
-	result += ret[i];
+        result += ret[i];
       if (result)
-	addr += size;
+        addr += size;
     } while (result && addr < 0xffff0);
 
   if (!result)

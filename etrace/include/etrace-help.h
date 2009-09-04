@@ -1,11 +1,13 @@
-/*
-** etrace-help.h for etrace
-**
-** Started on  Thu Aug 15 07:19:04 2005 mxatone
-**
-** $Id$
-**
-*/
+/**
+ * @file etrace/include/etrace-help.h
+ * @ingroup etrace
+ * etrace-help.h for etrace
+ *
+ * Started on  Thu Aug 15 07:19:04 2005 mxatone
+ *
+ * $Id$
+ *
+ */
 #ifndef __ETRACE_HELP_H_
  #define __ETRACE_HELP_H_
 

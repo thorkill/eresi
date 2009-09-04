@@ -1,15 +1,18 @@
-/*
-** @file arith.c
-** @ingroup librevm_lang
-** @brief Implementation of arithmetics for expressions
-**
-** Started on Nov 11 2008 23:39:51 jfv
-** $Id$
-*/
+/**
+ * @file librevm/arith.c
+ * @ingroup librevm_lang
+ * @brief Implementation of arithmetics for expressions
+ *
+ * Started on Nov 11 2008 23:39:51 jfv
+ * $Id$
+ */
 #include "revm.h"
 
 
-/** Get an expression by its name */
+/**
+ * Get an expression by its name
+ * @ingroup librevm_lang
+ */
 static revmexpr_t	*revm_ename_get(char **str)
 {
   char			name[BUFSIZ];
@@ -44,7 +47,10 @@ static revmexpr_t	*revm_ename_get(char **str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
-/** Dereference an existing address expression */
+/**
+ * Dereference an existing address expression 
+ * @ingroup librevm_lang
+ */
 static revmexpr_t	*revm_deref(revmexpr_t *ref)
 {
   revmexpr_t		*res;
@@ -79,7 +85,10 @@ static revmexpr_t	*revm_deref(revmexpr_t *ref)
 }
 
 
-/** Compute an intermediate numerical result */
+/**
+ * Compute an intermediate numerical result 
+ * @ingroup librevm_lang
+ */
 static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res, u_char *op)
 {
   u_char		quiet;
@@ -117,7 +126,10 @@ static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res,
 }
 
 
-/** Recursive eager evaluation of arithmetic expressions in ERESI */
+/**
+ * Recursive eager evaluation of arithmetic expressions in ERESI 
+ * @ingroup librevm_lang
+ */
 static revmexpr_t	*revm_compute_rec(char **str)
 {
   revmexpr_t		*res;

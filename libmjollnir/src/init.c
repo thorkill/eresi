@@ -1,9 +1,9 @@
 /**
- * (C) 2006-2008 Asgard Labs, thorolf
- *
- * @file init.c
+ * @file libmjollnir/src/init.c
  * @brief Initialization functions
+ * @ingroup libmjollnir
  *
+ * (C) 2006-2009 Eresi Project
  */
 
 #include "libmjollnir.h"
@@ -11,6 +11,7 @@
 /**
  * @brief Initialize the world for libmjollnir 
  * @param sess The session structure
+ * @ingroup libmjollnir
  */
 int		mjr_init_session(mjrsession_t *sess) 
 {
@@ -43,6 +44,7 @@ int		mjr_init_session(mjrsession_t *sess)
  * @brief Change the current analysis context
  * @param sess The session structure
  * @param name The name of the session
+ * @ingroup libmjollnir
  */
 int		mjr_set_current_context(mjrsession_t *sess, char *name) 
 {
@@ -56,6 +58,7 @@ int		mjr_set_current_context(mjrsession_t *sess, char *name)
  * @brief Create a new analysis context 
  * @param sess The session structure
  * @param ctx The context structure
+ * @ingroup libmjollnir
  */
 int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx) 
 {
@@ -68,6 +71,7 @@ int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx)
  * @brief Create a context and set it as the current one 
  * @param sess The session strucutre
  * @param obj elfshell obj
+ * @ingroup libmjollnir
  */
 int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj) 
 {
@@ -84,6 +88,7 @@ int		mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj)
 /**
  * @brief Create a new context 
  * @param obj elf shell object
+ * @ingroup libmjollnir
  */
 mjrcontext_t	*mjr_create_context(elfshobj_t *obj) 
 {
@@ -120,8 +125,10 @@ mjrcontext_t	*mjr_create_context(elfshobj_t *obj)
 }
 
 /**
- * Virtualisation of the libasm initialization depending on the architecture 
+ * @brief Virtualisation of the libasm initialization depending on the architecture 
  * @param sess Mjollnir session strucutre
+ * @param existing current processor
+ * @ingroup libmjollnir
  */
 int		mjr_setup_processor(mjrsession_t *sess, asm_processor *existing) 
 {
@@ -155,3 +162,4 @@ int		mjr_setup_processor(mjrsession_t *sess, asm_processor *existing)
    }
  return 1;
 }
+

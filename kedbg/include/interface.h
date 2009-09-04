@@ -1,7 +1,12 @@
+/**
+ * @file kedbg/include/interface.h
+ * @ingroup kedbg
+ */
+
+
 #include <netdb.h>
 #include "revm.h"
 #include "libe2dbg.h"
-
 
 /* Commands */
 int             cmd_com1(void);
@@ -17,11 +22,11 @@ void            *kedbg_getret_ia32(void *frame);
 void            kedbg_setstep(void);
 void            kedbg_resetstep(void);
 int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp);
-int             kedbg_delbp(elfshbp_t *bp);  
+int             kedbg_delbp(elfshbp_t *bp);
 void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
-				void *buf, unsigned size);
+                                void *buf, unsigned size);
 int             kedbg_writemem(elfshobj_t *file, eresi_Addr addr, void *data,
-			       unsigned size);
+                               unsigned size);
 void            *kedbg_readmem(elfshsect_t *base);
 eresi_Addr      *kedbg_getpc_ia32(void);
 void            kedbg_set_regvars_ia32(void);
@@ -40,4 +45,3 @@ char            *kedbg_getstr(void *addr, char *buf, unsigned maxsize);
 
 /* Linkmap related functions */
 elfshlinkmap_t  *kedbg_linkmap_getaddr(void);
-

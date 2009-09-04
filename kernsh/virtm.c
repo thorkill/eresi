@@ -1,17 +1,17 @@
 /**
- * @defgroup kernsh Kernsh
- */
-/**
  *
-** @file virtm.c
-** @ingroup kernsh
-**
-*/
+ * @file kernsh/virtm.c
+ * @ingroup kernsh
+ *
+ */
 
 #include "kernsh.h"
 #include "libkernsh.h"
 #include "libkernsh-virtm.h"
 
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_info()
 {
   int		ret;
@@ -22,6 +22,9 @@ int		cmd_kvirtm_info()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_loadme()
 {
   int		ret;
@@ -57,6 +60,9 @@ int		cmd_kvirtm_loadme()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_dump()
 {
   int		ret;
@@ -80,6 +86,9 @@ int		cmd_kvirtm_dump()
   return 0;
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_read_pid()
 {
   int		ret, len, pid, tmp;
@@ -112,7 +121,9 @@ int		cmd_kvirtm_read_pid()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_write_pid()
 {
   revmexpr_t	*e1;
@@ -203,6 +214,9 @@ int		cmd_kvirtm_write_pid()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_task_pid()
 {
   int		ret;
@@ -239,6 +253,9 @@ int		cmd_kvirtm_task_pid()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		cmd_kvirtm_disasm_pid()
 {
   int		ret, pid, len, tmp;
@@ -274,6 +291,9 @@ int		cmd_kvirtm_disasm_pid()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
 {
   int		fd, len, ret;
@@ -354,6 +374,9 @@ int		kernsh_virtm_dump_elf(pid_t pid, char *filename)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
 {
   int		ret;
@@ -384,6 +407,9 @@ int		kernsh_virtm_read_pid(pid_t pid, unsigned long addr, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		kernsh_virtm_write_pid(pid_t pid, unsigned long addr, char *buffer, int len)
 {
   int		ret;
@@ -406,6 +432,9 @@ int		kernsh_virtm_write_pid(pid_t pid, unsigned long addr, char *buffer, int len
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
 {
   int		index, ret;
@@ -467,6 +496,9 @@ int		kernsh_virtm_task_pid(pid_t pid, list_t *h)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
+/**
+ * @ingroup kernsh
+ */
 int		kernsh_virtm_disasm_pid(pid_t pid, unsigned long addr, int len)
 {
   int		ret;

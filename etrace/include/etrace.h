@@ -1,11 +1,13 @@
-/*
-** etrace.h for etrace
-** 
-** Started on  Thu Feb 22 07:19:04 2001 mxatone
-**
-** $Id$
-**
-*/
+/**
+ * @defgroup etrace etrace
+ * @file etrace/include/etrace.h
+ * etrace.h for etrace
+ * 
+ * Started on  Thu Feb 22 07:19:04 2001 mxatone
+ *
+ * $Id$
+ *
+ */
 #ifndef __ETRACE_H_
  #define __ETRACE_H_
 

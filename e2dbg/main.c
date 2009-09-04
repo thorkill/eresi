@@ -1,8 +1,9 @@
 /**
  * @defgroup e2dbg e2dbg
  */
-/*
- * @file main.c
+
+/**
+ * @file e2dbg/main.c
  * @ingroup e2dbg
  * The embedded ELF debugger
  *
@@ -19,7 +20,8 @@ char		*version;
 
 
 /**
- * Setup LD_PRELOAD for dynamic binaries debugging 
+ * Setup LD_PRELOAD for dynamic binaries debugging
+ * @ingroup e2dbg
  */
 void		revm_debugger_preload()
 {
@@ -57,6 +59,7 @@ void		revm_debugger_preload()
  * Inject the .o debugger file into the static binary 
  * @param file
  * @return
+ * @ingroup e2dbg
  */
 char*		revm_debugger_inject(elfshobj_t *file)
 {
@@ -125,6 +128,7 @@ char*		revm_debugger_inject(elfshobj_t *file)
  * @param ac Number of arguments.
  * @param av Array of arguments.
  * @return
+ * @ingroup e2dbg
  */
 int		revm_execute_debuggee(int ac, char **av)
 {
@@ -167,6 +171,7 @@ int		revm_execute_debuggee(int ac, char **av)
  * @param ac
  * @param av
  * @return
+ * @ingroup e2dbg
  */
 int		e2dbg_main(int ac, char **av)
 {
@@ -207,12 +212,10 @@ int		e2dbg_main(int ac, char **av)
  * @param ac
  * @param av
  * @return
+ * @ingroup e2dbg
  */
 int		main(int ac, char **av)
 {
   //fprintf(stderr, "e2dbg client main -----------> \n");
   return (e2dbg_main(ac, av));
 }
-
-
-

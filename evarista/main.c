@@ -1,15 +1,19 @@
-/*
-** main.c for evarista
-**
-** The entry point of the static analyzer
-**
-** Started on  Fri Jun 22 14:42:36 2007 jfv
-** $Id$
-*/
+/**
+ * @file evarista/main.c
+ * @ingroup evarista
+ *
+ * The entry point of the static analyzer
+ *
+ * Started on  Fri Jun 22 14:42:36 2007 jfv
+ * $Id$
+ */
 #include "evarista.h"
 
 
-/* Prompt related functions for evarista */
+/**
+ * Prompt related functions for evarista 
+ * @ingroup evarista
+ */
 void		eva_setup_quit_msg()
 {
   char		logbuf[BUFSIZ];
@@ -18,7 +22,10 @@ void		eva_setup_quit_msg()
 	   EVARISTA_NAME, REVM_VERSION);
   revm_quitmsg_set(logbuf);
 }
-
+/**
+ *
+ * @ingroup evarista
+ */
 void		eva_create_prompt(char *buf, u_int size)
 {
   snprintf(buf, size - 1,
@@ -37,13 +44,19 @@ void		eva_create_prompt(char *buf, u_int size)
   revm_endline();
 }
 
+/**
+ * @ingroup evarista
+ */
 void 		eva_setup_prompt()
 {
   revm_set_prompt(eva_create_prompt);
 }
 
 
-/* Print the etrace banner */
+/**
+ * Print the etrace banner 
+ * @ingroup evarista 
+ */
 void		eva_banner_print()
 {
   char		logbuf[BUFSIZ];
@@ -69,7 +82,10 @@ void		eva_banner_print()
 
 
 
-/* The real main function */
+/**
+ * The real main function 
+ * @ingroup evarista
+ */
 int		eva_main(int ac, char **av)
 {
   /* Interface tweak */
@@ -88,7 +104,10 @@ int		eva_main(int ac, char **av)
 }
 
 
-/* The main ELFsh routine */
+/**
+ * The main ELFsh routine 
+ * @ingroup evarista
+ */
 int		main(int ac, char **av)
 {
   return (eva_main(ac, av));

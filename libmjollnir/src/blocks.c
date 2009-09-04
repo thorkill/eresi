@@ -1,9 +1,10 @@
-/*
-** @file libmjollnir/src/blocks.c
-**
-** Authors : sk, jfv, thorkill, strauss
-**
-*/
+/** 
+ * @file libmjollnir/src/blocks.c
+ * @ingroup libmjollnir
+ * @{
+ * Authors : sk, jfv, thorkill, strauss
+ *
+ */
 #include "libmjollnir.h"
 
 
@@ -183,3 +184,6 @@ int			mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, off);
 }
+
+/** @} */
+

@@ -1,23 +1,20 @@
-/*
-** (C) 2006-2008 The ERESI team
-**
-** @file core.c
-** @brief Implement low-level functions of the libmjollnir library
-**
-*/
+/**
+ * @file core.c
+ * @ingroup libmjollnir
+ * @brief Implement low-level functions of the libmjollnir library
+ *
+ */
 #include "libmjollnir.h"
-
 
 /**
  * @brief Core control flow analysis function at a given address
  * @param sess Mjollnir session
- * @param ptr Code buffer pointer to analyze
- * @param offset Offset into the code buffer to analyze
  * @param vaddr Entry point address for analysis
- * @param len Size of code to analyse
  * @param curdepth current depth of cfg being analyzed
  * @param maxdepth depth limit of analysis (== MJR_MAX_DEPTH for limitless)
  * @return Success (0) or error (-1).
+ * 
+ * @ingroup libmjollnir
  */
 int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int maxdepth)
 {
@@ -190,7 +187,6 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Analyse control flow at a given address
  * @param sess Mjollnir session
@@ -198,6 +194,8 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
  * @param maxdepth Maximum depth of the analysis in the CFG
  * @param flags <FIXME:NotImplemented>
  * @return Success (0) or Error (-1).
+ *
+ * @ingroup libmjollnir
  */
 int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
 {
@@ -272,7 +270,11 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** Store control-flow analysis information on disk */
+/**
+ * @breif Store control-flow analysis information on disk 
+ * @param sess Mjollnir session
+ * @ingroup libmjollnir
+ */
 int             mjr_analyse_finished(mjrsession_t *sess)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -291,8 +293,12 @@ int             mjr_analyse_finished(mjrsession_t *sess)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-/** Indicate if a given address has already been analyzed */
+/**
+ * Indicate if a given address has already been analyzed 
+ * @param sess Mjollnir session
+ * @param addr current address
+ * @ingroup libmjollnir
+ */
 int		mjr_analysed(mjrsession_t *sess, eresi_Addr addr)
 {
   int		analysed;

@@ -1,9 +1,10 @@
-/*
-** evarista.h for evarista in ERESI
-** 
-** Started on Fri Jun 22 14:19:04 2007 jfv
-** $Id$
-*/
+/**
+ * @defgroup evarista Evarista: static analyzer
+ * @file evarista/include/evarista.h
+ * 
+ * Started on Fri Jun 22 14:19:04 2007 jfv
+ * $Id$
+ */
 #ifndef __EVARISTA_H_
  #define __EVARISTA_H_
 

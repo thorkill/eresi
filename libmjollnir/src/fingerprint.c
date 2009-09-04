@@ -1,11 +1,12 @@
-/*
-** @file fingerprint.c
-** 
-** @brief Functions for fingerprinting inside libmjollnir
-**
-** Started : Mon Jan 02 01:18:14 2007 jfv
-**
-*/
+/**
+ * @file fingerprint.c
+ * @ingroup libmjollnir
+ * 
+ * @brief Functions for fingerprinting inside libmjollnir
+ *
+ * Started : Mon Jan 02 01:18:14 2007 jfv
+ *
+ */
 
 #include "libmjollnir.h"
 

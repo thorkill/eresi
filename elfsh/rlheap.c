@@ -1,5 +1,5 @@
 /**
-* @file readlnheap.c
+* @file elfsh/rlheap.c
 * @ingroup elfsh 
 * @brief Handle the readline malloc/free to avoid messing with the alloc proxy.
 *

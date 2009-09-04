@@ -1,3 +1,8 @@
+/**
+ * @defgroup kedbg kedbg: The Kernel Debugger
+ * @file kedbg/include/kedbg.h
+ */
+
 #include "libe2dbg.h"
 #include "libasm-int.h"
 #include "gdbwrapper.h"

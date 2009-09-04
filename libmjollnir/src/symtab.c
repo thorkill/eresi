@@ -1,5 +1,6 @@
 /**
  * @file symtab.c
+ * @ingroup libmjollnir
  *
  * (C) 2006-2008 Asgard Labs, thorolf
  *

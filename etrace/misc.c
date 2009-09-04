@@ -1,16 +1,17 @@
-/*
-** misc.c for etrace
-** @file misc.c
-** Updated on  Wed Jan 03 17:31:11 2007 mxatone
-**
-** $Id$
-**
-*/
+/**
+ * @file etrace/misc.c
+ * @ingroup etrace
+ * Updated on  Wed Jan 03 17:31:11 2007 mxatone
+ *
+ * $Id$
+ *
+ */
 #include "etrace.h"
 
 
 /**
- * Mark the current object SHT to be removed on savnig 
+ * Mark the current object SHT to be removed on savnig
+ * @ingroup etrace
  */
 int             cmd_shtrm()
 {
@@ -22,8 +23,9 @@ int             cmd_shtrm()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** 
- * Mark the file as stripped 
+/**
+ * Mark the file as stripped
+ * @ingroup etrace
  */
 int		cmd_strip()
 {
@@ -36,8 +38,9 @@ int		cmd_strip()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** 
- * Mark SHT as removed and file as stripped 
+/**
+ * Mark SHT as removed and file as stripped
+ * @ingroup etrace
  */
 int		cmd_sstrip()
 {

@@ -1,11 +1,11 @@
-/*
-** (C) 2006-2008 The ERESI team
-**
-** @file libmjollnir/types.c
-** 
-** @brief Top-level functions for control-flow analysis
-**
-*/
+/** 
+ * @file libmjollnir/types.c
+ * (C) 2006-2008 The ERESI team
+ * @ingroup libmjollnir
+ * 
+ * @brief Top-level functions for control-flow analysis
+ *
+ */
 #include "libmjollnir.h"
 
 
@@ -26,7 +26,7 @@
  *  to following instruction.
  *
  * FIXME : this function must be tested on other architectures
- *
+ * @ingroup libmjollnir
  */
 int			mjr_trace_control(mjrcontext_t *context,
 					  container_t	*curblock,
@@ -208,6 +208,7 @@ int			mjr_trace_control(mjrcontext_t *context,
  *  804936c:       ff d2                   call   *%edx
  *
  * FIXME : this function must be ported to the SPARC architecture
+ * @ingroup libmjollnir
  */
 eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 {
@@ -294,6 +295,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 /**
  * @brief Resolve the destination address of current call 
  * @param context mjorllnir context strucutre
+ * @ingroup libmjollnir
  */
 eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 {
@@ -375,6 +377,7 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 /**
  * @brief Resolve the destination address of current jmp instruction
  * @param context mjollnir context structure
+ * @ingroup libmjollnir
  */
 eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 {
@@ -471,7 +474,11 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
  * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
  * @todo to remove ?
+ * @ingroup libmjollnir
  */
+
+/** @} */
+
 /*
 int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
@@ -559,3 +566,5 @@ int			mjr_asm_check_function_start(mjrcontext_t *ctxt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 */
+
+

@@ -1,13 +1,13 @@
-/*
-** @file display.c
-** 
-** @brief Contain printing functions for debug purpose only
-**
-** FIXME: needs to use revm_output() and not printf inside elfsh.
-**
-** Started on  Tue Jan 02 04:04:18 2006 jfv
-**
-*/
+/**
+ * @file display.c
+ * @ingroup libmjollnir
+ * @brief Contain printing functions for debug purpose only
+ *
+ * FIXME: needs to use revm_output() and not printf inside elfsh.
+ *
+ * Started on  Tue Jan 02 04:04:18 2006 jfv
+ *
+ */
 
 #include "libmjollnir.h"
 

@@ -1,5 +1,5 @@
 /**
- * @file run.c
+ * @file elfsh/run.c
  * @ingroup elfsh
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  *
@@ -11,7 +11,8 @@
 
 
 /** 
- * Run the binary 
+ * Run the binary
+ * @ingroup elfsh
  */
 int		cmd_run()
 {

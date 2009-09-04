@@ -1,6 +1,7 @@
-/**
+/** 
  * @file libmjollnir-objects.h
- *
+ * @ingroup libmjollnir
+ * @{
  * 2001-2007 Devhell Labs, Asgardlabs
  * 
  * @brief All structures of libmjollnir
@@ -164,3 +165,5 @@ typedef struct	s_condition
 
 
 #endif
+
+/** @} */

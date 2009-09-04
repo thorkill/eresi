@@ -1,5 +1,5 @@
 /**
- * @file main.c
+ * @file elfsh/main.c
  * @ingroup elfsh
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Wed Jan 03 17:51:04 2007 jfv
