@@ -7,7 +7,6 @@
 ** $Id$
 **
 */
-
 #include "libedfmt.h"
 
 char *alloc_pool = NULL;
@@ -86,7 +85,7 @@ int			edfmt_dwarf2_abbrev_read(edfmtdw2abbent_t *ent, u_long fnum, u_long ipos)
 int			edfmt_dwarf2_abbrev_enum_clean(hash_t *abbrev_table)
 {
   char			**keys;
-  u_int			index;
+  int			index;
   int			keynbr;
   u_long		*value;
 
@@ -275,7 +274,7 @@ int 	   		edfmt_dwarf2_form_value(edfmtdw2abbattr_t *attr)
   char			*ptr;
   u_char 		addr[10]; /* 10 should be enough */
   u_int			data;
-  long			ddata;
+  long			ddata; /* FIXME: this is not a 64b type...*/
 
   NOPROFILER_IN();
 
@@ -909,8 +908,9 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
   u_int	       		basic_block;
   u_int			end_sequence;
   u_long		tmpf;
-
-  u_int			i, bsize;
+  int			i;
+  u_int			i2;
+  u_int			bsize;
   u_char       		opc, ext_opc;
   char			*read_addr;
 
@@ -961,8 +961,8 @@ static int		edfmt_dwarf2_line_data(edfmtdw2linehead_t *header)
 		    case DW_LNE_set_address:
 		      DW2_GETPTR(read_addr, current_cu->addr_size, -1);
 		      
-		      for (i = 0; i < current_cu->addr_size; i++)
-			dwarf2_ipos(read_addr[i], line, u_char);
+		      for (i2 = 0; i2 < current_cu->addr_size; i2++)
+			dwarf2_ipos(read_addr[i2], line, u_char);
 
 		      addr = *(eresi_Addr *) read_addr;
 		      break;

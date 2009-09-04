@@ -18,13 +18,13 @@ OBJ64	 		= ${SRC:.c=.64.o}
 NAME32			= libedfmt32
 NAME64			= libedfmt64
 
-CFLAGS32		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
+CFLAGS32		+= -Wall -fPIC -g3 -Iinclude -I ../libaspect/include/ \
 			-I../libelfsh/include/  -DERESI32 $(EXTRACFLAGS)
 
-CFLAGS64		+= -Wall -fPIC -g3 -O2 -Iinclude -I ../libaspect/include/ \
+CFLAGS64		+= -Wall -fPIC -g3 -Iinclude -I ../libaspect/include/ \
 			-I../libelfsh/include/  -DERESI64 $(EXTRACFLAGS)
 
-LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 
+LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32
 #			-L../liballocproxy -lallocproxy
 
 LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \

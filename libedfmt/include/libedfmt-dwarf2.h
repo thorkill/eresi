@@ -60,9 +60,9 @@ typedef struct 	s_dw2abbattr
   union 
   {
     char 	*vbuf; 	/* DW_FORM_ref_addr, DW_FORM_addr, DW_FORM_block[1-4], DW_FORM_block */
-    u_long 	udata;	/* DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
+    int64_t    udata;	/* DW_FORM_udata, DW_FORM_data[1-4], DW_FORM_flag, DW_FORM_data8 
 			   DW_FORM_ref[1-8], DW_FORM_ref_udata */
-    long	sdata;	/* DW_FORM_sdata */
+    uint64_t   sdata;	/* DW_FORM_sdata */
     char      	*str;	/* DW_FORM_string, DW_FORM_strp */
   } u;
 
@@ -260,17 +260,28 @@ extern edfmtdw2cu_t *current_cu;
 #define dwarf2_a_pos(name) 	(dwarf2_data(name) + dwarf2_pos(name))
 #define dwarf2_ac_pos(name) 	(char *) dwarf2_a_pos(name)
 
+/* For big-endian targets */
 #define dwarf2_get_1(val) (val[0])
 #define dwarf2_get_2(val) (val[0] | (val[1] << 8))
 #define dwarf2_get_4(val) (val[0] | (val[1] << 8) | (val[2] << 16) | (val[3] << 24))
 #define dwarf2_get_8(val) (val[0] | (val[1] << 8) | (val[2] << 16) | (val[3] << 24) \
 		       | (val[4] << 32) | (val[5] << 40) | (val[6] << 48) | (val[7] << 56))
 
+#define dwarf2_get_pos_be(val, name, type) \
+ val = (type) (sizeof(type) == 1 ? dwarf2_get_1(dwarf2_a_pos(name)) \
+	    : (sizeof(type) == 2 ? dwarf2_get_2(dwarf2_a_pos(name)) \
+	    : (sizeof(type) == 4 ? dwarf2_get_4(dwarf2_a_pos(name)) \
+	    : (sizeof(type) == 8 ? dwarf2_get_8((int64_t)dwarf2_a_pos(name)) : 0))))
+
+/* Little endian targets */
+#define dwarf2_get_pos_le(val, name, type) val = *(type *) dwarf2_a_pos(name)
+
+/* Top level macro */
 #define dwarf2_get_pos(val, name, type) \
-val = (type) (sizeof(type) == 1 ? dwarf2_get_1(dwarf2_a_pos(name)) \
-	   : (sizeof(type) == 2 ? dwarf2_get_2(dwarf2_a_pos(name)) \
-	   : (sizeof(type) == 4 ? dwarf2_get_4(dwarf2_a_pos(name)) \
-           : (sizeof(type) == 8 ? dwarf2_get_8(dwarf2_a_pos(name)) : 0 ))))
+  if (elfsh_get_encoding(dwarf2_info->cu_list->fileobj->hdr) == ELFDATA2LSB)  \
+    dwarf2_get_pos_le(val, name, type); \
+  else \
+   dwarf2_get_pos_be(val, name, type)
 
 #define dwarf2_inc_pos(name, value) 			\
 do {							\
@@ -285,22 +296,22 @@ do { 							\
 
 #define dwarf2_read_1(val, name) 			\
 do { 							\
-  dwarf2_get_pos(val, name, char); 			\
+  dwarf2_get_pos(val, name, uint8_t); 			\
 } while(0)
 
 #define dwarf2_read_2(val, name) 			\
 do { 							\
-  dwarf2_get_pos(val, name, short); 			\
+  dwarf2_get_pos(val, name, uint16_t); 			\
 } while(0)
 
 #define dwarf2_read_4(val, name) 		   	\
 do { 						     	\
-  dwarf2_get_pos(val, name, int); 			\
+  dwarf2_get_pos(val, name, uint32_t); 			\
 } while(0)
 
 #define dwarf2_read_8(val, name) 			\
 do { 							\
-  dwarf2_get_pos(val, name, long); 			\
+  dwarf2_get_pos(val, name, uint64_t); 			\
 } while(0)
 
 #define dwarf2_iread_1(val, name) 		  	\

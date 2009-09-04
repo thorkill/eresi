@@ -52,7 +52,7 @@ long 			edfmt_read_leb128(void *data, u_int *bread)
   long			sum = 0;
   u_int			read = 0;
   u_char 		c;
-  int			s = 0;
+  u_int			s = 0;
 
   NOPROFILER_IN();
 
@@ -64,7 +64,7 @@ long 			edfmt_read_leb128(void *data, u_int *bread)
     s += 7;
   } while ((c & 128) != 0);
 
-  if ((s < 8 * sizeof(sum)) && (c & 0x40))
+  if ((s < (8 * sizeof(sum))) && (c & 0x40))
     sum |= -(((long)1) << s);
 
   if (bread)

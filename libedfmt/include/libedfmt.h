@@ -113,7 +113,7 @@ edfmtdw2info_t 	*edfmt_dwarf2_getinfo(elfshobj_t *file);
 int		edfmt_dwarf2_parse(elfshobj_t *file);
 int 		edfmt_dwarf2_clean(elfshobj_t *file);
 int		edfmt_dwarf2_block_entrie(elfshobj_t *file);
-int		edfmt_dwarf2_block_loop(u_int endpos);
+int		edfmt_dwarf2_block_loop();
 int		edfmt_dwarf2_build_tree(edfmtdw2abbent_t *parent,
 					edfmtdw2abbent_t *fent,
 					edfmtdw2abbent_t *ref);

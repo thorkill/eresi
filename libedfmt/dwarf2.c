@@ -1,19 +1,17 @@
 /*
+** @brief Implement DWARF2 support in libedfmt
 ** @file dwarf2.c
 ** @ingroup libedfmt
 ** 
 ** Started Dec 26 2006 10:49:45 mxatone
-**
-**
 ** $Id$
-**
 */
 
 #include "libedfmt.h"
 
 /**
  * This file implements DWARF2 support for libedfmt.
- * specificitation @ http://dwarf.freestandards.org/Download.php 
+ * specification @ http://dwarf.freestandards.org/Download.php 
  * @file dwarf2.c
  */
 
@@ -114,11 +112,14 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
       if (pointers[i]->sect != NULL)
 	pointers[i]->data = pointers[i]->sect->data;
     }
-
+  
   /* Start into the block entrie */
   if (edfmt_dwarf2_block_entrie(file) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "DWARF2 block parsing failed", -1);
+    {
+      profiler_disable_err();
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		   "DWARF2 block parsing failed", -1);
+    }
 
   /* Parse cfa informations */
   /* TODO: reimplement it when it will be usefull
@@ -140,11 +141,14 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
 int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
 {
   edfmtdw2cu_t		*tcu;
+  u_int			nbr = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   while (dwarf2_pos(info) < dwarf2_size(info))
     {
+      nbr++;
+
       /* Alloc a new compil unit */
       XALLOC(__FILE__, __FUNCTION__, __LINE__,tcu, sizeof(edfmtdw2cu_t), -1);
 
@@ -168,12 +172,18 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
 
       /* Read DWARF2 .dwarf2_info header */
       dwarf2_ipos(current_cu->length, info, u_int);
+
+      /* A compil unit bigger than the section ? */
+      if (current_cu->length > dwarf2_size(info))
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		     "DWARF2 compil unit size incorrect", -1);
+
       current_cu->end_pos = dwarf2_pos(info) + current_cu->length;
 
       /* A compil unit bigger than the section ? */
       if (current_cu->end_pos > dwarf2_size(info))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "DWARF2 compil unit size incorrect", -1);
+		     "DWARF2 compil unit end position incorrect", -1);
 
       dwarf2_ipos(current_cu->version, info, u_short);
 
@@ -197,14 +207,16 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       dwarf2_pos(abbrev) = current_cu->offset;
      
       /* Loop on the current compil unit */
-      if (edfmt_dwarf2_block_loop(current_cu->end_pos) < 0)
+      if (edfmt_dwarf2_block_loop() < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "DWARF2 block looping failed", -1);
 
       /* We update info position, to finish at the right offset */
       dwarf2_pos(info) = current_cu->end_pos;
     }
-      
+
+  fprintf(stderr, " Found %u DWARF2 compilation units!\n", nbr);
+  
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -247,10 +259,10 @@ int 			edfmt_dwarf2_getent(edfmtdw2cu_t *cu, edfmtdw2abbent_t *abbent,
 }
 
 /**
- * Manage parsing loops. On the new layout thif function just fill abbrev hash table
+ * Manage parsing loops. On the new layout this function just fill abbrev hash table
  * @param endpos represent the end position to read on the current compile unit (deprecate)
  */
-int			edfmt_dwarf2_block_loop(u_int endpos)
+int			edfmt_dwarf2_block_loop()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);   
 

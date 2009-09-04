@@ -30,7 +30,7 @@ char		*edfmt_stabs_readstr(char *buf, u_int size, char **str, char c_delim)
 
   delim = strchr(*str, c_delim);
 
-  csize = delim ? delim - *str + 1 : size;
+  csize = delim ? (u_int) (delim - *str) + 1 : size;
 
   if (csize > size)
     csize = size;

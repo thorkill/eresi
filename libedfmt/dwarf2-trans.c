@@ -242,7 +242,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
       DWARF2_TRANS_GETATTR(fileid, abbrev, DW_AT_decl_file, u.udata, -1);
 
       inc = 1;
-      if (fileid > 0 && fileid < current_cu->files_number)
+      if (fileid > 0 && fileid < (int) current_cu->files_number)
 	{
 	  fileid--;
 	  pstr = current_cu->dirs[current_cu->files_dindex[fileid] - 1];

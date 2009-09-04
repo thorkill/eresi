@@ -360,7 +360,7 @@ edfmtinfo_t		*edfmt_get_uniinfo(elfshobj_t *file)
 
   if (!file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid paramter", NULL);
+		      "Invalid parameter", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     (edfmtinfo_t *) file->debug_format.uni);

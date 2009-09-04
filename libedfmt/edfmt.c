@@ -74,19 +74,19 @@ elfshsect_t    		*edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
 /* The internal basename function */
 static char    	*edfmt_basename(char *str)
 {
-  char		*cur;
-  char		*ret;
+  volatile char		*cur;
+  volatile char		*ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = NULL;
   cur = str;
-  while ((cur = strchr(cur, '/')))
+  while ((cur = strchr((char *) cur, '/')))
     if (!*(cur + 1))
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No basename", (NULL));
     else
       ret = ++cur;
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (char *) (ret));
 }
 
 
@@ -136,8 +136,7 @@ int			edfmt_format(elfshobj_t *file)
       if (sect != NULL && debug_format[i].func != NULL)
 	{
 	  /* Parse */
-	  if (debug_format[i].func)
-	    debug_format[i].func(file);
+	  debug_format[i].func(file);
 
 	  /* Transform */
 	  if (debug_format[i].trans)
