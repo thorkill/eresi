@@ -352,6 +352,7 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 	break;
     } while (sumrval >= 3 &&
 	     desc->packet[sumrval - 3] != GDBWRAP_END_PACKETC && rval);
+      
 
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval)
@@ -359,7 +360,6 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
       desc->packet[sumrval] = GDBWRAP_NULL_CHAR;
       gdbwrap_extract_from_packet(desc->packet, checksum, GDBWRAP_END_PACKET,
 				  NULL, sizeof(checksum));
-
       /* If no error, we ack the packet. */
       if (rval != -1 &&
 	  gdbwrap_atoh(checksum, strlen(checksum)) ==
@@ -372,6 +372,10 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 	}
       else
 	{
+	  DEBUGMSG(printf("received : %s, checksum: %#x, calulated: %#x\n",
+			  desc->packet,
+			  gdbwrap_atoh(checksum, strlen(checksum)),
+			  gdbwrap_calc_checksum(desc, desc->packet)));
 	  if (gdbwrap_is_interrupted(desc))
 	    {
 	      desc->interrupted = FALSE;
@@ -494,12 +498,13 @@ unsigned             gdbwrap_atoh(const char *str, unsigned size)
   for (i = 0, hex = 0; i < size; i++)
     if (str != NULL && str[i] >= 'A' && str[i] <= 'F')
       hex += (str[i] - 0x37) << 4 * (size - i - 1);
-    if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
+    else if (str != NULL && str[i] >= 'a' && str[i] <= 'f')
       hex += (str[i] - 0x57) << 4 * (size - i - 1);
     else if (str != NULL && str[i] >= '0' && str[i] <= '9')
       hex += (str[i] - 0x30) << 4 * (size - i - 1);
     else
       return 0;
+    
   return hex;
 }
 
