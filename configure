@@ -582,7 +582,11 @@ echo "include ./$CONFIGFILE " 					>> Makefile
 echo ""								>> Makefile
 echo "CC      = gcc "						>> Makefile
 echo "RM      = rm -f "						>> Makefile
-echo "ETAGS   = etags "					        >> Makefile
+if which etags 2>/dev/null; then
+    echo "ETAGS   = etags "				        >> Makefile
+elif  which etags.emacs 2>/dev/null; then
+    echo "ETAGS   = etags.emacs "			        >> Makefile
+fi
 echo "CTAGS   = ctags "						>> Makefile
 echo "DESTDIR = $PREFIX"                       			>> Makefile
 echo "BUILD_TARGET = $BUILD_TARGET"				>> Makefile
