@@ -1,6 +1,6 @@
 /**
  * @file network.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief The high-level network interface.
  *
  * Started Wed Feb 25 22:22:35 2004 yann_malcom
@@ -35,7 +35,7 @@ char            *revm_netgdb_input(void)
 #if defined(ERESI_NET)
 /**
  * @brief Add a client socket to the elfsh_net_client_list. 
- * @ingroup io
+ * @ingroup librevm_io
  */
 revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
@@ -88,7 +88,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 
 /** 
  * @brief Return the number of buffer in a revmsock_t recvd 
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_socket_get_nb_recvd(char *inet)
 {
@@ -169,7 +169,7 @@ int		revm_socket_get_nb_recvd(char *inet)
 
 /**
  * @brief Only close a socket 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int revm_socket_close(int socket)
 {
@@ -192,7 +192,7 @@ int revm_socket_close(int socket)
 /**
 * @brief Remove a client socket from the list and close it, return (-1) if socket 
 * not found
-* @ingroup io
+* @ingroup librevm_io
 */
 int		 revm_socket_del(char *inet_addr)
 {
@@ -257,7 +257,7 @@ int		 revm_socket_del(char *inet_addr)
 
 /**
  * @brief Really send the data 
- * @ingroup io
+ * @ingroup librevm_io
  */
 int revm_netsend(char *buf, unsigned int len)
 {
@@ -278,7 +278,7 @@ int revm_netsend(char *buf, unsigned int len)
 
 /**
  * @brief send buf on a socket 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int	revm_net_output(char *buf)
 {
@@ -310,7 +310,7 @@ int	revm_net_output(char *buf)
 
 /**
  * @brief  Create le main socket and bind it to ELFSH_LISTEN_PORT. 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int	revm_create_server(int			*serv_sock, 
 			 struct sockaddr_in	*addr,
@@ -353,7 +353,7 @@ int	revm_create_server(int			*serv_sock,
 
 /**
  * @brief Update revmsock_t recvd buffer 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int		revm_update_recvd(revmsock_t *socket)
 {
@@ -511,7 +511,7 @@ int		revm_update_recvd(revmsock_t *socket)
 
 /**
  * @brief  send buf on a dump connection 
- * @ingroup io
+ * @ingroup librevm_io
  */
 int	revm_dump_output(char *buf)
 {
@@ -533,7 +533,7 @@ int	revm_dump_output(char *buf)
 
 /** 
  * @brief Return the first packet data 
- * @ingroup io
+ * @ingroup librevm_io
 */
 char	*revm_dump_input()
 {
@@ -550,7 +550,7 @@ char	*revm_dump_input()
 
 /** 
  * @brief accept a DUMP connection 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int			revm_dump_accept()
 {
@@ -605,7 +605,7 @@ int			revm_dump_accept()
 
 /**
  * @brief  Accept new connection if there is 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int			revm_net_accept()
 {
@@ -681,7 +681,7 @@ int			revm_net_accept()
 
 /**
  * @brief  One listening step 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int			revm_net_recvd(fd_set *sel_sockets)
 {
@@ -858,7 +858,7 @@ int			revm_net_recvd(fd_set *sel_sockets)
 
 /**
  * @brief  Merge buffers 
- * @ingroup io
+ * @ingroup librevm_io
 */
 char	*revm_socket_merge_recvd(revmsock_t *socket)
 {
@@ -902,7 +902,7 @@ char	*revm_socket_merge_recvd(revmsock_t *socket)
 
 /**
  * @brief  Return the first buffers 
- * @ingroup io
+ * @ingroup librevm_io
  */
 char			*revm_net_input()
 {
@@ -971,7 +971,7 @@ char			*revm_net_input()
 
 /** 
  * @brief Listening initialisation 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int			revm_net_init()
 {
@@ -1009,7 +1009,7 @@ int			revm_net_init()
 
 /** 
  * @brief Stopping network | not workspace compliant ... 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int		      revm_net_stop()
 {
@@ -1075,7 +1075,7 @@ int		      revm_net_stop()
 
 /** 
  * @brief Clean jobs 
- * @ingroup io
+ * @ingroup librevm_io
 */
 int			revm_clean_jobs()
 {
@@ -1117,7 +1117,7 @@ int			revm_clean_jobs()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_clean_jobs()
 {
@@ -1126,7 +1126,7 @@ int		revm_clean_jobs()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_getmaxfd() 
 { 
@@ -1140,7 +1140,7 @@ int		revm_getmaxfd()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 {
@@ -1149,7 +1149,7 @@ revmjob_t	*revm_socket_add(int socket, struct sockaddr_in *addr)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_socket_get_nb_recvd(char *inet)
 {
@@ -1158,7 +1158,7 @@ int		revm_socket_get_nb_recvd(char *inet)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_socket_close(int socket)
 {
@@ -1167,7 +1167,7 @@ int		revm_socket_close(int socket)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		 revm_socket_del(char *inet_addr)
 {
@@ -1176,7 +1176,7 @@ int		 revm_socket_del(char *inet_addr)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_netsend(char *buf, unsigned int len)
 {
@@ -1185,7 +1185,7 @@ int		revm_netsend(char *buf, unsigned int len)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_net_output(char *buf)
 {
@@ -1194,7 +1194,7 @@ int		revm_net_output(char *buf)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_create_server(int *serv_sock, 
 				 struct sockaddr_in *addr)
@@ -1204,7 +1204,7 @@ int		revm_create_server(int *serv_sock,
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_update_recvd(revmsock_t *socket)
 {
@@ -1213,7 +1213,7 @@ int		revm_update_recvd(revmsock_t *socket)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_net_accept_connection()
 {
@@ -1222,7 +1222,7 @@ int		revm_net_accept_connection()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_dump_accept_connection()
 {
@@ -1231,7 +1231,7 @@ int		revm_dump_accept_connection()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_net_recvd(fd_set *sel_sockets)
 {
@@ -1240,7 +1240,7 @@ int		revm_net_recvd(fd_set *sel_sockets)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 char		*revm_socket_merge_recvd(revmsock_t *socket)
 {
@@ -1249,7 +1249,7 @@ char		*revm_socket_merge_recvd(revmsock_t *socket)
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 char		*revm_net_input()
 {
@@ -1258,7 +1258,7 @@ char		*revm_net_input()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_net_init()
 {
@@ -1267,7 +1267,7 @@ int		revm_net_init()
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_net_stop()
 {

@@ -1,6 +1,6 @@
 /**
  * @file register.c
- * @ingroup libasm_ia32
+ * @ingroup libasm/ia32
  * @brief Registration of the ia32 disassembling vector.
  *
  */

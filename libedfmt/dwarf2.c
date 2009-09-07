@@ -214,8 +214,6 @@ int			edfmt_dwarf2_block_entrie(elfshobj_t *file)
       /* We update info position, to finish at the right offset */
       dwarf2_pos(info) = current_cu->end_pos;
     }
-
-  fprintf(stderr, " Found %u DWARF2 compilation units!\n", nbr);
   
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

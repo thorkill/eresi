@@ -1,11 +1,10 @@
 /*
-** @file dwarf2-cfa.c
+** @file libedfmt/dwarf2-cfa.c
 ** @ingroup libedfmt
+** @brief DWARF2 CFA data handling
+**
 ** Started Dec 26 2006 10:49:45 mxatone
-**
-**
 ** $Id$
-**
 */
 
 #include "libedfmt.h"

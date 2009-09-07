@@ -1,12 +1,10 @@
 /**
- * @file delete.c
- *    
- * Delete breakpoints
+ * @file libe2dbg/common/delete.c
+ * @brief Command and API for breakpoint deletion
+ * @ingroup libe2dbg
  *
  * Started on  Tue Aug 16 09:38:03 2005 jfv
- *
  * $Id$
- *
  */
 #include "libe2dbg.h"
 

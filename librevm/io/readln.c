@@ -1,6 +1,6 @@
 /**
  * @file readln.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief Interface readline with librevm.
  *
  * This allows us to only recompile this file
@@ -165,7 +165,7 @@ void		revm_buffer_free(char *buf)
 
 /**
  * @brief  Strip readline escape characters from buffer
- * @ingroup io
+ * @ingroup librevm_io
  */
 void		revm_strip_char(char *str, char c)
 {

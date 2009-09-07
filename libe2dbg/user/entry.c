@@ -1,13 +1,13 @@
 /**
+ * @defgroup libe2dbg/user
+ */
+/**
  * @file entry.c
- *
- * The debugger file for OS dependant entry points
+ * @brief The debugger file for OS dependant entry points
+ * @ingroup libe2dbg/user
  * 
  * Started on  Tue Jul 11 20:37:33 2003 jfv
- *
- *
  * $Id$
- *
  */
 #include "libe2dbg.h"
 

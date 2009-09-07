@@ -1,6 +1,6 @@
 /**
  * @file generic.c
- * @ingroup libasm_engine
+ * @ingroup libasm
  * Latest edition Author : $Author: may $
  * $Id$
  * Started : Wed Jul 24 18:45:15 2002

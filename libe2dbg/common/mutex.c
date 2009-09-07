@@ -1,12 +1,9 @@
 /*
-** mutex.c for e2dbg
-**
-** The debugger needs mutexes inside signal handlers so we do not use pthread mutexes
-** 
-** Last update Wed Oct 11 18:22:59 2005 jfv
+** @file libe2dbg/common/mutex.c
+** @brief Implement debugger mutexes inside signal handlers (no pthread mutexes)
+** @ingroup libe2dbg 
 **
 ** $Id$
-**
 */
 #include "libe2dbg.h"
 

@@ -1,18 +1,13 @@
 /**
- * @defgroup libelfsh The libelfsh library
+ * @defgroup libelfsh The ELF shell library.
  */
 /**
- * @file version.c
+ * @file libelfsh/version.c
  * @ingroup libelfsh
- * version.c for elfsh
- * 
- * Started     Nov 25 2003 jfv
- * Last update Nov 25 2003 jfv
- * Last update Sep 27 2005 mxatone
- * 
+ * @brief Implements API for ELF version tables.
  *
+ * Started Nov 25 2003 may
  * $Id$
- *
  */
 #include "libelfsh.h"
 

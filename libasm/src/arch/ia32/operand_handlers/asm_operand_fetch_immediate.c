@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_immediate.c
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * $Id$
  */
 
@@ -13,7 +13,7 @@
  */
 /**
  * Decode data for operand type ASM_OTYPE_YDEST
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype

@@ -1,15 +1,13 @@
 /**
- * @defgroup libedfmt Libedfmt : The Elf debug format library of ELFsh
+ * @defgroup libedfmt Implement DWARF2, STABS, and the ERESI debug formats (EDFMT)
  */
-/*
-** @file stabs.c
+/**
+** @file libedfmt/stabs.c
 ** @ingroup libedfmt
+** @brief Interface routines for STABS debug format.
 **
 ** Started Jan 01 2007 21:30:13 mxatone
-**
-**
 ** $Id$
-**
 */
 
 #include "libedfmt.h"

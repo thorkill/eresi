@@ -1,19 +1,19 @@
 /**
- * @file asm_operand_fetch.c
- * @ingroup operand_handler
+ * @defgroup libasm/ia32/operands Libasm IA32 operands decoding handlers.
+ */
+/**
+ * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch.c
+ * @ingroup libasm/ia32/operands
+ * @brief Implements top-level fetching handler for IA32 operands.
+ *
  * $Id$
  */
-
-/**
- * @defgroup operand_handler Operand decoding handlers.
- */
-
 #include <libasm.h>
 #include <libasm-int.h>
 
 /**
  * @brief Main function, dispatch processing to handler.
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * @param op Pointer to operand to fill
  * @param opcode Pointer to operand data.
  * @param otype Type of operand to fetch : ASM_OTYPE_*

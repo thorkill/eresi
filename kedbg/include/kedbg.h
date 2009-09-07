@@ -1,7 +1,14 @@
 /**
- * @defgroup kedbg kedbg: The Kernel Debugger
- * @file kedbg/include/kedbg.h
+ * @defgroup kedbg The ERESI kernel debugger.
  */
+/**
+ * @file kedbg/include/kedbg.h
+ * @brief The kernel ERESI debugger header file.
+ * @ingroup kedbg
+ */
+
+#if !defined(__KEDBG_H__)
+ #define __KEDBG_H__
 
 #include "libe2dbg.h"
 #include "libasm-int.h"
@@ -70,3 +77,5 @@ int             cmd_kedbghookivt(void);
 int             cmd_kedbgitrace(void);
 int             cmd_kedbgproc(void);
 int             cmd_kedbggraph(void);
+
+#endif

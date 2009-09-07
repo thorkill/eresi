@@ -1,6 +1,6 @@
 /**
  * @file op_mov_subreg_ib.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * $Id$
  *
  */

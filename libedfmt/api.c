@@ -1,12 +1,10 @@
 /**
- * @file api.c
+ * @file libedfmt/api.c
  * @ingroup libedfmt
- * api.c for libedfmt (The Elf debug format library of ELFsh)
+ * @brief Generic internal API for libedfmt.
  *
  * Started Jan 26 2007 11:54:22 mxatone
- *
  * $Id$
- *
  */
 
 #include "libedfmt.h"

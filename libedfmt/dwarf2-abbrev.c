@@ -1,11 +1,10 @@
 /*
-** @file dwarf2-abbrev.c
+** @file libedfmt/dwarf2-abbrev.c
 ** @ingroup libedfmt
+** @brief Abbreviation table access for DWARF2 debug format.
+**
 ** Started Dec 26 2006 10:49:45 mxatone
-**
-**
 ** $Id$
-**
 */
 #include "libedfmt.h"
 

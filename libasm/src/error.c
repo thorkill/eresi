@@ -1,6 +1,6 @@
 /**
  * @file error.c
- * @ingroup libasm_engine
+ * @ingroup libasm
 ** 
 ** $Id$
 ** 

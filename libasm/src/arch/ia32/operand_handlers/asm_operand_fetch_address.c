@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_address.c
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * $Id$
  */
 
@@ -13,7 +13,7 @@
  *
  */
 /**
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * Decode data for operand type ASM_OTYPE_YDEST
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

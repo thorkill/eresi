@@ -1,7 +1,7 @@
 /**
  * @file op_xchg_rmb_rb.c
  * @brief Handler for instruction xchg rmb,rb opcode 0x86
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * $Id$
  *
  */

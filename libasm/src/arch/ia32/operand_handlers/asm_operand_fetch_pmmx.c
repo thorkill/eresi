@@ -13,7 +13,7 @@
  */
 /**
  * Decode data for operand type ASM_OTYPE_PMMX
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype

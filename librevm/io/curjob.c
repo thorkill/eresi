@@ -1,6 +1,6 @@
 /**
  * @file curjob.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief Implement job API necessary for revm-io.
  *
  * Started September 16 03:11:04 2005 jfv

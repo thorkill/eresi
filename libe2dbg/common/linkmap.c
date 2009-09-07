@@ -1,3 +1,10 @@
+/*
+** @file libe2dbg/common/linkmap.c
+** @ingroup libe2dbg
+** @brief Command and API for accessing the LINKMAP linked list.
+**
+** $Id$
+*/
 #include "libe2dbg.h"
 
 

@@ -1,9 +1,12 @@
 /**
+* @defgroup kernsh The kernel shell.
+*/
+/**
  * @file kernsh/include/kernsh.h
- * @defgroup kernsh kernel shell
+ * @ingroup kernsh
+ * @brief The kernel shell header file.
  * 
  * $Id$
- *
  */
 #ifndef __KERNSH_H__
  #define __KERNSH_H__

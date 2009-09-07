@@ -1,12 +1,10 @@
 /**
- * @defgroup libstderesi Lib Standard for eresi.
+ * @defgroup libstderesi The ERESI standard library.
  */
 /**
- * @file vlist.c
+ * @file libstderesi/lang/vlist.c
  * @ingroup libstderesi
  * @brief List all variables currently existing.
- * 
- * Updated Feb 07 2005 22:34:01 jfv
  * 
  * $Id$
  */

@@ -1,6 +1,6 @@
 /**
  * @file log.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief Implement logging facilities.
  *
  * Started September 16 03:11:04 2005 jfv

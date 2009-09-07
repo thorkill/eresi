@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_shortjump.c
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  */
 
 #include <libasm.h>

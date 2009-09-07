@@ -1,11 +1,10 @@
 /*
-** @file dwarf2.c
+** @file libedfmt/dwarf2-trans.c
 ** @ingroup libedfmt
+** @brief Translation from DWARF2 to EDFMT format.
+**
 ** Started Dec 26 2006 10:49:45 mxatone
-**
-**
 ** $Id$
-**
 */
 
 #include "libedfmt.h"

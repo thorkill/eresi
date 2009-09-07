@@ -1,6 +1,6 @@
 /**
  * @file input.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief Input related functions.
  *
  * Started on  Fri Feb  7 20:53:25 2003 jfv

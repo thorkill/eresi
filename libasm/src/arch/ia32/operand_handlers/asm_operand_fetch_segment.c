@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_segment.c
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  */
 
 #include <libasm.h>
@@ -8,7 +8,7 @@
 
 /**
  * @brief Decode data for operand type ASM_OTYPE_YDEST
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype

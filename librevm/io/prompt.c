@@ -1,8 +1,8 @@
 /**
  * @file prompt.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief Interface for prompt management.
- * @ingroup io
+ * @ingroup librevm_io
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Mon Mar  5 17:26:11 2007 jfv
  *
@@ -19,7 +19,7 @@ char	prompt_token[512];
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 void    revm_set_prompt(void (*func) (char *name, u_int size))
 {
@@ -28,7 +28,7 @@ void    revm_set_prompt(void (*func) (char *name, u_int size))
 
 /**
  * @brief TO COMPLETE
- * @ingroup io
+ * @ingroup librevm_io
  */
 void	revm_create_default_prompt(char *name, u_int size)
 {
@@ -52,7 +52,7 @@ void	revm_create_default_prompt(char *name, u_int size)
 
 /** 
  * @brief return the right prompt
- * @ingroup io
+ * @ingroup librevm_io
  */
 char*	revm_get_prompt()
 {
@@ -82,7 +82,7 @@ char*	revm_get_prompt()
 
 /**
  * @brief Display the prompt 
- * @ingroup io
+ * @ingroup librevm_io
  */
 int		revm_display_prompt()
 {

@@ -1,17 +1,15 @@
 /**
- * @file libasm.h
- * $Id$
+ * @file libasm/include/libasm.h
  * 
  * Author  : <sk at devhell dot org>
  * Started : Sat Oct 26 01:18:46 2002
- * Updated : Thu Apr  8 00:45:41 2004
  *
  * This is the main definition file for libasm.h
  * Definitions, enums, prototypes or anything related
  * to a specific architecture MUST be stored in that specific
  * architecture include files.
  *
- * 
+ *  $Id: libasm.h 1311 2009-01-14 20:36:48Z may 
  */
 
 /**
@@ -20,11 +18,11 @@
  */
 
 /**
- * @defgroup operands Operands related API
+ * @defgroup libasm/ia32/operands Libasm Operands related API
  */
 
 /**
- * @defgroup handlers_ia32 IA32 Fechting handlers.
+ * @defgroup libasm/ia32/handlers Libasm IA32 fechting handlers.
  */
 
 #ifndef LIBASM_H_

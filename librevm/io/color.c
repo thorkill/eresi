@@ -1,6 +1,6 @@
 /**
  * @file color.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief All functions about colors.
  *
  * Started on Sept 11 2005 mxatone

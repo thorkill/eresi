@@ -12,17 +12,37 @@
 
 int			elfsh_get_dwarf(elfshobj_t *file)
 {
+  void			*data;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  elfsh_get_dwarf_info(file, NULL);
-  elfsh_get_dwarf_abbrev(file, NULL);
-  elfsh_get_dwarf_aranges(file, NULL);
-  elfsh_get_dwarf_frame(file, NULL);
-  elfsh_get_dwarf_line(file, NULL);
-  elfsh_get_dwarf_macinfo(file, NULL);
-  elfsh_get_dwarf_pubnames(file, NULL);
-  elfsh_get_dwarf_str(file, NULL);
-  elfsh_get_dwarf_loc(file, NULL);  
+  data = elfsh_get_dwarf_info(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for INFO\n");
+  data = elfsh_get_dwarf_abbrev(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for ABBREV\n");
+  data = elfsh_get_dwarf_aranges(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for ARANGES\n");
+  data = elfsh_get_dwarf_frame(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for FRAME\n");
+  data = elfsh_get_dwarf_line(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for LINE\n");
+  data = elfsh_get_dwarf_macinfo(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for MACINFO\n");
+  data = elfsh_get_dwarf_pubnames(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for PUBNAMES\n");
+  data = elfsh_get_dwarf_str(file, NULL);
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for STR\n");
+  data = elfsh_get_dwarf_loc(file, NULL);  
+  //if (data == NULL)
+  //fprintf(stderr, "Failed to load section data for LOC\n");
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

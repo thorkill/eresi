@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_general.c
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * $Id$
  * @brief Operand Handler to decode data for operand type ASM_OTYPE_GENERAL
  */
@@ -10,7 +10,7 @@
 
 /**
  * @brief Decode data for operand type ASM_OTYPE_GENERAL
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param type Not used.

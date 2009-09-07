@@ -1,6 +1,6 @@
 /**
  * @file output.c
- * @ingroup libasm_engine
+ * @ingroup libasm
  * $Id$
  *  
  * Author  : <sk at devhell dot org>

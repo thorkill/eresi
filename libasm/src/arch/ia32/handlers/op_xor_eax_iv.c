@@ -1,6 +1,6 @@
 /**
  * @file op_xor_eax_iv.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * @brief Handler for instruction xor eax,iv opcode 0x35
  * $Id$
  *

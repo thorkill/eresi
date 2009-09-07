@@ -1,12 +1,13 @@
 /**
- * @defgroup etrace etrace
+ * @defgroup etrace The Embedded ERESI tracer.
+ */
+/**
  * @file etrace/include/etrace.h
- * etrace.h for etrace
- * 
+ * @brief Header file for ETRACE.
+ * @ingroup etrace
+ *
  * Started on  Thu Feb 22 07:19:04 2001 mxatone
- *
  * $Id$
- *
  */
 #ifndef __ETRACE_H_
  #define __ETRACE_H_

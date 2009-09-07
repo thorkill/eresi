@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_debug.c
- * @ingroup operand_handler
+ * @ingroup libasm/ia32/operands/handlers
  * $Id$
  */
 

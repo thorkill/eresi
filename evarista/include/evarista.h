@@ -1,7 +1,11 @@
 /**
- * @defgroup evarista Evarista: static analyzer
+ * @defgroup evarista The EVARISTA static analyzer.
+ */
+/**
  * @file evarista/include/evarista.h
- * 
+ * @ingroup evarista
+ * @brief The evarista header file. 
+ *
  * Started on Fri Jun 22 14:19:04 2007 jfv
  * $Id$
  */

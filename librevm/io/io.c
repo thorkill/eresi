@@ -1,6 +1,6 @@
 /**
  * @file io.c
- * @ingroup io
+ * @ingroup librevm_io
  * @brief Initialize the IO system.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv

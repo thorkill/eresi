@@ -1,9 +1,7 @@
 /*
-** dbghooks.c for e2dbg in the ERESI framework
-**
-** The interface hooking system
-**
-** Those hooks stay in the debugger and not in libelfsh.
+** @file libe2dbg/common/dbghooks.c
+** @brief Vectors for debugging features
+** @ingroup libe2dbg
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 jfv
 ** $Id$

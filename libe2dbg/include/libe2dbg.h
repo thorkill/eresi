@@ -1,12 +1,13 @@
-/*
-**
-** libe2dbg.h for The Embedded ELF debugger 
+/**
+ * @defgroup libe2dbg The Embedded ERESI debugger library.
+ */
+/**
+** @file libe2dbg/include/libe2dbg.h 
+** @brief The Embedded ERESI debugger header file.
+** @ingroup libe2dbg
 **
 ** Started on Sun 05 Jun 2005 17:54:01 jfv
-**
-**
 ** $Id$
-**
 */
 #ifndef __E2DBG_H__
  #define __E2DBG_H__

@@ -1,4 +1,15 @@
+/**
+ * @defgroup libgdbwrap: The ERESI gdb protocol wrapper library.
+ */
+/**
+ * @file libgdbwrap/interface.c
+ * @brief Implements initial connection to the GDB server.
+ * @ingroup libgdbwrap
+ *
+ * $Id$
+ */
 #include "gdbwrapper.h"
+
 
 int             gdbwrap_simpleconnect(char *host, int port)
 {

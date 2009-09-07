@@ -74,8 +74,8 @@ echo > $LIBVARSFILE
 echo > $VARSFILE
 echo > $CONFIGFILE
 
-echo "CFLAGS32 += -Wall -Wextra" >> $CONFIGFILE
-echo "CFLAGS64 += -Wall -Wextra" >> $CONFIGFILE
+echo "CFLAGS32 += -Wall " >> $CONFIGFILE
+echo "CFLAGS64 += -Wall " >> $CONFIGFILE
 
 while [ $# -ne 0 ]; do
 

@@ -1,3 +1,10 @@
+/*
+** @file kedbg/register.c
+** @ingroup kedbg
+** @brief Implement registration of vector handlers
+**
+** $Id$
+*/
 #include "kedbg.h"
 
 void     kedbg_register_command(void)

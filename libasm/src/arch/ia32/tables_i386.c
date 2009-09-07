@@ -1,6 +1,6 @@
 /**
  * @file tables_i386.c
- * @ingroup libasm_ia32
+ * @ingroup libasm/ia32
  * @brief Initialization of ia32 processor mnemonic table.
  * $Id$
  * 

@@ -1,6 +1,6 @@
 /**
  * @file init_i386.c
- * @ingroup libasm_ia32
+ * @ingroup libasm/ia32
  * $Id$
  *
  */

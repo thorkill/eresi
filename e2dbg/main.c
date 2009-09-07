@@ -1,17 +1,13 @@
 /**
- * @defgroup e2dbg e2dbg
+ * @defgroup e2dbg The Embedded ERESI debugger.
  */
-
 /**
  * @file e2dbg/main.c
  * @ingroup e2dbg
- * The embedded ELF debugger
+ * @brief Implement E2DBG client side entry points.
  *
  * Started on  Wed Feb 21 22:02:36 2001 jfv
- * Updated on  Wed Jan 03 17:51:04 2007 jfv
- *
  * $Id$
- *
  */
 #include "e2dbg.h"
 

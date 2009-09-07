@@ -1,12 +1,14 @@
 /**
+ * @defgroup libmjollnir The control-flow analysis and fingerprinting library.
+ */
+/**
  * @file libmjollnir/include/libmjollnir.h
- * @defgroup libmjollnir Libmjollnir: The control flow analysis and fingerprinting component
+ * @ingroup libmjollnir
+ * @brief The libmjollnir header file.
  * 
- * (C) Devhell Labs / Asgard Labs 2001-2009
+ * The ERESI project (c) Devhell / Asgard labs
  *
- * December 2006 : Merged the modflow API and the mjollnir API to make a 
- * unified component. Adapted the data structures. Unified prefixing. -may
- *
+ * $Id$
  */
 
 #if !defined(__MJOLLNIR__)

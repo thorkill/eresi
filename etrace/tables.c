@@ -1,18 +1,18 @@
 /**
- * @file etrace/tables.c
- * @ingroup etrace
- * This file contains all command and objects definitions for scripting
- *
- * Started on  Sat Jan 25 07:48:41 2003 mxatone
- *
- * $Id$
- *
+ ** tables.c for etrace
+ **
+ ** @file etrace/tables.c
+ ** @ingroup etrace
+ ** @brief All command and objects definitions for scripting
+ **
+ ** Started on  Sat Jan 25 07:48:41 2003 mxatone
+ ** $Id$
  */
 #include "etrace.h"
 
+
 /**
- * Setup the command hash table
- * @ingroup etrace
+ * Setup the command hash table 
  */
 void	setup_local_cmdhash()
 {

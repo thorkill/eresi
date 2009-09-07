@@ -1,6 +1,6 @@
 /**
  * @file op_386sp.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * $Id$
  * ChangeLog:
  * 2007-05-30	Fixed a bug in fetching. The vector used was the previously defined.

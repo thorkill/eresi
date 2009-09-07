@@ -1,8 +1,12 @@
 /**
- * @file kedbg/handlers.c
- * @ingroup kedbg
- */
-
+** @file kedbg/handlers.c
+** @ingroup kedbg
+** @brief Implement kedbg-specific vector handlers.
+**
+** $Id$
+*/
+#include "kedbg.h"
+#include "interface.h"
 #include "kedbg.h"
 #include "interface.h"
 

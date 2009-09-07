@@ -1,6 +1,6 @@
 /**
  * @file output_ia32.c
- * @ingroup libasm_ia32
+ * @ingroup libasm/ia32
 ** $Id$
 ** 
 ** Author  : <sk at devhell dot org>

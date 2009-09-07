@@ -1,6 +1,6 @@
 /**
  * @file i386_paddusb_pq_qq.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
 * $Id$
 *
 */

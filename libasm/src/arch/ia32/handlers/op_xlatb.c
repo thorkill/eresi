@@ -1,6 +1,6 @@
 /**
  * @file op_xlatb.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * @brief <instruction opcode="0xd7" func="op_xlatb"/>
  * $Id$
  *

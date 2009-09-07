@@ -1,16 +1,13 @@
 /**
- * @defgroup elfsh Elfsh
+ * @defgroup elfsh The ELF shell
  */
-
 /**
  * @file elfsh/tables.c
  * @ingroup elfsh
- * This file contains all command and objects definitions for scripting
+ * @brief This file contains all command and objects definitions for scripting
  *
  * Started on  Sat Jan 25 07:48:41 2003 jfv
- *
  * $Id$
- *
  */
 #include "elfsh.h"
 

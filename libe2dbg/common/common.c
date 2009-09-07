@@ -1,3 +1,13 @@
+/**
+ * @defgroup libe2dbg/common
+ */
+/*
+** @file libe2dbg/common/common.c
+** @brief Common generic API for libe2dbg
+** @ingroup libe2dbg/common
+**
+** $Id$
+*/
 #include "libe2dbg.h"
 
 /* The debugger world */
@@ -5,7 +15,7 @@ e2dbgworld_t	e2dbgworld;
 
 /**
  * Realize the output.
- *  @todo: XXX: Need a vector
+ ** @todo: XXX: Need a vector
  * @param str
  * @return
  */

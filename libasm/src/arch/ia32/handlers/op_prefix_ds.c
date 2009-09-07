@@ -1,6 +1,6 @@
 /**
  * @file op_prefix_ds.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * $Id$
  *
  * Changelog

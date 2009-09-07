@@ -1,10 +1,10 @@
 /**
- * @defgroup libasm_engine libasm Engine.
+ * @defgroup libasm The ERESI disassembling library.
  */
 /**
  * $Id$
  * @file vectors.c
- * @ingroup libasm_engine
+ * @ingroup libasm
  * @brief Initialization the instruction and opcode vectors.
  */
 
@@ -12,6 +12,8 @@
 
 /**
  * @brief Default handler for the disasm vector.
+ * @ingroup libasm
+ *
  * This handler does nothing, simply returning -1.
  * @param ins Pointer to instruction structure to fill
  * @param opcode Pointer to buffer to disassemble

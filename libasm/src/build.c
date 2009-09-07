@@ -1,6 +1,6 @@
 /**
  * @file build.c
- * @ingroup libasm_engine
+ * @ingroup libasm
  * @brief Contains latest build date.
  * $Id$
  */

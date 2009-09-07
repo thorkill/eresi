@@ -1,6 +1,6 @@
 /**
  * @file i386_group16.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * $Id$
  *
  * Changelog

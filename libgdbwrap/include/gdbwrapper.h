@@ -1,4 +1,12 @@
-/* File to include to use the wrapper. */
+/**
+ * @file libgdbwrap/include/gdbwrapper.h
+ * @ingroup libgdbwrap
+ * @brief Header file for the ERESI gdb protocol wrapper.
+ *
+ * $Id$
+ */
+#if !defined(__GDBWRAPPER_H__)
+ #define __GDBWRAPPER_H__
 
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -91,3 +99,4 @@ char             *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd);
 u_char           gdbwrap_lasterror(gdbwrap_t *desc);
 gdbmemap_t       gdbwrap_memorymap_get();
 
+#endif

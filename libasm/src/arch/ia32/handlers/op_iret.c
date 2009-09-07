@@ -1,6 +1,6 @@
 /**
  * @file op_iret.c
- * @ingroup handlers_ia32
+ * @ingroup libasm/ia32/handlers
  * $Id$
  *
 */
