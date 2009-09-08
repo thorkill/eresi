@@ -1,5 +1,5 @@
 /**
- * @defgroup libgdbwrap: The ERESI gdb protocol wrapper library.
+ * @defgroup libgdbwrap libgdbwrap: The ERESI library implementing the GDB protocol.
  */
 /**
  * @file libgdbwrap/interface.c

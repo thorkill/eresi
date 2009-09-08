@@ -1,5 +1,6 @@
 /**
- * @defgroup libedfmt Implement DWARF2, STABS, and the ERESI debug formats (EDFMT)
+ * @defgroup libedfmt libedfmt: The ERESI debug formats library
+ * @brief Implement DWARF2, STABS, and the ERESI debug formats.
  */
 /**
 ** @file libedfmt/stabs.c

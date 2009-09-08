@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_xsrc.c
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  */
 
 #include <libasm.h>

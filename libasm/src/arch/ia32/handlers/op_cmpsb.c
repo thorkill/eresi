@@ -1,7 +1,7 @@
 /**
  * @file op_cmpsb.c
  * @brief Handler for instruction cmpsb opcode 0xa6
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

@@ -1,5 +1,5 @@
 /**
- * @defgroup libmjollnir The control-flow analysis and fingerprinting library.
+ * @defgroup libmjollnir libmjollnir: The control-flow analysis and fingerprinting library.
  */
 /**
  * @file libmjollnir/include/libmjollnir.h

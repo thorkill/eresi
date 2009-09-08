@@ -1,6 +1,6 @@
 /**
  * @file op_in_al_ref_ib.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction in al,ib opcode 0xe4
  
  * $Id$

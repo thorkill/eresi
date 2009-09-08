@@ -1,6 +1,6 @@
 /**
  * @file op_shift_rmv_1.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

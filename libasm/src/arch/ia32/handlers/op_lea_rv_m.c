@@ -1,6 +1,6 @@
 /**
  * @file op_lea_rv_m.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

@@ -1,5 +1,5 @@
 /**
- * @defgroup etrace The Embedded ERESI tracer.
+ * @defgroup etrace etrace: The Embedded ERESI tracer.
  */
 /**
  * @file etrace/include/etrace.h

@@ -1,6 +1,6 @@
 /**
  * @file operand.c
- * @ingroup libasm/ia32/operands
+ * @ingroup operands
  * $Id$
  * operand.c in 
  * 

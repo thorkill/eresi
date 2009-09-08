@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_encodedbyte.c
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  * $Id$
  */
 
@@ -8,7 +8,7 @@
 #include <libasm-int.h>
 
 /**
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  * Decode data for operand type ASM_OTYPE_ENCODEDBYTE
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

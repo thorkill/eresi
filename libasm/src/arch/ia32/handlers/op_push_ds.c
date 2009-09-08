@@ -1,6 +1,6 @@
 /**
  * @brief Handler for instruction push ds opcode 0x1e
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

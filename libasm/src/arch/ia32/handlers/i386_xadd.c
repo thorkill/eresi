@@ -1,6 +1,6 @@
 /**
  * @file i386_xadd.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  *  $Id$
  */
 #include <libasm.h>

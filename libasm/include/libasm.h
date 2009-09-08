@@ -1,5 +1,6 @@
 /**
  * @file libasm/include/libasm.h
+ * @ingroup libasm
  * 
  * Author  : <sk at devhell dot org>
  * Started : Sat Oct 26 01:18:46 2002
@@ -15,14 +16,6 @@
 /**
  * @brief It contains the main define types and prototypes.
  * @todo Reorganize include files content.
- */
-
-/**
- * @defgroup libasm/ia32/operands Libasm Operands related API
- */
-
-/**
- * @defgroup libasm/ia32/handlers Libasm IA32 fechting handlers.
  */
 
 #ifndef LIBASM_H_

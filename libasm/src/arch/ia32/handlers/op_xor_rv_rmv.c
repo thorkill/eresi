@@ -1,6 +1,6 @@
 /**
  * @file op_xor_rv_rmv.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction xor, opcode 0x33
  * $Id$
  *

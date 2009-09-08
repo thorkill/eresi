@@ -1,7 +1,7 @@
 /**
  * @file asm_operand_fetch_ydest.c
  * @brief Wrapper to call operand handler.
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  */
 
 #include <libasm.h>

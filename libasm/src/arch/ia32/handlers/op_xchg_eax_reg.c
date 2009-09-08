@@ -1,6 +1,6 @@
 /**
  * @file op_xchg_eax_reg.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction xchg eax,reg opcode 0x91 to 0x97
 ** $Id$
 **

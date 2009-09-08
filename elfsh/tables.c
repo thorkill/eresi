@@ -1,5 +1,5 @@
 /**
- * @defgroup elfsh The ELF shell
+ * @defgroup elfsh elfsh: The ELF shell.
  */
 /**
  * @file elfsh/tables.c

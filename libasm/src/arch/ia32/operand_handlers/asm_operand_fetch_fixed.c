@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_fixed.c
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  * $Id$
  */
 
@@ -12,7 +12,7 @@
  * Implement optional parameter for fixed operand fetching.
  */
 /**
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  * Decode data for operand type ASM_OTYPE_YDEST
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

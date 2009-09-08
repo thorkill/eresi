@@ -1,7 +1,7 @@
 /**
  * @file op_xchg_rmv_rv.c
  * @brief Handler for instruction xchg rmv,rv opcode 0x87
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

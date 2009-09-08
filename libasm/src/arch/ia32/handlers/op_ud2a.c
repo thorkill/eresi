@@ -1,6 +1,6 @@
 /**
  * @file op_ud2a.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction ud2a opcode 0x??
  * $Id$
  *

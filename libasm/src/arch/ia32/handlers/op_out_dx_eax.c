@@ -1,6 +1,6 @@
 /**
  * @file op_out_dx_eax.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  *
  * $Id$
  *

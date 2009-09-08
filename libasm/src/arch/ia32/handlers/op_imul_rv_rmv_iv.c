@@ -1,7 +1,7 @@
 /**
  * @file op_imul_rv_rmv_iv.c
  * @brief Handler for instruction op_imul_rv_rmv_iv opcode 0x69
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

@@ -1,3 +1,21 @@
+/**
+ * @defgroup arm Libasm ARM support
+ * @ingroup libasm
+ */
+
+/**
+ * @defgroup operands ARM operands API.
+ * @ingroup arm
+ */
+
+/**
+ * @defgroup instrs ARM instructions disassembler.
+ * @ingroup arm
+ */
+/**
+ * @file libasm/include/libasm-arm.h
+ * @ingroup arm
+ */
 #ifndef _LIBASM_ARM_H_
 #define _LIBASM_ARM_H_
 

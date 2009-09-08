@@ -1,6 +1,6 @@
 /**
  * @file op_sahf.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

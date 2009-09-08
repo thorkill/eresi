@@ -1,7 +1,4 @@
 /**
- * @defgroup libstderesi The ERESI standard library.
- */
-/**
  * @file libstderesi/lang/vlist.c
  * @ingroup libstderesi
  * @brief List all variables currently existing.

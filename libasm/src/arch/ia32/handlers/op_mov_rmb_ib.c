@@ -1,7 +1,7 @@
 /**
  *
  * @file op_mov_rmb_ib.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

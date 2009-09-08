@@ -1,6 +1,6 @@
 /**
  * @file op_unary_rmb.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction unary rmb opcode 0xf6
  * $Id$
  *

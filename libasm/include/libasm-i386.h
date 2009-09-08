@@ -1,5 +1,20 @@
 /**
- * @file libasm-i386.h
+ * @defgroup ia32 Libasm IA32 support
+ * @ingroup libasm
+ */
+/**
+ * @defgroup operands Libasm Operands related API
+ * @ingroup ia32
+ */
+
+/**
+ * @defgroup instrs Libasm IA32 fechting handlers.
+ * @ingroup ia32
+ */
+
+/**
+ * @file libasm/include/libasm-i386.h
+ * @ingroup ia32
  * @brief Contains structures,prototypes and defines/enum related to ia32.
  * $Id$
  */

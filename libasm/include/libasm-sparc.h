@@ -1,6 +1,21 @@
-/*
+/**
+ * @defgroup sparc SPARC architecture disassembler.
+ * @ingroup libasm
+ */
+
+/**
+ * @defgroup operands SPARC operands API.
+ * @ingroup sparc
+ */
+
+/**
+ * @defgroup instrs SPARC instructions API.
+ * @ingroup sparc
+ */
+
+/**
 ** 
-** sparc.h in 
+** @file libasm/include/libasm-sparc.h
 ** 
 ** Author  : <sk at devhell dot org>
 ** Started : Tue Dec  2 22:43:08 2003

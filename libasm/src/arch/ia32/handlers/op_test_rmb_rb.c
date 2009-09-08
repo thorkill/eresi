@@ -1,6 +1,6 @@
 /**
  * @file op_test_rmb_rb.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

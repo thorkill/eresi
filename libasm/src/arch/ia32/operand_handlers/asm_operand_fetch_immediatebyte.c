@@ -1,6 +1,6 @@
 /**
  * @file asm_operand_fetch_immediatebye.c
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  * $Id$
  */
 
@@ -9,7 +9,7 @@
 
 /**
  * Handler to fetch ASM_OTYPE_IMMEDIATEBYTE operand.
- * @ingroup libasm/ia32/operands/handlers
+ * @ingroup operands
  * @param operand Pointer to operand structure.
  * @param opcode Pointer to data to disassemble.
  * @param otype Operand type.

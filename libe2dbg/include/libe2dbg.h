@@ -1,5 +1,5 @@
 /**
- * @defgroup libe2dbg The Embedded ERESI debugger library.
+ * @defgroup libe2dbg libe2dbg: The Embedded ERESI debugger library.
  */
 /**
 ** @file libe2dbg/include/libe2dbg.h 

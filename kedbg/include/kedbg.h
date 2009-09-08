@@ -1,5 +1,5 @@
 /**
- * @defgroup kedbg The ERESI kernel debugger.
+ * @defgroup kedbg kedbg: The ERESI kernel debugger.
  */
 /**
  * @file kedbg/include/kedbg.h

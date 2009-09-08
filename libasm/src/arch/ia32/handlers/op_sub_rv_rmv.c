@@ -1,7 +1,7 @@
 /**
  * @file op_sub_rv_rmv.c
  * @brief Handler for instruction sub rv,rmv opcode 0x2b
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * 
  * $Id$
  *

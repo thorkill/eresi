@@ -1,6 +1,6 @@
 /**
  * @file op_scasb.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

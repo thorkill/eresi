@@ -1,6 +1,6 @@
 /**
  * @file op_unary_rmv.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction unary rmv opcode 0xf7
  * $Id$
  *

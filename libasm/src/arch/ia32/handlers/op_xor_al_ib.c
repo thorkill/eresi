@@ -1,6 +1,6 @@
 /**
  * @file op_xor_al_ib.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * @brief Handler for instruction xor al,ib opcode 0x34
  * 
  * $Id$

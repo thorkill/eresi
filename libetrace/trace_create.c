@@ -1,5 +1,5 @@
 /**
- * @defgroup libetrace The Embedded ERESI tracer library.
+ * @defgroup libetrace libetrace: The Embedded ERESI tracer library.
  */
 /**
 ** @file libetrace/trace_create.c

@@ -1,5 +1,9 @@
 /**
+ * @defgroup libstderesi libstderesi: The ERESI standard library.
+ */
+/**
 ** @file libstderesi.h
+** @ingroup libstderesi
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv
 ** $Id$

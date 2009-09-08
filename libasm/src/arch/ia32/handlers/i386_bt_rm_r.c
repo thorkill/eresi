@@ -1,6 +1,6 @@
 /**
  * @file i386_bt_rm_r.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

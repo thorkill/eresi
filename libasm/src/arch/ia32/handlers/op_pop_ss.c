@@ -1,6 +1,6 @@
 /**
  * @brief Handler for pop es instruction. Opcode = 0x17
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */

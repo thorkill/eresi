@@ -1,5 +1,5 @@
 /**
-* @defgroup kernsh The kernel shell.
+* @defgroup kernsh kernsh: The kernel shell.
 */
 /**
  * @file kernsh/include/kernsh.h

@@ -1,6 +1,6 @@
 /**
  * @file op_ret_i2.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

@@ -1,13 +1,9 @@
 /**
- * @defgroup libasm The ERESI disassembling library.
- */
-/**
  * $Id$
  * @file vectors.c
  * @ingroup libasm
  * @brief Initialization the instruction and opcode vectors.
  */
-
 #include <libasm.h>
 
 /**

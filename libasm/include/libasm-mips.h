@@ -1,11 +1,26 @@
 /**
- * @file libasm-mips.h
+ * @defgroup mips Libasm MIPS support
+ * @ingroup libasm
+ */
+
+/**
+ * @defgroup operands MIPS operands API.
+ * @ingroup mips
+ */
+
+/**
+ * @defgroup instrs MIPS instructions disassembler.
+ * @ingroup mips
+ */
+
+/**
+ * @file libasm/include/libasm-mips.h
+ * @ingroup mips
+ *
+ * - Sebastien Roy - 2006
+ * - Manuel Martin - 2007
+ * - Adam Zabrocki - 2008
  * $Id$
- *
- * fix and fill
- *          - Adam 'pi3' Zabrocki
- *
- * Manuel Martin - 2007
  */
 
 #ifndef LIBASM_MIPS_H_

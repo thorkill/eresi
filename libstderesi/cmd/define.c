@@ -1,10 +1,9 @@
 /*
-** @file define.c
-** @ingroup libstderesi.
+** @file libstderesi/cmd/define.c
+** @ingroup libstderesi
 ** @brief Allow constant values to be defined on names.
 **
 ** Start on Fri Aug 3 03:55:45 2007 jfv
-**
 ** $Id$
 */
 #include "libstderesi.h"

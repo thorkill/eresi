@@ -1,5 +1,5 @@
 /**
- * @defgroup e2dbg The Embedded ERESI debugger.
+ * @defgroup e2dbg e2dbg: The Embedded ERESI debugger.
  */
 /**
  * @file e2dbg/main.c

@@ -1,6 +1,6 @@
 /**
  * @file op_mov_eax_ref_iv.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * $Id$
  *
  */

@@ -1,6 +1,6 @@
 /**
  * @file op_sub_eax_iv.c
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
 ** $Id$
 **
 */
@@ -8,7 +8,7 @@
 #include <libasm-int.h>
 
 /**
- * @ingroup libasm/ia32/handlers
+ * @ingroup instrs
  * <instruction func="op_sub_eax_iv" opcode="0x2d"/>
 */
 

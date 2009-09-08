@@ -1,5 +1,5 @@
 /**
- * @defgroup evarista The EVARISTA static analyzer.
+ * @defgroup evarista Evarista: a binary program transformer.
  */
 /**
  * @file evarista/include/evarista.h
