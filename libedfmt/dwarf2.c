@@ -1,4 +1,4 @@
-/*
+/**
 ** @brief Implement DWARF2 support in libedfmt
 ** @file dwarf2.c
 ** @ingroup libedfmt

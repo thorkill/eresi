@@ -3,12 +3,12 @@
  * @ingroup libasm
  */
 /**
- * @defgroup ia-operands Libasm Operands related API
+ * @defgroup ia-operands Libasm IA32 operands handlers.
  * @ingroup ia32
  */
 
 /**
- * @defgroup ia-instrs Libasm IA32 fechting handlers.
+ * @defgroup ia-instrs Libasm IA32 instructions handlers.
  * @ingroup ia32
  */
 

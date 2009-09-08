@@ -1,4 +1,4 @@
-/*
+/**
 ** @file libedfmt/edfmt.c
 ** @ingroup libedfmt
 ** @brief External interface functions for the ERESI debug format

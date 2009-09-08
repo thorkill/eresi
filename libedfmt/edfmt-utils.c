@@ -1,4 +1,4 @@
-/*
+/**
 ** @file libedfmt/edfmt-utils.c
 ** @ingroup libedfmt
 **
