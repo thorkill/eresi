@@ -1,3 +1,7 @@
+/**
+** @file asm_mips_c_ngl_ps.c
+** @ingroup m-instrs
+*/
 /* Adam 'pi3' Zabrocki */
 /* Manuel Martin - 2007 */
 

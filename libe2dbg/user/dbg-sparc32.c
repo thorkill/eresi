@@ -1,3 +1,7 @@
+/**
+** @file dbg-sparc32.c
+** @ingroup user
+*/
 /*
 ** dbg-sparc32.c for e2dbg in the ERESI framework
 **

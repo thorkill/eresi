@@ -1,6 +1,6 @@
-/*
+/**
 ** @file libe2dbg/common/linkmap.c
-** @ingroup libe2dbg
+** @ingroup common
 ** @brief Command and API for accessing the LINKMAP linked list.
 **
 ** $Id$

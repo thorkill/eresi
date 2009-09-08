@@ -1,3 +1,7 @@
+/**
+** @file dbg-amd64.c
+** @ingroup user
+*/
 /*
 ** dbg-amd64.c for e2dbg in the ERESI framework
 **

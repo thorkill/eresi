@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_general.c
+ngroup ia-operands/g
  * @ingroup operands
  * $Id$
  * @brief Operand Handler to decode data for operand type ASM_OTYPE_GENERAL
@@ -10,6 +11,7 @@
 
 /**
  * @brief Decode data for operand type ASM_OTYPE_GENERAL
+ngroup ia-operands/g
  * @ingroup operands
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

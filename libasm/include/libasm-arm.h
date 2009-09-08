@@ -4,12 +4,12 @@
  */
 
 /**
- * @defgroup operands ARM operands API.
+ * @defgroup a-operands ARM operands API.
  * @ingroup arm
  */
 
 /**
- * @defgroup instrs ARM instructions disassembler.
+ * @defgroup a-instrs ARM instructions disassembler.
  * @ingroup arm
  */
 /**

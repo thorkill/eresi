@@ -1,5 +1,6 @@
 /**
- * @defgroup libaspect libaspect: The ERESI aspect library (low-level framework API).
+ * @defgroup libaspect libaspect: The ERESI aspect library.
+ * @ingroup ERESI
  */
 /**
 ** @file libaspect/vectors.c

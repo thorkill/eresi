@@ -1,3 +1,7 @@
+/**
+** @file decode_arm.c
+** @ingroup arm
+*/
 #include "libasm.h"
 
 void	arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr,

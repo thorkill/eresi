@@ -1,5 +1,6 @@
 /**
  * @file op_mov_subreg_ib.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

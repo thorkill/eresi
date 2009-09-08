@@ -1,5 +1,6 @@
 /**
  * @file op_sti.c
+ngroup ia-instrs/g
  * @ingroup instrs
  *
 ** $Id$

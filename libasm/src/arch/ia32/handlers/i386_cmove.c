@@ -1,5 +1,6 @@
 /**
  * @file i386_cmove.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

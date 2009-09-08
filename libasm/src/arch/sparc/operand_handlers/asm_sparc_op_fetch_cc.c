@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_op_fetch_cc.c
+** @ingroup s-operands
+*/
 #include <libasm.h>
 #include <libasm-sparc.h>
 

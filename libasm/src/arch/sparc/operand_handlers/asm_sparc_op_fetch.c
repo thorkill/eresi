@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_op_fetch.c
+** @ingroup s-operands
+*/
 #include <libasm.h>
 #include <libasm-int.h>
 

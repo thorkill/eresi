@@ -1,4 +1,4 @@
-/*
+/**
 ** @file libedfmt/dwarf2-abbrev.c
 ** @ingroup libedfmt
 ** @brief Abbreviation table access for DWARF2 debug format.

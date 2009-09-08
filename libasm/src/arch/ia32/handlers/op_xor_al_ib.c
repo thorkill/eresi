@@ -1,5 +1,6 @@
 /**
  * @file op_xor_al_ib.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction xor al,ib opcode 0x34
  * 

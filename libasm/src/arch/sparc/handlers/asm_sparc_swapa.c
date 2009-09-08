@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_swapa.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

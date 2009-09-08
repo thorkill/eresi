@@ -1,5 +1,6 @@
 /**
  * @file op_mov_rmv_iv.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  * ChangeLog:

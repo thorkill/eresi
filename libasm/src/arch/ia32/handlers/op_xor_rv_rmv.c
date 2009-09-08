@@ -1,5 +1,6 @@
 /**
  * @file op_xor_rv_rmv.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction xor, opcode 0x33
  * $Id$

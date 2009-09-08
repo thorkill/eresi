@@ -1,4 +1,4 @@
-/*
+/**
 ** @file libedfmt/dwarf2-cfa.c
 ** @ingroup libedfmt
 ** @brief DWARF2 CFA data handling

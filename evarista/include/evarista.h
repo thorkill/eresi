@@ -1,5 +1,5 @@
 /**
- * @defgroup evarista Evarista: a binary program transformer.
+ * @defgroup evarista evarista: a binary program transformer.
  */
 /**
  * @file evarista/include/evarista.h

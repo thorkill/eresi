@@ -1,6 +1,10 @@
-/*
-** libkernsh.h for libkernsh
-**
+/**
+ * @defgroup libkernsh
+ * @ingroup kernsh
+ */
+/**
+** @file libkernsh.h
+** @ingroup libkernsh
 **
 */
 #ifndef __LIBKERNSH_H__

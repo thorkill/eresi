@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_immediatebye.c
+ngroup ia-operands/g
  * @ingroup operands
  * $Id$
  */
@@ -9,6 +10,7 @@
 
 /**
  * Handler to fetch ASM_OTYPE_IMMEDIATEBYTE operand.
+ngroup ia-operands/g
  * @ingroup operands
  * @param operand Pointer to operand structure.
  * @param opcode Pointer to data to disassemble.

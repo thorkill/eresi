@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_encoded.c
+ngroup ia-operands/g
  * @ingroup operands
  * $Id$
  */
@@ -9,6 +10,7 @@
 
 
 /**
+ngroup ia-operands/g
  * @ingroup operands
  * Decode data for operand type ASM_OTYPE_ENCODED
  * @param operand Pointer to operand structure to fill.

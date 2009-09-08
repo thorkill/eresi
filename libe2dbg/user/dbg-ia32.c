@@ -1,3 +1,7 @@
+/**
+** @file dbg-ia32.c
+** @ingroup user
+*/
 /*
 ** dbg-ia32.c for e2dbg in the ERESI framework
 **

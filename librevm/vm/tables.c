@@ -1,5 +1,8 @@
 /**
-** @defgroup librevm_vm librevm VM
+** @defgroup librevm_vm librevm internal API.
+** @ingroup librevm
+*/
+/**
 ** @file tables.c
 ** @ingroup librevm_vm
 ** @brief This file contains all command and objects definitions for scripting.

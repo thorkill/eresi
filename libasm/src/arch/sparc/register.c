@@ -1,4 +1,8 @@
 /**
+** @file register.c
+** @ingroup sparc
+*/
+/**
  * @file register.c
  * @brief 
  *

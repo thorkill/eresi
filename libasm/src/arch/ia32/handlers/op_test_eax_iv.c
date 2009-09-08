@@ -1,5 +1,6 @@
 /**
  * @file op_test_eax_iv.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

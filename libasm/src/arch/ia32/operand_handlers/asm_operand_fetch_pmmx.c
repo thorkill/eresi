@@ -13,6 +13,7 @@
  */
 /**
  * Decode data for operand type ASM_OTYPE_PMMX
+ngroup ia-operands/g
  * @ingroup operands
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

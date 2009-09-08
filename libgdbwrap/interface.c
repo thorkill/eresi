@@ -1,5 +1,6 @@
 /**
  * @defgroup libgdbwrap libgdbwrap: The ERESI library implementing the GDB protocol.
+ * @ingroup kedbg
  */
 /**
  * @file libgdbwrap/interface.c

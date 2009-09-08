@@ -1,4 +1,8 @@
 /**
+** @file mips_convert.c
+** @ingroup mips
+*/
+/**
  * @file mips_convert.c
  * @brief Convert MIPS instruction to definied types and fill suitable structures.
  *

@@ -1,3 +1,7 @@
+/**
+** @file output_arm.c
+** @ingroup arm
+*/
 #include <libasm.h>
 
 void asm_resolve_arm(void *d, eresi_Addr val, char *buf, u_int len)

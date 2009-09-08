@@ -1,5 +1,6 @@
 /**
  * @brief Handler for instruction push ds opcode 0x1e
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

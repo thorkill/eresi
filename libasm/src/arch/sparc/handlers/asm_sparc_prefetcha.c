@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_prefetcha.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

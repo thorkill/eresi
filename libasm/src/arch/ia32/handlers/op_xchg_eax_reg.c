@@ -1,5 +1,6 @@
 /**
  * @file op_xchg_eax_reg.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction xchg eax,reg opcode 0x91 to 0x97
 ** $Id$

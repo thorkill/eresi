@@ -1,5 +1,6 @@
 /**
  * @defgroup libkernsh_user libkernsh_user
+ * @ingroup libkernsh
  */
 /*
 ** @file kernsh.c

@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_immediate.c
+ngroup ia-operands/g
  * @ingroup operands
  * $Id$
  */
@@ -13,6 +14,7 @@
  */
 /**
  * Decode data for operand type ASM_OTYPE_YDEST
+ngroup ia-operands/g
  * @ingroup operands
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

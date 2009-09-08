@@ -1,5 +1,6 @@
 /**
  * @file op_esc5.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

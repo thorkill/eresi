@@ -1,5 +1,6 @@
 /**
  * @file op_std.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

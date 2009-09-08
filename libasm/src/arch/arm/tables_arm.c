@@ -1,3 +1,7 @@
+/**
+** @file tables_arm.c
+** @ingroup arm
+*/
 #include <libasm.h>
 
 /* opcode (4bit) | cond (4bit) | S (1bit) */

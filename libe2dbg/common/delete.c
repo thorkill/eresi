@@ -1,7 +1,7 @@
 /**
  * @file libe2dbg/common/delete.c
  * @brief Command and API for breakpoint deletion
- * @ingroup libe2dbg
+ * @ingroup common
  *
  * Started on  Tue Aug 16 09:38:03 2005 jfv
  * $Id$

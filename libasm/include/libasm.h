@@ -1,4 +1,7 @@
 /**
+ * @defgroup libasm libasm: the smart disassembling library.
+ */
+/**
  * @file libasm/include/libasm.h
  * @ingroup libasm
  * 
@@ -323,7 +326,6 @@ void		asm_free_i386(asm_processor *proc);
 /**
  * Get immediate value stored in operand.
  */
-
 int		asm_operand_get_immediate(asm_instr *, int, int, void *);
 
 /**

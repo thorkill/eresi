@@ -1,5 +1,6 @@
 /**
  * @file op_unary_rmb.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction unary rmb opcode 0xf6
  * $Id$

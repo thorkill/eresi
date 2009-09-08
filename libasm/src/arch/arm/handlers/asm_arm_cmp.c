@@ -1,3 +1,7 @@
+/**
+** @file asm_arm_cmp.c
+** @ingroup a-instrs
+*/
 #include "libasm.h"
 
 int     asm_arm_cmp(asm_instr * ins, u_char * buf, u_int len,

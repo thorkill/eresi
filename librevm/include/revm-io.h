@@ -1,8 +1,8 @@
 /**
 ** @file revm.h for librevm in ERESI
-** @ingroup librevm_hdr 
+** @ingroup librevm
+**
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
-** Moved from elfsh to librevm on January 2007 jfv
 ** $Id$
 */
 #ifndef __REVM_IO_H_

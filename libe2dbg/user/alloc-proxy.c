@@ -1,4 +1,8 @@
 /**
+** @file alloc-proxy.c
+** @ingroup user
+*/
+/**
  * @file alloc-proxy.c
  * Allocator wrapper for the Embedded ELF Debugger
  * 

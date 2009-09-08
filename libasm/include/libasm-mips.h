@@ -4,12 +4,12 @@
  */
 
 /**
- * @defgroup operands MIPS operands API.
+ * @defgroup m-operands MIPS operands API.
  * @ingroup mips
  */
 
 /**
- * @defgroup instrs MIPS instructions disassembler.
+ * @defgroup m-instrs MIPS instructions disassembler.
  * @ingroup mips
  */
 

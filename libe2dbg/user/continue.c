@@ -1,4 +1,8 @@
 /**
+** @file continue.c
+** @ingroup user
+*/
+/**
  * @file continue.c
  *
  * The continue command in e2dbg

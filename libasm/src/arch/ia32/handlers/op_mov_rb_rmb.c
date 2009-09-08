@@ -1,5 +1,6 @@
 /**
  * @file op_mov_rb_rmb.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

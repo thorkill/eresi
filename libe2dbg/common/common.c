@@ -1,10 +1,11 @@
 /**
- * @defgroup libe2dbg/common
+ * @defgroup common
+ * @ingroup libe2dbg
  */
 /*
 ** @file libe2dbg/common/common.c
 ** @brief Common generic API for libe2dbg
-** @ingroup libe2dbg/common
+** @ingroup common
 **
 ** $Id$
 */

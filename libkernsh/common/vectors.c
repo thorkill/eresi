@@ -1,5 +1,6 @@
 /**
  * @defgroup libkernsh_common libkernsh_common
+ * @ingroup libkernsh
  */
 /*
 ** @file vectors.c

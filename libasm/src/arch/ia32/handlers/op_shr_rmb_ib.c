@@ -1,5 +1,6 @@
 /**
  * @file libasm/src/arch/ia32/handlers/op_shr_rmb_ib.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

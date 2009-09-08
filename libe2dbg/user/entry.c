@@ -1,10 +1,11 @@
 /**
- * @defgroup libe2dbg/user
+ * @defgroup user
+ * @ingroup libe2dbg
  */
 /**
  * @file entry.c
  * @brief The debugger file for OS dependant entry points
- * @ingroup libe2dbg/user
+ * @ingroup user
  * 
  * Started on  Tue Jul 11 20:37:33 2003 jfv
  * $Id$

@@ -1,4 +1,8 @@
 /**
+** @file output_mips.c
+** @ingroup mips
+*/
+/**
  * @file output_mips.c
  * @brief This file implements the MIPS ASCII output engine
  *

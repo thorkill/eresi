@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_sth.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

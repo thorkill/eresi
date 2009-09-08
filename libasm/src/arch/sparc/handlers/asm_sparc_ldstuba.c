@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_ldstuba.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

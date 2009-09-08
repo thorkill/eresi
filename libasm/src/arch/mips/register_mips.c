@@ -1,4 +1,8 @@
 /**
+** @file register_mips.c
+** @ingroup mips
+*/
+/**
  * @file register_mips.c
  * @brief Registration of the MIPS disassembling vectors.
  * $Id$

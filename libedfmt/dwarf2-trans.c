@@ -1,4 +1,4 @@
-/*
+/**
 ** @file libedfmt/dwarf2-trans.c
 ** @ingroup libedfmt
 ** @brief Translation from DWARF2 to EDFMT format.

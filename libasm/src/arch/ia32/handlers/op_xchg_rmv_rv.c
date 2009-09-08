@@ -1,6 +1,7 @@
 /**
  * @file op_xchg_rmv_rv.c
  * @brief Handler for instruction xchg rmv,rv opcode 0x87
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

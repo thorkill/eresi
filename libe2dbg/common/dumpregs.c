@@ -1,6 +1,6 @@
-/*
+/**
 ** @file libe2dbg/common/dumpregs.c
-** @ingroup libe2dbg
+** @ingroup common
 ** @brief Command and API for register printing.
 ** 
 ** Started on  Wed Jul 27 04:08:52 2005 ym

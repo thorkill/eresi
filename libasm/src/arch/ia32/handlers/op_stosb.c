@@ -1,5 +1,6 @@
 /**
  * @file op_stosb.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

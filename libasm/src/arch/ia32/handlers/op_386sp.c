@@ -1,5 +1,6 @@
 /**
  * @file op_386sp.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  * ChangeLog:

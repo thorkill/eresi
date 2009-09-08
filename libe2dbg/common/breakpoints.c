@@ -1,17 +1,15 @@
-/*
-** breakpoints.c for e2dbg
+/**
+** @file breakpoints.c
+** @ingroup common
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   
-**
 ** $Id$
-**
 */
 #include "libe2dbg.h"
 
-
-/**
- * Add a breakpoint 
- */
+/*
+ * @brief Add a breakpoint 
+*/
 int		elfsh_bp_add(hash_t	*bps, 
 			     elfshobj_t *file, 
 			     char	*resolv, 

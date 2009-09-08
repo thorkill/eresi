@@ -1,5 +1,6 @@
 /**
  * @file i386_bt_rm_r.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

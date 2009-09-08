@@ -1,5 +1,6 @@
 /**
  * @file i386_paddusw_pq_qq.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

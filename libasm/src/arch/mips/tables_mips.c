@@ -1,4 +1,8 @@
 /**
+** @file tables_mips.c
+** @ingroup mips
+*/
+/**
  * @file tables_mips.c
  * @brief MIPS processor mnemonic table.
  * $Id$

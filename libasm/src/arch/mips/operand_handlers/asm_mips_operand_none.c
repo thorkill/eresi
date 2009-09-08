@@ -1,3 +1,7 @@
+/**
+** @file asm_mips_operand_none.c
+** @ingroup m-operands
+*/
 /*
  * - Adam 'pi3' Zabrocki
  *

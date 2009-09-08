@@ -1,13 +1,10 @@
 /**
  * @file operand.c
- * @ingroup operands
- * $Id$
- * operand.c in 
+ * @ingroup libasm
+ * @brief Contains arch-independent generic operand manipulation functions.
  * 
  * Author  : <kahmm@altdev.net>
- * Started : Sat Mar  6 06:28:22 2004
- * Updated : Wed Apr  7 19:54:38 2004
- * @brief Contains operand manipulation functions.
+ * $Id$
 */
 
 #include <libasm.h>

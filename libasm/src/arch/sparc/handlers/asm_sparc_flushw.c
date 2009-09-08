@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_flushw.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

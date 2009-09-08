@@ -1,4 +1,8 @@
 /**
+ * @defgroup io librevm INPUT/OUTPUT API.
+ * @ingroup librevm
+ */
+/**
  * @file io.c
  * @ingroup librevm_io
  * @brief Initialize the IO system.
@@ -8,10 +12,6 @@
  */
 #include "revm.h"
 
-
-/**
- * @defgroup io librevm Input/output
- */
 
 /**
  * Reset lines counters and ignore output state 

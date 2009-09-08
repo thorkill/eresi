@@ -1,5 +1,6 @@
 /**
- * @defgroup librevm_lang librevm Language
+ * @defgroup librevm_lang The ERESI scripting language interpreter.
+ * @ingroup librevm
  */
 /**
  * @file variables.c

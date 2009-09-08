@@ -1,7 +1,7 @@
-/*
+/**
 ** @file libe2dbg/common/dbghooks.c
 ** @brief Vectors for debugging features
-** @ingroup libe2dbg
+** @ingroup common
 ** 
 ** Started   Sat Sep 24 07:17:33 2005 jfv
 ** $Id$

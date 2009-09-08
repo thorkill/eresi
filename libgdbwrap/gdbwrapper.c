@@ -1,3 +1,10 @@
+/**
+ * @file libgdbwrap/gdbwrapper.c
+ * @brief Implements the GDB serial protocol.
+ * @ingroup libgdbwrap
+ *
+ * $Id$
+ */
 
 /*
  *  See gdb documentation, section D for more information on the

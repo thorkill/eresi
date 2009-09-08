@@ -1,5 +1,6 @@
 /**
  * @file op_setge_rmb.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

@@ -1,6 +1,6 @@
 /*
 ** @file libui-color.h
-** @ingroup librevm_hdr
+** @ingroup librevm
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **
 ** $Id$

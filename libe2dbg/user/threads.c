@@ -1,3 +1,7 @@
+/**
+** @file threads.c
+** @ingroup user
+*/
 /*
  * @file threads.c
  *

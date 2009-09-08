@@ -1,5 +1,6 @@
 /**
  * @file op_in_al_ref_ib.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction in al,ib opcode 0xe4
  

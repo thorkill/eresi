@@ -1,5 +1,6 @@
 /**
  * @file op_iret.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

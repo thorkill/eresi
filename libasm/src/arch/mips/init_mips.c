@@ -1,4 +1,8 @@
 /**
+** @file init_mips.c
+** @ingroup mips
+*/
+/**
  * @file init_mips.c
  * @brief This file have function for initializing and fetch code for MIPS architecture.
  *

@@ -1,5 +1,6 @@
 /**
  * @file i386_xadd.c
+ngroup ia-instrs/g
  * @ingroup instrs
  *  $Id$
  */

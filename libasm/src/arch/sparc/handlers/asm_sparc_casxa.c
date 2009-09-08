@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_casxa.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

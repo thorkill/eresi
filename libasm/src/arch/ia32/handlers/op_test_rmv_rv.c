@@ -1,5 +1,6 @@
 /**
  * @file op_test_rmv_rv.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

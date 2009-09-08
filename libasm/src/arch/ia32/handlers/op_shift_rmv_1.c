@@ -1,5 +1,6 @@
 /**
  * @file op_shift_rmv_1.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

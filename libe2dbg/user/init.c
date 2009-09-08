@@ -1,3 +1,7 @@
+/**
+** @file init.c
+** @ingroup user
+*/
 #include "libe2dbg.h"
 
 

@@ -1,5 +1,6 @@
 /**
  * @file op_prefix_ds.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

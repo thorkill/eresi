@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_generalbyte.c
+ngroup ia-operands/g
  * @ingroup operands
  * $Id$
  */
@@ -9,6 +10,7 @@
 
 /**
  * Decode data for operand type ASM_OTYPE_GENERALBYTE
+ngroup ia-operands/g
  * @ingroup operands
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data

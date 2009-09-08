@@ -1,5 +1,6 @@
 /**
  * @file i386_shrd_rmv_rv_ib.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

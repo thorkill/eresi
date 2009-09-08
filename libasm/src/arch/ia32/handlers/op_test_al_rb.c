@@ -1,5 +1,6 @@
 /**
  * @file op_test_al_rb.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

@@ -1,15 +1,15 @@
 /**
- * @defgroup sparc SPARC architecture disassembler.
+ * @defgroup sparc Libasm SPARC support.
  * @ingroup libasm
  */
 
 /**
- * @defgroup operands SPARC operands API.
+ * @defgroup s-operands SPARC operands API.
  * @ingroup sparc
  */
 
 /**
- * @defgroup instrs SPARC instructions API.
+ * @defgroup s-instrs SPARC instructions API.
  * @ingroup sparc
  */
 

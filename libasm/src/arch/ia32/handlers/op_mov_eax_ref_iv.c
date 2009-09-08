@@ -1,5 +1,6 @@
 /**
  * @file op_mov_eax_ref_iv.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

@@ -1,5 +1,6 @@
 /**
  * @file op_sahf.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

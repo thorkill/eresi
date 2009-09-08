@@ -1,3 +1,7 @@
+/**
+** @file init_sparc.c
+** @ingroup sparc
+*/
 /*
 ** 
 ** init_sparc.c in 

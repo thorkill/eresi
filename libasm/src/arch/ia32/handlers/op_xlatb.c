@@ -1,5 +1,6 @@
 /**
  * @file op_xlatb.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief <instruction opcode="0xd7" func="op_xlatb"/>
  * $Id$

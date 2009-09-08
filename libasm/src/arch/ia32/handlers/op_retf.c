@@ -1,5 +1,6 @@
 /**
  * @file op_retf.c
+ngroup ia-instrs/g
  * @ingroup instrs
 ** $Id$
 **

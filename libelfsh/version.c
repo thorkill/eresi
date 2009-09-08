@@ -1,5 +1,6 @@
 /**
  * @defgroup libelfsh libelfsh: The ELF shell library.
+ * @ingroup elfsh
  */
 /**
  * @file libelfsh/version.c

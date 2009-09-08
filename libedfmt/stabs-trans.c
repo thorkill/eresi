@@ -1,4 +1,4 @@
-/*
+/**
 ** @file libedfmt/stabs-trans.c
 ** @ingroup libedfmt
 ** @brief Translation from STABS to EDFMT debug format.

@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_op_fetch_reg_address.c
+** @ingroup s-operands
+*/
 #include <libasm.h>
 #include <libasm-sparc.h>
 

@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_shortjump.c
+ngroup ia-operands/g
  * @ingroup operands
  */
 

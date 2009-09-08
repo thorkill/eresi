@@ -1,3 +1,7 @@
+/**
+** @file asm_sparc_ldsha.c
+** @ingroup s-instrs
+*/
 /*
 **
 ** $Id$

@@ -1,5 +1,6 @@
 /**
  * @file i386_bsf.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

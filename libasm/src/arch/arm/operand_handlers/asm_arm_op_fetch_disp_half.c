@@ -1,3 +1,7 @@
+/**
+** @file asm_arm_op_fetch_disp_half.c
+** @ingroup a-operands
+*/
 #include <libasm.h>
 
 int asm_arm_op_fetch_disp_half(asm_operand *operand, u_char *opcode,

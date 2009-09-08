@@ -1,3 +1,7 @@
+/**
+** @file asm_arm_mla.c
+** @ingroup a-instrs
+*/
 #include "libasm.h"
 
 int     asm_arm_mla(asm_instr * ins, u_char * buf, u_int len,

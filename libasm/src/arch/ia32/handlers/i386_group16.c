@@ -1,5 +1,6 @@
 /**
  * @file i386_group16.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

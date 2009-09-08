@@ -1,5 +1,6 @@
 /**
  * @file asm_operand_fetch_address.c
+ngroup ia-operands/g
  * @ingroup operands
  * $Id$
  */
@@ -13,6 +14,7 @@
  *
  */
 /**
+ngroup ia-operands/g
  * @ingroup operands
  * Decode data for operand type ASM_OTYPE_YDEST
  * @param operand Pointer to operand structure to fill.

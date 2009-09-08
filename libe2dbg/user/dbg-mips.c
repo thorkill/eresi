@@ -1,3 +1,7 @@
+/**
+** @file dbg-mips.c
+** @ingroup user
+*/
 /*
 ** dbg-mips.c for e2dbg in the ERESI framework
 **

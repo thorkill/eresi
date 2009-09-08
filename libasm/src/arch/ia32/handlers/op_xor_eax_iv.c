@@ -1,5 +1,6 @@
 /**
  * @file op_xor_eax_iv.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction xor eax,iv opcode 0x35
  * $Id$

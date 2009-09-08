@@ -1,3 +1,7 @@
+/**
+** @file tables_sparc.c
+** @ingroup sparc
+*/
 /*
 ** tables_sparc.c for  in /hate/home/hate/code/libasm_current
 ** 

@@ -1,3 +1,7 @@
+/**
+** @file output_sparc.c
+** @ingroup sparc
+*/
 /*
 ** output_sparc.c for  in /hate/home/hate/code/libasm_current
 ** 

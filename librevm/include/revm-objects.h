@@ -1,9 +1,10 @@
 /**
- * @defgroup librevm_hdr librevm Headers
+ * @defgroup librevm librevm: The Reverse Engineering Vector Machine.
+ * @ingroup ERESI
  */
 /**
 ** @file revm.h
-** @ingroup librevm_hdr
+** @ingroup librevm
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
 ** 
 ** Moved from elfsh to librevm on January 2007 -may

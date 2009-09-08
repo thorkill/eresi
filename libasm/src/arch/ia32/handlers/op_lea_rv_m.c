@@ -1,5 +1,6 @@
 /**
  * @file op_lea_rv_m.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

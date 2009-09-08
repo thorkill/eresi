@@ -1,5 +1,6 @@
 /**
  * @file op_push_iv.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * $Id$
  *

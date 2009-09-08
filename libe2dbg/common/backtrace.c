@@ -1,7 +1,7 @@
-/*
+/**
 ** @file libe2dbg/common/backtrace.c
 ** @brief Implement the backtrace functionality.
-** @ingroup libe2dbg
+** @ingroup common
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 jfv
 ** $Id$

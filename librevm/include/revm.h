@@ -1,4 +1,7 @@
 /**
+ * @defgroup ERESI The ERESI runtime environment
+ */
+/**
 ** @file revm.h
 ** @ingroup librevm
 **

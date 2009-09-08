@@ -1,5 +1,6 @@
 /**
  * @file op_xor_rb_rmb.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction xor rb,rmb opcode 0x32
  * $Id$

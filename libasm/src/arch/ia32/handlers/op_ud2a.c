@@ -1,5 +1,6 @@
 /**
  * @file op_ud2a.c
+ngroup ia-instrs/g
  * @ingroup instrs
  * @brief Handler for instruction ud2a opcode 0x??
  * $Id$
