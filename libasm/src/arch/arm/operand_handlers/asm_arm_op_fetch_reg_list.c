@@ -1,6 +1,6 @@
 /**
 ** @file asm_arm_op_fetch_reg_list.c
-** @ingroup a-operands
+** @ingroup ARM_operands
 */
 #include "libasm.h"
 

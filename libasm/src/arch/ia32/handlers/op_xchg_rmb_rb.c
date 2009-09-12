@@ -1,8 +1,8 @@
 /**
  * @file op_xchg_rmb_rb.c
  * @brief Handler for instruction xchg rmb,rb opcode 0x86
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */

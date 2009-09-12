@@ -1,7 +1,7 @@
 /**
  * @file i386_shld.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */

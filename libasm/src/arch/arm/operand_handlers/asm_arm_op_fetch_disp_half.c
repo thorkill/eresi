@@ -1,6 +1,6 @@
 /**
 ** @file asm_arm_op_fetch_disp_half.c
-** @ingroup a-operands
+** @ingroup ARM_operands
 */
 #include <libasm.h>
 

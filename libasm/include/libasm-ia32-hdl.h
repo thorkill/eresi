@@ -1,5 +1,5 @@
 /**
- * @defgroup ia-instrs Libasm IA32 instructions handlers.
+ * @defgroup IA32_instrs Libasm IA32 instructions handlers.
  * @ingroup ia32
  */
 #ifndef _LIBASM_IA32_HDL_H_

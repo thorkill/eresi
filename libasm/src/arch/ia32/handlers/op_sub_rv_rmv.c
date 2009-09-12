@@ -1,8 +1,8 @@
 /**
  * @file op_sub_rv_rmv.c
  * @brief Handler for instruction sub rv,rmv opcode 0x2b
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * 
  * $Id$
  *

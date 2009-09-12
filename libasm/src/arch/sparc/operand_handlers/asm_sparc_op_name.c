@@ -1,10 +1,10 @@
 /**
- * @defgroup s-operands SPARC operands API.
+ * @defgroup SPARC_operands SPARC operands API.
  * @ingroup sparc
  */
 /**
 ** @file asm_sparc_op_name.c
-** @ingroup s-operands
+** @ingroup SPARC_operands
 */
 #include <libasm.h>
 #include <libasm-sparc.h>

@@ -1,7 +1,7 @@
 /**
  * @file i386_btrl.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */

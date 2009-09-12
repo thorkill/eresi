@@ -1,7 +1,7 @@
 /**
  * @file op_test_rmb_rb.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
 ** $Id$
 **
 */

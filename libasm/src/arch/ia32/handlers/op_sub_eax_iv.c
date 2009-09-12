@@ -1,7 +1,7 @@
 /**
  * @file op_sub_eax_iv.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
 ** $Id$
 **
 */
@@ -9,8 +9,8 @@ ngroup ia-instrs/g
 #include <libasm-int.h>
 
 /**
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * <instruction func="op_sub_eax_iv" opcode="0x2d"/>
 */
 

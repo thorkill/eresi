@@ -1,8 +1,8 @@
 /**
  * @file op_cmpsb.c
  * @brief Handler for instruction cmpsb opcode 0xa6
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */

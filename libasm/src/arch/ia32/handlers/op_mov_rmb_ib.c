@@ -1,8 +1,8 @@
 /**
  *
  * @file op_mov_rmb_ib.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */

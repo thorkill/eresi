@@ -1,8 +1,8 @@
 /**
  * @file op_imul_rv_rmv_iv.c
  * @brief Handler for instruction op_imul_rv_rmv_iv opcode 0x69
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
 ** $Id$
 **
 */

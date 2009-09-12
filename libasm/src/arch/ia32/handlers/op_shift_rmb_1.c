@@ -1,7 +1,7 @@
 /**
  * @file op_shift_rmb_1.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
 ** $Id$
 **
 */

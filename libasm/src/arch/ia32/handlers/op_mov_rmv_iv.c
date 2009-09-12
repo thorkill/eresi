@@ -1,7 +1,7 @@
 /**
  * @file op_mov_rmv_iv.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  * ChangeLog:
  *

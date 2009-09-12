@@ -1,7 +1,7 @@
 /**
  * @brief Handler for pop es instruction. Opcode = 0x17
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
 ** $Id$
 **
 */

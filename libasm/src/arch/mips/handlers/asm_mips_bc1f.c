@@ -1,6 +1,6 @@
 /**
 ** @file asm_mips_bc1f.c
-** @ingroup m-instrs
+** @ingroup MIPS_instrs
 */
 /* Adam 'pi3' Zabrocki */
 /* Manuel Martin - 2007 */

@@ -1,7 +1,7 @@
 /**
  * @file asm_operand_fetch_segment.c
-ngroup ia-operands/g
- * @ingroup operands
+ *
+ * @ingroup IA32_operands
  */
 
 #include <libasm.h>
@@ -9,8 +9,8 @@ ngroup ia-operands/g
 
 /**
  * @brief Decode data for operand type ASM_OTYPE_YDEST
-ngroup ia-operands/g
- * @ingroup operands
+ *
+ * @ingroup IA32_operands
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype

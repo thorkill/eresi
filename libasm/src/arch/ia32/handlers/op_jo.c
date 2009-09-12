@@ -1,7 +1,7 @@
 /**
  * @file op_jo.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */

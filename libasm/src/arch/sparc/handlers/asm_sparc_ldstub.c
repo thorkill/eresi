@@ -1,6 +1,6 @@
 /**
 ** @file asm_sparc_ldstub.c
-** @ingroup s-instrs
+** @ingroup SPARC_instrs
 */
 /*
 **

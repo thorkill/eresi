@@ -1,5 +1,5 @@
 /**
- * @defgroup s-instrs SPARC instructions API.
+ * @defgroup SPARC_instrs SPARC instructions API.
  * @ingroup sparc
  */
 /**

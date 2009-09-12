@@ -1,6 +1,6 @@
 /**
 ** @file asm_sparc_orncc.c
-** @ingroup s-instrs
+** @ingroup SPARC_instrs
 */
 /*
 **

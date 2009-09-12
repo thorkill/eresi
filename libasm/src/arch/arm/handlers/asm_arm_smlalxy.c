@@ -1,6 +1,6 @@
 /**
 ** @file asm_arm_smlalxy.c
-** @ingroup a-instrs
+** @ingroup ARM_instrs
 */
 #include "libasm.h"
 

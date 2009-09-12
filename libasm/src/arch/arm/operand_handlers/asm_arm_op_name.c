@@ -1,10 +1,10 @@
 /**
- * @defgroup a-operands ARM operands API.
+ * @defgroup ARM_operands ARM operands API.
  * @ingroup arm
  */
 /**
 ** @file asm_arm_op_name.c
-** @ingroup a-operands
+** @ingroup ARM_operands
 */
 #include <libasm.h>
 

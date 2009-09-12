@@ -1,10 +1,10 @@
 /**
- * @defgroup m-operands MIPS operands API.
+ * @defgroup MIPS_operands MIPS operands API.
  * @ingroup mips
  */
 /**
 ** @file asm_mips_operand_fetch.c
-** @ingroup m-operands
+** @ingroup MIPS_operands
 */
 /*
  * Started by Adam 'pi3' Zabrocki

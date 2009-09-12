@@ -1,10 +1,10 @@
 /**
- * @defgroup a-instrs ARM instructions disassembler.
+ * @defgroup ARM_instrs ARM instructions disassembler.
  * @ingroup arm
  */
 /**
  * @file libasm-arm-decode.h
- * @ingroup a-instrs
+ * @ingroup arm
  */
 #ifndef LIBASM_ARM_DECODE_H
 #define LIBASM_ARM_DECODE_H

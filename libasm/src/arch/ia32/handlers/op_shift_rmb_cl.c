@@ -1,7 +1,7 @@
 /**
  * @file op_shift_rmb_cl.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  * Changelog

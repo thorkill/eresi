@@ -1,7 +1,7 @@
 /**
  * @file op_unary_rmv.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * @brief Handler for instruction unary rmv opcode 0xf7
  * $Id$
  *

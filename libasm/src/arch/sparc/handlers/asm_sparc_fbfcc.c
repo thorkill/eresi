@@ -1,6 +1,6 @@
 /**
 ** @file asm_sparc_fbfcc.c
-** @ingroup s-instrs
+** @ingroup SPARC_instrs
 */
 /*
 **

@@ -1,5 +1,5 @@
 /**
- * @defgroup m-instrs MIPS instructions disassembler.
+ * @defgroup MIPS_instrs MIPS instructions disassembler.
  * @ingroup mips
  */
 /**

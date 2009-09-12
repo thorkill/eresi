@@ -1,7 +1,7 @@
 /**
  * @file op_out_ref_ib_eax.c
-ngroup ia-instrs/g
- * @ingroup instrs
+ *
+ * @ingroup IA32_instrs
  * $Id$
  *
  */
