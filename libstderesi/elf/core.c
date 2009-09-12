@@ -1,6 +1,10 @@
 /**
+** @file core.c
+** @ingroup elf
+*/
+/**
  * notes.c for elfsh
- * @file notes.c
+ *
  * Started on Fri Jan 26 21:00:33 BRST 2007
  *
  *

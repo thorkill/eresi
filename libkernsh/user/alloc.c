@@ -1,6 +1,6 @@
-/*
+/**
 ** @file alloc.c
-** @ingroup libkernsh_user
+** @ingroup usermode
 ** @brief allocation contiguous/non contiguous.
 **
 */

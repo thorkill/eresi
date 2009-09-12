@@ -1,6 +1,6 @@
-/*
+/**
  * @file loop.c
- * @ingroup librevm_vm
+ * @ingroup vm
  * @brief This file include the control flow support for scripting.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv

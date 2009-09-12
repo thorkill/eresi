@@ -2,17 +2,6 @@
  * @defgroup mips Libasm MIPS support
  * @ingroup libasm
  */
-
-/**
- * @defgroup m-operands MIPS operands API.
- * @ingroup mips
- */
-
-/**
- * @defgroup m-instrs MIPS instructions disassembler.
- * @ingroup mips
- */
-
 /**
  * @file libasm/include/libasm-mips.h
  * @ingroup mips

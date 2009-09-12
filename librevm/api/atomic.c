@@ -1,10 +1,10 @@
 /**
-** @defgroup librevm_api librevm API
+** @defgroup api Librevm external API.
 ** @ingroup librevm
 */
 /**
 ** @file atomic.c
-** @ingroup librevm_api
+** @ingroup api
 ** @brief Implement the API for atomic arithmetic and logic ERESI commands.
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv

@@ -1,6 +1,6 @@
 /*
 ** @file graph.c
-** @ingroup libstderesi/analysis
+** @ingroup analysis
 ** @brief Dump graphviz output of call graph and control flow graph.
 **
 ** Started : Fri Mar  7 07:18:03 2003 jfv
@@ -77,7 +77,7 @@ void		revm_graph_legend(int fd, char *fnc)
 
 /** 
  * @brief OUTPUT handler for graphviz file
- * @ingroup libstderesi/analysis
+ * @ingroup analysis
  */
 int		eresi_graph_output(char *str)
 {

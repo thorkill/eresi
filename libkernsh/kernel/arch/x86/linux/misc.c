@@ -1,10 +1,10 @@
 /**
- * @defgroup libkernsh_kernel libkernsh_kernel
+ * @defgroup kernelmode Kernel mode code.
  * @ingroup libkernsh
  */
-/*
+/**
 ** @file misc.c
-** @ingroup libkernsh_kernel
+** @ingroup kernelmode
 **
 */
 #include "libkernsh-kernel.h"

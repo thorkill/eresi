@@ -1,6 +1,6 @@
 /**
  * @file grammar.c
- * @ingroup librevm_lang
+ * @ingroup lang
  * @brief We dont use bison and have our own parser generator.
  *
  * Started on  Sun Feb  9 22:57:58 2003 jfv

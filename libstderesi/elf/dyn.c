@@ -1,5 +1,9 @@
 /**
- * @file dyn.c
+** @file dyn.c
+** @ingroup elf
+*/
+/**
+ *
  * 
  * Started on  Fri Nov  2 15:17:36 2001 jfv
  *

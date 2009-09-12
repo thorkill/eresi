@@ -1,6 +1,6 @@
 /*
 ** @file hashes.c
-** @ingroup libstderesi
+** @ingroup type
 ** @brief Pretty printing for elfsh hash tables.
 **
 ** Started Jan 20 2007 18:57:03 jfv

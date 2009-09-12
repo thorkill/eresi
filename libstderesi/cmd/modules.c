@@ -1,6 +1,6 @@
 /**
 ** @file modules.c
-** @ingroup libstderesi
+** @ingroup cmd
 ** Started on  Wed Feb 19 04:42:47 2003 jfv
 **
 ** $Id$

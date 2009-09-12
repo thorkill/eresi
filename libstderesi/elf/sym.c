@@ -1,5 +1,9 @@
 /**
- * @file sym.c
+** @file sym.c
+** @ingroup elf
+*/
+/**
+ *
  * 
  * Started on  Fri Nov  2 15:19:38 2001 jfv
  *

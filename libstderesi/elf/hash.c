@@ -1,5 +1,9 @@
 /**
- * @file version.c
+** @file hash.c
+** @ingroup elf
+*/
+/**
+ *
  * 
  * @brief Hash features
  * 

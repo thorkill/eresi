@@ -1,6 +1,6 @@
 /**
  * @file lexer.c
- * @ingroup librevm_lang 
+ * @ingroup lang 
  * Started on  Fri Feb  7 20:53:25 2003 jfv
  * Updated on  Fri Mar  5 18:47:41 2007 jfv
  *

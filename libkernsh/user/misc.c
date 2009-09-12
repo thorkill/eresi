@@ -1,6 +1,6 @@
-/*
+/**
 ** @file misc.c
-** @ingroup libkernsh_user
+** @ingroup usermode
 **
 */
 #include "libkernsh.h"

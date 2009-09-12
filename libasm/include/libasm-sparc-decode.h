@@ -1,14 +1,13 @@
-/*
-** libasm-sparc-decode.h for  in /hate/home/hate/code/libasm_current
-** 
-** Made by #!HATE#@!
-** Login   <hate@epita.fr>
-** 
-** Started on  Tue Jun 14 05:02:37 2005 #!HATE#@!
-** Last update Tue Jun 14 06:06:32 2005 #!HATE#@!
+/**
+ * @defgroup s-instrs SPARC instructions API.
+ * @ingroup sparc
+ */
+/**
+** @file libasm-sparc-decode.h
+** @ingroup sparc
 **
+** Started by sroy on Tue Jun 14 05:02:37 2005
 ** $Id$
-**
 */
 
 #ifndef LIBASM_SPARC_DECODE_H_

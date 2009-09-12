@@ -1,10 +1,14 @@
 /**
+ * @defgroup m-operands MIPS operands API.
+ * @ingroup mips
+ */
+/**
 ** @file asm_mips_operand_fetch.c
 ** @ingroup m-operands
 */
 /*
- * - Adam 'pi3' Zabrocki
- *
+ * Started by Adam 'pi3' Zabrocki
+ * $Id$
  */
 
 #include <libasm.h>

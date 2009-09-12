@@ -1,6 +1,6 @@
-/*
+/**
 ** @file virtm.c
-** @ingroup libkernsh_kernel
+** @ingroup kernelmode
 **
 */
 

@@ -1,5 +1,9 @@
 /**
 ** @file notes.c
+** @ingroup elf
+*/
+/**
+ *
 ** 
 ** Started on  Fri Nov  2 15:20:58 2001 jfv
 **

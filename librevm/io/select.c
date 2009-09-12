@@ -1,6 +1,6 @@
 /**
  * @file select.c
- ** @ingroup librevm_io
+ ** @ingroup io
  ** @brief The interface for I/O based on select().
  **
 ** Started on Fri Mar 5 00:55:40 2004 jfv
@@ -15,7 +15,7 @@
 
 /**
  * @brief Return the greatest socket from the elfsh_net_client_list and sock. 
- * @ingroup librevm_io
+ * @ingroup io
  */
 #if defined(ERESI_NET)
 int             revm_getmaxfd()
@@ -90,7 +90,7 @@ int             revm_getmaxfd()
 /**
  * @brief Add a main socket and client's sockets to the sockets list used by select
  * and call get_max_fd to get the greatest 
- * @ingroup librevm_io
+ * @ingroup io
  */
 int		revm_prepare_select(fd_set *sel_sockets)
 {
@@ -158,7 +158,7 @@ int		revm_prepare_select(fd_set *sel_sockets)
 
 /**
  * @brief Check if we had any network event
- * @ingroup librevm_io
+ * @ingroup io
  */
 int			revm_check_net_select(fd_set *sel_sockets, int cursock)
 {
@@ -196,7 +196,7 @@ int			revm_check_net_select(fd_set *sel_sockets, int cursock)
 
 /** 
  * @brief Set IO to the choosen socket 
- * @ingroup librevm_io 
+ * @ingroup io 
 */
 int			revm_socket_getnew()
 {
@@ -229,7 +229,7 @@ int			revm_socket_getnew()
 
 /***
  * @brief Print prompt depending on the current REVM mode
- * @ingroup librevm_io
+ * @ingroup io
  */
 int			revm_preselect_prompt()
 {
@@ -254,7 +254,7 @@ int			revm_preselect_prompt()
 
 /**
  * @brief Wait for all input 
- * @ingroup librevm_io
+ * @ingroup io
  */
 int                     revm_select()
 {

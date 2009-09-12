@@ -1,10 +1,10 @@
 /**
- * @defgroup libkernsh_common libkernsh_common
+ * @defgroup common Common code between user and kernel land.
  * @ingroup libkernsh
  */
 /*
 ** @file vectors.c
-** @ingroup libkernsh_common
+** @ingroup common
 **
 */
 #include "libkernsh.h"

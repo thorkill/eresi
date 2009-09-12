@@ -1,7 +1,7 @@
 /*
  * @file memory.c
 ** @brief memory.c for libkernsh.
-** @ingroup libkernsh_common
+** @ingroup common
 **
 */
 #include "libkernsh.h"

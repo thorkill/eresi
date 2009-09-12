@@ -1,6 +1,6 @@
 /*
 ** @file filter.c
-** @ingroup librevm_api
+** @ingroup api
 ** @brief Filter 0x00 in the OBJ_TYPESTR object. 
 ** Started on  Thu Mar 13 23:27:58 2003 jfv
 ** Last update Sat Mar 15 07:00:38 2003 jfv

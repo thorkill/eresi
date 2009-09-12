@@ -1,6 +1,6 @@
 /*
 ** @file idt.c
-** @ingroup libkernsh_common
+** @ingroup common
 **
 */
 #include "libkernsh.h"

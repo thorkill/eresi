@@ -1,5 +1,9 @@
 /**
- * @file comment.c
+** @file comment.c
+** @ingroup elf
+*/
+/**
+ *
  *
  * Made by <jfv@devhell.org>
  *

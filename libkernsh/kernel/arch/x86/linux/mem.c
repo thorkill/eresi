@@ -1,6 +1,6 @@
-/*
+/**
 ** @file mem.c
-** @ingroup libkernsh_kernel
+** @ingroup kernelmode
 **
 */
 #include "libkernsh-kernel.h"

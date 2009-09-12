@@ -1,6 +1,6 @@
 /*
 ** @file proc.c
-** @ingroup libstderesi
+** @ingroup cmd
 **
 ** Made by jfv <vanegue@eresi-project.org>
 ** $Id$

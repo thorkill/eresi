@@ -1,10 +1,10 @@
 /**
- * @defgroup io librevm INPUT/OUTPUT API.
+ * @defgroup io Librevm IO API.
  * @ingroup librevm
  */
 /**
  * @file io.c
- * @ingroup librevm_io
+ * @ingroup io
  * @brief Initialize the IO system.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv

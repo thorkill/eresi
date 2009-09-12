@@ -1,6 +1,6 @@
 /*
 ** @file hammer.c
-** @ingroup libstderesi
+** @ingroup analysis
 ** @brief Contains libmjollnir commands bindings.
 **
 ** Last update December 10 2006 may

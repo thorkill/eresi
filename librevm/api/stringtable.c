@@ -1,6 +1,6 @@
 /*
 ** @file stringtable.c
-** @ingroup librevm_api
+** @ingroup api
 ** @brief All functions about string table management
 **
 ** Started on Sept 11 2005 mxatone

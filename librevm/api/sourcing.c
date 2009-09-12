@@ -1,7 +1,7 @@
 /**
 ** @file sourcing.c
 ** 
-** @ingroup librevm_api
+** @ingroup api
 */
 /*
 ** Started on  Fri May 16 15:18:35 2005 jfv

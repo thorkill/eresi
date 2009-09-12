@@ -1,6 +1,6 @@
 /**
  * @file lookup.c
- * @ingroup librevm_lang
+ * @ingroup lang
  * @brief Various object lookup functions built in the language.
  *
  * Started Nov 21 2003 jfv

@@ -1,5 +1,9 @@
 /**
 ** @file findrel.c
+** @ingroup elf
+*/
+/**
+ *
 **
 ** Started on  Sat Feb 22 17:06:17 2003 jfv
 **

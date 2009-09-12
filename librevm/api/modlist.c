@@ -1,6 +1,6 @@
 /*
 ** @file modlist.c
-** @ingroup librevm_api
+** @ingroup api
 ** @brief List the loaded eresi module.
 ** Started on  Wed Feb 19 04:42:47 2003 jfv
 **

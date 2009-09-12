@@ -1,6 +1,6 @@
-/*
+/**
 ** @file mem.c
-** @ingroup libkernsh_user
+** @ingroup usermode
 **
 */
 #if defined(__linux__)

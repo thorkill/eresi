@@ -1,7 +1,7 @@
 /*
 ** @file implicit.c
 ** @brief Load the working files.
-** @ingroup librevm_api 
+** @ingroup api 
 ** Started on  Tue Feb 18 06:45:35 2003 jfv
 **
 ** $Id$

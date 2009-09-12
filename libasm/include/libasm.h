@@ -1,5 +1,5 @@
 /**
- * @defgroup libasm libasm: the smart disassembling library.
+ * @defgroup libasm libasm: the disassembling library.
  */
 /**
  * @file libasm/include/libasm.h

@@ -3,26 +3,12 @@
  * @ingroup libasm
  */
 
-/**
- * @defgroup s-operands SPARC operands API.
- * @ingroup sparc
- */
-
-/**
- * @defgroup s-instrs SPARC instructions API.
- * @ingroup sparc
- */
-
-/**
-** 
+/** 
 ** @file libasm/include/libasm-sparc.h
+** @ingroup sparc
 ** 
-** Author  : <sk at devhell dot org>
-** Started : Tue Dec  2 22:43:08 2003
-** Updated : Thu Dec  4 03:29:25 2003
-**
+** Started by sroy on Tue Dec  2 22:43:08 2003
 ** $Id$
-**
 */
 
 #ifndef LIBASM_SPARC_H_

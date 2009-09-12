@@ -1,5 +1,14 @@
+/**
+ * @defgroup a-instrs ARM instructions disassembler.
+ * @ingroup arm
+ */
+/**
+ * @file libasm-arm-decode.h
+ * @ingroup a-instrs
+ */
 #ifndef LIBASM_ARM_DECODE_H
 #define LIBASM_ARM_DECODE_H
+
 
 /* B, BL, BLX(1) */
 struct s_arm_decode_branch1

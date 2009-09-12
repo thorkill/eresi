@@ -1,6 +1,6 @@
 /**
 ** @file remove.c
-** @ingroup libstderesi
+** @ingroup files
 ** @brief First remove functions for easy scripting
 **
 ** Started on Nov 22 2003 jfv

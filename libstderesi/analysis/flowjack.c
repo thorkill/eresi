@@ -1,6 +1,6 @@
 /*
 ** @file flowjack.c
-** @ingroup libstderesi
+** @ingroup analysis
 ** Author  : <sk at devhell dot org>
 **
 ** December 10 2006 : merged from modflow to the ELFsh vm -may

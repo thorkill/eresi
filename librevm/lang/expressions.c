@@ -1,6 +1,6 @@
 /*
 ** @file expressions.c
-** @ingroup librevm_lang
+** @ingroup lang
 ** @brief Implementation of scripting declarations for meta-language variables.
 **
 ** Started on Jun 23 2007 23:39:51 jfv

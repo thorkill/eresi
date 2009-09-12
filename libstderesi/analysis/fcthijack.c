@@ -1,6 +1,6 @@
 /*
 ** @file fcthijack.c
-** @ingroup libstderesi
+** @ingroup analysis
 ** Started on  Thu Jun 19 17:02:55 2003 jfv
 **
 ** $Id$

@@ -1,6 +1,6 @@
 /*
 ** @file match.c
-** @ingroup libstderesi
+** @ingroup type
 ** @brief Handle the match construct.
 **
 ** Start on Wed May 23 13:55:45 2007 jfv

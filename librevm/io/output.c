@@ -1,6 +1,6 @@
 /**
  * @file output.c
- * @ingroup librevm_io
+ * @ingroup io
  * @brief The output vector interface.
  *
  * Started on Fri Mar 5 00:55:40 2004 jfv
@@ -15,7 +15,7 @@
 
 /**
  * @brief Display str on all term
- * @ingroup librevm_io
+ * @ingroup io
  */
 int		revm_output_bcast(char *str)
 {
@@ -62,7 +62,7 @@ int		revm_output_bcast(char *str)
 
 /**
  * @brief OUTPUT handler for stdout
- * @ingroup librevm_io
+ * @ingroup io
  */
 int		revm_output(char *str)
 {
@@ -128,7 +128,7 @@ int		revm_output(char *str)
 
 /**
  * @brief  Output without buffering/log 
- * @ingroup librevm_io
+ * @ingroup io
 */
 int		revm_output_nolog(char *str)
 {
@@ -141,7 +141,7 @@ int		revm_output_nolog(char *str)
 
 /**
  * @brief ERR output function (stderr) 
- * @ingroup librevm_io 
+ * @ingroup io 
 */
 int		revm_outerr(char *str)
 {
@@ -154,7 +154,7 @@ int		revm_outerr(char *str)
 
 /** 
  * @brief OUTPUT handler for stdout 
- * @ingroup librevm_io
+ * @ingroup io
  */
 int		revm_stdoutput(char *str)
 {
@@ -168,7 +168,7 @@ int		revm_stdoutput(char *str)
 
 /** 
  * @brief Change the Output handler
- * @ingroup librevm_io
+ * @ingroup io
  */
 void	revm_setoutput_handler(revmworkspace_t *ws, void *hdl)
 {
@@ -177,7 +177,7 @@ void	revm_setoutput_handler(revmworkspace_t *ws, void *hdl)
 
 /** 
  * @brief Change the Output file 
- * @ingroup librevm_io
+ * @ingroup io
  */
 void	revm_setoutput(revmworkspace_t *ws, int fd)
 {
@@ -186,7 +186,7 @@ void	revm_setoutput(revmworkspace_t *ws, int fd)
 
 /** 
  * @brief Retreive the output fd of a workspace
- * @ingroup librevm_io
+ * @ingroup io
  */
 int	revm_output_get(revmworkspace_t *ws)
 {

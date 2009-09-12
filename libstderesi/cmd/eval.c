@@ -1,6 +1,6 @@
 /**
 ** @file eval.c
-** @ingroup libstderesi
+** @ingroup cmd
 **
 ** Started on Thu Nov 13 13:03:14 2008 jfv
 ** $Id$

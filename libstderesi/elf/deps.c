@@ -1,5 +1,9 @@
 /**
 ** @file deps.c
+** @ingroup elf
+*/
+/**
+ *
 **
 ** @brief All functions regarding dependences support in the naming scheme and the
 ** loading/unloading facilities of the shell

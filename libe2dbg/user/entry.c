@@ -1,5 +1,5 @@
 /**
- * @defgroup user
+ * @defgroup user Userland debugging API.
  * @ingroup libe2dbg
  */
 /**

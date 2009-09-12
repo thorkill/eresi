@@ -1,6 +1,6 @@
 /**
 ** @file save.c
-** @ingroup libstderesi 
+** @ingroup files 
 **
 ** Started on  Sat Jan 25 11:22:35 2003 jfv
 ** $Id$

@@ -1,5 +1,9 @@
 /**
 ** @file got.c
+** @ingroup elf
+*/
+/**
+ *
 ** 
 ** Started on  Fri Nov  2 15:20:18 2001 jfv
 **

@@ -1,6 +1,6 @@
 /**
  * @file utils.c
- * @ingroup libstderesi
+ * @ingroup cmd
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Thu Jan 04 11:26:11 2007 jfv
  *

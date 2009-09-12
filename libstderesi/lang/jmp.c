@@ -1,6 +1,6 @@
 /*
 ** @file jmp.c
-** @ingroup libstderesi 
+** @ingroup lang 
 ** Made by jfv
 ** Login   <jfv@devhell.org>
 ** 

@@ -1,6 +1,6 @@
-/*
+/**
 ** @file module.c 
-** @ingroup libkernsh_user
+** @ingroup usermode
 **
 */
 #include "libkernsh.h"

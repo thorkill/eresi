@@ -1,6 +1,6 @@
-/*
+/**
 ** @file symbs.c
-** @ingroup libkernsh_user
+** @ingroup usermode
 **
 */
 #include "libkernsh.h"

@@ -1,6 +1,6 @@
 /**
 * @file trace.c
-* @ingroup libstderesi
+* @ingroup analysis
 * @brief All functions that help to trace content
 *
 * Started Jul 2 2005 00:03:44 mxatone

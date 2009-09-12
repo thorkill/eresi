@@ -1,13 +1,12 @@
 /**
- * @file misc.c
- * @ingroup librevm_vm
+ * @file misc-revm.c
+ * @ingroup vm
+ *
  * Started on  Fri Nov  2 15:21:56 2001 jfv
- * Updated on  Fri Sep 11 17:26:11 2005 jfv
- *
  * $Id$
- *
  */
 #include "revm.h"
+
 
 /* XXX: to remove ?
 #if defined(USE_READLN)

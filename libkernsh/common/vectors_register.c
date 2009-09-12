@@ -1,6 +1,6 @@
 /*
 ** @file vectors_register.c
-** @ingroup libkernsh_common
+** @ingroup common
 **
 */
 #include "libkernsh.h"

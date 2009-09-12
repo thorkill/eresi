@@ -1,5 +1,9 @@
 /**
 ** @file disasm.c
+** @ingroup elf
+*/
+/**
+ *
 ** @brief Implement disassembling and hexadumping in ERESI
 **
 ** Started on  Fri Nov  2 15:41:34 2001 jfv

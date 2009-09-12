@@ -1,5 +1,9 @@
 /**
 ** @file dtors.c
+** @ingroup elf
+*/
+/**
+ *
 ** 
 ** Started on  Tue Feb 26 22:08:20 2002 jfv
 **

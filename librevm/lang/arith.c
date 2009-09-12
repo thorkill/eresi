@@ -1,6 +1,6 @@
 /**
  * @file librevm/arith.c
- * @ingroup librevm_lang
+ * @ingroup lang
  * @brief Implementation of arithmetics for expressions
  *
  * Started on Nov 11 2008 23:39:51 jfv
@@ -11,7 +11,7 @@
 
 /**
  * Get an expression by its name
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 static revmexpr_t	*revm_ename_get(char **str)
 {
@@ -49,7 +49,7 @@ static revmexpr_t	*revm_ename_get(char **str)
 
 /**
  * Dereference an existing address expression 
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 static revmexpr_t	*revm_deref(revmexpr_t *ref)
 {
@@ -87,7 +87,7 @@ static revmexpr_t	*revm_deref(revmexpr_t *ref)
 
 /**
  * Compute an intermediate numerical result 
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res, u_char *op)
 {
@@ -128,7 +128,7 @@ static revmexpr_t	*revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res,
 
 /**
  * Recursive eager evaluation of arithmetic expressions in ERESI 
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 static revmexpr_t	*revm_compute_rec(char **str)
 {

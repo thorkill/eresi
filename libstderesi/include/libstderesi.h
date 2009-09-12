@@ -1,8 +1,4 @@
 /**
- * @defgroup libstderesi libstderesi: The ERESI standard library.
- * @ingroup ERESI
- */
-/**
 ** @file libstderesi.h
 ** @ingroup libstderesi
 ** 
@@ -11,6 +7,31 @@
 */
 #ifndef __LIBSTDERESI_H_
  #define __LIBSTDERESI_H_
+
+/**
+ * @defgroup libstderesi libstderesi: The ERESI standard library.
+ * @ingroup ERESI
+ */
+/**
+ * @defgroup analysis Program analysis commands.
+ * @ingroup libstderesi
+ */
+/**
+ * @defgroup cmd General purpose commands.
+ * @ingroup libstderesi
+ */
+/**
+ * @defgroup elf ELF format related commands.
+ * @ingroup libstderesi
+ */
+/**
+ * @defgroup files File handling commands.
+ * @ingroup libstderesi
+ */
+/**
+ * @defgroup type Datatypes management commands.
+ * @ingroup libstderesi
+ */
 
 /* Debug flags for libstderesi */
 #define	__DEBUG_REWRITE__	0

@@ -1,10 +1,12 @@
 /**
+ * @defgroup ia-operands Libasm IA32 operands handlers.
+ * @ingroup ia32
+ */
+/**
  * @file asm_operand_fetch_address.c
-ngroup ia-operands/g
- * @ingroup operands
+ * @ingroup ia-operands
  * $Id$
  */
-
 #include <libasm.h>
 #include <libasm-int.h>
 
@@ -14,7 +16,6 @@ ngroup ia-operands/g
  *
  */
 /**
-ngroup ia-operands/g
  * @ingroup operands
  * Decode data for operand type ASM_OTYPE_YDEST
  * @param operand Pointer to operand structure to fill.

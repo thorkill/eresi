@@ -1,17 +1,14 @@
 /**
- * @defgroup librevm_lang The ERESI scripting language interpreter.
+ * @defgroup lang Librevm scripting engine API.
  * @ingroup librevm
  */
 /**
  * @file variables.c
- * @ingroup librevm_lang
+ * @ingroup lang
  * @brief Contain functions for easy variables accesses.
  *
  * Started September 16 2005 04:01:03 jfv
- *
- *
  * $Id$
- *
  */
 #include "revm.h"
 

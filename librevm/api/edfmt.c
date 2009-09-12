@@ -1,6 +1,6 @@
 /*
 ** @file librevm/api/edfmt.c
-** @ingroup librevm_api
+** @ingroup api
 ** @brief All functions dealing with libedfmt.
 **
 ** Started on Fev 25 2007 mxatone

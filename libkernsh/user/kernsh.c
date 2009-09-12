@@ -1,10 +1,10 @@
 /**
- * @defgroup libkernsh_user libkernsh_user
+ * @defgroup usermode Usermode running code.
  * @ingroup libkernsh
  */
 /*
 ** @file kernsh.c
-* @ingroup libkernsh_user
+* @ingroup usermode
 * @brief initialisation, get_raw and mode switch
 **
 */

@@ -1,6 +1,6 @@
 /*
 ** @file vectors_default.c
-** @ingroup libkernsh_common
+** @ingroup common
 **
 */
 

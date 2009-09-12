@@ -5,17 +5,12 @@
 /**
 ** @file revm.h
 ** @ingroup librevm
+**
 ** Started on  Thu Feb 22 07:19:04 2001 jfv
-** 
-** Moved from elfsh to librevm on January 2007 -may
-**
-**
 ** $Id$
-**
 */
 #ifndef __REVM_OBJECTS_H_
  #define __REVM_OBJECTS_H_
-
 
 /** 
  * Meta-object : Abstract object description when reflected 

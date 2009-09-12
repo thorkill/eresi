@@ -1,6 +1,6 @@
 /*
 ** @file foreach.c
-** @ingroup libstderesi
+** @ingroup lang
 ** @brief Implement the iteration on arrays, lists, and hash tables.
 **
 ** Started on Wed Feb 28 19:19:04 2007 jfv

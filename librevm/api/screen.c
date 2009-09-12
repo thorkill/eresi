@@ -1,6 +1,6 @@
 /*
 ** @file screen.c
-** @ingroup librevm_api
+** @ingroup api
 */
 /*
 ** Started on  Fri Nov  2 15:21:56 2001 jfv

@@ -1,6 +1,6 @@
 /**
 ** @file flow.c
-** @ingroup libstderesi
+** @ingroup analysis
 ** @brief Various commands related to flow analysis
 **
 ** $Id$

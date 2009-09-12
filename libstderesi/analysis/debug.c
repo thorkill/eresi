@@ -1,6 +1,6 @@
 /*
 ** @file debug.c
-** @ingroup libstderesi
+** @ingroup analysis
 ** @brief All functions dealing with libedfmt uni debugging format
 **
 ** Started on Fev 25 2007 mxatone

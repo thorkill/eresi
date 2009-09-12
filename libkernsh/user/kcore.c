@@ -1,6 +1,6 @@
-/*
+/**
 ** @file kcore.c
-** @ingroup libkernsh_user
+** @ingroup usermode
 **
 */
 #define _LARGEFILE64_SOURCE

@@ -1,6 +1,6 @@
 /*
 ** @file dump.c
-** @ingroup libkernsh_common
+** @ingroup common
 **
 */
 

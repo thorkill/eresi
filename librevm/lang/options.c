@@ -1,6 +1,6 @@
 /**
  * @file librevm/options.c
- * @ingroup librevm_lang
+ * @ingroup lang
  * @brief Implement the commands registration handlers.
  *
  * Started on  Fri Nov  2 15:17:02 2001 jfv
@@ -13,7 +13,7 @@
 
 /**
  * Read the input file parameter
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getoption(u_int index, u_int argc, char **argv)
 {
@@ -29,7 +29,7 @@ int		revm_getoption(u_int index, u_int argc, char **argv)
 
 /**
  * Read the input file parameter
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getinput(u_int index, u_int argc, char **argv)
 {
@@ -45,7 +45,7 @@ int		revm_getinput(u_int index, u_int argc, char **argv)
 
 /**
  * Read the output file parameter
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getoutput(u_int index, u_int argc, char **argv)
 {
@@ -61,7 +61,7 @@ int		revm_getoutput(u_int index, u_int argc, char **argv)
 
 /**
  * Activate a 2-non-regx-mandatory-parameters option
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getoption2(u_int index, u_int argc, char **argv)
 {
@@ -79,7 +79,7 @@ int		revm_getoption2(u_int index, u_int argc, char **argv)
 
 /**
  * Activate a 2-non-regx-mandatory-parameters option
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getoption3(u_int index, u_int argc, char **argv)
 {
@@ -98,7 +98,7 @@ int		revm_getoption3(u_int index, u_int argc, char **argv)
 
 /**
  * Activate a non-mandatory-regex-parameter option
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getregxoption(u_int index, u_int argc, char **argv)
 {
@@ -120,7 +120,7 @@ int		revm_getregxoption(u_int index, u_int argc, char **argv)
 
 /**
  * Fetch parameters until we find NULL or something starting by '-'
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getvarparams(u_int index, u_int argc, char **argv)
 {
@@ -146,7 +146,7 @@ int		revm_getvarparams(u_int index, u_int argc, char **argv)
 
 /**
  * Format the input of a loop
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getforparams(u_int index, u_int argc, char **argv)
 {
@@ -189,7 +189,7 @@ int		revm_getforparams(u_int index, u_int argc, char **argv)
 
 /**
  * Format the input of a case command
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getcaseparams(u_int index, u_int argc, char **argv)
 {
@@ -237,7 +237,7 @@ int		revm_getcaseparams(u_int index, u_int argc, char **argv)
 
 /**
  * Format the input of a match/rewrite command
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 {
@@ -255,7 +255,7 @@ int		revm_getmatchparams(u_int index, u_int argc, char **argv)
 
 /**
  * Add an entry to the requested dump list
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
 {
@@ -308,7 +308,7 @@ static int      revm_add2list(char outtype, u_int index, int argc, char **argv)
 
 /**
  * Add an DISASM typed entry
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_getdisasm(u_int index, u_int argc, char **argv)
 {
@@ -319,7 +319,7 @@ int		revm_getdisasm(u_int index, u_int argc, char **argv)
 
 /**
  * Add an HEXA typed entry
- * @ingroup librevm_lang
+ * @ingroup lang
  */
 int		revm_gethexa(u_int index, u_int argc, char **argv)
 {

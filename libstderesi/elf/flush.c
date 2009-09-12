@@ -1,5 +1,9 @@
 /**
 ** @file flush.c
+** @ingroup elf
+*/
+/**
+ *
 **
 ** @brief Flush the binary of any injected section 
 ** Restore the original PLT

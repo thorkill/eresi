@@ -1,5 +1,9 @@
 /**
- * @file rel.c
+** @file rel.c
+** @ingroup elf
+*/
+/**
+ *
  *
  * Started on  Fri Nov  2 15:19:19 2001 jfv
  *

@@ -1,4 +1,8 @@
 /**
+ * @defgroup a-operands ARM operands API.
+ * @ingroup arm
+ */
+/**
 ** @file asm_arm_op_name.c
 ** @ingroup a-operands
 */

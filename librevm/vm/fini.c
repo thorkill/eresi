@@ -1,6 +1,6 @@
-/*
+/**
  * @file fini.c
- * @ingroup librevm_vm
+ * @ingroup vm
  * @brief Routines executed when leaving script mode.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv

@@ -1,9 +1,14 @@
 /**
- * $Id$
- *
- * fix and fill                                                                                                                                  
+ * @defgroup m-instrs MIPS instructions disassembler.
+ * @ingroup mips
+ */
+/**
+ * @file libasm-mips-structs.h
+ * @ingroup mips
+ * fix and fill
  *          - Adam 'pi3' Zabrocki
  *
+ * $Id$
  */
 #ifndef LIBASM_MIPS_STRUCTS_H
 #define LIBASM_MIPS_STRUCTS_H
