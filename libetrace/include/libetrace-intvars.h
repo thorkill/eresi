@@ -1,3 +1,7 @@
+/**
+ * @file libetrace/include/libetrace-intvars.h
+ * @ingroup libetrace
+ */
 #ifndef __LIBETRACE_VARS_H_
 #define __LIBETRACE_VARS_H_
 

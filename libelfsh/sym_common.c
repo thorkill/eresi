@@ -525,13 +525,12 @@ int		elfsh_endianize_symtab(elfshsect_t *tab)
 }
 
 /**
- * If submited function point into the plt, we return the file
- * and its virtual address to point to remote function
+ * @brief Return the file and ivirtual address of looked up imported function.
  * @param filein base file pointer
  * @param vaddrin base virtual address
  * @param fileout returned file pointer
  * @param vaddrout returned virtual address
- * @return
+ * @return Success (0) or Error (-1).
  */
 int			elfsh_resolv_remote_function(elfshobj_t *filein, eresi_Addr vaddrin,
 						     elfshobj_t **fileout, eresi_Addr *vaddrout)

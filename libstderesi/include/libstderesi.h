@@ -220,6 +220,7 @@
 #define CMD_UNSTRIP		"unstrip"
 #define CMD_RENAME		"rename"
 #define	CMD_CONTROL		"control"
+#define	CMD_ARGCOUNT		"argcount"
 #define CMD_ANALYSE		"analyse"
 #define	CMD_ASTRIP		"astrip"
 
@@ -452,6 +453,7 @@ int		cmd_analyse();
 int		cmd_unstrip();
 int 		cmd_rename();
 int		cmd_control();
+int		cmd_argcount();
 int		cmd_astrip();
 
 /* Workspaces commands */

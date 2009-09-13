@@ -335,6 +335,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_RENAME	  , cmd_rename        , revm_getoption2,  1, HLP_RENAME);  
   revm_command_add(CMD_ASTRIP	 , cmd_astrip        , NULL,              1, HLP_ASTRIP);             
   revm_command_add(CMD_CONTROL   , cmd_control       , NULL,              1, HLP_CONTROL);
+  revm_command_add(CMD_ARGCOUNT  , cmd_argcount      , revm_getoption,    1, HLP_ARGCOUNT);
 
   /* Setup all used sub functions */
   traces_addcmd("add"      , (void *) traces_add      , 2, 1);

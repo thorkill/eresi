@@ -7,7 +7,7 @@
 include ../../config.h
 
 SRC			= flow.c graph.c debug.c fcthijack.c flowjack.c hammer.c  \
-			inspect.c match.c trace.c
+			inspect.c match.c trace.c argcount.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

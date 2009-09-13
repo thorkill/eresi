@@ -163,6 +163,7 @@
 #define	HLP_FLOWTEST		"Test command for graph analysis features"
 #define	HLP_ANALYSE		"Perform libmjollnir analysis"
 #define	HLP_CONTROL		"Print stored control flow information"
+#define	HLP_ARGCOUNT		"Count local variables in a function"
 #define HLP_UNSTRIP		"Unstrip the current working binary"
 #define HLP_RENAME		"Symbol rename: rename <old_symbol> <new_symol>"
 #define	HLP_ASTRIP		"Remove stored sections of control flow analysis results"

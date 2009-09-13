@@ -1,10 +1,10 @@
-/*
-** elfsh-help.h for elfsh
-** 
+/**
+** @file elfsh-help.h
+** @ingroup libelfsh
+** @brief Help strings for elfsh specific commands.
+**
 ** Started on  Thu Aug 15 07:19:04 2005 jfv
-**
 ** $Id$
-**
 */
 #ifndef __ELFSH_HELP_H_
  #define __ELFSH_HELP_H_
