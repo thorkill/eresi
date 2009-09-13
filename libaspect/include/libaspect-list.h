@@ -1,5 +1,5 @@
 /*
-** @file libaspect-list.h
+* @file libaspect/include/libaspect-list.h
 **
 ** @brief Prototypes of API for ERESI lists
 **

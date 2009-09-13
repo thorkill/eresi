@@ -1,5 +1,5 @@
 /**
- * @file libhash.c
+* @file libaspect/libhash.c
  * @ingroup libaspect
  * 
  * @brief Contain ELFsh internal hashtables library calls.

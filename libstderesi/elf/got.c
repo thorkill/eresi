@@ -1,5 +1,5 @@
 /**
-** @file got.c
+* @file libstderesi/elf/got.c
 ** @ingroup elf
 */
 /**

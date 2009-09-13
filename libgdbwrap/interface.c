@@ -3,7 +3,7 @@
  * @ingroup kedbg
  */
 /**
- * @file libgdbwrap/interface.c
+* @file libgdbwrap/interface.c
  * @brief Implements initial connection to the GDB server.
  * @ingroup libgdbwrap
  *

@@ -1,5 +1,5 @@
 /**
- * @file fini.c
+* @file librevm/vm/fini.c
  * @ingroup vm
  * @brief Routines executed when leaving script mode.
  *

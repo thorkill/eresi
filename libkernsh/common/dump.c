@@ -1,5 +1,5 @@
 /*
-** @file dump.c
+* @file libkernsh/common/dump.c
 ** @ingroup common
 **
 */

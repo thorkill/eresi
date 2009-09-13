@@ -1,5 +1,5 @@
 /*
-** @file misc.c
+* @file kernsh/misc.c
 ** @ingroup kernsh
 */
 #include "kernsh.h"

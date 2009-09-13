@@ -1,9 +1,9 @@
 /**
-** @file alloc-proxy.c
+* @file libe2dbg/user/alloc-proxy.c
 ** @ingroup user
 */
 /**
- * @file alloc-proxy.c
+* @file libe2dbg/user/alloc-proxy.c
  * Allocator wrapper for the Embedded ELF Debugger
  * 
  * Select the allocator depending on the thread ID of the caller

@@ -1,5 +1,5 @@
 /*
-** @file func_search.c
+* @file libetrace/func_search.c
 **
 ** Libetrace header file in the ERESI project
 **

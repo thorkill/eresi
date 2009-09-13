@@ -1,5 +1,5 @@
 /**
- * @file func_disable.c
+* @file libetrace/func_disable.c
 ** @ingroup libetrace
 ** 
 ** @brief trace table disable functions.

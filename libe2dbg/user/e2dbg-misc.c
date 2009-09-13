@@ -1,9 +1,9 @@
 /**
-** @file e2dbg-misc.c
+* @file libe2dbg/user/e2dbg-misc.c
 ** @ingroup user
 */
 /**
- * @file e2dbg-misc.c
+* @file libe2dbg/user/e2dbg-misc.c
  *
  * Misc routines for the debugger
  * 

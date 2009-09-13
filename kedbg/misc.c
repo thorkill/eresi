@@ -1,5 +1,5 @@
 /*
-** @file kedbg/misc.c
+* @file kedbg/misc.c
 ** @ingroup kedbg
 ** @brief Internal API for KEDBG.
 **

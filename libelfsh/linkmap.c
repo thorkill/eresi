@@ -1,5 +1,5 @@
 /**
- * @file linkmap.c
+* @file libelfsh/linkmap.c
  * @ingroup libelfsh
 ** linkmap.c for libelfsh
 ** 

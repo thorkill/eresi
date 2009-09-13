@@ -1,5 +1,5 @@
 /**
-** @file liblist.c
+* @file libaspect/liblist.c
 ** @ingroup libaspect
 ** 
 ** @brief Contain ELFsh internal lists related API.

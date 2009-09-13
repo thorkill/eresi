@@ -1,5 +1,5 @@
 /**
- * @file operand.c
+* @file libasm/src/operand.c
  * @ingroup libasm
  * @brief Contains arch-independent generic operand manipulation functions.
  * 

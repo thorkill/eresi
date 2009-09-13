@@ -3,7 +3,7 @@
  * @ingroup libasm
  */
 /**
- * @file libasm/include/libasm-i386.h
+* @file libasm/include/libasm-i386.h
  * @ingroup ia32
  * @brief Contains structures,prototypes and defines/enum related to ia32.
  * $Id$

@@ -1,5 +1,5 @@
 /*
-** @file hashes.c
+* @file libstderesi/type/hashes.c
 ** @ingroup type
 ** @brief Pretty printing for elfsh hash tables.
 **

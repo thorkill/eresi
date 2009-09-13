@@ -1,5 +1,5 @@
 /**
-** @file libe2dbg/common/stack.c
+* @file libe2dbg/common/stack.c
 ** @ingroup common
 ** @brief Implement commands and API for reading the stack.
 **    

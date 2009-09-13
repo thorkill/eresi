@@ -1,5 +1,5 @@
 /*
-** @file containers.c
+* @file libaspect/containers.c
 ** @ingroup libaspect
 ** 
 ** @brief Implement generic routines for containers.

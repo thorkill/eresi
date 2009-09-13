@@ -25,7 +25,7 @@
 #endif
 
 /*
-  @file aproxy.h
+* @file libaspect/include/aproxy.h
   $Id$
   @brief `ptmalloc2', a malloc implementation for multiple threads without
   lock contention, by Wolfram Gloger <wg@malloc.de>.

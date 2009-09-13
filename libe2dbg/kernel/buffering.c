@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/buffering.c
+* @file libe2dbg/kernel/buffering.c
  *
  *
  */

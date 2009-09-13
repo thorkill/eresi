@@ -1,5 +1,5 @@
 /**
-** @file tables_arm.c
+* @file libasm/src/arch/arm/tables_arm.c
 ** @ingroup arm
 */
 #include <libasm.h>

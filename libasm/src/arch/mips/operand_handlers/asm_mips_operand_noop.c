@@ -1,5 +1,5 @@
 /**
-** @file asm_mips_operand_noop.c
+* @file libasm/src/arch/mips/operand_handlers/asm_mips_operand_noop.c
 ** @ingroup MIPS_operands
 */
 /*

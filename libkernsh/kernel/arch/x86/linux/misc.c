@@ -3,7 +3,7 @@
  * @ingroup libkernsh
  */
 /**
-** @file misc.c
+* @file libkernsh/kernel/arch/x86/linux/misc.c
 ** @ingroup kernelmode
 **
 */

@@ -1,5 +1,5 @@
 /**
- * @file libmjollnir-int.h
+* @file libmjollnir/include/libmjollnir-int.h
  * @ingroup libmjollnir
  * @{
  * (C) 2006-2008 Asgard Labs, thorolf

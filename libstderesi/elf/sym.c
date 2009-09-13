@@ -1,5 +1,5 @@
 /**
-** @file sym.c
+* @file libstderesi/elf/sym.c
 ** @ingroup elf
 */
 /**

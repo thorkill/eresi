@@ -1,5 +1,5 @@
 /**
- * @file save.c
+* @file libetrace/save.c
 ** @ingroup libetrace
 **
 ** @brief This file contain trace save function.

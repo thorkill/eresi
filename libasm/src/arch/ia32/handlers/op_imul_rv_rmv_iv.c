@@ -1,5 +1,5 @@
 /**
- * @file op_imul_rv_rmv_iv.c
+* @file libasm/src/arch/ia32/handlers/op_imul_rv_rmv_iv.c
  * @brief Handler for instruction op_imul_rv_rmv_iv opcode 0x69
  *
  * @ingroup IA32_instrs

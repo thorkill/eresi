@@ -1,5 +1,5 @@
 /**
- * @file etrace/main.c
+* @file etrace/main.c
  * @ingroup etrace
  * Updated on  Wed Jan 03 17:51:04 2007 mxatone
  *

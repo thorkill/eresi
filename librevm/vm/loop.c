@@ -1,5 +1,5 @@
 /**
- * @file loop.c
+* @file librevm/vm/loop.c
  * @ingroup vm
  * @brief This file include the control flow support for scripting.
  *

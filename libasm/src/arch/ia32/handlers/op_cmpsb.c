@@ -1,5 +1,5 @@
 /**
- * @file op_cmpsb.c
+* @file libasm/src/arch/ia32/handlers/op_cmpsb.c
  * @brief Handler for instruction cmpsb opcode 0xa6
  *
  * @ingroup IA32_instrs

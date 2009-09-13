@@ -1,5 +1,5 @@
 /**
- * @file dynamic.c
+* @file libelfsh/dynamic.c
  * @ingroup libelfsh
 ** dynamic.c for libelfsh
 ** 

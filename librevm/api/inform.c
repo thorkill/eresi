@@ -1,5 +1,5 @@
 /*
-** @file inform.c
+* @file librevm/api/inform.c
 ** @ingroup api
 ** @brief API for annotating program objects.
 **

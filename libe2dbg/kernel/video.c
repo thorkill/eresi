@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/video.c
+* @file libe2dbg/kernel/video.c
  *
  */
 #include "ke2dbg.h"

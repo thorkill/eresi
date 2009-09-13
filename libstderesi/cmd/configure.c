@@ -1,5 +1,5 @@
 /**
- * @file configure.c
+* @file libstderesi/cmd/configure.c
  * @ingroup cmd
  * @brief ELFsh/vm configure related code
  * 2006 thorkill, Asgard Labs Inc.

@@ -1,5 +1,5 @@
 /**
- * @file sparc32.c
+* @file libelfsh/sparc32.c
  * @ingroup libelfsh
  * sparc32.c for libelfsh
  * 

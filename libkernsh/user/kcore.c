@@ -1,5 +1,5 @@
 /**
-** @file kcore.c
+* @file libkernsh/user/kcore.c
 ** @ingroup usermode
 **
 */

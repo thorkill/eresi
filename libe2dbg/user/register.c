@@ -1,5 +1,5 @@
 /**
-** @file register.c
+* @file libe2dbg/user/register.c
 ** @ingroup user
 */
 #include "libe2dbg.h"

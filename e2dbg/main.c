@@ -2,7 +2,7 @@
  * @defgroup e2dbg e2dbg: The Embedded ERESI debugger.
  */
 /**
- * @file e2dbg/main.c
+* @file e2dbg/main.c
  * @ingroup e2dbg
  * @brief Implement E2DBG client side entry points.
  *

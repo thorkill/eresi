@@ -1,5 +1,5 @@
 /**
- * @file comment.c
+* @file libelfsh/comment.c
  * @ingroup libelfsh
 ** comment.c for elfsh in 
 ** 

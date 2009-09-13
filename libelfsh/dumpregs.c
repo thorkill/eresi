@@ -1,5 +1,5 @@
 /**
- * @file dumpregs.c
+* @file libelfsh/dumpregs.c
  * @ingroup libelfsh
 ** dumpregs.c for elfsh
 ** 

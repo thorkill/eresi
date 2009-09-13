@@ -1,5 +1,5 @@
 /**
-** @file disasm.c
+* @file libstderesi/elf/disasm.c
 ** @ingroup elf
 */
 /**

@@ -3,7 +3,7 @@
 ** @ingroup librevm
 */
 /**
-** @file tables.c
+* @file librevm/vm/tables.c
 ** @ingroup vm
 ** @brief This file contains all command and objects definitions for scripting.
 **

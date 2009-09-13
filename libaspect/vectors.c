@@ -3,7 +3,7 @@
  * @ingroup ERESI
  */
 /**
-** @file libaspect/vectors.c
+* @file libaspect/vectors.c
 ** @ingroup libaspect
 ** @brief Implement the modularity for the framework.
 **

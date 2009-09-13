@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/pci.c
+* @file libe2dbg/kernel/pci.c
  */
 #include "ke2dbg.h"
 #include "ke2dbg-pci.h" 

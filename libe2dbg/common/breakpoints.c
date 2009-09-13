@@ -1,5 +1,5 @@
 /**
-** @file breakpoints.c
+* @file libe2dbg/common/breakpoints.c
 ** @ingroup common
 **    
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem                                                                                                                   

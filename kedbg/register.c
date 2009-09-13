@@ -1,5 +1,5 @@
 /*
-** @file kedbg/register.c
+* @file kedbg/register.c
 ** @ingroup kedbg
 ** @brief Implement registration of vector handlers
 **

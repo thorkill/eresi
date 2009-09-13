@@ -1,5 +1,5 @@
 /*
-** @file libelfsh.h
+* @file libelfsh/include/libelfsh.h
 **
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
 **

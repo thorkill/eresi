@@ -1,5 +1,5 @@
 /**
-** @file asm_mips_dmultu.c
+* @file libasm/src/arch/mips/handlers/asm_mips_dmultu.c
 ** @ingroup MIPS_instrs
 */
 /* Adam 'pi3' Zabrocki */

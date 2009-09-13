@@ -1,5 +1,5 @@
 /**
- * @file etrace/include/etrace-help.h
+* @file etrace/include/etrace-help.h
  * @ingroup etrace
  * etrace-help.h for etrace
  *

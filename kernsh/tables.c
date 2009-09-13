@@ -1,5 +1,5 @@
 /*
-** @file tables.c
+* @file kernsh/tables.c
 ** @ingroup kernsh
 **
 */

@@ -1,5 +1,5 @@
 /**
- * @file libasm-structs.h
+* @file libasm/include/libasm-structs.h
  * 
  * Started on  Tue Jun 14 05:00:05 2005 Sebastien Roy
  * $Id$

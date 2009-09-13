@@ -1,5 +1,5 @@
 /**
-** @file vectors.c
+* @file libaspect/init.c
 ** @ingroup libaspect
 **
 ** @brief Implement the modularity for the framework.

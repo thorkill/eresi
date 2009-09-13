@@ -1,5 +1,5 @@
 /**
- * @file altplt.c
+* @file libelfsh/altplt.c
  * @ingroup libelfsh
 ** altplt.c for libelfsh
 ** 

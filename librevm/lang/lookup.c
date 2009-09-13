@@ -1,5 +1,5 @@
 /**
- * @file lookup.c
+* @file librevm/lang/lookup.c
  * @ingroup lang
  * @brief Various object lookup functions built in the language.
  *

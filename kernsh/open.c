@@ -1,5 +1,5 @@
 /*
-** @file open.c
+* @file kernsh/open.c
 ** @ingroup kernsh
 ** $Id$
 **

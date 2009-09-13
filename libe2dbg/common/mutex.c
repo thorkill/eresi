@@ -1,5 +1,5 @@
 /**
-** @file libe2dbg/common/mutex.c
+* @file libe2dbg/common/mutex.c
 ** @brief Implement debugger mutexes inside signal handlers (no pthread mutexes)
 ** @ingroup common 
 **

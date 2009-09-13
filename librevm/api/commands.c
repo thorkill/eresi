@@ -1,5 +1,5 @@
 /*
-** @file cmdapi.c
+* @file librevm/api/commands.c
 ** @ingroup api
 ** @brief Commands functions.
 ** Started on  Mon Feb 24 15:52:06 2003 jfv

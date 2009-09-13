@@ -1,5 +1,5 @@
 /**
- * @file map.c
+* @file libelfsh/map.c
  * @ingroup libelfsh
 ** map.c for libelfsh
 ** 

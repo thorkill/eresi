@@ -1,5 +1,5 @@
 /*
-** @file trace_flush.c
+* @file libetrace/trace_flush.c
 **
 ** Libetrace code for the ERESI project.
 **

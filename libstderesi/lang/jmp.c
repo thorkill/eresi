@@ -1,5 +1,5 @@
 /*
-** @file jmp.c
+* @file libstderesi/lang/jmp.c
 ** @ingroup lang 
 ** Made by jfv
 ** Login   <jfv@devhell.org>

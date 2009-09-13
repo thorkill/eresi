@@ -1,5 +1,5 @@
 /**
-** @file libedfmt/dwarf2-trans.c
+* @file libedfmt/dwarf2-trans.c
 ** @ingroup libedfmt
 ** @brief Translation from DWARF2 to EDFMT format.
 **
@@ -11,7 +11,7 @@
 
 /**
  * This file implements DWARF2 transformation 
- * @file dwarf2-trans.c
+* @file libedfmt/dwarf2-trans.c
  */
 
 #define DWARF2_HNAME_TRANS_TREF "dwarf2_trans_typeref"

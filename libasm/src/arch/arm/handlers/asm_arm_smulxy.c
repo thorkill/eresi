@@ -1,5 +1,5 @@
 /**
-** @file asm_arm_smulxy.c
+* @file libasm/src/arch/arm/handlers/asm_arm_smulxy.c
 ** @ingroup ARM_instrs
 */
 #include "libasm.h"

@@ -1,5 +1,5 @@
 /*
-** @file screen.c
+* @file librevm/api/screen.c
 ** @ingroup api
 */
 /*

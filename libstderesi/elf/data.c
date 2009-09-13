@@ -1,5 +1,5 @@
 /**
-** @file data.c
+* @file libstderesi/elf/data.c
 ** @ingroup elf
 */
 /**

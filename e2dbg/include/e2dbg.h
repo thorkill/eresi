@@ -1,5 +1,5 @@
 /**
- * @file e2dbg.h
+* @file e2dbg/include/e2dbg.h
  * 
  * Started on  Thu Feb 22 07:19:04 2001 jfv
  *

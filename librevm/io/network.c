@@ -1,5 +1,5 @@
 /**
- * @file network.c
+* @file librevm/io/network.c
  * @ingroup io
  * @brief The high-level network interface.
  *

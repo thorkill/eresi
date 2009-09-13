@@ -1,5 +1,5 @@
 /**
- * @file op_sbb_al_ib.c
+* @file libasm/src/arch/ia32/handlers/op_sbb_al_ib.c
  *
  * @ingroup IA32_instrs
 ** $Id$

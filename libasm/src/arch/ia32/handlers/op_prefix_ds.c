@@ -1,5 +1,5 @@
 /**
- * @file op_prefix_ds.c
+* @file libasm/src/arch/ia32/handlers/op_prefix_ds.c
  *
  * @ingroup IA32_instrs
  * $Id$

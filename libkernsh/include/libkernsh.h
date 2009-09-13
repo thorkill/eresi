@@ -3,7 +3,7 @@
  * @ingroup kernsh
  */
 /**
-** @file libkernsh.h
+* @file libkernsh/include/libkernsh.h
 ** @ingroup libkernsh
 **
 */

@@ -1,5 +1,5 @@
 /**
- * @file libke2dbg/kernel/page.c
+* @file libe2dbg/kernel/page.c
  */
 #include "ke2dbg.h"
 

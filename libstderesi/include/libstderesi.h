@@ -1,5 +1,5 @@
 /**
-** @file libstderesi.h
+* @file libstderesi/include/libstderesi.h
 ** @ingroup libstderesi
 ** 
 ** Started on Thu Feb 22 07:19:04 2001 jfv

@@ -1,5 +1,5 @@
 /**
- * @file check.c
+* @file libetrace/check.c
 ** @ingroup libetrace
 ** 
 ** @brief check functions, valid faddr or is tracable.

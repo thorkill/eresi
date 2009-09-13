@@ -1,5 +1,5 @@
 /**
- * @file op_xchg_rmb_rb.c
+* @file libasm/src/arch/ia32/handlers/op_xchg_rmb_rb.c
  * @brief Handler for instruction xchg rmb,rb opcode 0x86
  *
  * @ingroup IA32_instrs

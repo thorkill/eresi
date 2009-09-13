@@ -1,6 +1,6 @@
 /**
  *
- * @file instruction.c
+* @file libasm/src/instruction.c
  * @ingroup libasm 
  * Author  : <kahmm@altdev.net>
  * Started : Mon Mar 15 13:58:52 2004

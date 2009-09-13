@@ -1,5 +1,5 @@
 /**
-* @file types.c
+* @file libstderesi/type/types.c
 * @ingroup type
 * Be able to add your own types in runtime
 *

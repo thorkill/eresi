@@ -1,5 +1,5 @@
 /**
- * @file op_lahf.c
+* @file libasm/src/arch/ia32/handlers/op_lahf.c
  *
  * @ingroup IA32_instrs
  * $Id$

@@ -1,5 +1,5 @@
 /**
-** @file libe2dbg/common/linkmap.c
+* @file libe2dbg/common/linkmap.c
 ** @ingroup common
 ** @brief Command and API for accessing the LINKMAP linked list.
 **

@@ -1,5 +1,5 @@
 /**
- * @file output.c
+* @file librevm/io/output.c
  * @ingroup io
  * @brief The output vector interface.
  *

@@ -1,5 +1,5 @@
 /**
- * @file i386_btrl.c
+* @file libasm/src/arch/ia32/handlers/i386_btrl.c
  *
  * @ingroup IA32_instrs
  * $Id$

@@ -2,7 +2,7 @@
  * @defgroup evarista evarista: a binary program transformer.
  */
 /**
- * @file evarista/include/evarista.h
+* @file evarista/include/evarista.h
  * @ingroup evarista
  * @brief The evarista header file. 
  *

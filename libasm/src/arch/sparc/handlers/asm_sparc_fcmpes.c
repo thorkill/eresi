@@ -1,5 +1,5 @@
 /**
-** @file asm_sparc_fcmpes.c
+* @file libasm/src/arch/sparc/handlers/asm_sparc_fcmpes.c
 ** @ingroup SPARC_instrs
 */
 /*

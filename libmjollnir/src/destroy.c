@@ -1,7 +1,7 @@
 /**
  * (C) 2006-2008 The ERESI team
  *
- * @file destroy.c
+* @file libmjollnir/src/destroy.c
  * @ingroup libmjollnir
  * @brief Cleaning API for removing previously saved analysis.
  */

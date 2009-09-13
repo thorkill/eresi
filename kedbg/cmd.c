@@ -1,6 +1,6 @@
 /**
  * @ingroup kedbg
- * @file kedbg/cmd.c
+* @file kedbg/cmd.c
  */
 
 #include "kedbg.h"

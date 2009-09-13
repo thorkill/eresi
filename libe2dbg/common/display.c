@@ -1,5 +1,5 @@
 /**
-** @file libe2dbg/common/display.c
+* @file libe2dbg/common/display.c
 ** @ingroup common
 ** @brief Command and API for the display-on-breakpoint feature.
 **    

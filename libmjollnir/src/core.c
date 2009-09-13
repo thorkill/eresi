@@ -1,5 +1,5 @@
 /**
- * @file core.c
+* @file libmjollnir/src/core.c
  * @ingroup libmjollnir
  * @brief Implement low-level functions of the libmjollnir library
  *

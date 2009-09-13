@@ -1,5 +1,5 @@
 /**
-** @file asm_sparc_op_fetch_displacement.c
+* @file libasm/src/arch/sparc/operand_handlers/asm_sparc_op_fetch_displacement.c
 ** @ingroup SPARC_operands
 */
 #include <libasm.h>

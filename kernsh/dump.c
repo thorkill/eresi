@@ -1,5 +1,5 @@
 /*
-** @file dump.c
+* @file kernsh/dump.c
 ** @ingroup kernsh
 **
 */

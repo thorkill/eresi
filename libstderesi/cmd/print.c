@@ -1,5 +1,5 @@
 /**
-** @file quit.c
+* @file libstderesi/cmd/print.c
 ** @ingroup cmd
 ** Started on  Sat Jan 25 11:19:53 2003 jfv
 ** 

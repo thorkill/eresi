@@ -1,5 +1,5 @@
 /**
- * @file error.c
+* @file libasm/src/error.c
  * @ingroup libasm
 ** 
 ** $Id$

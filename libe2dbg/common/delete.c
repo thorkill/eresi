@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/common/delete.c
+* @file libe2dbg/common/delete.c
  * @brief Command and API for breakpoint deletion
  * @ingroup common
  *

@@ -1,5 +1,5 @@
 /**
-** @file asm_mips_bnel.c
+* @file libasm/src/arch/mips/handlers/asm_mips_bnel.c
 ** @ingroup MIPS_instrs
 */
 /* Adam 'pi3' Zabrocki */

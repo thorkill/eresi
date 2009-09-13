@@ -2,7 +2,7 @@
  * @defgroup libasm libasm: the disassembling library.
  */
 /**
- * @file libasm/include/libasm.h
+* @file libasm/include/libasm.h
  * @ingroup libasm
  * 
  * Author  : <sk at devhell dot org>

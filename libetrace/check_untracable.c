@@ -1,5 +1,5 @@
 /**
- * @file check_func.c
+* @file libetrace/check_untracable.c
 ** @ingroup libetrace
 ** 
 ** @brief All functions that help check, remote untracable content.

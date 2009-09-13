@@ -1,5 +1,5 @@
 /**
- * @file op_sub_rmv_rv.c
+* @file libasm/src/arch/ia32/handlers/op_sub_rmv_rv.c
  *
  * @ingroup IA32_instrs
 ** $Id$

@@ -1,5 +1,5 @@
 /**
- * @file reginfo.c
+* @file libelfsh/reginfo.c
  * @ingroup libelfsh
 ** reginfo.c for libelfsh
 ** 

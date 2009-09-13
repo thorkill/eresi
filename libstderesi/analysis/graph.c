@@ -1,5 +1,5 @@
 /*
-** @file graph.c
+* @file libstderesi/analysis/graph.c
 ** @ingroup analysis
 ** @brief Dump graphviz output of call graph and control flow graph.
 **

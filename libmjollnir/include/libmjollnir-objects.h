@@ -1,5 +1,5 @@
 /** 
- * @file libmjollnir-objects.h
+* @file libmjollnir/include/libmjollnir-objects.h
  * @ingroup libmjollnir
  * @{
  * 2001-2007 Devhell Labs, Asgardlabs

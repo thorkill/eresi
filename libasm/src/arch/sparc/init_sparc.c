@@ -1,5 +1,5 @@
 /**
-** @file init_sparc.c
+* @file libasm/src/arch/sparc/init_sparc.c
 ** @ingroup sparc
 */
 /*

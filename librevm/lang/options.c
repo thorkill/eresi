@@ -1,5 +1,5 @@
 /**
- * @file librevm/options.c
+* @file librevm/lang/options.c
  * @ingroup lang
  * @brief Implement the commands registration handlers.
  *

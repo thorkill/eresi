@@ -1,5 +1,5 @@
 /**
- * @file copy.c
+* @file libelfsh/copy.c
  * @ingroup libelfsh
 ** copy.c for elfsh
 ** 

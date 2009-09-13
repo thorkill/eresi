@@ -1,9 +1,9 @@
 /**
-** @file tables_mips.c
+* @file libasm/src/arch/mips/tables_mips.c
 ** @ingroup mips
 */
 /**
- * @file tables_mips.c
+* @file libasm/src/arch/mips/tables_mips.c
  * @brief MIPS processor mnemonic table.
  * $Id$
  *

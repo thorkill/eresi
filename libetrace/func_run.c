@@ -1,5 +1,5 @@
 /*
-** @file func_run.c
+* @file libetrace/func_run.c
 **
 ** Libetrace implementation in the ERESI project.
 **

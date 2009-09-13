@@ -1,6 +1,6 @@
 /**
  * $Id$
- * @file register.c
+* @file libasm/src/register.c
  * @ingroup libasm
  * @brief Registration of instruction and operand handlers.
  */

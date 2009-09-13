@@ -1,5 +1,5 @@
 /**
- * @file op_test_rmb_rb.c
+* @file libasm/src/arch/ia32/handlers/op_test_rmb_rb.c
  *
  * @ingroup IA32_instrs
 ** $Id$

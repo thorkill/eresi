@@ -1,5 +1,5 @@
 /**
-** @file mem.c
+* @file libkernsh/user/mem.c
 ** @ingroup usermode
 **
 */

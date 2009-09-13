@@ -1,5 +1,5 @@
 /**
- * @file op_xchg_rmv_rv.c
+* @file libasm/src/arch/ia32/handlers/op_xchg_rmv_rv.c
  * @brief Handler for instruction xchg rmv,rv opcode 0x87
  *
  * @ingroup IA32_instrs

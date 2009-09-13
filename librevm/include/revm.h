@@ -2,7 +2,7 @@
  * @defgroup ERESI The ERESI runtime environment
  */
 /**
-** @file revm.h
+* @file librevm/include/revm.h
 ** @ingroup librevm
 **
 ** Started on  Thu Feb 22 07:19:04 2001 jfv

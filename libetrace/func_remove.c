@@ -1,5 +1,5 @@
 /**
- * @file func_remove.c
+* @file libetrace/func_remove.c
 ** @ingroup libetrace
 ** 
 ** @brief trace table remove functions.

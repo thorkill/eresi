@@ -2,7 +2,7 @@
  * @defgroup elfsh elfsh: The ELF shell.
  */
 /**
- * @file elfsh/tables.c
+* @file elfsh/tables.c
  * @ingroup elfsh
  * @brief This file contains all command and objects definitions for scripting
  *

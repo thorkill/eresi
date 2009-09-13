@@ -1,5 +1,5 @@
 /**
-** @file virtm.c
+* @file libkernsh/kernel/arch/x86/linux/virtm.c
 ** @ingroup kernelmode
 **
 */

@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/kentry.c
+* @file libe2dbg/kernel/kentry.c
  */
 #include <linux/kernel.h>
 #include <linux/module.h>

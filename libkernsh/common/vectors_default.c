@@ -1,5 +1,5 @@
 /*
-** @file vectors_default.c
+* @file libkernsh/common/vectors_default.c
 ** @ingroup common
 **
 */

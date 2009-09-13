@@ -1,5 +1,5 @@
 /**
-** @file dwarf2-utils.c
+* @file libedfmt/dwarf2-utils.c
 ** @ingroup libedfmt
 ** Started Dec 26 2006 10:49:45 mxatone
 **

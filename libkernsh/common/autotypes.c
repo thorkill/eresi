@@ -1,5 +1,5 @@
 /*
-** @file autotypes.c
+* @file libkernsh/common/autotypes.c
 ** @ingroup common
 **
 */

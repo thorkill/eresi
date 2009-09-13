@@ -1,5 +1,5 @@
 /**
-** @file asm_sparc_op_fetch_disp30.c
+* @file libasm/src/arch/sparc/operand_handlers/asm_sparc_op_fetch_disp30.c
 ** @ingroup SPARC_operands
 */
 #include <libasm.h>

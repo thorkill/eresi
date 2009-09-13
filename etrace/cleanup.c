@@ -1,5 +1,5 @@
 /**
- * @file etrace/cleanup.c
+* @file etrace/cleanup.c
  * This command cleanup a file by marking as removed all injected sections
  *
  * Started on  Sat May 31 23:48:41 2005 mxatone

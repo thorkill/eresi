@@ -1,9 +1,9 @@
 /**
-** @file resolv.c
+* @file libe2dbg/user/resolv.c
 ** @ingroup user
 */
 /**
- * @file resolv.c
+* @file libe2dbg/user/resolv.c
  *
  * Contains the linkmap related resolving builtins in e2dbg
  *

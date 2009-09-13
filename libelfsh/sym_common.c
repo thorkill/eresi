@@ -1,5 +1,5 @@
 /**
- * @file sym_common.c
+* @file libelfsh/sym_common.c
  * @ingroup libelfsh
  * sym_common.c for elfsh
  * 

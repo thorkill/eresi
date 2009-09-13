@@ -1,5 +1,5 @@
 /**
- * @file control.c
+* @file libmjollnir/src/findentry.c
  * @ingroup libmjollnir
  *
  * Started : Thu May 29 20:44:39 2003 sk

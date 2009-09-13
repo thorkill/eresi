@@ -1,5 +1,5 @@
 /**
- * @file op_repnz.c
+* @file libasm/src/arch/ia32/handlers/op_repnz.c
  *
  * @ingroup IA32_instrs
 ** $Id$

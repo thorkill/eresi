@@ -1,5 +1,5 @@
 /**
-** @file ctors.c
+* @file libstderesi/elf/ctors.c
 ** @ingroup elf
 */
 /**

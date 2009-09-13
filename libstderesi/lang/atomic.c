@@ -1,5 +1,5 @@
 /**
- ** @file atomic.c
+* @file libstderesi/lang/atomic.c
  ** @ingroup lang
  ** @brief Implement arithmetic operations
  **

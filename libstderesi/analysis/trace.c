@@ -1,5 +1,5 @@
 /**
-* @file trace.c
+* @file libstderesi/analysis/trace.c
 * @ingroup analysis
 * @brief All functions that help to trace content
 *

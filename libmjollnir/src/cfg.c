@@ -1,5 +1,5 @@
 /** 
- * @file libmjollnir/types.c
+* @file libmjollnir/src/cfg.c
  * (C) 2006-2008 The ERESI team
  * @ingroup libmjollnir
  * 

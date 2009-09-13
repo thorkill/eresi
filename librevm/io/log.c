@@ -1,5 +1,5 @@
 /**
- * @file log.c
+* @file librevm/io/log.c
  * @ingroup io
  * @brief Implement logging facilities.
  *

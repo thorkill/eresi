@@ -1,5 +1,5 @@
 /**
- ** @file libaspect.h
+* @file libaspect/include/libaspect.h
  **
  ** @brief The header file for modular objects in the framework
  **

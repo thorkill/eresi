@@ -1,5 +1,5 @@
 /**
- * @file objects.c
+* @file librevm/lang/objects.c
  * @ingroup lang
  * @brief Methods for creation of objects.
  *

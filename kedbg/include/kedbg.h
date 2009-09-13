@@ -2,7 +2,7 @@
  * @defgroup kedbg kedbg: The ERESI kernel debugger.
  */
 /**
- * @file kedbg/include/kedbg.h
+* @file kedbg/include/kedbg.h
  * @brief The kernel ERESI debugger header file.
  * @ingroup kedbg
  */

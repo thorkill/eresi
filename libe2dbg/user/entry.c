@@ -3,7 +3,7 @@
  * @ingroup libe2dbg
  */
 /**
- * @file entry.c
+* @file libe2dbg/user/entry.c
  * @brief The debugger file for OS dependant entry points
  * @ingroup user
  * 

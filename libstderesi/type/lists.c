@@ -1,5 +1,5 @@
 /**
-** @file lists.c 
+* @file libstderesi/type/lists.c
 ** @ingroup type
 ** @brief Pretty printing for ERESI lists
 **

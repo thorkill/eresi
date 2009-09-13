@@ -1,5 +1,5 @@
 /**
- * @file op_out_dx_eax.c
+* @file libasm/src/arch/ia32/handlers/op_out_dx_eax.c
  *
  * @ingroup IA32_instrs
  *

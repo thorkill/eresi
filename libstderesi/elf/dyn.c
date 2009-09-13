@@ -1,5 +1,5 @@
 /**
-** @file dyn.c
+* @file libstderesi/elf/dyn.c
 ** @ingroup elf
 */
 /**

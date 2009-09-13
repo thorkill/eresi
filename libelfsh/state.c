@@ -1,5 +1,5 @@
 /**
- * @file state.c
+* @file libelfsh/state.c
  * @ingroup libelfsh 
  * @brief Provide initialization and debugger state related functions.
  *

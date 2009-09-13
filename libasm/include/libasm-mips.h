@@ -3,7 +3,7 @@
  * @ingroup libasm
  */
 /**
- * @file libasm/include/libasm-mips.h
+* @file libasm/include/libasm-mips.h
  * @ingroup mips
  *
  * - Sebastien Roy - 2006

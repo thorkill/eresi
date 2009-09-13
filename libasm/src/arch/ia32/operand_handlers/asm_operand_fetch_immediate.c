@@ -1,5 +1,5 @@
 /**
- * @file asm_operand_fetch_immediate.c
+* @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_immediate.c
  *
  * @ingroup IA32_operands
  * $Id$

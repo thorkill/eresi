@@ -1,5 +1,5 @@
 /*
-** @file help.c
+* @file librevm/api/helping.c
 ** @ingroup api
 ** @brief The help command. 
 ** Started on  Sat Jan 25 11:19:18 2003 jfv

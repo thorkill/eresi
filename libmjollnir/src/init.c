@@ -1,5 +1,5 @@
 /**
- * @file libmjollnir/src/init.c
+* @file libmjollnir/src/init.c
  * @brief Initialization functions
  * @ingroup libmjollnir
  *

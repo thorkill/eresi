@@ -1,5 +1,5 @@
 /*
-** @file doswitch.c
+* @file librevm/api/doswitch.c
 ** @ingroup api
 ** @brief Do the switch. 
 ** Started on  Sat Jan 25 11:20:49 2003 jfv

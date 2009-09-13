@@ -1,5 +1,5 @@
 /**
- * @file alpha64.c
+* @file libelfsh/alpha64.c
  * @ingroup libelfsh
 ** Alpha64.c for libelfsh
 **

@@ -1,5 +1,5 @@
 /*
-** @file inform.c
+* @file libstderesi/type/inform.c
 ** @ingroup type
 ** @brief Commands for doing annotations on program objects
 **

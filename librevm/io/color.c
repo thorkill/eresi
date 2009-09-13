@@ -1,5 +1,5 @@
 /**
- * @file color.c
+* @file librevm/io/color.c
  * @ingroup io
  * @brief All functions about colors.
  *

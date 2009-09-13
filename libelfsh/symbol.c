@@ -1,5 +1,5 @@
 /**
- * @file symbol.c
+* @file libelfsh/symbol.c
  * @ingroup libelfsh
  * symbol.c for libelfsh
  * 

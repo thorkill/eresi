@@ -1,5 +1,5 @@
 /**
- * @file evarista/include/evarista-help.h
+* @file evarista/include/evarista-help.h
  * @ingroup evarista
  *
  * Started on Fri Jun 22 14:19:04 2007 jfv

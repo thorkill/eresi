@@ -1,5 +1,5 @@
 /*
-** @file proc.c
+* @file libstderesi/cmd/proc.c
 ** @ingroup cmd
 **
 ** Made by jfv <vanegue@eresi-project.org>

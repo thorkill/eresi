@@ -1,5 +1,5 @@
 /*
-** @file libui-color.h
+* @file librevm/include/librevm-color.h
 ** @ingroup librevm
 ** Started on  Sun Nov 26 22:13:54 2006 mxatone
 **

@@ -1,5 +1,5 @@
 /**
- * @file dtors.c
+* @file libelfsh/dtors.c
  * @ingroup libelfsh
  *
  * Started on  Tue Feb 26 22:12:38 2002 jfv

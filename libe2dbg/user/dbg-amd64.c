@@ -1,5 +1,5 @@
 /**
-** @file dbg-amd64.c
+* @file libe2dbg/user/dbg-amd64.c
 ** @ingroup user
 */
 /*

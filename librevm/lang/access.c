@@ -1,5 +1,5 @@
 /**
- * @file librevm/access.c
+* @file librevm/lang/access.c
  * @ingroup lang
  * @brief Implementation of scripting lookups for meta-language variables.
  *

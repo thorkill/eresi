@@ -1,5 +1,5 @@
 /**
- * @file op_sub_rv_rmv.c
+* @file libasm/src/arch/ia32/handlers/op_sub_rv_rmv.c
  * @brief Handler for instruction sub rv,rmv opcode 0x2b
  *
  * @ingroup IA32_instrs

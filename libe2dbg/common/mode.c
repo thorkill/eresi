@@ -1,5 +1,5 @@
 /**
-** @file libe2dbg/common/mode.c
+* @file libe2dbg/common/mode.c
 ** @brief Implement command for switching between static and dynamic mode.
 ** @ingroup common
 **

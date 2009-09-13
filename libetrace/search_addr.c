@@ -1,5 +1,5 @@
 /**
- * @file func_add.c
+* @file libetrace/search_addr.c
 ** @ingroup libetrace
 ** 
 ** @brief add function to a trace table

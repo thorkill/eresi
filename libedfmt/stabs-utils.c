@@ -1,5 +1,5 @@
 /**
-** @file libedfmt/stabs-utils.c
+* @file libedfmt/stabs-utils.c
 ** @ingroup libedfmt
 ** @brief Low-level utils for STABS parsing.
 **

@@ -1,5 +1,5 @@
 /*
-** @file libelfsh-internal.h
+* @file libaspect/include/libaspect-profiler.h
 ** 
 ** Started on  Wed Jan  1 07:51:24 2003 jfv
 ** Last update Thu Mar 20 06:19:53 2003 jfv

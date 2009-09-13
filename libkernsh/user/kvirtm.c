@@ -1,5 +1,5 @@
 /**
-** @file kvirtm.c
+* @file libkernsh/user/kvirtm.c
 ** @ingroup usermode
 **
 */

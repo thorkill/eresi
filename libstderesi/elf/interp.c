@@ -1,5 +1,5 @@
 /**
-** @file interp.c
+* @file libstderesi/elf/interp.c
 ** @ingroup elf
 */
 /**

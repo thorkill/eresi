@@ -1,5 +1,5 @@
 /**
- * @file op_lea_rv_m.c
+* @file libasm/src/arch/ia32/handlers/op_lea_rv_m.c
  *
  * @ingroup IA32_instrs
  * $Id$

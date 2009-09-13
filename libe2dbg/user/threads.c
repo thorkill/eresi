@@ -1,9 +1,9 @@
 /**
-** @file threads.c
+* @file libe2dbg/user/threads.c
 ** @ingroup user
 */
 /*
- * @file threads.c
+* @file libe2dbg/user/threads.c
  *
  * Hook the threads API for keeping thread debugger information 
  * accurately up2date

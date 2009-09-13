@@ -1,5 +1,5 @@
 /**
- * @file op_esc1.c
+* @file libasm/src/arch/ia32/handlers/op_esc1.c
  *
  * @ingroup IA32_instrs
  * $Id$

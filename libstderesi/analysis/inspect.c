@@ -1,5 +1,5 @@
 /*
-** @file inspect.c
+* @file libstderesi/analysis/inspect.c
 ** @ingroup analysis
 ** @brief Inspect the content of a basic block
 **

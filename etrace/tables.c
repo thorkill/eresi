@@ -1,7 +1,7 @@
 /**
  ** tables.c for etrace
  **
- ** @file etrace/tables.c
+* @file etrace/tables.c
  ** @ingroup etrace
  ** @brief All command and objects definitions for scripting
  **

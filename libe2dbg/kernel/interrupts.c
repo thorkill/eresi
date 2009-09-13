@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/interrupts.c
+* @file libe2dbg/kernel/interrupts.c
  *
  */
 #include "ke2dbg.h"

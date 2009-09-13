@@ -1,5 +1,5 @@
 /**
- * @file hash.c
+* @file libelfsh/hash.c
  * @ingroup libelfsh
 ** hash.c for libelfsh
 ** 

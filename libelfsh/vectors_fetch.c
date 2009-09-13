@@ -1,5 +1,5 @@
 /**
-** @file vectors_fetch.c
+* @file libelfsh/vectors_fetch.c
 ** @ingroup libelfsh
 **
 ** vectors_fetch.c for libelfsh (The ELF shell library)

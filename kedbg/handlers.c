@@ -1,5 +1,5 @@
 /**
-** @file kedbg/handlers.c
+* @file kedbg/handlers.c
 ** @ingroup kedbg
 ** @brief Implement kedbg-specific vector handlers.
 **

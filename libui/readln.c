@@ -1,5 +1,5 @@
 /*
-** @file readln.c
+* @file libui/readln.c
 **
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill

@@ -1,5 +1,5 @@
 /*
-** @file hammer.c
+* @file libstderesi/analysis/hammer.c
 ** @ingroup analysis
 ** @brief Contains libmjollnir commands bindings.
 **

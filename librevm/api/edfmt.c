@@ -1,5 +1,5 @@
 /*
-** @file librevm/api/edfmt.c
+* @file librevm/api/edfmt.c
 ** @ingroup api
 ** @brief All functions dealing with libedfmt.
 **

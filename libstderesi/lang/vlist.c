@@ -1,5 +1,5 @@
 /**
- * @file libstderesi/lang/vlist.c
+* @file libstderesi/lang/vlist.c
  * @ingroup lang
  * @brief List all variables currently existing.
  * 

@@ -1,5 +1,5 @@
 /**
-** @file error.c
+* @file libaspect/profiler.c
 ** @ingroup libaspect
 ** 
 ** Started on  Thu Nov 08 02:08:28 2001 mm

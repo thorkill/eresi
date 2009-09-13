@@ -1,5 +1,5 @@
 /**
- * @file display.c
+* @file libmjollnir/src/display.c
  * @ingroup libmjollnir
  * @brief Contain printing functions for debug purpose only
  *

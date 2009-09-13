@@ -1,5 +1,5 @@
 /**
- * @file op_xor_eax_iv.c
+* @file libasm/src/arch/ia32/handlers/op_xor_eax_iv.c
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor eax,iv opcode 0x35

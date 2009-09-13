@@ -3,7 +3,7 @@
  * @ingroup etrace
  */
 /**
-** @file libetrace/trace_create.c
+* @file libetrace/trace_create.c
 ** @ingroup libetrace
 ** @brief Functions for managing traces creation.
 ** 

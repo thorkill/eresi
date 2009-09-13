@@ -1,5 +1,5 @@
 /**
- * @file op_ret_i2.c
+* @file libasm/src/arch/ia32/handlers/op_ret_i2.c
  *
  * @ingroup IA32_instrs
  * $Id$

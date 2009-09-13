@@ -3,7 +3,7 @@
  * @brief Implement DWARF2, STABS, and the ERESI debug formats.
  */
 /**
-** @file libedfmt/stabs.c
+* @file libedfmt/stabs.c
 ** @ingroup libedfmt
 ** @brief Interface routines for STABS debug format.
 **
@@ -20,7 +20,7 @@
  * This version of stabs format parsing has been approved for x86
  * and gentoo linux, some bugs can append on Sparc, more test will
  * be done to make this work correctly 
- * @file stabs.c
+* @file libedfmt/stabs.c
  */
 
 #define STABS_HNAME_TYPE_REF 		"stabs_type_reference"

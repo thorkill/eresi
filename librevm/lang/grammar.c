@@ -1,5 +1,5 @@
 /**
- * @file grammar.c
+* @file librevm/lang/grammar.c
  * @ingroup lang
  * @brief We dont use bison and have our own parser generator.
  *

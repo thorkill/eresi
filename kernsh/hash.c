@@ -1,5 +1,5 @@
 /*
-** @file hash.c
+* @file kernsh/hash.c
 * @ingroup kernsh
 ** 
 ** $Id$

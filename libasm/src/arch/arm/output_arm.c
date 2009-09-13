@@ -1,5 +1,5 @@
 /**
-** @file output_arm.c
+* @file libasm/src/arch/arm/output_arm.c
 ** @ingroup arm
 */
 #include <libasm.h>

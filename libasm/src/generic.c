@@ -1,5 +1,5 @@
 /**
- * @file generic.c
+* @file libasm/src/generic.c
  * @ingroup libasm
  * Latest edition Author : $Author: may $
  * $Id$

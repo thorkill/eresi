@@ -1,5 +1,5 @@
 /*
-** @file info.c
+* @file libstderesi/cmd/info.c
 ** @ingroup cmd
 ** Made by jfv
 ** Login   <jfv@devhell.org>

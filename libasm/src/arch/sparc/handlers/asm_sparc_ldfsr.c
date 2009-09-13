@@ -1,5 +1,5 @@
 /**
-** @file asm_sparc_ldfsr.c
+* @file libasm/src/arch/sparc/handlers/asm_sparc_ldfsr.c
 ** @ingroup SPARC_instrs
 */
 /*

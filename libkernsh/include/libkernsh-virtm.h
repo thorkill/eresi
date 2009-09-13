@@ -1,5 +1,5 @@
 /**
-** @file libkernsh-virtm.h
+* @file libkernsh/include/libkernsh-virtm.h
 ** @ingroup libkernsh
 */
 #ifndef __LIBKERNSH_VIRTM_H__

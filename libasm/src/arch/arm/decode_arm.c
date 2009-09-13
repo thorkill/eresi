@@ -1,5 +1,5 @@
 /**
-** @file decode_arm.c
+* @file libasm/src/arch/arm/decode_arm.c
 ** @ingroup arm
 */
 #include "libasm.h"

@@ -1,5 +1,5 @@
 /**
- * @file parse.c
+* @file librevm/lang/parser.c
  * @@ingroup lang
  *
  * The top level parser for ERESI scripting

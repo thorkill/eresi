@@ -1,5 +1,5 @@
 /**
-** @file init_arm.c
+* @file libasm/src/arch/arm/init_arm.c
 ** @ingroup arm
 */
 // TODO: file comments

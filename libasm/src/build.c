@@ -1,5 +1,5 @@
 /**
- * @file build.c
+* @file libasm/src/build.c
  * @ingroup libasm
  * @brief Contains latest build date.
  * $Id$

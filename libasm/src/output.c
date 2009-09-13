@@ -1,5 +1,5 @@
 /**
- * @file output.c
+* @file libasm/src/output.c
  * @ingroup libasm
  * $Id$
  *  

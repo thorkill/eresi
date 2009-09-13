@@ -1,5 +1,5 @@
 /**
-** @file asm_mips_operand_branch.c
+* @file libasm/src/arch/mips/operand_handlers/asm_mips_operand_branch.c
 ** @ingroup MIPS_operands
 */
 /*

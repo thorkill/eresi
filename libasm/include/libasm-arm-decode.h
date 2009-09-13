@@ -3,7 +3,7 @@
  * @ingroup arm
  */
 /**
- * @file libasm-arm-decode.h
+* @file libasm/include/libasm-arm-decode.h
  * @ingroup arm
  */
 #ifndef LIBASM_ARM_DECODE_H

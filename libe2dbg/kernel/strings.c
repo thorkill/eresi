@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/strings.c
+* @file libe2dbg/kernel/strings.c
  *
  *
  * Imported from glibc-2.7

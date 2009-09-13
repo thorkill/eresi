@@ -1,5 +1,5 @@
 /**
- * @file errfunc.c
+* @file libetrace/errfunc.c
 ** @ingroup libetrace
 **
 ** @brief This file contain one function for error collection.

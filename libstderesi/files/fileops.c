@@ -1,5 +1,5 @@
 /*
-** @file fileops.c
+* @file libstderesi/files/fileops.c
 ** @ingroup files
 ** Started on  Thu Feb 13 04:06:45 2003 jfv
 ** Last update Wed Mar 10 12:31:49 2004 jfv

@@ -1,5 +1,5 @@
 /**
- * @file stabs.c
+* @file libelfsh/stab.c
  * @ingroup libelfsh
  * stabs.c for libelfsh
  * 

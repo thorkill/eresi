@@ -1,5 +1,5 @@
 /**
- * @file op_xor_rv_rmv.c
+* @file libasm/src/arch/ia32/handlers/op_xor_rv_rmv.c
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor, opcode 0x33

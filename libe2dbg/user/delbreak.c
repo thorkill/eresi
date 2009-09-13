@@ -1,5 +1,5 @@
 /**
-** @file delbreak.c
+* @file libe2dbg/user/delbreak.c
 ** @ingroup user
 */
 #include "libe2dbg.h"

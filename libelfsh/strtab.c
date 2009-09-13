@@ -1,5 +1,5 @@
 /**
- * @file strtab.c
+* @file libelfsh/strtab.c
  * @ingroup libelfsh
  * strtab.c for libelfsh
  * 

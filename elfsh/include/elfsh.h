@@ -1,5 +1,5 @@
 /**
- * @file elfsh.h
+* @file elfsh/include/elfsh.h
  * @ingroup elfsh
  * 
  * Started on  Thu Feb 22 07:19:04 2001 jfv

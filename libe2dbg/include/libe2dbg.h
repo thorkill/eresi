@@ -3,7 +3,7 @@
  * @ingroup e2dbg
  */
 /**
-** @file libe2dbg/include/libe2dbg.h 
+* @file libe2dbg/include/libe2dbg.h
 ** @brief The Embedded ERESI debugger header file.
 ** @ingroup libe2dbg
 **

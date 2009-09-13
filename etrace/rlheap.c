@@ -1,6 +1,6 @@
 /**
  ** readlnheap.c for etrace
- ** @file etrace/readlnheap.c
+* @file etrace/rlheap.c
  ** @ingroup etrace
  ** @brief Handle the readline malloc/free to avoid messing with the alloc proxy
  **

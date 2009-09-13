@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/keyboard.c
+* @file libe2dbg/kernel/keyboard.c
  */
 #include "ke2dbg.h"
 #include "ke2dbg-keyb.h"

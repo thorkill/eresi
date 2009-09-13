@@ -1,5 +1,5 @@
 /*
-** @file func_match.c
+* @file libetrace/func_match.c
 **
 ** Libetrace implementation in the ERESI project.
 **

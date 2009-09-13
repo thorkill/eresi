@@ -1,5 +1,5 @@
 /**
- * @file libe2dbg/kernel/kern-bp.c
+* @file libe2dbg/kernel/kern-bp.c
  */
 #include "ke2dbg.h"
 

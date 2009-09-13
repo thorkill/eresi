@@ -1,5 +1,5 @@
 /**
- * @file prompt.c
+* @file librevm/io/prompt.c
  * @ingroup io
  * @brief Interface for prompt management.
  * @ingroup io

@@ -3,7 +3,7 @@
  * @ingroup libkernsh
  */
 /*
-** @file kernsh.c
+* @file libkernsh/user/kernsh.c
 * @ingroup usermode
 * @brief initialisation, get_raw and mode switch
 **

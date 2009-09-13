@@ -1,5 +1,5 @@
 /*
-** @file job.c
+* @file libstderesi/cmd/job.c
 ** @ingroup cmd
 ** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
 **

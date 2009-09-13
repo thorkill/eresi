@@ -1,5 +1,5 @@
 /**
- * @file libgdbwrap/gdbwrapper.c
+* @file libgdbwrap/gdbwrapper.c
  * @brief Implements the GDB serial protocol.
  * @ingroup libgdbwrap
  *

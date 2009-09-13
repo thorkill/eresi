@@ -1,5 +1,5 @@
 /**
-** @file libedfmt/edfmt-utils.c
+* @file libedfmt/edfmt-utils.c
 ** @ingroup libedfmt
 **
 ** Started Jan 13 2007 18:09:02 mxatone

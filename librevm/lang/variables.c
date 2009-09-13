@@ -3,7 +3,7 @@
  * @ingroup librevm
  */
 /**
- * @file variables.c
+* @file librevm/lang/variables.c
  * @ingroup lang
  * @brief Contain functions for easy variables accesses.
  *

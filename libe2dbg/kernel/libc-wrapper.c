@@ -1,5 +1,5 @@
 /** 
- ** @file libe2dbg/kernel/libc-wrapper.c
+* @file libe2dbg/kernel/libc-wrapper.c
  **/
 
 #include "ke2dbg.h"

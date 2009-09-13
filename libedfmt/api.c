@@ -1,5 +1,5 @@
 /**
- * @file libedfmt/api.c
+* @file libedfmt/api.c
  * @ingroup libedfmt
  * @brief Generic internal API for libedfmt.
  *

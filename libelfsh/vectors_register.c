@@ -1,5 +1,5 @@
 /**
-** @file vectors_register.c
+* @file libelfsh/vectors_register.c
 ** @ingroup libelfsh
 **
 ** vectors_register.c for libelfsh (The ELF shell library)

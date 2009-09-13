@@ -1,9 +1,9 @@
 /**
-** @file continue.c
+* @file libe2dbg/user/continue.c
 ** @ingroup user
 */
 /**
- * @file continue.c
+* @file libe2dbg/user/continue.c
  *
  * The continue command in e2dbg
  *

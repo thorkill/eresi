@@ -3,7 +3,7 @@
  * @ingroup libkernsh
  */
 /*
-** @file vectors.c
+* @file libkernsh/common/vectors.c
 ** @ingroup common
 **
 */

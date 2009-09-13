@@ -1,5 +1,5 @@
 /**
-** @file remove.c
+* @file libstderesi/files/remove.c
 ** @ingroup files
 ** @brief First remove functions for easy scripting
 **

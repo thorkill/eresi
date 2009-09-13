@@ -1,5 +1,5 @@
 /**
- * @file op_xor_al_ib.c
+* @file libasm/src/arch/ia32/handlers/op_xor_al_ib.c
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor al,ib opcode 0x34

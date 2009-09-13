@@ -1,5 +1,5 @@
 /**
- * @file notes.c
+* @file libelfsh/notes.c
  * @ingroup libelfsh
 ** notes.c for libelfsh
 ** 

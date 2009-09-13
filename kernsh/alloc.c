@@ -1,5 +1,5 @@
 /*
-** @file alloc.c 
+* @file kernsh/alloc.c
 ** @ingroup kernsh
 ** $Id$
 **

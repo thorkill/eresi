@@ -1,5 +1,5 @@
 /**
-** @file step.c
+* @file libe2dbg/user/step.c
 ** @ingroup user
 */
 /*

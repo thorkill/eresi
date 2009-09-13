@@ -1,5 +1,5 @@
 /*
-** @file log.c
+* @file libstderesi/cmd/log.c
 ** @ingroup cmd
 ** Implement logging facilities 
 **

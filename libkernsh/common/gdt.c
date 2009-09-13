@@ -1,5 +1,5 @@
 /*
-** @file idt.c
+* @file libkernsh/common/gdt.c
 ** @ingroup common
 **
 */

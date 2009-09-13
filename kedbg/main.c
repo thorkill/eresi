@@ -1,5 +1,5 @@
 /**
- * @file kedbg/main.c
+* @file kedbg/main.c
  * @ingroup kedbg
  */
 

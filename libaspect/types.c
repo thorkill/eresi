@@ -1,5 +1,5 @@
 /**
-** @file libaspect/types.c
+* @file libaspect/types.c
 ** @ingroup libaspect
 ** @brief The base of the unified type system.
 **

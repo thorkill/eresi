@@ -1,5 +1,5 @@
 /**
- * @file elfsh/cleanup.c
+* @file elfsh/cleanup.c
  * @ingroup elfsh
  * @brief This command cleanup a file by marking as removed all injected sections.
  *

@@ -1,5 +1,5 @@
 /*
-** @file mem.c
+* @file kernsh/mem.c
 ** @ingroup kernsh
 ** $Id$
 **

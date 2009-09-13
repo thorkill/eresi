@@ -1,5 +1,5 @@
 /**
- * @file op_xlatb.c
+* @file libasm/src/arch/ia32/handlers/op_xlatb.c
  *
  * @ingroup IA32_instrs
  * @brief <instruction opcode="0xd7" func="op_xlatb"/>

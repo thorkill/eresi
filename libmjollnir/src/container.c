@@ -1,7 +1,7 @@
 /**
  * 2001-2008 Devhell Labs, Rfdslabs, Asgardlabs
  *
- * @file container.c
+* @file libmjollnir/src/container.c
  * @ingroup libmjollnir
  * @brief An API for generic containers data structures
  *

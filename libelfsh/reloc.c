@@ -1,5 +1,5 @@
 /**
- * @file reloc.c
+* @file libelfsh/reloc.c
  * @ingroup libelfsh
 ** reloc.c for elfsh
 ** 

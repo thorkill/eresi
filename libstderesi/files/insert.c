@@ -1,5 +1,5 @@
 /*
-** @file insert.c
+* @file libstderesi/files/insert.c
 ** @ingroup files
 ** @brief First insert functions for easy scripting.
 **

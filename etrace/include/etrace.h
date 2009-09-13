@@ -2,7 +2,7 @@
  * @defgroup etrace etrace: The Embedded ERESI tracer.
  */
 /**
- * @file etrace/include/etrace.h
+* @file etrace/include/etrace.h
  * @brief Header file for ETRACE.
  * @ingroup etrace
  *

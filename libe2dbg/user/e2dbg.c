@@ -1,9 +1,9 @@
 /**
-** @file e2dbg.c
+* @file libe2dbg/user/e2dbg.c
 ** @ingroup user
 */
 /**
- * @file e2dbg.c
+* @file libe2dbg/user/e2dbg.c
  *
  * Starting routines for the debugger
  * 

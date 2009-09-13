@@ -1,5 +1,5 @@
 /**
-** @file findrel.c
+* @file libstderesi/elf/findrel.c
 ** @ingroup elf
 */
 /**

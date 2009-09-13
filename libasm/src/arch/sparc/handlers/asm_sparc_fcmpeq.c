@@ -1,5 +1,5 @@
 /**
-** @file asm_sparc_fcmpeq.c
+* @file libasm/src/arch/sparc/handlers/asm_sparc_fcmpeq.c
 ** @ingroup SPARC_instrs
 */
 /*

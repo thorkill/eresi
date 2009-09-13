@@ -3,7 +3,7 @@
 ** @ingroup librevm
 */
 /**
-** @file atomic.c
+* @file librevm/api/atomic.c
 ** @ingroup api
 ** @brief Implement the API for atomic arithmetic and logic ERESI commands.
 **

@@ -1,5 +1,5 @@
 /**
-** @file libedfmt/stabs-trans.c
+* @file libedfmt/stabs-trans.c
 ** @ingroup libedfmt
 ** @brief Translation from STABS to EDFMT debug format.
 **
@@ -11,7 +11,7 @@
 
 /**
  * Translation from stabs representation into uniform format 
- * @file stabs-trans.c
+* @file libedfmt/stabs-trans.c
  */
 
 #define STABS_HNAME_TYPE_ADD "stabs_type_added"

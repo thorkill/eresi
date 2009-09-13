@@ -1,5 +1,5 @@
 /*
-** @file autotypes.c 
+* @file kernsh/autotypes.c
 ** @ingroup kernsh
 ** $Id$
 **

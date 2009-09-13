@@ -1,5 +1,5 @@
 /**
-** @file symbs.c
+* @file libkernsh/user/symbs.c
 ** @ingroup usermode
 **
 */

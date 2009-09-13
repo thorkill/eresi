@@ -1,5 +1,5 @@
 /*
- * @file memory.c
+* @file libkernsh/common/memory.c
 ** @brief memory.c for libkernsh.
 ** @ingroup common
 **

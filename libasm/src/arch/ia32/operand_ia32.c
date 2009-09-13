@@ -1,5 +1,5 @@
 /**
- * @file operand_ia32.c
+* @file libasm/src/arch/ia32/operand_ia32.c
  * @ingroup ia32
 ** $Id$
 **

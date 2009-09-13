@@ -1,5 +1,5 @@
 /*
-** @file trace_run.c
+* @file libetrace/trace_run.c
 **
 ** Libetrace implementation in the ERESI project.
 **

@@ -1,6 +1,6 @@
 /**
 ** @brief Implement DWARF2 support in libedfmt
-** @file dwarf2.c
+* @file libedfmt/dwarf2.c
 ** @ingroup libedfmt
 ** 
 ** Started Dec 26 2006 10:49:45 mxatone
@@ -12,7 +12,7 @@
 /**
  * This file implements DWARF2 support for libedfmt.
  * specification @ http://dwarf.freestandards.org/Download.php 
- * @file dwarf2.c
+* @file libedfmt/dwarf2.c
  */
 
 #define DWARF2_ABBREV_NAME "dwarf2_abbrev_table"

@@ -1,5 +1,5 @@
 /**
-** @file kernimage.c
+* @file libkernsh/user/kernimage.c
 ** @ingroup usermode
 **
 */

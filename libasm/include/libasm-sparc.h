@@ -4,7 +4,7 @@
  */
 
 /** 
-** @file libasm/include/libasm-sparc.h
+* @file libasm/include/libasm-sparc.h
 ** @ingroup sparc
 ** 
 ** Started by sroy on Tue Dec  2 22:43:08 2003

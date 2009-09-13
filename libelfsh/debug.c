@@ -1,5 +1,5 @@
 /**
- * @file debug.c
+* @file libelfsh/debug.c
  * @ingroup libelfsh
  *
  * Started on  Thu Apr  3 21:36:55 2003 jfv

@@ -1,5 +1,5 @@
 /**
- * @file links.c
+* @file libmjollnir/src/links.c
  * @ingroup libmjollnir
  *
  * @brief All the functions that deal with linking other objects, such

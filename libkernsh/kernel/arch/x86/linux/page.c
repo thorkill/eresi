@@ -1,5 +1,5 @@
 /**
-** @file page.c
+* @file libkernsh/kernel/arch/x86/linux/page.c
 ** @ingroup kernelmode
 **
 */

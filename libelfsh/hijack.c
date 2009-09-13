@@ -1,5 +1,5 @@
 /**
- * @file hijack.c
+* @file libelfsh/hijack.c
  * @ingroup libelfsh
 ** hijack.c in elfsh
 ** 

@@ -1,5 +1,5 @@
 /*
-** @file libstderesi/cmd/define.c
+* @file libstderesi/cmd/define.c
 ** @ingroup cmd
 ** @brief Allow constant values to be defined on names.
 **

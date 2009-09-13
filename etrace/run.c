@@ -1,6 +1,6 @@
 /*
 ** run.c for etrace
-** @file etrace/run.c 
+* @file etrace/run.c
 ** @ingroup etrace
 **
 ** Started on  Wed Feb 21 22:02:36 2001 mxatone

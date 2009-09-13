@@ -1,5 +1,5 @@
 /**
- * @file libgdbwrap/include/gdbwrapper.h
+* @file libgdbwrap/include/gdbwrapper.h
  * @ingroup libgdbwrap
  * @brief Header file for the ERESI gdb protocol wrapper.
  *

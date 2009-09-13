@@ -1,5 +1,5 @@
 /**
- * @file libasm-int.h
+* @file libasm/include/libasm-int.h
  * $Id$
  * 
  * This file contains the forward declarations of i386 instruction

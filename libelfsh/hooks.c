@@ -1,5 +1,5 @@
 /**
- * @file hooks.c
+* @file libelfsh/hooks.c
  * @ingroup libelfsh
 ** hooks.c for libelfsh (The ELF shell library)
 ** 

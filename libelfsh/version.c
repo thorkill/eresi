@@ -3,7 +3,7 @@
  * @ingroup elfsh
  */
 /**
- * @file libelfsh/version.c
+* @file libelfsh/version.c
  * @ingroup libelfsh
  * @brief Implements API for ELF version tables.
  *

@@ -1,9 +1,9 @@
 /**
-** @file signal.c
+* @file libe2dbg/user/signal.c
 ** @ingroup user
 */
 /**
- * @file signal.c
+* @file libe2dbg/user/signal.c
  *
  * The debugger file for signal handlers
  * 

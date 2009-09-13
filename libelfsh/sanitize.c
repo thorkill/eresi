@@ -1,5 +1,5 @@
 /**
- * @file sanitize.c
+* @file libelfsh/sanitize.c
  * @ingroup libelfsh
 ** sanitize.c for elfsh
 ** 

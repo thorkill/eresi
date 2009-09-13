@@ -1,5 +1,5 @@
 /*
-** @file expressions.c
+* @file librevm/lang/expressions.c
 ** @ingroup lang
 ** @brief Implementation of scripting declarations for meta-language variables.
 **

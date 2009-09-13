@@ -2,7 +2,7 @@
 * @defgroup kernsh kernsh: The kernel shell.
 */
 /**
- * @file kernsh/include/kernsh.h
+* @file kernsh/include/kernsh.h
  * @ingroup kernsh
  * @brief The kernel shell header file.
  * 

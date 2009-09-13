@@ -1,5 +1,5 @@
 /**
- * @file evarista/tables.c
+* @file evarista/tables.c
  * @ingroup evarista
  *
  * This file contains all command and objects definitions for specific Evarista scripting

@@ -1,5 +1,5 @@
 /**
- * @file etrace/misc.c
+* @file etrace/misc.c
  * @ingroup etrace
  * Updated on  Wed Jan 03 17:31:11 2007 mxatone
  *

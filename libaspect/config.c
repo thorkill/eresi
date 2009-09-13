@@ -1,5 +1,5 @@
 /*
-** @file state.c
+* @file libaspect/config.c
 ** @ingroup libaspect
 ** 
 ** Started on  Sat Jun  2 15:20:18 2005 jfv

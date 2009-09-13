@@ -3,7 +3,7 @@
  * @ingroup libe2dbg
  */
 /*
-** @file libe2dbg/common/common.c
+* @file libe2dbg/common/common.c
 ** @brief Common generic API for libe2dbg
 ** @ingroup common
 **

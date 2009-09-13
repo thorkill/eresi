@@ -1,5 +1,5 @@
 /**
- * @file fingerprint.c
+* @file libmjollnir/src/fingerprint.c
  * @ingroup libmjollnir
  * 
  * @brief Functions for fingerprinting inside libmjollnir

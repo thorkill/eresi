@@ -1,5 +1,5 @@
 /**
- * @file evarista/main.c
+* @file evarista/main.c
  * @ingroup evarista
  *
  * The entry point of the static analyzer

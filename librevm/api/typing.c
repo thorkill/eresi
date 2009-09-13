@@ -1,5 +1,5 @@
 /**
-* @file typing.c
+* @file librevm/api/typing.c
 * @ingroup api
 * @brief Various API for manipulating types.
 *

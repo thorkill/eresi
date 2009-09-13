@@ -1,5 +1,5 @@
 /**
- * @file op_scasd.c
+* @file libasm/src/arch/ia32/handlers/op_scasd.c
  *
  * @ingroup IA32_instrs
 ** $Id$

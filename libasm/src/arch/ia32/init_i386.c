@@ -1,5 +1,5 @@
 /**
- * @file init_i386.c
+* @file libasm/src/arch/ia32/init_i386.c
  * @ingroup ia32
  * $Id$
  *

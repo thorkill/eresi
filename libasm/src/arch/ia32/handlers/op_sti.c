@@ -1,5 +1,5 @@
 /**
- * @file op_sti.c
+* @file libasm/src/arch/ia32/handlers/op_sti.c
  *
  * @ingroup IA32_instrs
  *

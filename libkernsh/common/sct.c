@@ -1,5 +1,5 @@
 /*
-** @file sct.c
+* @file libkernsh/common/sct.c
 ** @ingroup common
 **
 */

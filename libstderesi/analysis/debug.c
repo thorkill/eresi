@@ -1,5 +1,5 @@
 /*
-** @file debug.c
+* @file libstderesi/analysis/debug.c
 ** @ingroup analysis
 ** @brief All functions dealing with libedfmt uni debugging format
 **

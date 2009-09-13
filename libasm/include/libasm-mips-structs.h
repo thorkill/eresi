@@ -3,7 +3,7 @@
  * @ingroup mips
  */
 /**
- * @file libasm-mips-structs.h
+* @file libasm/include/libasm-mips-structs.h
  * @ingroup mips
  * fix and fill
  *          - Adam 'pi3' Zabrocki

@@ -1,5 +1,5 @@
 /**
- * @file section.c
+* @file libelfsh/section.c
  * @ingroup libelfsh
 ** section.c for libelfsh
 ** 

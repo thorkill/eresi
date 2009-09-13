@@ -1,6 +1,6 @@
 /**
  *
- * @file kernsh/virtm.c
+* @file kernsh/virtm.c
  * @ingroup kernsh
  *
  */

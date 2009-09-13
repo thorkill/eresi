@@ -1,5 +1,5 @@
 /**
- * @file history.c
+* @file libmjollnir/src/history.c
  * @ingroup libmjollnir
  *
  * (C) 2001-2008 Devhell Labs / Asgard Labs : thorolf / sk / jfv

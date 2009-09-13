@@ -1,5 +1,5 @@
 /**
- * @file func_exclude.c
+* @file libetrace/func_exclude.c
 ** @ingroup libetrace
 ** 
 ** @brief trace table exclude functions

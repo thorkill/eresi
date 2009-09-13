@@ -1,5 +1,5 @@
 /**
-** @file libe2dbg/common/dbghooks.c
+* @file libe2dbg/common/dbghooks.c
 ** @brief Vectors for debugging features
 ** @ingroup common
 ** 

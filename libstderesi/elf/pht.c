@@ -1,5 +1,5 @@
 /**
-** @file pht.c
+* @file libstderesi/elf/pht.c
 ** @ingroup elf
 */
 /**

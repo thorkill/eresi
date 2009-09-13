@@ -1,5 +1,5 @@
 /**
- * @file dynsym.c
+* @file libelfsh/dynsym.c
  * @ingroup libelfsh
 ** Dynsym.c for libelfsh
 ** 

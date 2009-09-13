@@ -1,5 +1,5 @@
 /**
-** @file asm_sparc_op_fetch_cc.c
+* @file libasm/src/arch/sparc/operand_handlers/asm_sparc_op_fetch_cc.c
 ** @ingroup SPARC_operands
 */
 #include <libasm.h>

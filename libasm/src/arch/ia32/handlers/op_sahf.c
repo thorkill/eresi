@@ -1,5 +1,5 @@
 /**
- * @file op_sahf.c
+* @file libasm/src/arch/ia32/handlers/op_sahf.c
  *
  * @ingroup IA32_instrs
 ** $Id$

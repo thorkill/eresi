@@ -1,5 +1,5 @@
 /**
- * @file mips64.c
+* @file libelfsh/mips64.c
  * @ingroup libelfsh
 ** mips64.c for libelfsh
 ** 

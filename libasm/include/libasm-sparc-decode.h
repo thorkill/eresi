@@ -3,7 +3,7 @@
  * @ingroup sparc
  */
 /**
-** @file libasm-sparc-decode.h
+* @file libasm/include/libasm-sparc-decode.h
 ** @ingroup sparc
 **
 ** Started by sroy on Tue Jun 14 05:02:37 2005

@@ -1,5 +1,5 @@
 /**
- * @file op_386sp.c
+* @file libasm/src/arch/ia32/handlers/op_386sp.c
  *
  * @ingroup IA32_instrs
  * $Id$

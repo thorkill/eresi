@@ -1,5 +1,5 @@
 /**
- * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch.c
+* @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch.c
  *
  * @ingroup IA32_operands
  * @brief Implements top-level fetching handler for IA32 operands.

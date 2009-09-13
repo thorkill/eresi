@@ -1,5 +1,5 @@
 /*
-** @file libetrace.h
+* @file libetrace/include/libetrace.h
 **
 ** Libetrace header file in the ERESI project
 **

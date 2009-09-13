@@ -1,5 +1,5 @@
 /**
-** @file switch.c
+* @file libstderesi/files/switch.c
 ** @ingroup files
 **
 ** Started on  Sat Jan 25 11:20:49 2003 jfv

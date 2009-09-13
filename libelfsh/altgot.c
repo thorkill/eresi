@@ -1,5 +1,5 @@
 /**
- * @file altgot.c
+* @file libelfsh/altgot.c
  * @ingroup libelfsh
 ** altgot.c for libelfsh
 ** 

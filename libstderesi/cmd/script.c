@@ -1,5 +1,5 @@
 /**
- * @file script.c
+* @file libstderesi/cmd/script.c
  * @ingroup cmd 
  * Started on  Fri May 16 15:18:35 2005 jfv
  *

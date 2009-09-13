@@ -1,5 +1,5 @@
 /*
-** @file init.c for libstderesi in ERESI
+* @file libstderesi/cmd/init.c
 ** @ingroup cmd
 ** @brief Constructors for the ERESI standard library
 **

@@ -1,5 +1,5 @@
 /**
- * @file kernsh/include/kernsh-help.h
+* @file kernsh/include/kernsh-help.h
  * @ingroup kernsh
  * $Id$
  *

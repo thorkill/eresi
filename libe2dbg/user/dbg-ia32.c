@@ -1,5 +1,5 @@
 /**
-** @file dbg-ia32.c
+* @file libe2dbg/user/dbg-ia32.c
 ** @ingroup user
 */
 /*

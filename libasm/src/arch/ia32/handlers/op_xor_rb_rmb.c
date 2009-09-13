@@ -1,5 +1,5 @@
 /**
- * @file op_xor_rb_rmb.c
+* @file libasm/src/arch/ia32/handlers/op_xor_rb_rmb.c
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor rb,rmb opcode 0x32

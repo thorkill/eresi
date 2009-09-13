@@ -1,5 +1,5 @@
 /**
-** @file hdr.c
+* @file libstderesi/elf/hdr.c
 ** @ingroup elf
 */
 /**

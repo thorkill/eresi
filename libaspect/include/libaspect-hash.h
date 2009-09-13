@@ -1,5 +1,5 @@
 /*
-** @file libhash.h
+* @file libaspect/include/libaspect-hash.h
 **
 ** Started on  Fri Jan 24 20:25:42 2003 jfv
 ** Last update Fri Dec 22 00:14:56 2006 jfv

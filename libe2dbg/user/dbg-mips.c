@@ -1,5 +1,5 @@
 /**
-** @file dbg-mips.c
+* @file libe2dbg/user/dbg-mips.c
 ** @ingroup user
 */
 /*
