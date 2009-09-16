@@ -287,7 +287,7 @@ static int		edfmt_stabs_transform_func(edfmtstabsfunc_t *func_list)
 	continue;
 
       uni_func = edfmt_add_func(func->data->name, func->rettype->transtype, 
-				func->s_addr, func->e_addr);
+				func->s_addr, func->e_addr, 0);
 
       if (!uni_func)
 	continue;

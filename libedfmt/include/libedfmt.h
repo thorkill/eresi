@@ -74,7 +74,7 @@ edfmttype_t	*edfmt_add_type_link(char *name, edfmttype_t *type);
 edfmtvar_t	*edfmt_add_var_global(edfmttype_t *type, char *name, 
 				      eresi_Addr addr);
 edfmtfunc_t	*edfmt_add_func(char *name, edfmttype_t *ret, 
-				eresi_Addr start, eresi_Addr end);
+				eresi_Addr start, eresi_Addr end, u_int srcLine);
 edfmtfuncarg_t	*edfmt_add_arg(edfmtfunc_t *func, char *name,
 			       u_int reg, int pos, edfmttype_t *type);
 edfmttype_t	*edfmt_check_type(char *name);

@@ -4,7 +4,7 @@
  * @brief Generic internal API for libedfmt.
  *
  * Started Jan 26 2007 11:54:22 mxatone
- * $Id$
+ * $Id: api.c 1391 2009-09-07 08:04:38Z may
  */
 
 #include "libedfmt.h"
@@ -833,8 +833,53 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, eresi_Addr addr
   lvar->scope = EDFMT_SCOPE_GLOBAL;
   lvar->addr = addr;
   lvar->type = type;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lvar);
+}
+
+hash_t *edfmt_hfuncs_get()
+{
+	if (uniinfo == NULL || uniinfo->lfile == NULL)
+		return (NULL);
+	return &(uniinfo->lfile->hfunc);
+
+}
+
+char *edfmt_srcline_get(char *buf, eresi_Addr addr)
+{
+	hash_t		*htable;
+	int			keynbr;
+	char		**keys;
+	int			index;
+	edfmtfunc_t *lfunc;
+
+	PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+	if (!uniinfo)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			      "Global pointer uninitialise", NULL);
+	/* Setup hash table depending of current scope */
+	htable = API_GET_FROM_SCOPE(hfunc);
+
+	keys = hash_get_keys(&htable, &keynbr);
+
+
+	buf = NULL;
+	if (keys)
+	{
+		for (index = 0; index < keynbr; index++)
+			{
+				lfunc = (edfmtfunc_t *)hash_get(&htable, keys[index]);
+			  if (lfunc->start <= addr && lfunc->end >= addr)
+			  {
+				buf = lfunc->srcLine;
+			    return buf;;
+			  }
+			}
+
+
+	}
+	return buf;
+
+	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 /**
@@ -846,12 +891,11 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, eresi_Addr addr
  * @return result function
  */
 edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret, 
-					eresi_Addr start, eresi_Addr end)
+					eresi_Addr start, eresi_Addr end, u_int srcLine)
 {
   edfmtfunc_t		*lfunc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   if (!name || !ret)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		 "Invalid paramters", NULL);
@@ -860,6 +904,7 @@ edfmtfunc_t		*edfmt_add_func(char *name, edfmttype_t *ret,
   lfunc->rettype = ret;
   lfunc->start = start;
   lfunc->end = end;
+  lfunc->srcLine = srcLine;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, lfunc);
 }

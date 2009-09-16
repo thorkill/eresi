@@ -109,6 +109,7 @@ int			edfmt_format(elfshobj_t *file)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Wrong file object", -1);
 
+
   if (file->name)
     {
       /* Retrieve file basename */

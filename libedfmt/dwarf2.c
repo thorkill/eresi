@@ -64,6 +64,8 @@ int 			edfmt_dwarf2_parse(elfshobj_t *file)
   dw2_sections.info.sect = edfmt_get_sect(file, ELFSH_SECTION_DW2_INFO, 
 					  ELFSH_SECTION_NAME_DW2_INFO, 0);
 
+//  char *edfmt_srcline_get(eresi_Addr address)
+
   dw2_sections.info.data = dw2_sections.info.sect->data;
 
   if (dw2_sections.info.sect == NULL || dw2_sections.info.data == NULL)

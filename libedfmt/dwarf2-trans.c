@@ -213,6 +213,8 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
   int			fileid, inc = 0, addtype = 1, base = 0, op = 0;
   edfmtfunc_t		*func;
 
+  u_int srcLine = 0;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!abbrev)
@@ -238,7 +240,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
    */
   if (abbrev->tag != DW_TAG_compile_unit)
     {
-      DWARF2_TRANS_GETATTR(fileid, abbrev, DW_AT_decl_file, u.udata, -1);
+   //   DWARF2_TRANS_GETATTR(fileid, abbrev, DW_AT_decl_file, u.udata, -1);
 
       inc = 1;
       if (fileid > 0 && fileid < (int) current_cu->files_number)
@@ -272,7 +274,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	  edfmt_reset_file();
 	}
     }
-
+	 // printf("edfmt_dwarf2_transform_abbrev_parse in dwarf2-trans.c\n");
   /** 
    * A TAG represent an element of the dwarf2 format, each TAG are linked by child / parent
    * alike structure. You can get more information on the dwarf2 documentation
@@ -317,7 +319,6 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	break;
 
       DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
-
       type = edfmt_dwarf2_trans_gettype(iref);
 
       if (!type)
@@ -473,8 +474,11 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	low = *(eresi_Addr *) vbuf;
       DWARF2_TRANS_GETATTR(vbuf, abbrev, DW_AT_high_pc, u.vbuf, 0);
       if (vbuf)
+
 	high = *(eresi_Addr *) vbuf;
-      
+
+    DWARF2_TRANS_GETATTR(srcLine, abbrev, DW_AT_decl_line, u.udata, 0);
+
       /* Resolve return type */
       DWARF2_TRANS_GETATTR(iref, abbrev, DW_AT_type, u.udata, 0);
       type = edfmt_dwarf2_trans_gettype(iref);
@@ -483,7 +487,8 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
 	break;      
       
       /* Transform the function */
-      func = edfmt_add_func(str, type, low, high);
+      //func = edfmt_add_func(str, type, low, high, linhaTeste);
+      func = edfmt_add_func(str, type, low, high, 0);
 
       if (func)
 	{
