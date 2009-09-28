@@ -488,7 +488,7 @@ edfmttype_t		*edfmt_dwarf2_transform_abbrev_parse(edfmtdw2abbent_t *abbrev)
       
       /* Transform the function */
       //func = edfmt_add_func(str, type, low, high, linhaTeste);
-      func = edfmt_add_func(str, type, low, high, 0);
+      func = edfmt_add_func(str, type, low, high, srcLine);
 
       if (func)
 	{
