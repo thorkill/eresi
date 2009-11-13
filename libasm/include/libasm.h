@@ -139,7 +139,7 @@ enum e_instr_types
     ASM_TYPE_PROLOG       = 0x100000, //!< Instruction creates a new function prolog
     ASM_TYPE_EPILOG       = 0x200000, //!< Instruction creates a new function epilog
     ASM_TYPE_STOP         = 0x400000, //!< Instruction stops the program
-    ASM_TYPE_IO           = 0x80000 //!< Instruction accesses I/O locations (e.g. ports).
+    ASM_TYPE_IO           = 0x800000 //!< Instruction accesses I/O locations (e.g. ports).
   };
 
 
