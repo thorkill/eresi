@@ -12,9 +12,8 @@
 
 int i386_jl(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
-  // new->type = IS_COND_BRANCH;
+  new->type = ASM_TYPE_CONDBRANCH;
   new->instr = ASM_BRANCH_S_LESS;
-
   new->len += 1;
 
 #if LIBASM_USE_OPERAND_VECTOR
