@@ -35,7 +35,7 @@ LDFLAGS32               += -L../libstderesi/ -lstderesi32   			\
 			-L../libelfsh/ -lelfsh32        			\
 			-L../libetrace/ -letrace32				\
 			-L/usr/pkg/lib/ 					\
-			-L../libmjollnir/ -lmjollnir32 -lcrypto        		\
+			-L../libmjollnir/ -lmjollnir32 -lcrypto $(DLOPT) 	\
 			-L../libetrace -letrace32 $(LPTHREAD)			\
 			-L../libasm/ -lasm32 $(LDUIOPT32) -g3 $(STATOPT) 	\
 			-L../libaspect/ -laspect32				\

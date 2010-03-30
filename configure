@@ -432,10 +432,10 @@ fi
 
 Linux*)
 
-    echo "RANLIB  = ranlib"               >> $CONFIGFILE
+    echo "RANLIB  = ranlib"			>> $CONFIGFILE
+    echo  "DLOPT		= -ldl"		>> $CONFIGFILE
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
-    echo  "DLOPT		= -ldl"       >> $CONFIGFILE
     echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
 fi
 
