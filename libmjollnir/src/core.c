@@ -210,6 +210,10 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
   if (!addr || !sess)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid null parameters", -1);
 
+  if (sess->cur->proc.fetch == NULL)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "No valid fetch-hook for this architecture", -1);
+
   /* Make sure the input address is mapped somewhere */
   parent = elfsh_get_parent_section(sess->cur->obj, addr, &offset);
   if (!parent)
