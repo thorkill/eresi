@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Homemade configure file for the ERESI project
-# The ERESI team 2001-2008
+# The ERESI team 2001-2010
 #
 # $Id$
 
@@ -59,7 +59,7 @@ printHelp()
     echo "   --set-compiler    : Set your compiler path."
     echo "   --set-editor      : Set your editor path."
     echo "   --set-modpath     : Set your ELFsh modules path."
-    echo "   --prefix          : Set prefix."
+    echo "   --prefix <path>   : Set prefix."
     echo
     echo "   All options are disabled by default."
     echo
@@ -319,6 +319,7 @@ echo "" >> kernsh/include/info.h
 echo "#define ARCH \"$arch\"" >> kernsh/include/info.h
 echo "#define OS \"$os\"" >> kernsh/include/info.h
 echo "#define RELEASE \"$release\"" >> kernsh/include/info.h
+
 if [ $os = 'Linux' ]; then
     echo "" > libkernsh/include/libkernsh-info.h
     echo "#ifndef __LIBKERNSH_INFO_H__" >> libkernsh/include/libkernsh-info.h
@@ -331,7 +332,8 @@ if [ $os = 'Linux' ]; then
     fi
     echo "" >> libkernsh/include/libkernsh-info.h
     echo "#endif" >> libkernsh/include/libkernsh-info.h
-fi     
+fi
+
 echo "" >> kernsh/include/info.h
 echo "#endif" >> kernsh/include/info.h
 KERNSH="1"
@@ -351,7 +353,6 @@ fi
 
 --prefix*)
 shift
-echo " [*] Prefix:  " $1
 PREFIX=$1
 ;;
 
@@ -443,6 +444,11 @@ if [ "$ERESI_NET" = "1" ]; then
     echo  "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
 fi
 
+if [ "$PREFIX" == "" ]; then
+    PREFIX="/usr"
+fi
+
+
 ;;
 
 FreeBSD*)
@@ -450,6 +456,11 @@ FreeBSD*)
     echo " [*] OS Version: $OSVER"
     echo "RANLIB  = ranlib"               >> $CONFIGFILE
     SHELL="/bin/sh"
+
+    if [ "$PREFIX" == "" ]; then
+	PREFIX="/usr/local/"
+    fi
+
 if [ "$STATIC" = "0" ]; then
     echo  " [*] Enabling dynamic linking."
     echo  "DYNOPT		= -rdynamic"  >> $CONFIGFILE
@@ -464,9 +475,7 @@ if [ "$OSVER" = "4" ]; then
  LPTHREAD="-lc_r"
 fi
 
-echo "#define ERESI_MODPATH    \"/usr/local/share/eresi/\" "   >> $VARSFILE
-
-MODPATHSET="1";
+MODPATHSET="0";
 FREEBSD="1";
 ;;
 
@@ -523,22 +532,20 @@ if [ "$ERESI_NET" = "1" ]; then
 fi
 ;;
 
-
 esac
-
 
 # Set default variables in case it was not precised
 
 if [ "$MODPATHSET" != "1" ]; then
-    echo "#define ERESI_MODPATH    \"/usr/local/share/eresi/\"" >> $VARSFILE
+	echo "#define ERESI_MODPATH    \"$BASEPATH/share/eresi/\"" >> $VARSFILE
 fi
 
 if [ "$LIBPATHSET" != "1" ]; then
-    echo "#define ERESI_LIBPATH    \"/lib;/usr/lib;/usr/local/lib\"" >> $VARSFILE
+    echo "#define ERESI_LIBPATH    \"/lib;/usr/lib;/usr/local/lib:$BASEPATH/lib/\"" >> $VARSFILE
 fi
 
 if [ "$TESTING" != "1" ]; then
-    echo "#define E2DBG_PATH    \"$PREFIX/usr/local/lib/\""  >> $VARSFILE
+    echo "#define E2DBG_PATH    \"$BASEPATH/lib/\""  >> $VARSFILE
 fi
 
 if [ "$SLOGSET" != "1" ]; then
@@ -556,6 +563,8 @@ fi
 if [ "$BUILDOP" != "1" ];  then
     echo "BUILDOP = -DM32"					>> $CONFIGFILE
 fi
+
+echo " [*] Prefix:  " $PREFIX
 
 echo  " [*] Enabling libasm support"
 echo  "LDASMOPT	= -lasm"		>> $CONFIGFILE
@@ -587,26 +596,31 @@ if which etags 2>/dev/null; then
 elif  which etags.emacs 2>/dev/null; then
     echo "ETAGS   = etags.emacs "			        >> Makefile
 fi
+
 echo "CTAGS   = ctags "						>> Makefile
 echo "DESTDIR = $PREFIX"                       			>> Makefile
 echo "BUILD_TARGET = $BUILD_TARGET"				>> Makefile
 echo "MOD_TARGET = $MOD_TARGET"					>> Makefile
 
 if [ "$FREEBSD" = "1" ]; then
-echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
+echo "BASEPATH = \$(DESTDIR)/"				>> Makefile
 echo "MANPATH = \$(BASEPATH)/man"				>> Makefile
+
 elif [ "$BEOS" = "1" ]; then
-echo "BASEPATH = \$(DESTDIR)"					>> Makefile
+echo "BASEPATH = \$(DESTDIR)/"					>> Makefile
 echo "MANPATH = \$(BASEPATH)/man"				>> Makefile
+
 else
-echo "BASEPATH = \$(DESTDIR)/usr/local"				>> Makefile
+echo "BASEPATH = \$(DESTDIR)/"				>> Makefile
 echo "MANPATH = \$(BASEPATH)/share/man"				>> Makefile
 fi
 
 echo "MODPATH = \$(BASEPATH)/share/elfsh/"			>> Makefile
 echo "BINPATH = \$(BASEPATH)/bin/"				>> Makefile
 echo "LIBPATH = \$(BASEPATH)/lib/"				>> Makefile
-echo "#define LIBPATH          \"$PREFIX/usr/local/lib/\""	>> $VARSFILE
+
+echo "#define LIBPATH          \"$PREFIX/lib/\""	>> $VARSFILE
+
 echo "INCPATH = \$(BASEPATH)/include/"				>> Makefile
 echo "RM      = rm -f "                                		>> Makefile
 echo ""								>> Makefile
@@ -963,6 +977,8 @@ echo "	rm -f  \$(BINPATH)/elfsh*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/e2dbg*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/etrace*"				>> Makefile
 echo "	rm -f  \$(BINPATH)/evarista*"				>> Makefile
+echo "	rm -f  \$(BINPATH)/eresi-config*"			>> Makefile
+echo "	rm -f  \$(BINPATH)/kedbg*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libelfsh*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libetrace*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libe2dbg*"				>> Makefile
@@ -974,17 +990,22 @@ echo "	rm -f  \$(LIBPATH)/librevm*"			        >> Makefile
 echo "	rm -f  \$(LIBPATH)/libstderesi*"			>> Makefile
 echo "	rm -f  \$(LIBPATH)/libedfmt*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libasm*"				>> Makefile
+echo "	rm -f  \$(LIBPATH)/libgdbwrap*"				>> Makefile
 echo "	rm -f  \$(LIBPATH)/libmalloc-e2dbg*"			>> Makefile
 echo "	rm -fr \$(MODPATH) "					>> Makefile
 echo "	rm -f  \$(MANPATH)/man1/elfsh.1 "			>> Makefile
 echo "	rm -f  \$(INCPATH)/libasm*.h "				>> Makefile
 echo "	rm -f  \$(INCPATH)/libmjollnir*.h "		        >> Makefile
 echo "	rm -f  \$(INCPATH)/libui.h "				>> Makefile
+echo "	rm -f  \$(INCPATH)/aproxy.h "				>> Makefile
 echo "	rm -fr \$(INCPATH)/libelfsh*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libaspect*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/librevm*"				>> Makefile
 echo "	rm -fr \$(INCPATH)/libstderesi*"         		>> Makefile
 echo "	rm -fr \$(INCPATH)/libedfmt*"				>> Makefile
+echo "	rm -fr \$(INCPATH)/libetrace*"				>> Makefile
+echo "	rm -fr \$(INCPATH)/revm*"				>> Makefile
+echo "	rm -f \$(INCPATH)/libvars.h"				>> Makefile
 if [ "$KERNSH" = "1" ]; then
 echo "	rm -f  \$(BINPATH)/kernsh*"                             >> Makefile
 echo "	rm -f  \$(LIBPATH)/libkernsh*"                          >> Makefile

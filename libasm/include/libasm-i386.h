@@ -489,7 +489,7 @@ enum e_asm_dreg {
  * Refer to init_instr_table in tables_i386.c
  */
 
-enum asm_instr {
+enum e_asm_instr {
   ASM_NONE,  
   /* special instr id	*/
   ASM_IPREFIX_MIN,
