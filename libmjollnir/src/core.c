@@ -1,5 +1,5 @@
 /**
-* @file libmjollnir/src/core.c
+ * @file libmjollnir/src/core.c
  * @ingroup libmjollnir
  * @brief Implement low-level functions of the libmjollnir library
  *
@@ -13,7 +13,7 @@
  * @param curdepth current depth of cfg being analyzed
  * @param maxdepth depth limit of analysis (== MJR_MAX_DEPTH for limitless)
  * @return Success (0) or error (-1).
- * 
+ *
  * @ingroup libmjollnir
  */
 int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int maxdepth)
@@ -46,9 +46,9 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 
   /* Create a new block if current address is out of all existing ones */
   curblock = (container_t *) hash_get(&sess->cur->blkhash, _vaddr2str(vaddr));
-  
+
 #if __DEBUG_MJOLLNIR__
-  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr " XFMT " \n", 
+  fprintf(D_DESC, "[D] core.c:analyse_code: bloc requested at vaddr " XFMT " \n",
 	  vaddr);
 #endif
 
@@ -58,7 +58,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 
 #if __DEBUG_MJOLLNIR__
   fprintf(D_DESC, "[D] %s: bloc " XFMT ": seen %hhd\n",
-          __FUNCTION__, block->vaddr, block->seen);
+	  __FUNCTION__, block->vaddr, block->seen);
 #endif
 
   /* Avoid loops */
@@ -70,7 +70,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
   sect = elfsh_get_parent_section(sess->cur->obj, vaddr, &off);
 
 #if __DEBUG_MJOLLNIR__
-  fprintf(stderr, " [D] analyse_rec: parent section of vaddr "AFMT" = %s (off %u) \n", 
+  fprintf(stderr, " [D] analyse_rec: parent section of vaddr "AFMT" = %s (off %u) \n",
 	  vaddr, (sect ? sect->name : "UNKNOW"), (u_int) off);
 #endif
 
@@ -96,8 +96,10 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
     {
 
       /* Reallocate the buffer if necessary (runtime kernsh or kedbg mode) */
-      /* If we are in elfsh, e2dbg or evarista, never reallocate since we read from static cache */
-      /* The use of readmema is a bit subtle here, dont modify unless you know what you are doing */
+      /* If we are in elfsh, e2dbg or evarista, never reallocate */
+      /* since we read from static cache */
+      /* The use of readmema is a bit subtle here, dont modify unless */
+      /* you know what you are doing */
       if (!eos && curr + 15 >= curlen)
 	{
 	  sect = elfsh_get_parent_section(sess->cur->obj, vaddr + curr, &off);
@@ -119,28 +121,28 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 
       /* Analyse current instruction */
       ilen = asm_read_instr(&instr, ptr + curr, curlen - curr, &sess->cur->proc);
-      
+
       /* This is an error that should never happen, or we have a serious libasm bug */
-      if (ilen <= 0) 
+      if (ilen <= 0)
 	{
 	  fprintf(stderr,
-		  " [D] asm_read_instr returned -1 (opcode %02X %02X %02X %02X %02X %02X) at "XFMT"\n", 
+		  " [D] asm_read_instr returned -1 (opcode %02X %02X %02X %02X %02X %02X) at "XFMT"\n",
 		 *(ptr + curr), *(ptr + curr + 1), *(ptr + curr + 2),
-		 *(ptr + curr + 3), *(ptr + curr + 4), *(ptr + curr + 5), 
+		 *(ptr + curr + 3), *(ptr + curr + 4), *(ptr + curr + 5),
 		 vaddr + curr);
 	  goto end;
 	}
 
       mjr_history_shift(sess->cur, instr, vaddr + curr);
-      block->size += ilen;	  
+      block->size += ilen;
 
 #if __DEBUG_READ__
-      fprintf(stderr, " [D] curaddr WILL BE analyzed: "XFMT" (curr = %d, ilen = %d) \n", 
+      fprintf(stderr, " [D] curaddr WILL BE analyzed: "XFMT" (curr = %d, ilen = %d) \n",
 	      vaddr + curr, curr, ilen);
 #endif
 
       /* Increase block size for delay slot if any */
-      delayslotsize = mjr_trace_control(sess->cur, curblock, sess->cur->obj, &instr, 
+      delayslotsize = mjr_trace_control(sess->cur, curblock, sess->cur->obj, &instr,
 					vaddr + curr, &trueaddr, &falseaddr);
 
 #if __DEBUG_READ__
@@ -156,25 +158,27 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 	}
 
       /* Recurse on next blocks */
-      if (trueaddr != MJR_BLOCK_INVALID) 
+      if (trueaddr != MJR_BLOCK_INVALID)
 	{
 	  depthinc = (instr.type & ASM_TYPE_CALLPROC ? 1 : 0);
 	  mjr_analyse_rec(sess, trueaddr, curdepth + depthinc, maxdepth);
 	}
 
-      if (falseaddr != MJR_BLOCK_INVALID) 
+      if (falseaddr != MJR_BLOCK_INVALID)
 	mjr_analyse_rec(sess, falseaddr, curdepth, maxdepth);
 
       /* If we have recursed, the current block is over */
-      if (falseaddr != MJR_BLOCK_INVALID || trueaddr != MJR_BLOCK_INVALID || 
+      if (falseaddr != MJR_BLOCK_INVALID || trueaddr != MJR_BLOCK_INVALID ||
 	  (instr.type & ASM_TYPE_RETPROC) || (instr.type & ASM_TYPE_STOP))
 	{
 
 #if __DEBUG_MJOLLNIR__
-	  fprintf(D_DESC, "[D] core.c:analyse_code: bloc at vaddr " XFMT " with delayslot size %u\n", 
-		  block->vaddr, delayslotsize);
+	  fprintf(D_DESC,
+		  "[D] core.c:analyse_code: bloc at vaddr " XFMT " with delayslot size %u\n",
+		  block->vaddr,
+		  delayslotsize);
 #endif
-	  
+
 	  block->size += delayslotsize;
 	  break;
 	}
@@ -183,7 +187,7 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
  end:
   if (elfsh_is_runtime_mode() && (kernsh_is_present() || kedbg_is_present()))
     XFREE(__FILE__, __FUNCTION__, __LINE__, argptr);
-  
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -211,7 +215,7 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid null parameters", -1);
 
   if (sess->cur->proc.fetch == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "No valid fetch-hook for this architecture", -1);
 
   /* Make sure the input address is mapped somewhere */
@@ -239,7 +243,7 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
     }
 
   /* We are not analyzing the entry point */
-  else   
+  else
     {
       main_addr = 0;
       sess->cur->func_stack = elist_empty(sess->cur->func_stack->name);
@@ -252,7 +256,7 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
   /* Analyse recursively, starting at requested address */
   if (mjr_analyse_rec(sess, addr, 0, maxdepth) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Error during code analysis", -1);
+		 "Error during code analysis", -1);
 
   /* If requested address was the entry point, also analyse the infered main() address */
   if (main_addr)
@@ -269,13 +273,13 @@ int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags)
   /* Store analysis on disk */
   if (mjr_analyse_finished(sess) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Error during storage of analysis info", -1);
+		 "Error during storage of analysis info", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
- * @breif Store control-flow analysis information on disk 
+ * @breif Store control-flow analysis information on disk
  * @param sess Mjollnir session
  * @ingroup libmjollnir
  */
@@ -286,19 +290,19 @@ int             mjr_analyse_finished(mjrsession_t *sess)
   /* Store analyzed functions in file */
   if (mjr_flow_store(sess->cur, ASPECT_TYPE_FUNC) <= 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Unable to store functions in file", -1);
+		 "Unable to store functions in file", -1);
 
   /* Store analyzed blocks in file */
   if (mjr_flow_store(sess->cur, ASPECT_TYPE_BLOC) <= 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                 "Unable to store blocks in file", -1);
+		 "Unable to store blocks in file", -1);
 
   /* Set the flag and return */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
- * Indicate if a given address has already been analyzed 
+ * Indicate if a given address has already been analyzed
  * @param sess Mjollnir session
  * @param addr current address
  * @ingroup libmjollnir

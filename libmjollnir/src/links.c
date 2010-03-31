@@ -198,6 +198,7 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
                                     eresi_Addr   ret)
 {
   container_t   *csrc, *cdst, *cret;
+  mjrblock_t	*bsrc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -208,6 +209,15 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
 
   /* Insert symbol on terminated block */
   csrc = mjr_block_get_by_vaddr(ctxt, src, MJR_BLOCK_GET_FUZZY);
+
+  /* Get block data */
+  bsrc = (mjrblock_t *) csrc->data;
+
+  /* If TRUE < SRC: split it and set the new one as csrc */
+  if (bsrc->vaddr < src)
+    {
+      csrc = mjr_block_split(ctxt, src, MJR_LINK_BLOCK_COND_ALWAYS);
+    }
 
   if (!csrc)
     {

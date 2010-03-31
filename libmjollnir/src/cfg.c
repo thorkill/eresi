@@ -1,14 +1,12 @@
 /** 
-* @file libmjollnir/src/cfg.c
- * (C) 2006-2008 The ERESI team
+ * @file libmjollnir/src/cfg.c
+ * (C) 2006-2010 The ERESI team
  * @ingroup libmjollnir
  * 
  * @brief Top-level functions for control-flow analysis
  *
  */
 #include "libmjollnir.h"
-
-
 
 /** 
  * @brief This function trace execution flow and creates block depending on instruction.
@@ -28,7 +26,7 @@
  * FIXME : this function must be tested on other architectures
  * @ingroup libmjollnir
  */
-int			mjr_trace_control(mjrcontext_t *context,
+int			mjr_trace_control(mjrcontext_t	*context,
 					  container_t	*curblock,
 					  elfshobj_t    *obj, 
 					  asm_instr     *curins, 
@@ -58,11 +56,11 @@ int			mjr_trace_control(mjrcontext_t *context,
 			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
       mjr_container_add_link(context, bloc, curblock->id, MJR_LINK_BLOCK_COND_ALWAYS, 
 			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
-      
+
 #if __DEBUG_FLOW__
       fprintf(stderr, " [D] Found contiguous block ! stopping this recursion branch ******** \n");
 #endif
-      
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
