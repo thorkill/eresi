@@ -444,7 +444,7 @@ if [ "$ERESI_NET" = "1" ]; then
     echo  "EXTRAOPT = " $EXTRAOPT	  >> $CONFIGFILE
 fi
 
-if [ "$PREFIX" == "" ]; then
+if [ "$PREFIX" = "" ]; then
     PREFIX="/usr"
 fi
 
@@ -457,7 +457,7 @@ FreeBSD*)
     echo "RANLIB  = ranlib"               >> $CONFIGFILE
     SHELL="/bin/sh"
 
-    if [ "$PREFIX" == "" ]; then
+    if [ "$PREFIX" = "" ]; then
 	PREFIX="/usr/local/"
     fi
 

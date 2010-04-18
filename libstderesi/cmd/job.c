@@ -1,11 +1,11 @@
-/*
-* @file libstderesi/cmd/job.c
-** @ingroup cmd
-** Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
-**
-** $Id$
-**
-*/
+/**
+ * @file libstderesi/cmd/job.c
+ * @ingroup cmd
+ * Started on  Wed Jul 20 22:22:35 2005 yann_malcom 
+ *
+ * $Id$
+ *
+ */
 #include "libstderesi.h"
 
 
@@ -120,7 +120,8 @@ int		cmd_workspace()
       
       /* $ workspace name */      
     case 1:
-      return revm_create_new_workspace(revm_get_cur_job_parameter(0));
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
+                    revm_create_new_workspace(revm_get_cur_job_parameter(0)));
 
       /* Unknown command format */
     default:
