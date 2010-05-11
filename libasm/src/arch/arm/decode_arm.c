@@ -4,13 +4,62 @@
 */
 #include "libasm.h"
 
+void	arm_decode_condition(asm_instr *ins, u_char condition)
+{
+  ins->conditional = 0;
+  if (condition < 0x0E)
+    {
+      ins->conditional = 1;
+      ins->type |= ASM_TYPE_READFLAG;
+      ins->flagsread = arm_cond_flagsread_table[condition];
+    }
+}
+
+/* Must be called after full decode of opcode structure and operands */
+void	arm_decode_dataproc_flagswritten(asm_instr *ins, struct s_arm_decode_dataproc *opcode)
+{
+  u_char is_pc_dest;
+  int i;
+
+  /* Verify if PC is a destination register */
+  is_pc_dest = 0;
+  for (i = 0; i < ins->nb_op; i++)
+    {
+      if (ins->op[i].destination && ins->op[i].baser == ASM_ARM_REG_PC)
+        {
+          is_pc_dest = 1;
+        }
+    }
+
+  if (opcode->s)
+    {
+      /* Update instruction type */
+      ins->type |= ASM_TYPE_WRITEFLAG;
+
+      /* Determine which flags are written */
+      if (is_pc_dest)
+        {
+          /* CPSR = SPSR, thus all flags are written */
+          /* If any flag is added to e_arm_flags, please update this assignment */
+          ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V | ASM_ARM_FLAG_Q;
+        }
+      else
+        {
+          /* Fetch the table for the written flags */
+          ins->flagswritten = arm_dataproc_flagswritten_table[opcode->op2];
+        }
+    }
+}
+
 void	arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr,
                                   struct s_arm_decode_dataproc *opcode)
 {
+
   asm_operand *op;
 
   op = &ins->op[op_nr];
 
+  /* Decode operands */
   if (opcode->i)
     {
       u_int64_t temp;
@@ -102,9 +151,11 @@ void	arm_decode_multiply_long(asm_instr *ins, u_char *buf,
                                  struct s_arm_decode_multiply *opcode)
 {
   ins->op[0].baser = opcode->r2; /* This is RdLo */
+  ins->op[0].destination = 1;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   ins->op[1].baser = opcode->r1; /* This is RdHi */
+  ins->op[1].destination = 1;
   asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   ins->op[2].baser = opcode->r4; /* This is Rs */

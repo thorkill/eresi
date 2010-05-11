@@ -25,11 +25,13 @@ int     asm_arm_smlalxy(asm_instr * ins, u_char * buf, u_int len,
   ins->nb_op = 4;
 
   /* Decode operands */
-
+  // TODO: verify if we can do like smlal
   ins->op[0].baser = opcode.r2; /* This is RdLo */
+  ins->op[0].destination = 1;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   ins->op[1].baser = opcode.r1; /* This is RdHi */
+  ins->op[1].destination = 1;
   asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   ins->op[2].baser = opcode.r4; /* This is Rm */

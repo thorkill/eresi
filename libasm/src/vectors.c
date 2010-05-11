@@ -36,13 +36,25 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
 			  asm_processor *proc)
 {
   int	to_ret;
+
   LIBASM_PROFILE_FIN();
+
+  switch (proc->type)
+    {
 #if LIBASM_ENABLE_SPARC
-  if (proc->type == ASM_PROC_SPARC)
-    to_ret = asm_sparc_illegal(ins, opcode, len, proc);
-  else	
-    to_ret = -1;
+    case ASM_PROC_SPARC:
+      to_ret = asm_sparc_illegal(ins, opcode, len, proc);
+      break;
 #endif
+#if LIBASM_ENABLE_ARM
+    case ASM_PROC_ARM:
+      to_ret = asm_arm_illegal(ins, opcode, len, proc);
+      break;
+#endif
+    default:
+      to_ret = -1;
+    }
+
   LIBASM_PROFILE_FOUT(to_ret);
 }
 #endif

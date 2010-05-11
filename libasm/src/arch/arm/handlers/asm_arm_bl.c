@@ -15,6 +15,8 @@ int     asm_arm_bl(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_branch1(&opcode, buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->branch1_table[(opcode.l_h << 4) | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];

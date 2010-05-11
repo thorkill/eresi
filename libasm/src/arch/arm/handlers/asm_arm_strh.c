@@ -15,6 +15,8 @@ int     asm_arm_strh(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_ldst_misc(&opcode,buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->ldst_table[(opcode.l << 6) | (opcode.s << 5) | opcode.h << 4 | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];

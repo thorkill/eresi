@@ -144,6 +144,8 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
           temp = temp >> 1;
         }
       strcat(buf, "}");
+      if (op->regset == ASM_ARM_REGSET_USR)
+        strcat(buf, "^");
       break;
     case ASM_ARM_OTYPE_DISP:
       address = asm_dest_resolve_arm(addr, op->imm, 0);

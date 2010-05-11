@@ -117,6 +117,9 @@ int     asm_register_arm_instructions()
   // If not, maybe it'll be better to remove the multiple entries used in
   // the opcode vector
 
+  /* undefined instruction */
+  asm_register_arm_opcode(0x00, 0x00, 0x00, (unsigned long) asm_arm_undef);
+
   /* multiply */
   asm_register_arm_opcode(0x00, 0x01, 0x00, (unsigned long) asm_arm_mul);
   asm_register_arm_opcode(0x00, 0x01, 0x01, (unsigned long) asm_arm_mla);
@@ -149,7 +152,7 @@ int     asm_register_arm_instructions()
   /* .. other */
   /* ... status register manipulation */
   asm_register_arm_opcode(0x00, 0x06, 0x00, (unsigned long) asm_arm_mrs);
-  asm_register_arm_opcode(0x00, 0x00, 0x00, (unsigned long) asm_arm_msr); /* MSR(1) */
+  asm_register_arm_opcode(0x00, 0x00, 0x01, (unsigned long) asm_arm_msr); /* MSR(1) */
   asm_register_arm_opcode(0x00, 0x06, 0x02, (unsigned long) asm_arm_msr); /* MSR(2) */
 
   asm_register_arm_opcode(0x00, 0x06, 0x03, (unsigned long) asm_arm_bx);
@@ -187,11 +190,11 @@ int     asm_register_arm_instructions()
   asm_register_arm_opcode(0x01, 0x02, 0x00, (unsigned long) asm_arm_pld);
 
   /* load/store multiple */
-  asm_register_arm_opcode(0x02, 0x00, 0x00, (unsigned long) asm_arm_stm); // first form
-  asm_register_arm_opcode(0x02, 0x00, 0x02, (unsigned long) asm_arm_ldm); // first form
-  asm_register_arm_opcode(0x02, 0x00, 0x04, (unsigned long) asm_arm_stm); // second form
-  asm_register_arm_opcode(0x02, 0x00, 0x06, (unsigned long) asm_arm_ldm); // second form
-  asm_register_arm_opcode(0x02, 0x00, 0x07, (unsigned long) asm_arm_ldm); // third form
+  asm_register_arm_opcode(0x02, 0x00, 0x00, (unsigned long) asm_arm_stm1); /* STM(1) */
+  asm_register_arm_opcode(0x02, 0x00, 0x02, (unsigned long) asm_arm_ldm1); /* LDM(1) */
+  asm_register_arm_opcode(0x02, 0x00, 0x04, (unsigned long) asm_arm_stm2); /* STM(2) */
+  asm_register_arm_opcode(0x02, 0x00, 0x06, (unsigned long) asm_arm_ldm2); /* LDM(2) */
+  asm_register_arm_opcode(0x02, 0x00, 0x07, (unsigned long) asm_arm_ldm3); /* LDM(3) */
   /* branch */
   asm_register_arm_opcode(0x02, 0x01, 0x00, (unsigned long) asm_arm_b);
   asm_register_arm_opcode(0x02, 0x01, 0x01, (unsigned long) asm_arm_bl);

@@ -15,11 +15,14 @@ int     asm_arm_blx1(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_branch1(&opcode, buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->branch1_table[(opcode.l_h << 4) | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = ASM_TYPE_CALLPROC; /* Imperative call proc */
+  /* Imperative call proc */
+  ins->type = ASM_TYPE_CALLPROC | ASM_TYPE_ARCH; 
 
   ins->nb_op = 1;
 

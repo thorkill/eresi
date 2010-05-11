@@ -16,7 +16,7 @@ struct s_asm_op
   u_int	len;			
   /* pointer to operand in buffer */
   u_char *ptr;
-  /* operand type: contain operand type flags */
+  /* operand type: contain operandb type flags */
   u_int	type;
   /* a pointer to the operand name in string format */
   char *name;
@@ -25,6 +25,7 @@ struct s_asm_op
   /* Operand content flags */
   u_int	content;
   /* register set: 8/16/32 bits general registers, segment registers .. (IA32 only) */
+  /* register set: usr, svc, abt, und, irq, fiq (arm) */
   int regset;
   /* operand prefix (ia32 only)	*/
   int prefix;  
@@ -38,6 +39,9 @@ struct s_asm_op
   char	*sbaser;
   /* String for index register */
   char	*sindex;
+  /* Determines if this register is source or destination */
+  u_char destination;
+
   /* address space (sparc only) 
    * 
    * has to be different than ASM_SP_ASI_P for ASM_SP_OTYPE_IMM_ADDRESS
@@ -89,7 +93,9 @@ struct s_asm_instr
   /* annul bit (sparc only) */
   int annul;
   /* prediction bit (sparc only) */
-  int prediction;    
+  int prediction;
+  /* Whether instruction is conditional or not (arm only) */
+  u_char conditional;
   /* number of operand */
   int nb_op;
   /* Array of operands */

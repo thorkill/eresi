@@ -30,7 +30,7 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   u_int         dim[3];
   int           (*fetch)(asm_instr *, u_char *, u_int, asm_processor *); 
   
-  int           converted;  
+  int           converted;
 
   LIBASM_PROFILE_FIN();
 
@@ -54,13 +54,18 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   ins->ptr_instr = buf;
   ins->nb_op = 0;
   ins->type = ASM_TYPE_NONE;
+  ins->flagsread = ASM_ARM_FLAG_NUM;
+  ins->flagswritten = ASM_ARM_FLAG_NUM;
   clear_operands(ins);
 
   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_ARM);
-  dim[0] = (converted & 0x0C000000) >> 26;
+  /* Undefined instruction is at (0,0,0) */
+// XXX: define if we need ASM_ARM_ and ASM_ARM_BAD (ASM_ARM_ is being used for undefined instruction)
+// The undefined instruction in the ARM arch generates an exception.
+  dim[0] = (converted >> 26) & 0x00000003;
   dim[1] = 0;
   dim[2] = 0;
-  
+
   switch (dim[0])
     {
     case 0x00:
@@ -81,7 +86,7 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
       fill_dim_vector_type4(converted,dim);
       break;
     default:
-      /* you should't be here! */
+      /* you shouldn't be here! */
       break;
     }
   
@@ -89,8 +94,6 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
 
   LIBASM_PROFILE_FOUT(fetch(ins, (u_char*) &converted, len, proc));
 }
-
-/* TODO: update this function comment */
 
 /**
  * Initialize the arm processor.
@@ -110,7 +113,6 @@ int     asm_init_arm(asm_processor *proc)
   proc->display_handle = asm_arm_display_instr;
   proc->type = ASM_PROC_ARM;
   
-
   proc->internals = inter = malloc(sizeof (struct s_asm_proc_arm)); 
 
   inter->dataproc_table = arm_dataproc_table;
@@ -149,18 +151,27 @@ eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half)
 /* Helper functions */
 void    fill_dim_vector_type1(int inst, u_int *dim_vec)
 {
-  int   sec_nibble, six_nibble, sev_nibble;
+  int   sec_nibble, six_nibble, sev_nibble, eig_nibble;
 
   sec_nibble = MGETNIBBLE(inst,1);
   six_nibble = MGETNIBBLE(inst,5);
   sev_nibble = MGETNIBBLE(inst,6);
+  eig_nibble = MGETNIBBLE(inst,7);
 
-  if (sev_nibble == 0x03
-      && (six_nibble & 0x0B) == 0x02)
+  if (eig_nibble == 0x0F
+      || (sev_nibble == 0x03 && (six_nibble & 0x0B) == 0x00))
+    {
+      /* Undefined */
+      /* UNPREDICTABLE prior to ARMv5 if eig_nibble == 0x0F */
+      /* UNPREDICTABLE prior to ARMv4 otherwise */
+      dim_vec[1] = 0x00;
+      dim_vec[2] = 0x00;
+    }
+  else if (sev_nibble == 0x03 && (six_nibble & 0x0B) == 0x02)
     {
       /* MSR(1) */
       dim_vec[1] = 0x00;
-      dim_vec[2] = 0x00;
+      dim_vec[2] = 0x01;
     }
   else if ((sev_nibble & 0x0E) == 0x00
            && (sec_nibble & 0x09) == 0x09)
@@ -173,17 +184,21 @@ void    fill_dim_vector_type1(int inst, u_int *dim_vec)
               /* multiply: 6 instructions */
               dim_vec[1] = 0x01;
               dim_vec[2] = six_nibble >> 1;
+              /* if dim_vec[2] > 1, UNPREDICTABLE prior ARMv4 */
             }
           else
             {
               /* swap: 2 instructions */
               dim_vec[1] = 0x02;
               dim_vec[2] = six_nibble >> 2;
+              // TODO: what if dim_vec[2] > 1?
             }
         }
       else
         {
           /* extra load/store: 6 instructions */
+          /* UNPREDICTABLE prior to ARMv4 */
+          /* LDRD/STRD present in E variant (>=ARMv5) excluding TExP */
           dim_vec[1] = 0x03;
           dim_vec[2] = (MGETBIT(six_nibble,0) << 2) | ((sec_nibble >> 1) & 0x03);
         }
@@ -196,6 +211,7 @@ void    fill_dim_vector_type1(int inst, u_int *dim_vec)
       if (MGETBIT(sec_nibble,3))
         {
           /* DSP multiply: 5 instructions */
+          /* Present in E variant (>= ARMv5) */
           dim_vec[1] = 0x04;
           dim_vec[2] = (six_nibble >> 1);
           if (dim_vec[2] == 0x01)
@@ -206,6 +222,7 @@ void    fill_dim_vector_type1(int inst, u_int *dim_vec)
           if ((sec_nibble >> 1) == 0x02)
             {
               /* DSP add/sub: 4 instructions */
+              /* Present in E variant (>= ARMv5) */
               dim_vec[1] = 0x05;
               dim_vec[2] = six_nibble >> 1;
             }
@@ -230,60 +247,96 @@ void    fill_dim_vector_type1(int inst, u_int *dim_vec)
 
 void    fill_dim_vector_type2(int inst, u_int *dim_vec)
 {
-  int	eig_nibble;
+  int	eig_nibble, sev_nibble, sec_nibble;
 
   eig_nibble = MGETNIBBLE(inst,7);
+  sev_nibble = MGETNIBBLE(inst,6);
+  sec_nibble = MGETNIBBLE(inst,1);
+
   if (eig_nibble == 0x0F)
-    if ((MGETNIBBLE(inst,6) & 0x0D) == 0x05
-        && (MGETNIBBLE(inst,5) & 0x07) == 0x05
-        && MGETNIBBLE(inst,3) == 0x0F)
-      {
-        /* PLD */
-        dim_vec[1] = 0x02;
-        dim_vec[2] = 0x00;
-      }
-    else
-      {
-        /* TODO: undef */
-      }
+    {
+      /* UNPREDICTABLE prior to ARMv5 */
+      if ((MGETNIBBLE(inst,6) & 0x0D) == 0x05
+          && (MGETNIBBLE(inst,5) & 0x07) == 0x05
+          && MGETNIBBLE(inst,3) == 0x0F)
+        {
+          /* PLD */
+          dim_vec[1] = 0x02;
+          dim_vec[2] = 0x00;
+        }
+      else
+        {
+          /* Undefined */
+          dim_vec[0] = 0x00;
+          dim_vec[1] = 0x00;
+          dim_vec[2] = 0x00;
+        }
+    }
   else
     {
-      /* divides into load and store: 8 instructions */
-
-      dim_vec[1] = MGETBIT(inst,20);
-
-      dim_vec[2] = MGETBIT(inst,22) << 1;
-      if (!MGETBIT(inst,24) && MGETBIT(inst,21))
+      if ((sev_nibble & 0x0E) == 0x06
+          && (sec_nibble & 0x01) == 0x01)
         {
-          dim_vec[2] |= 0x1;
+          /* Undefined (all versions) */
+          dim_vec[0] = 0x00;
+          dim_vec[1] = 0x00;
+          dim_vec[2] = 0x00;
+        }
+      else
+        {
+          /* Load/store */
+          /* divides into load and store: 8 instructions */
+          dim_vec[1] = MGETBIT(inst,20);
+
+          dim_vec[2] = MGETBIT(inst,22) << 1;
+          if (!MGETBIT(inst,24) && MGETBIT(inst,21))
+            {
+              dim_vec[2] |= 0x1;
+            }
         }
     }
 }
 
 void    fill_dim_vector_type3(int inst, u_int *dim_vec)
 {
-  /* we could have just the second dimension, but i'll use the third to */
-  /* divide into store/load multiple and branch instructions */
-  dim_vec[1] = MGETBIT(inst,25);
+  int eig_nibble, sev_nibble;
 
-  if (!dim_vec[1])
+  eig_nibble = MGETNIBBLE(inst,7);
+  sev_nibble = MGETNIBBLE(inst,6);
+
+  if (eig_nibble == 0x0F
+      && (sev_nibble & 0x0E) == 0x08)
     {
-      /* load/store multiple: 5 instructions */
-      dim_vec[2] = MGETBIT(inst,22) << 2 | MGETBIT(inst,20) << 1;
-      if (!dim_vec[1] && dim_vec[2] == 0x6)
-        dim_vec[2] |= MGETBIT(inst,15);
+      /* Undefined */
+      /* UNPREDICTABLE prior to ARMv5 */
+      dim_vec[0] = 0;
+      dim_vec[1] = 0;
+      dim_vec[2] = 0;
     }
   else
     {
-      /* branch: 3 instructions */
-      if (MGETNIBBLE(inst,7) == 0x0F)
-        /* BLX */
-        dim_vec[2] = 0x02;
-      else
-        /* B, BL */
-        dim_vec[2] = MGETBIT(inst,24);
-    }
+      /* we could have just the second dimension, but i'll use the third to */
+      /* divide into store/load multiple and branch instructions */
+      dim_vec[1] = MGETBIT(inst,25);
 
+      if (!dim_vec[1])
+        {
+          /* load/store multiple: 5 instructions */
+          dim_vec[2] = MGETBIT(inst,22) << 2 | MGETBIT(inst,20) << 1;
+          if (!dim_vec[1] && dim_vec[2] == 0x6)
+            dim_vec[2] |= MGETBIT(inst,15);
+        }
+      else
+        {
+          /* branch: 3 instructions */
+          if (MGETNIBBLE(inst,7) == 0x0F)
+            /* BLX */
+            dim_vec[2] = 0x02;
+          else
+            /* B, BL */
+            dim_vec[2] = MGETBIT(inst,24);
+        }
+    }
 }
 
 void    fill_dim_vector_type4(int inst, u_int *dim_vec)
@@ -294,22 +347,32 @@ void    fill_dim_vector_type4(int inst, u_int *dim_vec)
   sev_nibble = MGETNIBBLE(inst,6);
   six_nibble = MGETNIBBLE(inst,5);
 
-  if (sev_nibble < 0x0E)
-    if (sev_nibble == 0x0C
-        && (six_nibble & 0x0E) == 0x04)
-      {
-        /* MRRC & MCRR */
-        dim_vec[1] = 0x00;
-        dim_vec[2] = MGETBIT(six_nibble,0);
-      }
-    else
-      {
-        /* load/store coprocessor: 4 instructions */
-        dim_vec[1] = 0x01;
-        dim_vec[2] = MGETBIT(six_nibble,0);
-        if (eig_nibble == 0x0F)
-          dim_vec[2] += 0x02;
-      }
+  if (eig_nibble == 0x0F && sev_nibble == 0x0F)
+    {
+      /* Undefined */
+      /* UNPREDICTABLE prior to ARMv5 */
+      dim_vec[0] = 0;
+      dim_vec[1] = 0;
+      dim_vec[2] = 0;
+    }
+  else if (sev_nibble < 0x0E)
+    {
+      if (sev_nibble == 0x0C
+          && (six_nibble & 0x0E) == 0x04)
+        {
+          /* MRRC & MCRR */
+          dim_vec[1] = 0x00;
+          dim_vec[2] = MGETBIT(six_nibble,0);
+        }
+      else
+        {
+          /* load/store coprocessor: 4 instructions */
+          dim_vec[1] = 0x01;
+          dim_vec[2] = MGETBIT(six_nibble,0);
+          if (eig_nibble == 0x0F)
+            dim_vec[2] += 0x02;
+        }
+    }
   else if (sev_nibble == 0x0E)
     {
       if (!MGETBIT(inst,4))
@@ -329,8 +392,9 @@ void    fill_dim_vector_type4(int inst, u_int *dim_vec)
             dim_vec[2] += 0x02;
         }
     }
-  else if (sev_nibble == 0x0F)
+  else 
     {
+      /* eig_nibble != 0x0F && sev_nibble == 0x0F */
       /* SWI */
       dim_vec[1] = 0x04;
       dim_vec[2] = 0x00;
@@ -345,8 +409,10 @@ void	clear_operands(asm_instr *ins)
 
   for (i = 0; i < 4; i++)
     {
+      ins->op[i].destination = 0;
       ins->op[i].baser = ASM_ARM_REG_NUM;
       ins->op[i].indexr = ASM_ARM_REG_NUM;
       ins->op[i].shift_type = ASM_ARM_SHIFT_NUM;
+      ins->op[i].regset = ASM_ARM_REGSET_NUM;
     }
 }

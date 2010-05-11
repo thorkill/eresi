@@ -15,11 +15,13 @@ int     asm_arm_b(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_branch1(&opcode, buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->branch1_table[(opcode.l_h << 4) | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = (ins->instr == ASM_ARM_B) ? ASM_TYPE_IMPBRANCH : ASM_TYPE_CONDBRANCH;
+  ins->type = ins->conditional ? ASM_TYPE_CONDBRANCH : ASM_TYPE_IMPBRANCH;
 
   ins->nb_op = 1;
 

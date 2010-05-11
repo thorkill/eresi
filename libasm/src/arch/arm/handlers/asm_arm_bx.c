@@ -15,20 +15,34 @@ int     asm_arm_bx(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_branch2(&opcode, buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->branch2_table[(opcode.op << 4) | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = (ins->instr == ASM_ARM_BX) ? ASM_TYPE_IMPBRANCH : ASM_TYPE_CONDBRANCH;
-  /* If register is the LR (R14), then it's a retproc */
+  /* rest of the type is defined below */
+  ins->type = ASM_TYPE_ARCH; 
   if (opcode.rm == ASM_ARM_REG_R14)
-    ins->type = ASM_TYPE_RETPROC;
+    /* This is a return */
+    ins->type |= ASM_TYPE_RETPROC;
+  else
+    ins->type |= ins->conditional ? ASM_TYPE_CONDBRANCH : ASM_TYPE_IMPBRANCH;
 
   ins->nb_op = 1;
 
   /* Decode operands */
   ins->op[0].baser = opcode.rm;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
+
+  /* Check if this BX is a procedure return (BX LR) */
+  if (ins->op[0].baser == ASM_ARM_REG_R14)
+    {
+      /* clear types assigned in the operand handler */
+      ins->type &= ~(ASM_TYPE_CONDBRANCH | ASM_TYPE_IMPBRANCH);
+      /* assign the real type */
+      ins->type |= ASM_TYPE_RETPROC;
+    }
 
   LIBASM_PROFILE_FOUT(4);
 }

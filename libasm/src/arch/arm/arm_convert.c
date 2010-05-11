@@ -29,9 +29,9 @@ void	arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf)
 
   opcode->rm = (opcode->shifter_operand & 0x0F);
   opcode->rs = opcode->rotate_imm = ((opcode->shifter_operand >> 8) & 0x0F);
-  opcode->immed = (opcode->shifter_operand) & 0x0F;
+  opcode->immed = (opcode->shifter_operand) & 0x0FF;
   opcode->shift = ((opcode->shifter_operand >> 5) & 0x03);
-  opcode->shift_imm = ((opcode->shifter_operand >> 7) & 0x1F);
+  opcode->shift_imm = ((opcode->shifter_operand >> 7) & 0x01F);
   opcode->reg_shift = ((opcode->shifter_operand >> 4) & 0x01);
 }
 

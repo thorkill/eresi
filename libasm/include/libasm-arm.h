@@ -24,12 +24,14 @@ eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half);
 /* Output functions */
 char *asm_arm_display_instr(asm_instr *instr, eresi_Addr addr);
 char *asm_arm_get_op_name(asm_operand *op);
-
 char *asm_arm_get_register(int reg);
+char *asm_arm_get_regset_suffix(int regset);
 char *asm_arm_get_shift_type(u_int shift_type);
 void asm_arm_dump_operand(asm_instr *ins, int num, eresi_Addr addr, char *buf, u_int len);
 
 /* Instruction handlers */
+int asm_arm_illegal(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_undef(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_adc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_add(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_and(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -46,7 +48,9 @@ int asm_arm_cmn(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_cmp(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_eor(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
-int asm_arm_ldm(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_ldm1(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_ldm2(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_ldm3(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldr(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrb(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_ldrbt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -82,7 +86,8 @@ int asm_arm_smull(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc
 int asm_arm_smulwy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_smulxy(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_stc(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
-int asm_arm_stm(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_stm1(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
+int asm_arm_stm2(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_str(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_strb(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
 int asm_arm_strbt(asm_instr * ins, u_char * buf, u_int len, asm_processor * proc);
@@ -116,6 +121,9 @@ void arm_convert_ldst_mult(struct s_arm_decode_ldst_mult *opcode, u_char *buf);
 void arm_convert_multiply(struct s_arm_decode_multiply *opcode, u_char *buf);
 void arm_convert_branch1(struct s_arm_decode_branch1 *opcode, u_char *buf);
 void arm_convert_branch2(struct s_arm_decode_branch2 *opcode, u_char *buf);
+
+void arm_decode_condition(asm_instr *ins, u_char condition);
+void arm_decode_dataproc_flagswritten(asm_instr *ins, struct s_arm_decode_dataproc *opcode);
 
 void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_dataproc *opcode);
 void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
@@ -192,6 +200,50 @@ enum e_arm_registers
     ASM_ARM_REG_SPSR,
 
     ASM_ARM_REG_NUM
+  };
+
+enum e_arm_regset
+  {
+    ASM_ARM_REGSET_USR, /* User/System registers */
+    ASM_ARM_REGSET_SVC, /* Supervisor registers */
+    ASM_ARM_REGSET_ABT, /* Abort registers */
+    ASM_ARM_REGSET_UND, /* Undefined registers */
+    ASM_ARM_REGSET_IRQ, /* IRQ register */
+    ASM_ARM_REGSET_FIQ, /* FIQ registers */
+
+    ASM_ARM_REGSET_NUM
+  };
+
+/* ARM Flags - values correspond to the bit in the CPSR/SPSR register */
+enum e_arm_flags
+  {
+    ASM_ARM_FLAG_N = 1 << 31, /* Negative */
+    ASM_ARM_FLAG_Z = 1 << 30, /* Zero */
+    ASM_ARM_FLAG_C = 1 << 29, /* Carry */
+    ASM_ARM_FLAG_V = 1 << 28, /* Overflow */
+    ASM_ARM_FLAG_Q = 1 << 27,  /* Enhanced DSP Overflow (ARMv5E and superior) */
+
+    ASM_ARM_FLAG_NUM = 0x00
+  };
+
+enum e_arm_conditions
+  {
+    ASM_ARM_COND_EQ,
+    ASM_ARM_COND_NE,
+    ASM_ARM_COND_CS,
+    ASM_ARM_COND_CC,
+    ASM_ARM_COND_MI,
+    ASM_ARM_COND_PL,
+    ASM_ARM_COND_VS,
+    ASM_ARM_COND_VC,
+    ASM_ARM_COND_HI,
+    ASM_ARM_COND_LS,
+    ASM_ARM_COND_GE,
+    ASM_ARM_COND_LT,
+    ASM_ARM_COND_GT,
+    ASM_ARM_COND_LE,
+    ASM_ARM_COND_AL,
+    ASM_ARM_COND_NV
   };
 
 /***
@@ -1874,5 +1926,8 @@ extern int	arm_dsp_multiply_table[256];
 extern int	arm_dsp_arith_table[64];
 extern int	arm_branch1_table[32];
 extern int	arm_branch2_table[32];
+
+extern int	arm_cond_flagsread_table[16];
+extern int	arm_dataproc_flagswritten_table[16];
 
 #endif /* _LIBASM_ARM_H_ */

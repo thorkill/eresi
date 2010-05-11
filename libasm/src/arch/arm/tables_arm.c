@@ -4,6 +4,49 @@
 */
 #include <libasm.h>
 
+/* Flags read by condition */
+int	arm_cond_flagsread_table[16] =
+  {
+    ASM_ARM_FLAG_Z, /* ASM_ARM_COND_EQ */
+    ASM_ARM_FLAG_Z, /* ASM_ARM_COND_NE */
+    ASM_ARM_FLAG_C, /* ASM_ARM_COND_CC */
+    ASM_ARM_FLAG_C, /* ASM_ARM_COND_CS */
+    ASM_ARM_FLAG_N, /* ASM_ARM_COND_MI */
+    ASM_ARM_FLAG_N, /* ASM_ARM_COND_PL */
+    ASM_ARM_FLAG_V, /* ASM_ARM_COND_VS */
+    ASM_ARM_FLAG_V, /* ASM_ARM_COND_VC */
+    ASM_ARM_FLAG_C | ASM_ARM_FLAG_Z, /* ASM_ARM_COND_HI */
+    ASM_ARM_FLAG_C | ASM_ARM_FLAG_Z, /* ASM_ARM_COND_LS */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_GE */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_LT */
+    ASM_ARM_FLAG_Z | ASM_ARM_FLAG_N, ASM_ARM_FLAG_V, /* ASM_ARM_COND_GT */
+    ASM_ARM_FLAG_Z | ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_LE */
+    0x00, /* ASM_ARM_COND_AL */
+    0x00, /* ASM_ARM_COND_NV */
+  };
+
+/* Flags written by data processing instructions */
+/* opcode (4bit) */
+int	arm_dataproc_flagswritten_table[16] =
+  {
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* AND */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* EOR */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* SUB */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* RSB */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* ADD */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* ADC */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* SBC */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* RSC */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* TST */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* TEQ */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* CMP */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V, /* CMN */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* ORR */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* MOV */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C, /* BIC */
+    ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C  /* MVN */
+  };
+
 /* opcode (4bit) | cond (4bit) | S (1bit) */
 int	arm_dataproc_table[512] =
   {

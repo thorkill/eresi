@@ -23,6 +23,7 @@ int     asm_arm_clz(asm_instr * ins, u_char * buf, u_int len,
 
   /* Decode operands */
   ins->op[0].baser = opcode.rd;
+  ins->op[0].destination = 1;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
   ins->op[1].baser = opcode.rm;
   asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);

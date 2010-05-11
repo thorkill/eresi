@@ -15,5 +15,7 @@ int     asm_arm_bkpt(asm_instr * ins, u_char * buf, u_int len,
 
   ins->nb_op = 0;
 
+  ins->conditional = 0;
+
   LIBASM_PROFILE_FOUT(4);
 }
