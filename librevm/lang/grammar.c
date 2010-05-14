@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/grammar.c
+ * @file librevm/lang/grammar.c
  * @ingroup lang
  * @brief We dont use bison and have our own parser generator.
  *
@@ -11,7 +11,7 @@
 
 
 /**
- * @brief Get a va_list of parameters 
+ * @brief Get a va_list of parameters
  */
 static int	parse_lookup_varlist(char *param, char *fmt, ...)
 {
@@ -25,8 +25,8 @@ static int	parse_lookup_varlist(char *param, char *fmt, ...)
 }
 
 
-/** 
- * @brief Parse a vector access 
+/**
+ * @brief Parse a vector access
  */
 revmobj_t	*parse_vector(char *param, char *fmt)
 {
@@ -56,10 +56,10 @@ revmobj_t	*parse_vector(char *param, char *fmt)
   /* Early sanity checks */
   if (!cur)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unknown requested vector", NULL);
+                      "Unknown requested vector", NULL);
   if (revm_vector_bad_dims(cur, dims, dimnbr))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Requested vector with bad dimensions", NULL);
+                      "Requested vector with bad dimensions", NULL);
 
   /* Get a pointer on the desired entry of the vector */
   XALLOC(__FILE__, __FUNCTION__, __LINE__,ret, sizeof(revmobj_t), NULL);
@@ -75,8 +75,8 @@ revmobj_t	*parse_vector(char *param, char *fmt)
 }
 
 
-/** 
- * @brief Parse a hash access 
+/**
+ * @brief Parse a hash access
  */
 revmobj_t	*parse_hash(char *param, char *fmt)
 {
@@ -87,14 +87,13 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   char		*entryname;
   char		*hashname;
   void		*ptr;
-  revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   size = parse_lookup_varlist(param, fmt, index);
   if (size != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Parser handling failed", NULL);
-  
+
   /* Get hash table and entry */
   entryname = strchr(index, ':');
   if (entryname)
@@ -104,23 +103,23 @@ revmobj_t	*parse_hash(char *param, char *fmt)
   hashname = revm_lookup_key(index);
   if (!hashname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unknown hash table", NULL);
+                 "Unknown hash table", NULL);
 
   /* Resolve entry name without messing with variable type */
   if (entryname)
     {
       entryname = revm_lookup_key(entryname);
       if (!entryname)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Unknown hash table entry", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unknown hash table entry", NULL);
     }
 
   /* In case the hash table does not exist, create it empty */
   hash = hash_find(hashname);
   if (!hash)
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	     hash, sizeof(hash_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+             hash, sizeof(hash_t), NULL);
       hash_init(hash, strdup(hashname), 7, ASPECT_TYPE_UNKNOW);
     }
 
@@ -146,8 +145,8 @@ revmobj_t	*parse_hash(char *param, char *fmt)
 
 
 
-/** 
- * @brief Parse a hash access 
+/**
+ * @brief Parse a hash access
  */
 revmobj_t	*parse_list(char *param, char *fmt)
 {
@@ -165,7 +164,7 @@ revmobj_t	*parse_list(char *param, char *fmt)
   if (size != 1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                       "Parser handling failed", NULL);
-  
+
   /* Get hash table and entry */
   entryname = strchr(index, ':');
   if (entryname)
@@ -173,23 +172,23 @@ revmobj_t	*parse_list(char *param, char *fmt)
   listname  = revm_lookup_key(index);
   if (!listname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unknown list", NULL);
+                 "Unknown list", NULL);
 
   /* Resolve entry name without messing with variable type */
   if (entryname)
     {
       entryname = revm_lookup_key(entryname);
       if (!entryname)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Unknown list element", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unknown list element", NULL);
     }
 
   /* In case the hash table does not exist, create it empty */
   list = elist_find(listname);
   if (!list)
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	     list, sizeof(list_t), NULL);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__,
+             list, sizeof(list_t), NULL);
       elist_init(list, listname, ASPECT_TYPE_UNKNOW);
     }
 
@@ -212,13 +211,9 @@ revmobj_t	*parse_list(char *param, char *fmt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
-
-
-
 /**
- * @brief Lookup a parameter with 3 fields, 3rd field beeing an index 
- * Used by GOT, CTORS, DTORS 
+ * @brief Lookup a parameter with 3 fields, 3rd field beeing an index
+ * Used by GOT, CTORS, DTORS
  */
 revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
 {
@@ -238,92 +233,89 @@ revmobj_t		*parse_lookup3_index(char *param, char *fmt, u_int sep)
 
   real_index = 0;
 
-  // Check if this handler is the correct one 
+  // Check if this handler is the correct one
   size = parse_lookup_varlist(param, fmt, obj, L1field, index);
   if (size != 3)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parser handling failed", NULL);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Parser handling failed", NULL);
+
   // Let's ask the hash table for the current working file
   robj = revm_lookup_file(obj);
   if (robj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested file object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested file object", NULL);
 
-  // Then, we ask the Level 1 object 
+  // Then, we ask the Level 1 object
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L1 object", NULL);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested L1 object", NULL);
+
   else if (l1->get_entptr == NULL || l1->get_obj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Bad object path", NULL);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Bad object path", NULL);
+
   pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
-  // Lookup object 
+  // Lookup object
   o1 = l1->get_obj(robj, &size);
 
-  // Lookup index 
+  // Lookup index
   real_index = revm_lookup_index(index);
-  
-  //printf("GOT real_index = " XFMT " unsigned: " UFMT " signed: " DFMT "\n", 
+
+  //printf("GOT real_index = " XFMT " unsigned: " UFMT " signed: " DFMT "\n",
   // real_index, real_index, real_index);
 
   if (((int) real_index) < 0)
     {
-      
-      if (l1->get_obj_nam == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid L1 index", NULL);
-      else
-	{
-	  
-	  //printf("looking up get_obj_name in GOT ! \n");
-	  
-	  pobj->parent = l1->get_obj_nam(robj, index);
-	  
-	  /*
-	  printf("GOT pobjparent = %p (with name = %s) \n", pobj->parent, index);
-	  printf("GOT sect data  = %p (GOT name = %s) \n", 
-		 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->data,
-		 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->name);
-	  */
 
-	  if (pobj->parent == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "No entry by that name", NULL);
-	}
+      if (l1->get_obj_nam == NULL)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Invalid L1 index", NULL);
+      else
+        {
+
+          //printf("looking up get_obj_name in GOT ! \n");
+
+          pobj->parent = l1->get_obj_nam(robj, index);
+
+          /*
+          printf("GOT pobjparent = %p (with name = %s) \n", pobj->parent, index);
+          printf("GOT sect data  = %p (GOT name = %s) \n",
+                 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->data,
+                 ((elfshobj_t *) robj)->secthash[ELFSH_SECTION_GOT]->name);
+          */
+
+          if (pobj->parent == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                              "No entry by that name", NULL);
+        }
     }
 
-  // Do index sanity 
+  // Do index sanity
   if (pobj->parent == NULL)
     {
       if (size <= real_index)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Index too big", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Index too big", NULL);
       pobj->parent  = l1->get_entptr(o1, real_index);
     }
 
-  // Finally we fill the intermediate object format for the guessed object 
+  // Finally we fill the intermediate object format for the guessed object
   pobj->get_obj = (void *) l1->get_entval;
   pobj->set_obj = (void *) l1->set_entval;
   pobj->otype   = aspect_type_get_by_id(ASPECT_TYPE_CADDR);
   pobj          = revm_check_object(pobj);
   if (!pobj)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid REVM object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Invalid REVM object", NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
-
-
-
 /**
- * Lookup a parameter with 3 fields, all fields beeing non indexed 
- * Only used by ELF header 'til now 
+ * Lookup a parameter with 3 fields, all fields beeing non indexed
+ * Only used by ELF header 'til now
  */
 revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
 {
@@ -341,38 +333,38 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
   if (sep != 2)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
-  // Check if this handler is the correct one 
+  // Check if this handler is the correct one
   ret = parse_lookup_varlist(param, fmt, obj, L1field, L2field);
   if (ret != 3)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parser handling failed", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Parser handling failed", NULL);
 
-  // Let's ask the hash table for the current working file 
+  // Let's ask the hash table for the current working file
   robj = revm_lookup_file(obj);
   if (robj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested file object",
-		      NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested file object",
+                      NULL);
 
-  // Then, we ask the Level 1 object 
+  // Then, we ask the Level 1 object
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L1 object",
-		      NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested L1 object",
+                      NULL);
   else if (l1->get_obj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid object path",
-		      NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Invalid object path",
+                      NULL);
 
-  // Then the Level 2 object 
+  // Then the Level 2 object
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L2 object",
-		      NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested L2 object",
+                      NULL);
 
-  // Finally we fill the intermediate object format for the guessed object 
+  // Finally we fill the intermediate object format for the guessed object
   pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
@@ -382,16 +374,13 @@ revmobj_t		*parse_lookup3(char *param, char *fmt, u_int sep)
   pobj          = revm_check_object(pobj);
 
   if (!pobj)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid REVM object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Invalid REVM object", NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
-
-
-
-/** 
- * Lookup a parameter with 4 fields, 3rd field beeing an index 
+/**
+ * Lookup a parameter with 4 fields, 3rd field beeing an index
  * Used by SHT, PHT, SYMTAB, DYNSYM , Sections, .dynamic
  *
  * Here need to add 1.rel[name].{L2fields} lookup
@@ -402,7 +391,7 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   revmL2_t		*l2;
   void			*robj;
   void			*o1;
-  int		  	real_index;
+  int                   real_index;
   int			isversion;
   u_int			size;
   revmobj_t		*pobj;
@@ -422,14 +411,14 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   switch (sep)
     {
     case 4:
-      ret = parse_lookup_varlist(param, fmt, obj, L1field, 
-				 index, offfield, sizelemfield, L2field);
+      ret = parse_lookup_varlist(param, fmt, obj, L1field,
+                                 index, offfield, sizelemfield, L2field);
       sizelem = atoi(sizelemfield);
       off = atoi(offfield);
       break;
     case 3:
-      ret = parse_lookup_varlist(param, fmt, obj, L1field, 
-				 index, offfield, L2field);
+      ret = parse_lookup_varlist(param, fmt, obj, L1field,
+                                 index, offfield, L2field);
       sizelem = 1;
       off = atoi(offfield);
       break;
@@ -445,89 +434,89 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   /* Quick test to see if we matched */
   if (ret - 2 != sep)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
-  
+
   /* Let's ask the hash table for the current working file */
   robj = revm_lookup_file(obj);
   if (NULL == robj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown file object",
-		   NULL);
+                   NULL);
 
-  // Then, we ask the Level 1 object 
+  // Then, we ask the Level 1 object
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L1 object", 
-		   NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L1 object",
+                   NULL);
   else if (l1->get_entptr == NULL || l1->get_obj == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect object path",
-		   NULL);
+                   NULL);
 
-  // Then the Level 2 object 
+  // Then the Level 2 object
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L2 object", 
-		   NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown L2 object",
+                   NULL);
 
-  // Read object 
+  // Read object
   o1 = l1->get_obj(robj, (void *) &size);
   if (o1 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object", 
-		   NULL);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Cannot read object",
+                   NULL);
+
   pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
 
-  // Do lookup by index or by name 
+  // Do lookup by index or by name
   real_index = (int) revm_lookup_index(index);
-  
+
 #if __DEBUG_LANG__
-  printf("LOOKUP4 object index = %s, real_index = %u (signed = %d) \n", 
-	 index, real_index, real_index);
+  printf("LOOKUP4 object index = %s, real_index = %u (signed = %d) \n",
+         index, real_index, real_index);
 #endif
 
-  // Index error handling 
+  // Index error handling
   if (real_index < 0)
     {
       if (l1->get_obj_nam == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Invalid L1 index", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Invalid L1 index", NULL);
       else
-	{
-	  pobj->parent = l1->get_obj_nam(robj, index);
-	  if (pobj->parent == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "No L1 index by this name", NULL);
-	}
+        {
+          pobj->parent = l1->get_obj_nam(robj, index);
+          if (pobj->parent == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                              "No L1 index by this name", NULL);
+        }
     }
-  
-  // Get L2 object by index (or type for dynamic) 
+
+  // Get L2 object by index (or type for dynamic)
   if (pobj->parent == NULL)
     {
 
       if (!strcmp(L1field, "dynamic") && !revm_isnbr(index))
-	real_index = elfsh_get_dynent_by_type(robj, o1, real_index);
-      
+        real_index = elfsh_get_dynent_by_type(robj, o1, real_index);
+
       isversion = (!strcmp(L1field, "version") ||
-		   !strcmp(L1field, "verdef") ||
-		   !strcmp(L1field, "verneed"));
-      
+                   !strcmp(L1field, "verdef") ||
+                   !strcmp(L1field, "verneed"));
+
       if (!isversion && size <= real_index)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "L1 index too big", NULL);
 
       pobj->parent = l1->get_entptr(o1, real_index);
 
       if (isversion && pobj->parent == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unknown L2 object or Invalid L1 index", 
-			  NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                          "Unknown L2 object or Invalid L1 index",
+                          NULL);
     }
 
-  // Finally we fill the intermediate object format for the guessed object 
+  // Finally we fill the intermediate object format for the guessed object
   pobj->get_obj  = (void *) l2->get_obj;
   pobj->set_obj  = (void *) l2->set_obj;
   pobj->get_name = (void *) l2->get_name;
   pobj->set_name = (void *) l2->set_name;
 
-  // The 2 next fields are used for 'raw' L2 of 'section' L1 
+  // The 2 next fields are used for 'raw' L2 of 'section' L1
   pobj->get_data = (void *) l2->get_data;
   pobj->set_data = (void *) l2->set_data;
 
@@ -536,20 +525,17 @@ revmobj_t		*parse_lookup4(char *param, char *fmt, u_int sep)
   pobj->sizelem  = sizelem;
   pobj->root     = robj;
 
-  // Error checking 
+  // Error checking
   pobj = revm_check_object(pobj);
   if (!pobj)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid REVM object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Invalid REVM object", NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }
 
-
-
-
 /**
- * Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes 
- * Used for Relocation tables and GOT tables 
+ * Lookup a parameter with 5 fields, 3rd and 5th field beeing indexes
+ * Used for Relocation tables and GOT tables
  */
 revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
 {
@@ -578,95 +564,95 @@ revmobj_t		*parse_lookup5_index(char *param, char *fmt, u_int sep)
   if (sep != 2)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 
-  // Check if this handler is the correct one 
+  // Check if this handler is the correct one
   ret = parse_lookup_varlist(param, fmt, obj, L1field, index, index2, L2field);
   if (ret != 5)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Parser handling failed", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Parser handling failed", NULL);
 
-  // Let's ask the hash table for the current working file 
+  // Let's ask the hash table for the current working file
   robj = revm_lookup_file(obj);
   if (robj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested file object", 
-		      NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested file object",
+                      NULL);
 
-  // Then, we ask the Level 1 object 
+  // Then, we ask the Level 1 object
   l1 = hash_get(&L1_hash, L1field);
   if (l1 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L1 object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested L1 object", NULL);
   else if (l1->get_entptr == NULL || l1->get_obj_idx == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "This object needs 2 indexes", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "This object needs 2 indexes", NULL);
 
-  // Then the Level 2 object 
+  // Then the Level 2 object
   l2 = hash_get(l1->l2list, L2field);
   if (l2 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot find requested L2 object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Cannot find requested L2 object", NULL);
   else if (l2->get_obj == NULL || l2->set_obj == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Child object is invalid", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Child object is invalid", NULL);
 
-  // Not clean .. need to ve virtualized 
+  // Not clean .. need to ve virtualized
   isversion = (!strcmp(L1field, "version") ||
-	       !strcmp(L1field, "verdef") ||
-	       !strcmp(L1field, "verneed"));
+               !strcmp(L1field, "verdef") ||
+               !strcmp(L1field, "verneed"));
 
-  // Get indexes 
+  // Get indexes
   real_index  = (int) revm_lookup_index(index);
   real_index2 = (int) revm_lookup_index(index2);
 
 #if 0
- snprintf(logbuf, BUFSIZ - 1, 
-	  "[DEBUG_MODEL] Lookup5_index : index(" UFMT ") rindex(" UFMT ") \n", 
-	  real_index, real_index2);
+ snprintf(logbuf, BUFSIZ - 1,
+          "[DEBUG_MODEL] Lookup5_index : index(" UFMT ") rindex(" UFMT ") \n",
+          real_index, real_index2);
  revm_output(logbuf);
 #endif
 
-  // Do index sanity 
+  // Do index sanity
   o1 = l1->get_obj_idx(robj, real_index, (u_int *) &size);
   if (!isversion && size <= real_index2)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Second index too big", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Second index too big", NULL);
 
   if (isversion && o1 == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid L1 index", NULL);    
-  
-  // printf("[DEBUG_RELOCS_IDX2] o1 = %p, o1->data = %p (%s) \n", 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Invalid L1 index", NULL);
+
+  // printf("[DEBUG_RELOCS_IDX2] o1 = %p, o1->data = %p (%s) \n",
   // o1, ((elfshsect_t*)o1)->data, ((elfshsect_t*)o1)->name);
 
-  // 
-  // This elfsh_get_reloc() returns a elfshsect_t *, 
-  // and we need to grab the ->data pointer, to avoid rewriting a 
+  //
+  // This elfsh_get_reloc() returns a elfshsect_t *,
+  // and we need to grab the ->data pointer, to avoid rewriting a
   // new handler (its not fair but it works .. ;) and its acceptable
   // since only relocation tables use this rule.
-  
+
   sect = (elfshsect_t *) o1;
   o1 = elfsh_readmem(sect);
 
-  // Finally we fill the intermediate object format for the guessed object 
+  // Finally we fill the intermediate object format for the guessed object
   pobj = revm_create_IMMED(ASPECT_TYPE_UNKNOW, 0, 0);
   pobj->immed = 0;
   pobj->get_obj = (void *) l2->get_obj;
   pobj->set_obj = (void *) l2->set_obj;
   pobj->otype   = aspect_type_get_by_id(l2->type);
 
-  // ugly flag to put for dynamic Rel vs Rela information 
+  // ugly flag to put for dynamic Rel vs Rela information
   elfsh_setrel(IS_REL(sect));
   pobj->parent  = l1->get_entptr(o1, real_index2);
 
   if (isversion && pobj->parent == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Unknown L2 object or Invalid L2 index", 
-		      NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Unknown L2 object or Invalid L2 index",
+                      NULL);
 
-  // Error checking 
+  // Error checking
   pobj = revm_check_object(pobj);
   if (!pobj)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid REVM object", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                      "Invalid REVM object", NULL);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pobj);
 }

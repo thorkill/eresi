@@ -1,14 +1,15 @@
 /**
-* @file libelfsh/section.c
+ * @file libelfsh/section.c
  * @ingroup libelfsh
-** section.c for libelfsh
-** 
-** @brief All handlers and lowlevel routines for sections management.
-** 
-** Started on  Mon Feb 26 04:12:42 2001 jfv
-** $Id$
-**
-*/
+ * section.c for libelfsh
+ * 
+ * @brief All handlers and lowlevel routines for sections management.
+ * 
+ * Started on  Mon Feb 26 04:12:42 2001 jfv
+ * $Id$
+ *
+ */
+
 #include "libelfsh.h"
 
 /**
@@ -633,7 +634,6 @@ elfshsect_t	*elfsh_get_parent_section_by_foffset(elfshobj_t *file,
 {
   elfshsect_t	*s;
   char		i;
-  u_int		bval;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -715,7 +715,7 @@ int		elfsh_fill_section(elfshsect_t	*sect,
 }
 
 
-/* 
+/**
  * This function is quite context dependant and should be rewritten.
  * Symbol table shifting might be avoided in some obscure
  * not-yet-encountered cases. For now it works as requested quite

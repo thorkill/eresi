@@ -74,7 +74,7 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
       tmpfunc = (mjrfunc_t *) ctxt->curfunc->data;
       tmpfunc2 = (mjrfunc_t *) fun->data;
       fprintf(stderr, " [*] Linking function " XFMT " to func " XFMT "\n",
-	      tmpfunc->vaddr, tmpfunc2->vaddr);
+              tmpfunc->vaddr, tmpfunc2->vaddr);
 #endif
       mjr_container_add_link(ctxt, fun, ctxt->curfunc->id,
                              MJR_LINK_FUNC_RET, scope, CONTAINER_LINK_IN);
@@ -83,9 +83,9 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
     }
 
   /* Fingerprint function */
-  /* 
+  /*
   ** XXX: this segfaults on 64bits architecture - MAX_FUNC_LEN should
-  ** not be used. Instead, we should fingerprint all functions with 
+  ** not be used. Instead, we should fingerprint all functions with
   ** their infered size at the moment of saving debug sections.
   **
   md5 = mjr_fingerprint_function(ctxt, tmpaddr, MJR_FPRINT_TYPE_MD5);
@@ -97,7 +97,7 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
 #if __DEBUG_FLOW__
   tmpfunc = fun->data;
 #endif
-  
+
   if (scope == MJR_LINK_SCOPE_LOCAL && isnew)
     {
       elist_push(ctxt->func_stack, fun);
@@ -155,13 +155,13 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
     {
       cdst = mjr_block_split(ctxt, dst, MJR_LINK_FUNC_CALL);
       if (!cdst)
-	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		     "Could not split the dst", 0);
+        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+                     "Could not split the dst", 0);
 
       mjr_container_add_link(ctxt, csrc, cdst->id,
-			     MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
+                             MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_OUT);
       mjr_container_add_link(ctxt, cdst, csrc->id,
-			     MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
+                             MJR_LINK_FUNC_CALL, MJR_LINK_SCOPE_GLOBAL, CONTAINER_LINK_IN);
     }
 
   /* Link src and ret at the block level */
@@ -169,8 +169,8 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
     {
       cret = mjr_block_split(ctxt, ret, MJR_LINK_FUNC_RET);
       if (!cret)
-	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		     "Could not split the ret", 0);
+        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+                     "Could not split the ret", 0);
 
       mjr_container_add_link(ctxt, csrc, cret->id,
                              MJR_LINK_TYPE_DELAY, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
@@ -226,26 +226,33 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
     }
 
   mjr_block_symbol(ctxt, csrc);
-  
+
   /* Now split destination blocks */
   cdst = mjr_block_split(ctxt, dst, MJR_LINK_BLOCK_COND_ALWAYS);
   if (!cdst)
     PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		 "Could not split destination block",0);
+                 "Could not split destination block", 0);
+
   if (ret != MJR_BLOCK_INVALID)
     {
       cret = mjr_block_split(ctxt, ret, MJR_LINK_BLOCK_COND_ALWAYS);
       if (!cret)
-	PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
-		     "Could not split return block",0);
+        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+                     "Could not split return block", 0);
     }
   else
     cret = NULL;
-  
+
   mjr_container_add_link(ctxt, csrc, cdst->id,
                          MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
   mjr_container_add_link(ctxt, cdst, csrc->id,
                          MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
+
+
+#if __DEBUG_LINKS__
+  fprintf(D_DESC,"[D] %s: cret: "XFMT"\n",
+          __FUNCTION__, ret);
+#endif  
 
   if (cret)
     {
@@ -337,8 +344,8 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   assert(sym != NULL);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s:%d: wanted dst:"XFMT" got:"XFMT"\n", 
-	  __FUNCTION__, __LINE__, dst, blkdst->vaddr);
+  fprintf(D_DESC,"[D] %s:%d: wanted dst:"XFMT" got:"XFMT"\n",
+          __FUNCTION__, __LINE__, dst, blkdst->vaddr);
 #endif
 
   /* Recompute sizes */
@@ -348,8 +355,8 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
 
 #if __DEBUG_LINKS__
       fprintf(D_DESC,"[D] %s:%d: new_size %d for "XFMT"\n", __FUNCTION__, __LINE__, new_size, dst);
-      fprintf(D_DESC,"[D] %s:%d: turncate "XFMT" to %d\n", 
-	      __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
+      fprintf(D_DESC,"[D] %s:%d: turncate "XFMT" to %d\n",
+              __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
 #endif
 
       blkdst->size -= new_size;
@@ -357,19 +364,18 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
 
       assert(blkdst->size > 0);
 
-      /* Correct existing symbol size and add new symbol pointing on new split block */      
+      /* Correct existing symbol size and add new symbol pointing on new split block */
       dstend = mjr_create_block_container(ctxt, 0, dst, new_size, (new_size ? 1 : 0));
       hash_add(&ctxt->blkhash, _vaddr2str(dst), dstend);
       mjr_block_symbol(ctxt, dstend);
       mjr_block_relink(ctxt, tmpdst, dstend, CONTAINER_LINK_OUT);
-      mjr_container_add_link(ctxt, tmpdst, dstend->id, MJR_LINK_BLOCK_COND_ALWAYS, 
-			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
-      mjr_container_add_link(ctxt, dstend, tmpdst->id, MJR_LINK_BLOCK_COND_ALWAYS, 
-			     MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
+      mjr_container_add_link(ctxt, tmpdst, dstend->id, MJR_LINK_BLOCK_COND_ALWAYS,
+                             MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
+      mjr_container_add_link(ctxt, dstend, tmpdst->id, MJR_LINK_BLOCK_COND_ALWAYS,
+                             MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
     }
   else
     dstend = tmpdst;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dstend));
 }
-

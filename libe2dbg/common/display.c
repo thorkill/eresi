@@ -1,13 +1,13 @@
 /**
-* @file libe2dbg/common/display.c
-** @ingroup common
-** @brief Command and API for the display-on-breakpoint feature.
-**    
-** Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
-** $Id$
-*/
-#include "libe2dbg.h"
+ * @file libe2dbg/common/display.c
+ * @ingroup common
+ * @brief Command and API for the display-on-breakpoint feature.
+ *    
+ * Started on  Tue Aug 16 09:38:03 2005 jfv                                                                                                                   
+ * $Id$
+ */
 
+#include "libe2dbg.h"
 
 /* Print all display commands */
 void		e2dbg_display_print()
@@ -15,7 +15,6 @@ void		e2dbg_display_print()
   char		buff[BUFSIZ];
   int		idx;
   int		printed;
-
   listent_t     *actual;
   elfshbp_t     *curbp;
   int		idx2;
@@ -78,7 +77,6 @@ int		e2dbg_display(char **cmd, u_int nbr)
   int		idx;
   revmargv_t	*cur;
   char		*str;
-  char		buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -86,11 +84,6 @@ int		e2dbg_display(char **cmd, u_int nbr)
     {
       if (cmd[idx])
 	{
-	  
-	  //snprintf(buf, BUFSIZ, 
-	  //   "\t .:: Display %u [%s] result ::. \n", 
-	  //   idx, cmd[idx]);
-	  //e2dbg_output(buf);
 	  
 	  /* Register displayed command in the script control flow */
 	  str = strdup(cmd[idx]);
@@ -163,14 +156,11 @@ int		cmd_display()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Delete displays */
+// FIXME: empty function?
 int		cmd_undisplay()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

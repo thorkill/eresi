@@ -1,16 +1,16 @@
-/*
-* @file libstderesi/analysis/flowjack.c
-** @ingroup analysis
-** Author  : <sk at devhell dot org>
-**
-** December 10 2006 : merged from modflow to the ELFsh vm -may
-** December 31 2006 : factored and cleaned code -may
-**
-** $Id$
-**
-*/
-#include "libstderesi.h"
+/**
+ * @file libstderesi/analysis/flowjack.c
+ * @ingroup analysis
+ * Author  : <sk at devhell dot org>
+ *
+ * December 10 2006 : merged from modflow to the ELFsh vm -may
+ * December 31 2006 : factored and cleaned code -may
+ *
+ * $Id$
+ *
+ */
 
+#include "libstderesi.h"
 
 /* Perform hijack of basic blocks */
 int			cmd_flowjack(void)
@@ -33,7 +33,6 @@ int			cmd_flowjack(void)
   list_t		*linklist;
   listent_t		*listent;
   int			len;
-  char			logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   sect = elfsh_get_section_by_name(world.curjob->curfile, 

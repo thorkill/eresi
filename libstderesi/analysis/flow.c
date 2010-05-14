@@ -1,19 +1,18 @@
 /**
-* @file libstderesi/analysis/flow.c
-** @ingroup analysis
-** @brief Various commands related to flow analysis
-**
-** $Id$
-*/
+ * @file libstderesi/analysis/flow.c
+ * @ingroup analysis
+ * @brief Various commands related to flow analysis
+ *
+ * $Id$
+ */
 #include "libstderesi.h"
 
 
-/** 
+/**
  * Manually add function pointer information 
  */
 int		cmd_addgoto(void)
 {
-  hash_t	*hash;
   char		buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  

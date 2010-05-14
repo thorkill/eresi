@@ -53,6 +53,10 @@ int		cmd_unload()
     hash_del(&world.shared_hash, cur->name);
   else
     hash_del(&world.curjob->loaded, cur->name);
+
+  /* Cleanup libmjollnir context */
+  mjr_del_context(&world.mjr_session, cur->name);
+
   elfsh_unload_obj(cur);
   revm_output("\n");
 

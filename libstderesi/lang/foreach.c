@@ -1,11 +1,11 @@
-/*
-* @file libstderesi/lang/foreach.c
-** @ingroup lang
-** @brief Implement the iteration on arrays, lists, and hash tables.
-**
-** Started on Wed Feb 28 19:19:04 2007 jfv
-** $Id$
-*/
+/**
+ * @file libstderesi/lang/foreach.c
+ * @ingroup lang
+ * @brief Implement the iteration on arrays, lists, and hash tables.
+ *
+ * Started on Wed Feb 28 19:19:04 2007 jfv
+ * $Id$
+ */
 #include "libstderesi.h"
 
 

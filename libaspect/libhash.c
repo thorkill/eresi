@@ -226,9 +226,7 @@ int		hash_add(hash_t *h, char *key, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, index);
 }
 
-
-
-/** 
+/**
  * @brief Delete an entry from the hash table.
  * @param
  */
@@ -238,8 +236,6 @@ int		hash_del(hash_t *h, char *key)
   listent_t	*todel;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //printf("DEL %s in HASH %s \n", key, h->name);
 
   /* Check the first entry for this hash */
   actual = hash_get_head(h, key);
@@ -276,9 +272,7 @@ int		hash_del(hash_t *h, char *key)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/** 
+/**
  * @brief Retrieve the metadata for a given key 
  *
  * @param h

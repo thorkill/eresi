@@ -1,12 +1,13 @@
 /**
-* @file libaspect/liblist.c
-** @ingroup libaspect
-** 
-** @brief Contain ELFsh internal lists related API.
-**
-** Started on  Fri Jul 13 20:26:18 2007 jfv
-** $Id$
-*/
+ * @file libaspect/liblist.c
+ * @ingroup libaspect
+ * 
+ * @brief Contain ELFsh internal lists related API.
+ *
+ * Started on  Fri Jul 13 20:26:18 2007 jfv
+ * $Id$
+ */
+
 #include "libaspect.h"
 
 /* Hash tables of hash tables */
@@ -360,8 +361,6 @@ int		elist_replace(list_t *h, char *key, list_t *newlist)
   listent_t	*cur;
   listent_t	*lastent;
   listent_t	*prev;
-  int		idx;
-  char		namebuf[BUFSIZ];
 
   /* Preliminary checks */
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

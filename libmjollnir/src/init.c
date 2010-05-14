@@ -1,9 +1,9 @@
 /**
-* @file libmjollnir/src/init.c
+ * @file libmjollnir/src/init.c
  * @brief Initialization functions
  * @ingroup libmjollnir
  *
- * (C) 2006-2009 Eresi Project
+ * (C) 2006-2010 Eresi Project
  */
 
 #include "libmjollnir.h"
@@ -65,6 +65,34 @@ int		mjr_add_context(mjrsession_t *sess, mjrcontext_t *ctx)
  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
  hash_add(&sess->ctx, ctx->obj->name, ctx);
  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
+}
+
+/**
+ * @brief Delete an analysis context 
+ * @param sess The session structure
+ * @param name Object Name
+ * @ingroup libmjollnir
+ */
+int		mjr_del_context(mjrsession_t *sess, char *name) 
+{
+  mjrcontext_t *ctx;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  ctx = hash_get(&sess->ctx, name);
+  elist_destroy(ctx->func_stack);
+
+  /* Check if current context is the same we want to remove
+     if yes set cur to NULL
+  */
+  if (sess && sess->cur && (!strcmp(sess->cur->obj->name,
+                                    name)))
+    {
+      sess->cur = NULL;
+    }
+
+  hash_del(&sess->ctx, name);
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
 /**

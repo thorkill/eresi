@@ -1,14 +1,14 @@
 /**
-* @file libelfsh/obj.c
+ * @file libelfsh/obj.c
  * @ingroup libelfsh
-** obj.c for elfsh
-** 
-** Started on  Wed Feb 12 00:07:06 2003 jfv
-** Last update Sun Mar  4 00:46:13 2007 thorkill
-**
-** $Id$
-**
-*/
+ * obj.c for elfsh
+ * 
+ * Started on  Wed Feb 12 00:07:06 2003 jfv
+ * Last update Sun Mar  4 00:46:13 2007 thorkill
+ *
+ * $Id$
+ *
+ */
 #include "libelfsh.h"
 
 

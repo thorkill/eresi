@@ -1,21 +1,15 @@
 /**
-* @file libstderesi/elf/got.c
-** @ingroup elf
-*/
-/**
+ * @file libstderesi/elf/got.c
+ * @ingroup elf
+ * 
+ * Started on  Fri Nov  2 15:20:18 2001 jfv
  *
-** 
-** Started on  Fri Nov  2 15:20:18 2001 jfv
-**
-**
-** $Id$
-**
-*/
+ * $Id$
+ *
+ */
 #include "libstderesi.h"
 
-
-
-/** 
+/**
  * Command handler for GOT command 
  */
 int		cmd_got()
@@ -64,7 +58,6 @@ int		cmd_got()
 	    snprintf(off, sizeof(off), " %s %s", 
 		     revm_colorstr((offset < 0 ? "-" : "+")), 
 		     revm_colornumber("%u", (u_int) (offset > 0 ? offset : offset - offset - offset)));
-
 
 	  snprintf(buff, sizeof(buff), "%s : %s %s \t <%s%s>\n", 
 		   revm_coloraddress(XFMT, got->shdr->sh_addr + (index * sizeof(eresi_Addr))),

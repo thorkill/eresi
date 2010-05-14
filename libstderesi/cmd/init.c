@@ -1,10 +1,10 @@
-/*
-* @file libstderesi/cmd/init.c
-** @ingroup cmd
-** @brief Constructors for the ERESI standard library
-**
-** $Id$
-*/
+/**
+ * @file libstderesi/cmd/init.c
+ * @ingroup cmd
+ * @brief Constructors for the ERESI standard library
+ *
+ * $Id$
+ */
 #include <libstderesi.h>
 
 /* The command hash table : hash the command name and returns a revmcmd_t */
@@ -17,7 +17,7 @@ hash_t		traces_cmd_hash;
 hash_t		const_hash;
 
 /**
- * Setup ELF constants hash tables 
+ * Setup ELF constants hash tables
  */
 static void	eresi_constants_init()
 {
@@ -26,123 +26,123 @@ static void	eresi_constants_init()
   hash_init(&const_hash, "constants", 51, ASPECT_TYPE_STR);
 
   for (index = 0; index < ELFSH_SEGTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_seg_type[index].name, 
-	     elfsh_seg_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_seg_type[index].name,
+             elfsh_seg_type + index);
 
   for (index = 0; index < ELFSH_EXTSEG_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_extseg_type[index].name, 
-	     elfsh_extseg_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_extseg_type[index].name,
+             elfsh_extseg_type + index);
 
   for (index = 0; index < ELFSH_ENCODING_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_encoding[index].name, 
-	     elfsh_encoding + index);
+    hash_add(&const_hash,
+             (char *) elfsh_encoding[index].name,
+             elfsh_encoding + index);
   for (index = 0; index < ELFSH_SHTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_sh_type[index].name, 
-	     elfsh_sh_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_sh_type[index].name,
+             elfsh_sh_type + index);
   for (index = 0; index < ELFSH_OBJTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_obj_type[index].name, 
-	     elfsh_obj_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_obj_type[index].name,
+             elfsh_obj_type + index);
   for (index = 0; index < ELFSH_SYMBIND_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_sym_bind[index].name, 
-	     elfsh_sym_bind + index);
+    hash_add(&const_hash,
+             (char *) elfsh_sym_bind[index].name,
+             elfsh_sym_bind + index);
   for (index = 0; index < ELFSH_SYMTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_sym_type[index].name, 
-	     elfsh_sym_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_sym_type[index].name,
+             elfsh_sym_type + index);
   for (index = 0; index < ELFSH_RELOC_i386_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_rel_type_i386[index].name, 
-	     elfsh_rel_type_i386 + index);
+    hash_add(&const_hash,
+             (char *) elfsh_rel_type_i386[index].name,
+             elfsh_rel_type_i386 + index);
 
   for (index = 0; index < ELFSH_RELOC_SPARC64_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_rel_type_sparc[index].name, 
-	     elfsh_rel_type_sparc + index);
+    hash_add(&const_hash,
+             (char *) elfsh_rel_type_sparc[index].name,
+             elfsh_rel_type_sparc + index);
 
   for (index = 0; index < ELFSH_RELOC_IA64_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_rel_type_ia64[index].name, 
-	     elfsh_rel_type_ia64 + index);
+    hash_add(&const_hash,
+             (char *) elfsh_rel_type_ia64[index].name,
+             elfsh_rel_type_ia64 + index);
 
   for (index = 0; index < ELFSH_RELOC_ALPHA_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_rel_type_alpha[index].name, 
-	     elfsh_rel_type_alpha + index);
+    hash_add(&const_hash,
+             (char *) elfsh_rel_type_alpha[index].name,
+             elfsh_rel_type_alpha + index);
 
   for (index = 0; index < ELFSH_RELOC_MIPS_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_rel_type_mips[index].name, 
-	     elfsh_rel_type_mips + index);
+    hash_add(&const_hash,
+             (char *) elfsh_rel_type_mips[index].name,
+             elfsh_rel_type_mips + index);
 
-     
+
   for (index = 0; index < ELFSH_DYNAMIC_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_dynentry_type[index].name, 
-	     elfsh_dynentry_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_dynentry_type[index].name,
+             elfsh_dynentry_type + index);
   for (index = 0; index < ELFSH_EXTDYN_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_extdyn_type[index].name, 
-	     elfsh_extdyn_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_extdyn_type[index].name,
+             elfsh_extdyn_type + index);
   for (index = 0; index < ELFSH_MIPSDYN_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_mipsdyn_type[index].name, 
-	     elfsh_mipsdyn_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_mipsdyn_type[index].name,
+             elfsh_mipsdyn_type + index);
   for (index = 0; index < ELFSH_FEATURE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_feature1[index].name, 
-	     elfsh_feature1 + index);
+    hash_add(&const_hash,
+             (char *) elfsh_feature1[index].name,
+             elfsh_feature1 + index);
   for (index = 0; index < ELFSH_POSFLAG_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_posflag1[index].name, 
-	     elfsh_posflag1 + index);
+    hash_add(&const_hash,
+             (char *) elfsh_posflag1[index].name,
+             elfsh_posflag1 + index);
   for (index = 0; index < ELFSH_FLAGS_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_flags[index].name, 
-	     elfsh_flags + index);
+    hash_add(&const_hash,
+             (char *) elfsh_flags[index].name,
+             elfsh_flags + index);
   for (index = 0; index < ELFSH_FLAGS1_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_flags1[index].name, 
-	     elfsh_flags1 + index);
+    hash_add(&const_hash,
+             (char *) elfsh_flags1[index].name,
+             elfsh_flags1 + index);
   for (index = 0; index < ELFSH_MIPSFLAGS_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_mipsflags[index].name, 
-	     elfsh_mipsflags + index);
+    hash_add(&const_hash,
+             (char *) elfsh_mipsflags[index].name,
+             elfsh_mipsflags + index);
 
   for (index = 0; index < ELFSH_INSTRTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) asm_instr_type[index].name, 
-	     asm_instr_type + index);
+    hash_add(&const_hash,
+             (char *) asm_instr_type[index].name,
+             asm_instr_type + index);
 
   for (index = 0; index < ELFSH_OPTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) asm_operand_type[index].name, 
-	     asm_operand_type + index);
+    hash_add(&const_hash,
+             (char *) asm_operand_type[index].name,
+             asm_operand_type + index);
 
   for (index = 0; index < ELFSH_LINKTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_link_type[index].name, 
-	     elfsh_link_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_link_type[index].name,
+             elfsh_link_type + index);
 
   for (index = 0; index < ELFSH_LINKSCOPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_link_scope[index].name, 
-	     elfsh_link_scope + index);
+    hash_add(&const_hash,
+             (char *) elfsh_link_scope[index].name,
+             elfsh_link_scope + index);
 
   for (index = 0; index < ELFSH_ARCHTYPE_MAX; index++)
-    hash_add(&const_hash, 
-	     (char *) elfsh_arch_type[index].name, 
-	     elfsh_arch_type + index);
+    hash_add(&const_hash,
+             (char *) elfsh_arch_type[index].name,
+             elfsh_arch_type + index);
 }
 
 
-/** 
- * @brief Setup the command hash table 
+/**
+ * @brief Setup the command hash table
  */
 void		eresi_commands_init()
 {
@@ -203,7 +203,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_CTORS   , (void *) cmd_ctors   , (void *) revm_getregxoption, 1, HLP_CTORS);
   revm_command_add(CMD_DTORS   , (void *) cmd_dtors   , (void *) revm_getregxoption, 1, HLP_DTORS);
   revm_command_add(CMD_NOTE    , (void *) cmd_notes   , (void *) revm_getregxoption, 1, HLP_NOTES);
-  revm_command_add(CMD_COREINFO, (void *) cmd_coreinfo, (void *) NULL	          , 1, HLP_COREINFO);
+  revm_command_add(CMD_COREINFO, (void *) cmd_coreinfo, (void *) NULL             , 1, HLP_COREINFO);
   revm_command_add(CMD_SYM     , (void *) cmd_sym     , (void *) revm_getregxoption, 1, HLP_SYM);
   revm_command_add(CMD_DYNAMIC , (void *) cmd_dyn     , (void *) revm_getregxoption, 1, HLP_DYNAMIC);
   revm_command_add(CMD_DYNSYM  , (void *) cmd_dynsym  , (void *) revm_getregxoption, 1, HLP_DYNSYM);
@@ -289,7 +289,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_VLIST   , (void *) cmd_vlist   , (void *) revm_getregxoption, 0, HLP_VLIST);
   revm_command_add(CMD_VARLIST , (void *) cmd_vlist   , (void *) revm_getregxoption, 0, HLP_VLIST);
   revm_command_add(CMD_SOURCE  , (void *) cmd_source  , (void *) revm_getvarparams , 0, HLP_SOURCE);
-  revm_command_add(CMD_LSCRIPTS, (void *) cmd_lscripts, (void *) NULL		  , 0, HLP_LSCRIPTS);
+  revm_command_add(CMD_LSCRIPTS, (void *) cmd_lscripts, (void *) NULL             , 0, HLP_LSCRIPTS);
   revm_command_add(CMD_CAT	, (void *) cmd_cat     , (void *) revm_getoption    , 0, HLP_CAT);
   revm_command_add(CMD_PROFILE	, (void *) cmd_profile , (void *) revm_getvarparams , 0, HLP_PROFILE);
   revm_command_add(CMD_LOG     , (void *) cmd_log     , (void *) revm_getvarparams , 0, HLP_LOG);
@@ -302,7 +302,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_CONFIGURE, cmd_configure       , revm_getvarparams, 0, HLP_CONFIGURE);
   revm_command_add(CMD_CONFIG  , cmd_configure        , revm_getvarparams, 0, HLP_CONFIGURE);
   revm_command_add(CMD_PROC    , cmd_proc             , NULL, 0, HLP_PROC);
-  
+
   /* Type related commands */
   revm_command_add(CMD_TYPE     , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
   revm_command_add(CMD_UNION    , cmd_type            , revm_getvarparams, 0, HLP_TYPE);
@@ -311,7 +311,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_UNINFORM , cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
   revm_command_add(CMD_INFORM2  , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
   revm_command_add(CMD_UNINFORM2, cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
-  
+
 #if defined(ERESI_NET)
   /* DUMP network commands */
   revm_command_add(CMD_NETWORK   , (void *) cmd_network  , (void *) NULL            , 0, HLP_NETWORK);
@@ -321,19 +321,19 @@ void		eresi_commands_init()
   revm_command_add(CMD_PEERSLIST , (void *) cmd_peerslist, (void *) NULL            , 0, HLP_PEERSLIST);
   revm_command_add(CMD_CONNECT   , (void *) cmd_connect  , (void *) revm_getoption    , 0, HLP_CONNECT);
   revm_command_add(CMD_DISCON    , (void *) cmd_discon   , (void *) revm_getoption    , 0, HLP_DISCON);
-  revm_command_add(CMD_RCMD	  , (void *) cmd_rcmd     , (void *) revm_getvarparams , 0, HLP_RCMD);
+  revm_command_add(CMD_RCMD       , (void *) cmd_rcmd     , (void *) revm_getvarparams , 0, HLP_RCMD);
 #endif
 
   /* Flow analysis commands */
-  revm_command_add(CMD_ANALYSE	  , cmd_analyse      , revm_getvarparams, 1, HLP_ANALYSE);
-  revm_command_add(CMD_UNSTRIP	  , cmd_unstrip       , NULL,             1, HLP_UNSTRIP);
+  revm_command_add(CMD_ANALYSE    , cmd_analyse      , revm_getvarparams, 1, HLP_ANALYSE);
+  revm_command_add(CMD_UNSTRIP    , cmd_unstrip       , NULL,             1, HLP_UNSTRIP);
   revm_command_add(CMD_GRAPH     , cmd_graph         , revm_getvarparams, 1, HLP_GRAPH);
   revm_command_add(CMD_INSPECT   , cmd_inspect       , revm_getoption,    1, HLP_INSPECT);
   revm_command_add(CMD_FLOWJACK  , cmd_flowjack      , revm_getoption2,   1, HLP_FLOWJACK);
   revm_command_add(CMD_ADDGOTO   , cmd_addgoto       , revm_getoption2,   1, HLP_ADDGOTO);
   revm_command_add(CMD_SETGVL    , cmd_setgvl        , revm_getoption,    1, HLP_SETGVL);
-  revm_command_add(CMD_RENAME	  , cmd_rename        , revm_getoption2,  1, HLP_RENAME);  
-  revm_command_add(CMD_ASTRIP	 , cmd_astrip        , NULL,              1, HLP_ASTRIP);             
+  revm_command_add(CMD_RENAME     , cmd_rename        , revm_getoption2,  1, HLP_RENAME);
+  revm_command_add(CMD_ASTRIP    , cmd_astrip        , NULL,              1, HLP_ASTRIP);
   revm_command_add(CMD_CONTROL   , cmd_control       , NULL,              1, HLP_CONTROL);
   revm_command_add(CMD_ARGCOUNT  , cmd_argcount      , revm_getoption,    1, HLP_ARGCOUNT);
 
@@ -351,8 +351,8 @@ void		eresi_commands_init()
   /* Base type declarations commands */
   typeinfo = aspect_basetype_get(&typenbr);
   for (index = 0; index < typenbr; index++)
-    revm_command_add(typeinfo[index].name, cmd_declare, 
-	      revm_getvarparams, 0, HLP_DECLARE);
+    revm_command_add(typeinfo[index].name, cmd_declare,
+              revm_getvarparams, 0, HLP_DECLARE);
 }
 
 

@@ -1,15 +1,14 @@
-/*
-* @file librevm/api/filter.c
-** @ingroup api
-** @brief Filter 0x00 in the OBJ_TYPESTR object. 
-** Started on  Thu Mar 13 23:27:58 2003 jfv
-** Last update Sat Mar 15 07:00:38 2003 jfv
-**
-** $Id$
-**
-*/
+/**
+ * @file librevm/api/filter.c
+ * @ingroup api
+ * @brief Filter 0x00 in the OBJ_TYPESTR object.
+ * Started on  Thu Mar 13 23:27:58 2003 jfv
+ * Last update Sat Mar 15 07:00:38 2003 jfv
+ *
+ * $Id$
+ *
+ */
 #include "libui.h"
-
 
 /* Filter \x00 in the OBJ_TYPESTR object */
 void			revm_filter_zero(char *buf)
@@ -24,22 +23,22 @@ void			revm_filter_zero(char *buf)
     {
       ptr = strstr(buf, "\\x00");
       if (ptr != NULL)
-	{
-	  *ptr = 0x00;
-	  memmove(ptr + 1, ptr + 4, (u_int) buf + size - (u_int) (ptr + 4));
-	  buf = ptr + 1;
-	  size -= 3;
-	}
-      else 
-	{
-	  ptr = strstr(buf, "\\x0");
-	  if (ptr == NULL)
-	    break;
-	  *ptr = 0x00;
-	  memmove(ptr + 1, ptr + 3, (u_int) buf + size - (u_int) (ptr + 3));
-	  buf = ptr + 1;
-	  size -= 2;
-	}
+        {
+          *ptr = 0x00;
+          memmove(ptr + 1, ptr + 4, (u_int) buf + size - (u_int) (ptr + 4));
+          buf = ptr + 1;
+          size -= 3;
+        }
+      else
+        {
+          ptr = strstr(buf, "\\x0");
+          if (ptr == NULL)
+            break;
+          *ptr = 0x00;
+          memmove(ptr + 1, ptr + 3, (u_int) buf + size - (u_int) (ptr + 3));
+          buf = ptr + 1;
+          size -= 2;
+        }
     }
   while (ptr != NULL);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -73,7 +72,7 @@ char		*revm_filter_param(char *buf, char *ptr)
   sscanf(ptr + 2, "%X", &nbr);
   *ptr = (char) nbr;
   buf = ptr + 4;
-  
+
   //If we are ending the search buffer
   if (*buf == 0x00)
     {
@@ -94,7 +93,6 @@ char		*revm_filter_param(char *buf, char *ptr)
   u_int		nbr;
   char		c;
   char		d;
-  u_int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -111,11 +109,8 @@ char		*revm_filter_param(char *buf, char *ptr)
   sscanf(ptr + 2, "%X", &nbr);
   *ptr = (char) nbr;
   buf = ptr + 4;
-  
+
   /* and copy the data, strcpy put NUL at the end */
   strcpy(ptr + 1, buf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ptr + 1));
 }
-
-
-

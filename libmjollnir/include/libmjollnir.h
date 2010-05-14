@@ -2,7 +2,7 @@
  * @defgroup libmjollnir libmjollnir: The control-flow analysis and fingerprinting library.
  */
 /**
-* @file libmjollnir/include/libmjollnir.h
+ * @file libmjollnir/include/libmjollnir.h
  * @ingroup libmjollnir
  * @brief The libmjollnir header file.
  * 
