@@ -19,10 +19,10 @@ int	arm_cond_flagsread_table[16] =
     ASM_ARM_FLAG_C | ASM_ARM_FLAG_Z, /* ASM_ARM_COND_LS */
     ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_GE */
     ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_LT */
-    ASM_ARM_FLAG_Z | ASM_ARM_FLAG_N, ASM_ARM_FLAG_V, /* ASM_ARM_COND_GT */
+    ASM_ARM_FLAG_Z | ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_GT */
     ASM_ARM_FLAG_Z | ASM_ARM_FLAG_N | ASM_ARM_FLAG_V, /* ASM_ARM_COND_LE */
     0x00, /* ASM_ARM_COND_AL */
-    0x00, /* ASM_ARM_COND_NV */
+    0x00  /* ASM_ARM_COND_NV */
   };
 
 /* Flags written by data processing instructions */
