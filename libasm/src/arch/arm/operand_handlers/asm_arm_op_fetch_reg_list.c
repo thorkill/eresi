@@ -19,12 +19,22 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
           /* R13 = SP */
           ins->type |= ASM_TYPE_TOUCHSP;
         }
-      else if (operand->imm & (1 << 15))
+      if (operand->imm & (1 << 15))
         {
-          if (ins->conditional)
-            ins->type |= ASM_TYPE_CONDBRANCH;
+          /* PC */
+          /* LDMIA (POP) is usually used as return of a function */
+          
+          if (ins->instr == ASM_ARM_LDMIA)
+            {
+              ins->type = ASM_TYPE_RETPROC;
+            }
           else
-            ins->type |= ASM_TYPE_IMPBRANCH;
+            {
+              if (ins->conditional)
+                ins->type |= ASM_TYPE_CONDBRANCH;
+              else
+                ins->type |= ASM_TYPE_IMPBRANCH;
+            }
         }
     }
 
