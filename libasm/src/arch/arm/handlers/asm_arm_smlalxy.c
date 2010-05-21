@@ -20,7 +20,7 @@ int     asm_arm_smlalxy(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = ASM_TYPE_ARITH;
+  MASSIGNTYPE(ins, ASM_TYPE_ARITH);
 
   ins->nb_op = 4;
 

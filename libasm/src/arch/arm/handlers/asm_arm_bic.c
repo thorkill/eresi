@@ -21,7 +21,7 @@ int     asm_arm_bic(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = ASM_TYPE_BITSET;
+  MASSIGNTYPE(ins, ASM_TYPE_BITSET);
 
   ins->nb_op = 3;
 

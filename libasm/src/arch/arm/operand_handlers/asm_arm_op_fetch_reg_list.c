@@ -17,7 +17,7 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
       if (operand->imm & (1 << 13))
         {
           /* R13 = SP */
-          ins->type |= ASM_TYPE_TOUCHSP;
+          MASSIGNTYPE(ins, ASM_TYPE_TOUCHSP);
         }
       if (operand->imm & (1 << 15))
         {
@@ -26,13 +26,13 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
           
           if (ins->instr == ASM_ARM_LDMIA)
             {
-              ins->type |= ASM_TYPE_RETPROC;
+              MASSIGNTYPE(ins, ASM_TYPE_RETPROC);
             }
           else
             {
-              ins->type |= ASM_TYPE_BRANCH;
+              MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
               if (ins->conditional)
-                ins->type |= ASM_TYPE_CONDCONTROL;
+                MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
             }
         }
     }

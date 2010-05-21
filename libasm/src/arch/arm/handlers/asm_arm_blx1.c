@@ -22,7 +22,7 @@ int     asm_arm_blx1(asm_instr * ins, u_char * buf, u_int len,
   ins->name = ins->proc->instr_table[ins->instr];
 
   /* Imperative call proc */
-  ins->type = ASM_TYPE_CALLPROC | ASM_TYPE_ARCH; 
+  MASSIGNTYPE(ins, (ASM_TYPE_CALLPROC | ASM_TYPE_ARCH));
 
   ins->nb_op = 1;
 

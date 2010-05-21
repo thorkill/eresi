@@ -20,12 +20,12 @@ int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode,
         {
         case ASM_ARM_REG_R13:
           /* R13 = SP */
-          ins->type |= ASM_TYPE_TOUCHSP;
+          MASSIGNTYPE(ins, ASM_TYPE_TOUCHSP);
           break;
         case ASM_ARM_REG_PC:
-          ins->type |= ASM_TYPE_BRANCH;
+          MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
           if (ins->conditional)
-            ins->type |= ASM_TYPE_CONDCONTROL;
+            MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
           break;
         }
     }

@@ -6,7 +6,7 @@ int     asm_arm_undef(asm_instr * ins, u_char * buf, u_int len,
   LIBASM_PROFILE_FIN();
 
   ins->instr = ASM_ARM_;
-  ins->type = ASM_TYPE_INT;
+  MASSIGNTYPE(ins, ASM_TYPE_INT);
 
   LIBASM_PROFILE_FOUT(4);
 }

@@ -21,7 +21,7 @@ int     asm_arm_mov(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = ASM_TYPE_ASSIGN;
+  MASSIGNTYPE(ins, ASM_TYPE_ASSIGN);
 
   ins->nb_op = 2;
 
@@ -41,9 +41,9 @@ int     asm_arm_mov(asm_instr * ins, u_char * buf, u_int len,
       && ins->op[0].baser == ASM_ARM_REG_PC)
     {
       /* clear types assigned in the operand handler */
-      ins->type &= ~(ASM_TYPE_BRANCH);
+      MUNASSIGNTYPE(ins, ASM_TYPE_BRANCH);
       /* assign the real type */
-      ins->type |= ASM_TYPE_RETPROC;
+      MASSIGNTYPE(ins, ASM_TYPE_RETPROC);
     }
 
   LIBASM_PROFILE_FOUT(4);

@@ -21,7 +21,7 @@ int     asm_arm_mvn(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = ASM_TYPE_ASSIGN;
+  MASSIGNTYPE(ins, ASM_TYPE_ASSIGN);
 
   ins->nb_op = 2;
 

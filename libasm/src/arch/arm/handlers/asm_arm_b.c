@@ -21,9 +21,9 @@ int     asm_arm_b(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  ins->type = ASM_TYPE_BRANCH;
+  MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
   if (ins->conditional)
-    ins->type |= ASM_TYPE_CONDCONTROL;
+    MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
 
   ins->nb_op = 1;
 

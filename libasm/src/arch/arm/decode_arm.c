@@ -10,7 +10,8 @@ void	arm_decode_condition(asm_instr *ins, u_char condition)
   if (condition < 0x0E)
     {
       ins->conditional = 1;
-      ins->type |= ASM_TYPE_READFLAG;
+      MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
+      MASSIGNTYPE(ins, ASM_TYPE_READFLAG);
       ins->flagsread = arm_cond_flagsread_table[condition];
     }
 }
@@ -34,7 +35,7 @@ void	arm_decode_dataproc_flagswritten(asm_instr *ins, struct s_arm_decode_datapr
   if (opcode->s)
     {
       /* Update instruction type */
-      ins->type |= ASM_TYPE_WRITEFLAG;
+      MASSIGNTYPE(ins, ASM_TYPE_WRITEFLAG);
 
       /* Determine which flags are written */
       if (is_pc_dest)
