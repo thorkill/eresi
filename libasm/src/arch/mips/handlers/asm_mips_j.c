@@ -13,7 +13,7 @@ int asm_mips_j(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_jump temp;
 
    ins->instr = ASM_MIPS_J;
-   ins->type = ASM_TYPE_IMPBRANCH;
+   ins->type = ASM_TYPE_BRANCH;
    mips_convert_format_j(&temp,buf);
    ins->op[0].imm = temp.ta;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_JUMP, ins);

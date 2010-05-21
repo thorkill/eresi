@@ -274,33 +274,31 @@ char		*asm_sparc_display_instr(asm_instr *instr, eresi_Addr addr)
 
   memset(buffer, 0, 1024);
   sprintf(buffer, "%s", instr->proc->instr_table[instr->instr]);  
-  
-  switch (instr->type) 
+
+  if ((instr->type & ASM_TYPE_BRANCH) && (instr->type & ASM_TYPE_CONDCONTROL))
     {
-    case ASM_TYPE_CONDBRANCH:	  
       if (instr->annul)
-	strcat(buffer, ",a");
+        strcat(buffer, ",a");
       if (!instr->prediction)
-	strcat(buffer, ",pn");
-      
-    default:
-      if (instr->nb_op > 0) 
-	{
-	  strcat(buffer, " ");
+        strcat(buffer, ",pn");
+    }
+
+  if (instr->nb_op > 0) 
+    {
+      strcat(buffer, " ");
 	  
-	  if (instr->nb_op == 3) 
-	    {
-	      asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
-	      strcat(buffer, ", ");
-	    }
-	  if (instr->nb_op >= 2) 
-	    {
-	      asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
-	      strcat(buffer, ", ");	    
-	    }
-	  asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
-	}    
-  }
+      if (instr->nb_op == 3) 
+        {
+          asm_sparc_dump_operand(instr, 3, addr, buffer + strlen(buffer));
+          strcat(buffer, ", ");
+        }
+      if (instr->nb_op >= 2) 
+        {
+          asm_sparc_dump_operand(instr, 2, addr, buffer + strlen(buffer));
+          strcat(buffer, ", ");	    
+        }
+      asm_sparc_dump_operand(instr, 1, addr, buffer + strlen(buffer));
+    }    
     
   return (buffer);    
 }

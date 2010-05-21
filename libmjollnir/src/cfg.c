@@ -20,6 +20,9 @@
  *  ASM_TYPE_CALLPROC: calls break instruction flow but CAN restore it
  *  ASM_TYPE_IMPBRANCH, ASM_TYPE_RETPROC: jmp and ret break execution flow
  *
+ *  UPDATE: ASM_TYPE_IMPBRANCH and ASM_TYPE_CONDBRANCH are now ASM_TYPE_BRANCH and
+ *          (ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL)
+ *
  *  The last two types reset g_prevaddr as execution flow won't be restored
  *  to following instruction.
  *
@@ -67,8 +70,9 @@ int			mjr_trace_control(mjrcontext_t	*context,
   //mjr_asm_check_function_start(context);
 
   /* Switch on instruction types provided by libasm */
-  if (curins->type & ASM_TYPE_CONDBRANCH)
+  if ((curins->type & ASM_TYPE_BRANCH) && (curins->type & ASM_TYPE_CONDCONTROL))
     {
+      /* Conditional branch */
       /* MIPS use delay slots for jump instructions too */
       addend = (context->proc.type == ASM_PROC_MIPS || 
 		context->proc.type == ASM_PROC_SPARC ? 4 : 0);
@@ -77,7 +81,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[D] %s:%d " XFMT " ASM_TYPE_CONDBRANCH T:" XFMT
+	      "[D] %s:%d " XFMT " ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL T:" XFMT
 	      " F:" XFMT"\n", __FUNCTION__, __LINE__, 
 	      curvaddr, *dstaddr, curvaddr + ilen + addend);
 #endif
@@ -85,13 +89,14 @@ int			mjr_trace_control(mjrcontext_t	*context,
       *retaddr = curvaddr + ilen + addend;      
       mjr_link_block_jump(context, curvaddr, *dstaddr, *retaddr);
     }
-  else if (curins->type & ASM_TYPE_IMPBRANCH)
+  else if ((curins->type & ASM_TYPE_BRANCH) && !(curins->type & ASM_TYPE_CONDCONTROL))
     {
+      /* Imperative branch */
       *dstaddr = mjr_get_jmp_destaddr(context);
       
 #if __DEBUG_FLOW__
       fprintf(D_DESC,
-	      "[D] mjr_asm_flow: " XFMT " ASM_TYPE_IMPBRANCH  T:" XFMT 
+	      "[D] mjr_asm_flow: " XFMT " ASM_TYPE_BRANCH  T:" XFMT 
 	      " F: NULL \n", curvaddr, *dstaddr);
 #endif
       
@@ -444,7 +449,8 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 	dest = MJR_BLOCK_INVALID;
 	}
       */
-      if (ins->type & ASM_TYPE_CONDBRANCH || ins->type & ASM_TYPE_IMPBRANCH)
+      if (ins->type & ASM_TYPE_BRANCH)
+        /* Imperative or conditional branch */
 	dest = (ins->op[0].imm * 4) + context->hist[MJR_HISTORY_CUR].vaddr;
       else
 	{

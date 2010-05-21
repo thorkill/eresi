@@ -21,7 +21,7 @@
 
 int i386_ja(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
-  new->type = ASM_TYPE_CONDBRANCH;
+  new->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
   new->instr = ASM_BRANCH_U_GREATER;
   new->len += 1;
 #if LIBASM_USE_OPERAND_VECTOR

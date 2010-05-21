@@ -14,7 +14,7 @@ int op_loope(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_LOOPE;
-  new->type = ASM_TYPE_CONDBRANCH | ASM_TYPE_READFLAG;
+  new->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL | ASM_TYPE_READFLAG;
   new->flagsread = ASM_FLAG_ZF;
 
 #if WIP

@@ -108,16 +108,16 @@ int			cmd_flowjack(void)
 	case MJR_LINK_BLOCK_COND_FALSE:
 	case MJR_LINK_BLOCK_COND_ALWAYS:
 	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 2, 2, world.curjob->proc);
-	  if (len == 2 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	  if (len == 2 && (ins.type & ASM_TYPE_BRANCH))
 	    break;
 	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 3, 3, world.curjob->proc);
-	  if (len == 3 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	  if (len == 3 && (ins.type & ASM_TYPE_BRANCH))
 	    break;
 	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 4, 4, world.curjob->proc);
-	  if (len == 4 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	  if (len == 4 && (ins.type & ASM_TYPE_BRANCH))
 	    break;
 	  len = asm_read_instr(&ins, (u_char *) buffer + cal->size - 5, 5, world.curjob->proc);
-	  if (len == 5 && (ins.type == ASM_TYPE_IMPBRANCH || ins.type == ASM_TYPE_CONDBRANCH))
+	  if (len == 5 && (ins.type & ASM_TYPE_BRANCH))
 	    break;
 	default:
 	  revm_output(" [D] Unable to patch flow for non-immediate CALL/JMP transfers \n");

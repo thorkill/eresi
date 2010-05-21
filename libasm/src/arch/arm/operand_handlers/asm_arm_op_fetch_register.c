@@ -23,10 +23,9 @@ int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode,
           ins->type |= ASM_TYPE_TOUCHSP;
           break;
         case ASM_ARM_REG_PC:
+          ins->type |= ASM_TYPE_BRANCH;
           if (ins->conditional)
-            ins->type |= ASM_TYPE_CONDBRANCH;
-          else
-            ins->type |= ASM_TYPE_IMPBRANCH;
+            ins->type |= ASM_TYPE_CONDCONTROL;
           break;
         }
     }

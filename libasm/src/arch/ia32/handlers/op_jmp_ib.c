@@ -13,7 +13,7 @@ int op_jmp_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->instr = ASM_BRANCH;
 
-  new->type = ASM_TYPE_IMPBRANCH;
+  new->type = ASM_TYPE_BRANCH;
   new->ptr_instr = opcode;
   new->len += 1;
 

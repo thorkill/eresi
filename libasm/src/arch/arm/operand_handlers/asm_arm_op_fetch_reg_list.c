@@ -26,14 +26,13 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
           
           if (ins->instr == ASM_ARM_LDMIA)
             {
-              ins->type = ASM_TYPE_RETPROC;
+              ins->type |= ASM_TYPE_RETPROC;
             }
           else
             {
+              ins->type |= ASM_TYPE_BRANCH;
               if (ins->conditional)
-                ins->type |= ASM_TYPE_CONDBRANCH;
-              else
-                ins->type |= ASM_TYPE_IMPBRANCH;
+                ins->type |= ASM_TYPE_CONDCONTROL;
             }
         }
     }

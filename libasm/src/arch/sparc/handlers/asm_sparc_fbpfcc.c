@@ -22,13 +22,14 @@ asm_sparc_fbpfcc(asm_instr * ins, u_char * buf, u_int len,
   ins->instr = inter->fbcc_table[opcodep.cond];
 
   if (ins->instr == ASM_SP_FBA)
-    ins->type = ASM_TYPE_IMPBRANCH;
+    ins->type = ASM_TYPE_BRANCH;
   else if (ins->instr == ASM_SP_FBN)
     ins->type = ASM_TYPE_NOP;
   else
-    ins->type = ASM_TYPE_CONDBRANCH;
+    ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
 
-  ins->type = ASM_TYPE_CONDBRANCH;
+  /* Removed during flags cleanup. */
+  /* ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL; */
   ins->nb_op = 2;
   ins->op[0].imm = opcodep.imm;
   ins->op[1].baser = opcodep.cc;

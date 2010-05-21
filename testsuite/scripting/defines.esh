@@ -3,8 +3,7 @@
 #profile enable warn
 
 # Attributes for instructions
-define b        ASM_TYPE_IMPBRANCH
-define cb       ASM_TYPE_CONDBRANCH
+define b        ASM_TYPE_BRANCH
 define c        ASM_TYPE_CALLPROC
 define i        ASM_TYPE_INT
 define r        ASM_TYPE_RETPROC
@@ -19,6 +18,9 @@ define s        ASM_TYPE_STOP
 define n        ASM_TYPE_NOP
 define ar       ASM_TYPE_ARITH
 define wf       ASM_TYPE_WRITEFLAG
+define cnd      ASM_TYPE_CONDCONTROL
+
+define b-cnd    b  cnd
 define i-r      i  r
 define ar-wf    ar wf
 define ar-wm    ar wm
@@ -35,9 +37,9 @@ define imm      ASM_OPTYPE_IMM
 define mem      ASM_OPTYPE_MEM
 
 # Printing to see if it worked
-print b cb c i r p cmp bs a wm
+print b c i r p cmp bs a wm
 print rm e s n ar wf
 
-print i-r ar-wf ar-wm a-rm a-wm
+print i-r ar-wf ar-wm a-rm a-wm b-cnd
 
 print reg imm mem

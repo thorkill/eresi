@@ -27,22 +27,16 @@ int     asm_arm_bx(asm_instr * ins, u_char * buf, u_int len,
     /* This is a return */
     ins->type |= ASM_TYPE_RETPROC;
   else
-    ins->type |= ins->conditional ? ASM_TYPE_CONDBRANCH : ASM_TYPE_IMPBRANCH;
+    ins->type |= ASM_TYPE_BRANCH;
+
+  if (ins->conditional)
+    ins->type |= ASM_TYPE_CONDCONTROL;
 
   ins->nb_op = 1;
 
   /* Decode operands */
   ins->op[0].baser = opcode.rm;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
-
-  /* Check if this BX is a procedure return (BX LR) */
-  if (ins->op[0].baser == ASM_ARM_REG_R14)
-    {
-      /* clear types assigned in the operand handler */
-      ins->type &= ~(ASM_TYPE_CONDBRANCH | ASM_TYPE_IMPBRANCH);
-      /* assign the real type */
-      ins->type |= ASM_TYPE_RETPROC;
-    }
 
   LIBASM_PROFILE_FOUT(4);
 }

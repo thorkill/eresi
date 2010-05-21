@@ -221,7 +221,7 @@ into Interrupt(addr:$curaddr, dst(val:$instr.op1.imm))
 
 # Jxx, LOOP, LOOPE, LOOPNE (imm)
 # Jxx = JA, JAE, JB, JBE, JE, JECXZ, JG, JGE, JL, JLE, JNE, JNO, JNP, JNS, JO, JP, JS
-case instr(sem:cb) 
+case instr(sem:b-cnd) 
 into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
 
 # JMP (imm)

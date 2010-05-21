@@ -12,7 +12,7 @@
 
 int i386_jnp(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
-  new->type = ASM_TYPE_CONDBRANCH;
+  new->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
   new->instr = ASM_BRANCH_NOT_PARITY;
     new->len += 1;
 

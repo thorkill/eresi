@@ -362,9 +362,9 @@ void	asm_instruction_debug(asm_instr *ins, FILE *out)
   fprintf(out, "ins=[%s] len=[%i] types=[%c|%c%c%c]\n",
 	  asm_instr_get_memonic(ins, ins->proc), 
 	  asm_instr_len(ins),
-	  ins->type & ASM_TYPE_IMPBRANCH ? 'I' :
+          (ins->type & ASM_TYPE_BRANCH) && !(ins->type & ASM_TYPE_CONDCONTROL) ? 'I' :
 	  ins->type & ASM_TYPE_CALLPROC ? 'C' : 
-	  ins->type & ASM_TYPE_CONDBRANCH ? 'J' : 
+          (ins->type & ASM_TYPE_BRANCH) && (ins->type & ASM_TYPE_CONDCONTROL) ? 'J' : 
 	  ins->type & ASM_TYPE_RETPROC ? 'R' : ' ',
 	  ins->type & ASM_TYPE_ARITH ? 'c' : ' ',
 	  ins->type & ASM_TYPE_CONTROL ? 'f' : ' ',

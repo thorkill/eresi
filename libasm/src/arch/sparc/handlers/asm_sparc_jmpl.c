@@ -20,7 +20,7 @@ asm_sparc_jmpl(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
   
-  ins->type = ASM_TYPE_IMPBRANCH;
+  ins->type = ASM_TYPE_BRANCH;
 
   ins->nb_op = 2;
   ins->op[0].baser = opcode.rd;

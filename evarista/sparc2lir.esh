@@ -35,17 +35,17 @@ into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
 
 # indirect conditional branch without link
 # XXX lacks flag translation
-case instr(sem:cb, nb_op:1, op1(sem:reg))
+case instr(sem:b-cnd, nb_op:1, op1(sem:reg))
 into IndBranchR(addr:$curaddr, dst(rid:$instr.op1.baser))
 
 # direct always branch (bcc, bpcc) 					
 # XXX lacks flag translation
-case instr(sem:cb, nb_op:1, op1(sem:imm))
+case instr(sem:b-cnd, nb_op:1, op1(sem:imm))
 into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
 
 # direct always branch (bcc, bpcc) with 2 args 					
 # XXX lacks flag translation
-case instr(sem:cb, nb_op:2, op1(sem:imm))
+case instr(sem:b-cnd, nb_op:2, op1(sem:imm))
 into Branch(addr:$curaddr, dst(val:$instr.op1.imm))::
      Nop(addr:$curaddr)
 

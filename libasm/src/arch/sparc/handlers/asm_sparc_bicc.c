@@ -22,11 +22,11 @@ asm_sparc_bicc(asm_instr * ins, u_char * buf, u_int len,
   ins->instr = inter->bcc_table[opcode.cond];
 
   if (ins->instr == ASM_SP_BA)
-    ins->type = ASM_TYPE_IMPBRANCH;
+    ins->type = ASM_TYPE_BRANCH;
   else if (ins->instr == ASM_SP_BN)
     ins->type = ASM_TYPE_NOP;
   else
-    ins->type = ASM_TYPE_CONDBRANCH;
+    ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
 
   ins->nb_op = 1;  
   ins->op[0].imm = opcode.imm;  

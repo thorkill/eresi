@@ -6,8 +6,8 @@
 verb
 
 # Attributes for ASM instructions
-define b	ASM_TYPE_IMPBRANCH
-define cb	ASM_TYPE_CONDBRANCH
+define non  ASM_TYPE_NONE
+define b	ASM_TYPE_BRANCH
 define c	ASM_TYPE_CALLPROC
 define i	ASM_TYPE_INT
 define r	ASM_TYPE_RETPROC
@@ -25,6 +25,14 @@ define wf	ASM_TYPE_WRITEFLAG
 define rf	ASM_TYPE_READFLAG
 define io	ASM_TYPE_IO
 define sp	ASM_TYPE_TOUCHSP
+define cnd	ASM_TYPE_CONDCONTROL
+define ind	ASM_TYPE_INDCONTROL
+define arch ASM_TYPE_ARCH
+define ctl  ASM_TYPE_CONTROL
+# TODO: check where bt is being defined. Wanted to use it for BITTEST flag.
+define btt  ASM_TYPE_BITTEST
+define id   ASM_TYPE_INCDEC
+define oth  ASM_TYPE_OTHER
 
 # Combinations of flags
 define i-r      i  r
@@ -41,6 +49,7 @@ define sp-rm    sp  rm
 define sp-rm-wf sp  rm wf
 define sp-wm-rf sp  wm rf
 define wm-rm    wm  rm
+define b-cnd    b   cnd
 
 #return 0
 

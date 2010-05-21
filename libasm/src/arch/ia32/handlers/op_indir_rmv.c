@@ -47,12 +47,12 @@ int op_indir_rmv(asm_instr *new, u_char *opcode, u_int len,
 
     break;
   case 4:
-    new->type = ASM_TYPE_IMPBRANCH;
+    new->type = ASM_TYPE_BRANCH;
     new->instr = ASM_BRANCH;
     new->op[0].type = ASM_OTYPE_MEMORY;
     break;
   case 5:
-    new->type = ASM_TYPE_IMPBRANCH;
+    new->type = ASM_TYPE_BRANCH;
     new->instr = ASM_BRANCH;
     new->op[0].type = ASM_OTYPE_MEMORY;
     break;

@@ -20,7 +20,7 @@ int asm_mips_jr(asm_instr *ins, u_char *buf, u_int len,
    if (temp.rs == ASM_MIPS_REG_RA)
       ins->type = ASM_TYPE_RETPROC;
    else
-      ins->type = ASM_TYPE_IMPBRANCH;
+      ins->type = ASM_TYPE_BRANCH;
 
    /* Exceptions: None */
 

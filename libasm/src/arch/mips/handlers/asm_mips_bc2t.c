@@ -13,7 +13,7 @@ int asm_mips_bc2t(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_imm temp;
 
    ins->instr = ASM_MIPS_BC2T;
-   ins->type = ASM_TYPE_ARCH | ASM_TYPE_CONDBRANCH;
+   ins->type = ASM_TYPE_ARCH | ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
    mips_convert_format_i(&temp, buf);
    ins->op[0].imm = temp.im;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_BRANCH, ins);

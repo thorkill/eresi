@@ -13,7 +13,7 @@ int op_je_cxz(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;
-  new->type = ASM_TYPE_CONDBRANCH;
+  new->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
   new->instr = ASM_BRANCH_CXZ;
 
 #if WIP

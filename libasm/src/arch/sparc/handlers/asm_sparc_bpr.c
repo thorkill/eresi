@@ -20,7 +20,7 @@ asm_sparc_bpr(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
 
   ins->instr = inter->brcc_table[opcoder.rcond];
-  ins->type = ASM_TYPE_CONDBRANCH;
+  ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
   ins->nb_op = 2;
   ins->op[0].imm = opcoder.d16;
   ins->op[1].baser = opcoder.rs1;

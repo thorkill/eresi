@@ -13,7 +13,7 @@ int asm_mips_bgezal(asm_instr *ins, u_char *buf, u_int len,
    struct s_mips_decode_imm temp;
 
    ins->instr = ASM_MIPS_BGEZAL;
-   ins->type = ASM_TYPE_CONDBRANCH | ASM_TYPE_CALLPROC;
+   ins->type = ASM_TYPE_CONDCONTROL | ASM_TYPE_CALLPROC;
    mips_convert_format_i(&temp, buf);
    ins->op[0].baser = temp.rs;
    asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);

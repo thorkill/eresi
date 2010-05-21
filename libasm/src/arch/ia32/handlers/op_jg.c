@@ -13,7 +13,7 @@ int  op_jg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->len += 1;
-  new->type = ASM_TYPE_CONDBRANCH;
+  new->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
   new->instr = ASM_BRANCH_S_GREATER;
 
 #if WIP
