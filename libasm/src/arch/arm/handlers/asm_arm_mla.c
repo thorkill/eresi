@@ -15,6 +15,8 @@ int     asm_arm_mla(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_multiply(&opcode, buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->multiply_table[(opcode.op << 5) | (opcode.cond << 1) | opcode.s];
 
   ins->name = ins->proc->instr_table[ins->instr];

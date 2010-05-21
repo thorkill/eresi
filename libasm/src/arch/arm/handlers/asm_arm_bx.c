@@ -29,9 +29,6 @@ int     asm_arm_bx(asm_instr * ins, u_char * buf, u_int len,
   else
     MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
 
-  if (ins->conditional)
-    MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
-
   ins->nb_op = 1;
 
   /* Decode operands */

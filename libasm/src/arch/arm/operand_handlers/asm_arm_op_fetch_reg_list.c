@@ -31,8 +31,6 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
           else
             {
               MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
-              if (ins->conditional)
-                MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
             }
         }
     }

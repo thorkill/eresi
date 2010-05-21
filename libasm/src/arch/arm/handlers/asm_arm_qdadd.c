@@ -15,6 +15,8 @@ int     asm_arm_qdadd(asm_instr * ins, u_char * buf, u_int len,
   inter = proc->internals;
   arm_convert_multiply(&opcode, buf);
 
+  arm_decode_condition(ins, opcode.cond);
+
   ins->instr = inter->dsp_arith_table[(opcode.op << 4) | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];

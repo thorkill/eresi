@@ -21,7 +21,6 @@ int     asm_arm_bl(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  /* Can be a conditional call proc, not yet supported */
   MASSIGNTYPE(ins, ASM_TYPE_CALLPROC);
 
   ins->nb_op = 1;
