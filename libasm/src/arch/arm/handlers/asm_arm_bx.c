@@ -22,12 +22,12 @@ int     asm_arm_bx(asm_instr * ins, u_char * buf, u_int len,
   ins->name = ins->proc->instr_table[ins->instr];
 
   /* rest of the type is defined below */
-  MASSIGNTYPE(ins, ASM_TYPE_ARCH);
   if (opcode.rm == ASM_ARM_REG_R14)
     /* This is a return */
     MASSIGNTYPE(ins, ASM_TYPE_RETPROC);
   else
     MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
+  MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL | ASM_TYPE_ARCH);
 
   ins->nb_op = 1;
 

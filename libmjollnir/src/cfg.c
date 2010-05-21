@@ -364,32 +364,14 @@ eresi_Addr		 mjr_get_call_destaddr(mjrcontext_t *context)
 
       /* ARM architecture */
     case ASM_PROC_ARM:
-      switch (ins->instr)
-        {
-        case ASM_ARM_BLEQ:
-        case ASM_ARM_BLNE:
-        case ASM_ARM_BLCS:
-        case ASM_ARM_BLCC:
-        case ASM_ARM_BLMI:
-        case ASM_ARM_BLPL:
-        case ASM_ARM_BLVS:
-        case ASM_ARM_BLVC:
-        case ASM_ARM_BLHI:
-        case ASM_ARM_BLLS:
-        case ASM_ARM_BLGE:
-        case ASM_ARM_BLLT:
-        case ASM_ARM_BLGT:
-        case ASM_ARM_BLLE:
-        case ASM_ARM_BL:
-        case ASM_ARM_BLX1:
-          dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
-                                      (ins->op[0].content == ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
-          break;
-        default:
-          /* Call to register */
-          dest = MJR_BLOCK_INVALID;
-          break;
-        }
+      if (!(ins->type & ASM_TYPE_INDCONTROL))
+        /* BLX(1) & BL */
+        dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
+                                    (ins->op[0].content == ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
+      else
+        /* Call to register */
+        /* BLX(2) */
+        dest = MJR_BLOCK_INVALID;
       break;
       
       /* Unknown architecture */
@@ -484,31 +466,25 @@ eresi_Addr	mjr_get_jmp_destaddr(mjrcontext_t *context)
 
       /* ARM architecture */
     case ASM_PROC_ARM:
-      switch (ins->instr)
+      if (!(ins->type & ASM_TYPE_INDCONTROL))
         {
-        case ASM_ARM_BEQ:
-        case ASM_ARM_BNE:
-        case ASM_ARM_BCS:
-        case ASM_ARM_BCC:
-        case ASM_ARM_BMI:
-        case ASM_ARM_BPL:
-        case ASM_ARM_BVS:
-        case ASM_ARM_BVC:
-        case ASM_ARM_BHI:
-        case ASM_ARM_BLS:
-        case ASM_ARM_BGE:
-        case ASM_ARM_BLT:
-        case ASM_ARM_BGT:
-        case ASM_ARM_BLE:
-        case ASM_ARM_B:
-          dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm,
-                                      (ins->op[0].content == ASM_ARM_OTYPE_DISP_HALF) ? 1 : 0);
-          break;
-        default:
-          /* Jump to register */
-          dest = MJR_BLOCK_INVALID;
-          break;
+          if (ins->op[0].content == ASM_ARM_OTYPE_REGISTER)
+            {
+              if ((ins->instr >= ASM_ARM_MVNEQ && ins->instr <= ASM_ARM_MVNS))
+                /* MVN */
+                dest = ~ins->op[1].imm;
+              else
+                /* MOV */
+                dest = ins->op[1].imm;
+            }
+          else
+            /* B */
+            dest = asm_dest_resolve_arm(context->hist[MJR_HISTORY_CUR].vaddr, ins->op[0].imm, 0);
         }
+      else
+        /* Jump to register */
+        dest = MJR_BLOCK_INVALID;
+
       break;
 
       /* Unknown architecture */

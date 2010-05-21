@@ -14,8 +14,9 @@
 #define MGETBYTE(val, byte) ((val >> (byte*8)) & 0x00FF)
 #define MGETNIBBLE(val, nibble) ((val >> (nibble*4)) & 0x000F)
 
-#define MASSIGNTYPE(insptr, instype) (insptr->type |= instype)
-#define MUNASSIGNTYPE(insptr, instype) (insptr->type &= ~(instype))
+#define MASSIGNTYPE(insptr, instype) ((insptr->type) |= (instype))
+#define MUNASSIGNTYPE(insptr, instype) ((insptr->type) &= ~(instype))
+#define MISTYPE(insptr, instype) ((insptr->type) & (instype))
 
 /* Registration functions */
 int asm_register_arm();

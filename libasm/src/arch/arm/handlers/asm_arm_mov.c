@@ -36,14 +36,22 @@ int     asm_arm_mov(asm_instr * ins, u_char * buf, u_int len,
   arm_decode_dataproc_flagswritten(ins, &opcode);
 
   /* Check if this MOV is a procedure return (MOV PC,LR) */
-  if ((ins->op[1].content & ASM_ARM_OTYPE_REGISTER) == ASM_ARM_OTYPE_REGISTER
+  if ((ins->op[1].content & ASM_ARM_OTYPE_REGISTER)
       && ins->op[1].baser == ASM_ARM_REG_R14
       && ins->op[0].baser == ASM_ARM_REG_PC)
     {
-      /* clear types assigned in the operand handler */
+      /* clear types assigned in the register operand handler */
       MUNASSIGNTYPE(ins, ASM_TYPE_BRANCH);
       /* assign the real type */
       MASSIGNTYPE(ins, ASM_TYPE_RETPROC);
+    }
+
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      if (!(ins->op[1].content & ASM_ARM_OTYPE_IMMEDIATE))
+        MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
     }
 
   LIBASM_PROFILE_FOUT(4);

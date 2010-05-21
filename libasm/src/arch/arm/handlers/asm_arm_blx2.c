@@ -21,7 +21,7 @@ int     asm_arm_blx2(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, (ASM_TYPE_CALLPROC | ASM_TYPE_ARCH));
+  MASSIGNTYPE(ins, (ASM_TYPE_CALLPROC | ASM_TYPE_INDCONTROL | ASM_TYPE_ARCH));
 
   ins->nb_op = 1;
 

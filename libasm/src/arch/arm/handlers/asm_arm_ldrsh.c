@@ -32,5 +32,12 @@ int     asm_arm_ldrsh(asm_instr * ins, u_char * buf, u_int len,
 
   arm_decode_ldst_misc_offop(ins, buf, 1, &opcode);
 
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
+    }
+
   LIBASM_PROFILE_FOUT(4);
 }

@@ -37,5 +37,12 @@ int     asm_arm_rsc(asm_instr * ins, u_char * buf, u_int len,
   /* Decode flags related behaviour */
   arm_decode_dataproc_flagswritten(ins, &opcode);
 
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
+    }
+
   LIBASM_PROFILE_FOUT(4);
 }
