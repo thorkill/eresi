@@ -51,6 +51,54 @@ char *asm_arm_get_shift_type(u_int shift_type)
     }
 }
 
+char *asm_arm_get_coprocessor(int coproc)
+{
+  switch (coproc)
+    {
+    case ASM_ARM_COPROC_P0: return "p0";
+    case ASM_ARM_COPROC_P1: return "p1";
+    case ASM_ARM_COPROC_P2: return "p2";
+    case ASM_ARM_COPROC_P3: return "p3";
+    case ASM_ARM_COPROC_P4: return "p4";
+    case ASM_ARM_COPROC_P5: return "p5";
+    case ASM_ARM_COPROC_P6: return "p6";
+    case ASM_ARM_COPROC_P7: return "p7";
+    case ASM_ARM_COPROC_P8: return "p8";
+    case ASM_ARM_COPROC_P9: return "p9";
+    case ASM_ARM_COPROC_P10: return "p10";
+    case ASM_ARM_COPROC_P11: return "p11";
+    case ASM_ARM_COPROC_P12: return "p12";
+    case ASM_ARM_COPROC_P13: return "p13";
+    case ASM_ARM_COPROC_P14: return "p14";
+    case ASM_ARM_COPROC_P15: return "p15";
+    default: return "bad";
+    }
+}
+
+char *asm_arm_get_coprocessor_register(int reg)
+{
+  switch (reg)
+    {
+    case ASM_ARM_COPROC_REG_CR0: return "cr0";
+    case ASM_ARM_COPROC_REG_CR1: return "cr1";
+    case ASM_ARM_COPROC_REG_CR2: return "cr2";
+    case ASM_ARM_COPROC_REG_CR3: return "cr3";
+    case ASM_ARM_COPROC_REG_CR4: return "cr4";
+    case ASM_ARM_COPROC_REG_CR5: return "cr5";
+    case ASM_ARM_COPROC_REG_CR6: return "cr6";
+    case ASM_ARM_COPROC_REG_CR7: return "cr7";
+    case ASM_ARM_COPROC_REG_CR8: return "cr8";
+    case ASM_ARM_COPROC_REG_CR9: return "cr9";
+    case ASM_ARM_COPROC_REG_CR10: return "cr10";
+    case ASM_ARM_COPROC_REG_CR11: return "cr11";
+    case ASM_ARM_COPROC_REG_CR12: return "cr12";
+    case ASM_ARM_COPROC_REG_CR13: return "cr13";
+    case ASM_ARM_COPROC_REG_CR14: return "cr14";
+    case ASM_ARM_COPROC_REG_CR15: return "cr15";
+    default: return "bad";
+    }
+}
+
 /**
  * Dump a ARM operand to a buffer.
  * @param ins Pointer to instruction structure.
@@ -76,7 +124,8 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
     {
     case ASM_ARM_OTYPE_REGISTER:
       sprintf(buf, "%s", asm_arm_get_register(op->baser));
-      if (op->writeback)
+      if (op->indexing == ASM_ARM_ADDRESSING_PREINDEXED
+          || op->indexing == ASM_ARM_ADDRESSING_POSTINDEXED)
         strcat(buf, "!");
       break;
     case ASM_ARM_OTYPE_IMMEDIATE:
@@ -97,7 +146,8 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
     case ASM_ARM_OTYPE_REG_OFFSET:
       sprintf(buf, "[%s", asm_arm_get_register(op->baser));
 
-      if (!op->preindexed)
+      if (op->indexing == ASM_ARM_ADDRESSING_POSTINDEXED
+          || op->indexing == ASM_ARM_ADDRESSING_UNINDEXED)
         strcat(buf, "]");
 
       if (op->indexr == ASM_ARM_REG_NUM)
@@ -121,9 +171,11 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
             }
         }
 
-      if (op->preindexed)
+      if (op->indexing == ASM_ARM_ADDRESSING_PREINDEXED
+          || op->indexing == ASM_ARM_ADDRESSING_OFFSET)
         strcat(buf, "]");
-      if (op->writeback)
+
+      if (op->indexing == ASM_ARM_ADDRESSING_PREINDEXED)
         strcat(buf, "!");
 
       break;
@@ -154,6 +206,12 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
     case ASM_ARM_OTYPE_DISP_HALF:
       address = asm_dest_resolve_arm(addr, op->imm, 1);
       ins->proc->resolve_immediate(ins->proc->resolve_data, address, buf, len);
+      break;
+    case ASM_ARM_OTYPE_COPROC:
+      sprintf(buf, "%s", asm_arm_get_coprocessor(op->imm));
+      break;
+    case ASM_ARM_OTYPE_COPROC_REGISTER:
+      sprintf(buf, "%s", asm_arm_get_coprocessor_register(op->baser));
       break;
     default:
       sprintf(buf, "err");

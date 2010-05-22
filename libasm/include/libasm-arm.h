@@ -31,6 +31,8 @@ char *asm_arm_get_op_name(asm_operand *op);
 char *asm_arm_get_register(int reg);
 char *asm_arm_get_regset_suffix(int regset);
 char *asm_arm_get_shift_type(u_int shift_type);
+char *asm_arm_get_coprocessor(int coproc);
+char *asm_arm_get_coprocessor_register(int reg);
 void asm_arm_dump_operand(asm_instr *ins, int num, eresi_Addr addr, char *buf, u_int len);
 
 /* Instruction handlers */
@@ -116,6 +118,8 @@ int asm_arm_op_fetch_reg_offset(asm_operand *operand, u_char *opcode, int otype,
 int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_disp(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 int asm_arm_op_fetch_disp_half(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_coprocessor(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
+int asm_arm_op_fetch_coprocessor_register(asm_operand *operand, u_char *opcode, int otype, asm_instr *ins);
 
 /* Decoding helper functions */
 void arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf);
@@ -125,6 +129,12 @@ void arm_convert_ldst_mult(struct s_arm_decode_ldst_mult *opcode, u_char *buf);
 void arm_convert_multiply(struct s_arm_decode_multiply *opcode, u_char *buf);
 void arm_convert_branch1(struct s_arm_decode_branch1 *opcode, u_char *buf);
 void arm_convert_branch2(struct s_arm_decode_branch2 *opcode, u_char *buf);
+void arm_convert_bkpt(struct s_arm_decode_bkpt *opcode, u_char *buf);
+void arm_convert_coproc_dataproc(struct s_arm_decode_coproc_dataproc* opcode, u_char *buf);
+void arm_convert_coproc_mov(struct s_arm_decode_coproc_mov* opcode, u_char *buf);
+void arm_convert_coproc_mov2(struct s_arm_decode_coproc_mov2* opcode, u_char *buf);
+void arm_convert_coproc_ldst(struct s_arm_decode_coproc_ldst* opcode, u_char *buf);
+
 
 void arm_decode_condition(asm_instr *ins, u_char condition);
 void arm_decode_dataproc_flagswritten(asm_instr *ins, struct s_arm_decode_dataproc *opcode);
@@ -133,6 +143,7 @@ void arm_decode_dataproc_shfop(asm_instr *ins, u_char *buf, u_int op_nr, struct 
 void arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst *opcode);
 void arm_decode_ldst_misc_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_ldst_misc *opcode);
 void arm_decode_multiply_long(asm_instr *ins, u_char *buf, struct s_arm_decode_multiply *opcode);
+void arm_decode_coproc_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, struct s_arm_decode_coproc_ldst *opcode);
 
 struct  s_asm_proc_arm
 {
@@ -145,6 +156,10 @@ struct  s_asm_proc_arm
   int   *dsp_multiply_table;
   int   *branch1_table;
   int   *branch2_table;
+  int   *coproc_dataproc_table;
+  int   *coproc_mov_table;
+  int   *coproc_mov2_table;
+  int   *coproc_ldst_table;
 };
 
 enum e_arm_shift
@@ -158,16 +173,15 @@ enum e_arm_shift
     ASM_ARM_SHIFT_NUM
   };
 
-/*
 enum e_arm_addressing
   {
     ASM_ARM_ADDRESSING_OFFSET,
-    ASM_ARM_ADDRESSING_PRE,
-    ASM_ARM_ADDRESSING_POST,
+    ASM_ARM_ADDRESSING_PREINDEXED,
+    ASM_ARM_ADDRESSING_POSTINDEXED,
+    ASM_ARM_ADDRESSING_UNINDEXED, /* Coprocessor only */
 
     ASM_ARM_ADDRESSING_NUM
   };
-*/
 
 enum e_arm_operand
   {
@@ -178,6 +192,8 @@ enum e_arm_operand
     ASM_ARM_OTYPE_REG_LIST,
     ASM_ARM_OTYPE_DISP,
     ASM_ARM_OTYPE_DISP_HALF,
+    ASM_ARM_OTYPE_COPROC,
+    ASM_ARM_OTYPE_COPROC_REGISTER,
 
     ASM_ARM_OTYPE_NUM
   };
@@ -221,13 +237,13 @@ enum e_arm_regset
 /* ARM Flags - values correspond to the bit in the CPSR/SPSR register */
 enum e_arm_flags
   {
+    ASM_ARM_FLAG_NONE = 0x00,
+
     ASM_ARM_FLAG_N = 1 << 31, /* Negative */
     ASM_ARM_FLAG_Z = 1 << 30, /* Zero */
     ASM_ARM_FLAG_C = 1 << 29, /* Carry */
     ASM_ARM_FLAG_V = 1 << 28, /* Overflow */
-    ASM_ARM_FLAG_Q = 1 << 27,  /* Enhanced DSP Overflow (ARMv5E and superior) */
-
-    ASM_ARM_FLAG_NUM = 0x00
+    ASM_ARM_FLAG_Q = 1 << 27  /* Enhanced DSP Overflow (ARMv5E and superior) */
   };
 
 enum e_arm_conditions
@@ -248,6 +264,51 @@ enum e_arm_conditions
     ASM_ARM_COND_LE,
     ASM_ARM_COND_AL,
     ASM_ARM_COND_NV
+  };
+
+/* Coprocessor related */
+enum e_arm_coprocessor
+  {
+    ASM_ARM_COPROC_P0,
+    ASM_ARM_COPROC_P1,
+    ASM_ARM_COPROC_P2,
+    ASM_ARM_COPROC_P3,
+    ASM_ARM_COPROC_P4,
+    ASM_ARM_COPROC_P5,
+    ASM_ARM_COPROC_P6,
+    ASM_ARM_COPROC_P7,
+    ASM_ARM_COPROC_P8,
+    ASM_ARM_COPROC_P9,
+    ASM_ARM_COPROC_P10,
+    ASM_ARM_COPROC_P11,
+    ASM_ARM_COPROC_P12,
+    ASM_ARM_COPROC_P13,
+    ASM_ARM_COPROC_P14,
+    ASM_ARM_COPROC_P15,
+
+    ASM_ARM_COPROC_NUM
+  };
+
+enum e_arm_coprocessor_registers
+  {
+    ASM_ARM_COPROC_REG_CR0,
+    ASM_ARM_COPROC_REG_CR1,
+    ASM_ARM_COPROC_REG_CR2,
+    ASM_ARM_COPROC_REG_CR3,
+    ASM_ARM_COPROC_REG_CR4,
+    ASM_ARM_COPROC_REG_CR5,
+    ASM_ARM_COPROC_REG_CR6,
+    ASM_ARM_COPROC_REG_CR7,
+    ASM_ARM_COPROC_REG_CR8,
+    ASM_ARM_COPROC_REG_CR9,
+    ASM_ARM_COPROC_REG_CR10,
+    ASM_ARM_COPROC_REG_CR11,
+    ASM_ARM_COPROC_REG_CR12,
+    ASM_ARM_COPROC_REG_CR13,
+    ASM_ARM_COPROC_REG_CR14,
+    ASM_ARM_COPROC_REG_CR15,
+
+    ASM_ARM_COPROC_REG_NUM
   };
 
 /***
@@ -1920,7 +1981,7 @@ enum e_arm_instr
     ASM_ARM_BAD,
   };
 
-extern char 	*arm_instr_list[ASM_ARM_BAD + 1];
+extern char	*arm_instr_list[ASM_ARM_BAD + 1];
 extern int	arm_dataproc_table[512];
 extern int	arm_ldst_table[128];
 extern int	arm_ldst_misc_table[128];
@@ -1930,6 +1991,11 @@ extern int	arm_dsp_multiply_table[256];
 extern int	arm_dsp_arith_table[64];
 extern int	arm_branch1_table[32];
 extern int	arm_branch2_table[32];
+extern int	arm_coproc_dataproc_table[16];
+extern int	arm_coproc_mov_table[32];
+extern int	arm_coproc_mov2_table[32];
+extern int	arm_coproc_ldst_table[64];
+
 
 extern int	arm_cond_flagsread_table[16];
 extern int	arm_dataproc_flagswritten_table[16];

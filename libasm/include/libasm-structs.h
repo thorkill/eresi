@@ -53,11 +53,9 @@ struct s_asm_op
   /* shift type (arm only) */
   u_int shift_type;
   /* indexing type (arm only) */
-  u_int preindexed;
+  u_int indexing;
   /* determines if offset is added or subtracted from the base (arm only) */
   u_int offset_added;
-  /* determines if the value is written back to the register (arm only) */
-  u_int writeback;
 };
 
 
@@ -99,7 +97,7 @@ struct s_asm_instr
   /* number of operand */
   int nb_op;
   /* Array of operands */
-  asm_operand	op[4];
+  asm_operand	op[6];
   /* instruction/operands full lengh */
   u_int len;   
 };

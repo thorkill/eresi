@@ -27,7 +27,8 @@ int     asm_arm_ldm3(asm_instr * ins, u_char * buf, u_int len,
 
   /* Decode operands */
   ins->op[0].baser = opcode.rn;
-  ins->op[0].writeback = opcode.w;
+  if (opcode.w)
+    ins->op[0].indexing = ASM_ARM_ADDRESSING_POSTINDEXED;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   ins->op[1].imm = opcode.reg_list;

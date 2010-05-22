@@ -12,7 +12,9 @@ int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode,
   operand->content = ASM_ARM_OTYPE_REGISTER;
   operand->type = ASM_OPTYPE_REG;
 
-  if (operand->destination || operand->writeback)
+  if (operand->destination
+      || operand->indexing == ASM_ARM_ADDRESSING_POSTINDEXED
+      || operand->indexing == ASM_ARM_ADDRESSING_PREINDEXED)
     {
       /* PC shouldn't be used as base address with writeback */
       /* If by any chance someone uses it this way, we will flag the instruction as a branch */

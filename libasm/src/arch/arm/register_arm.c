@@ -245,6 +245,8 @@ int asm_register_arm_operands()
   asm_register_arm_operand(ASM_ARM_OTYPE_REG_LIST, (unsigned long) asm_arm_op_fetch_reg_list);
   asm_register_arm_operand(ASM_ARM_OTYPE_DISP, (unsigned long) asm_arm_op_fetch_disp);
   asm_register_arm_operand(ASM_ARM_OTYPE_DISP_HALF, (unsigned long) asm_arm_op_fetch_disp_half);
+  asm_register_arm_operand(ASM_ARM_OTYPE_COPROC, (unsigned long) asm_arm_op_fetch_coprocessor);
+  asm_register_arm_operand(ASM_ARM_OTYPE_COPROC_REGISTER, (unsigned long) asm_arm_op_fetch_coprocessor_register);
   /* WIP */
 
   return (1);

@@ -1728,6 +1728,179 @@ int	arm_branch2_table[32] =
     ASM_ARM_
   };
 
+/* cond (4bit)  */
+int	arm_coproc_dataproc_table[16] =
+  {
+    ASM_ARM_CDPEQ,
+    ASM_ARM_CDPNE,
+    ASM_ARM_CDPCS,
+    ASM_ARM_CDPCC,
+    ASM_ARM_CDPMI,
+    ASM_ARM_CDPPL,
+    ASM_ARM_CDPVS,
+    ASM_ARM_CDPVC,
+    ASM_ARM_CDPHI,
+    ASM_ARM_CDPLS,
+    ASM_ARM_CDPGE,
+    ASM_ARM_CDPLT,
+    ASM_ARM_CDPGT,
+    ASM_ARM_CDPLE,
+    ASM_ARM_CDP,
+    ASM_ARM_CDP2
+  };
+
+/* toarm (1bit) | cond (4bit)  */
+int	arm_coproc_mov_table[32] =
+  {
+    /* MCR/MCR2 */
+    ASM_ARM_MCREQ,
+    ASM_ARM_MCRNE,
+    ASM_ARM_MCRCS,
+    ASM_ARM_MCRCC,
+    ASM_ARM_MCRMI,
+    ASM_ARM_MCRPL,
+    ASM_ARM_MCRVS,
+    ASM_ARM_MCRVC,
+    ASM_ARM_MCRHI,
+    ASM_ARM_MCRLS,
+    ASM_ARM_MCRGE,
+    ASM_ARM_MCRLT,
+    ASM_ARM_MCRGT,
+    ASM_ARM_MCRLE,
+    ASM_ARM_MCR,
+    ASM_ARM_MCR2,
+
+    /* MRC/MRC2 */
+    ASM_ARM_MRCEQ,
+    ASM_ARM_MRCNE,
+    ASM_ARM_MRCCS,
+    ASM_ARM_MRCCC,
+    ASM_ARM_MRCMI,
+    ASM_ARM_MRCPL,
+    ASM_ARM_MRCVS,
+    ASM_ARM_MRCVC,
+    ASM_ARM_MRCHI,
+    ASM_ARM_MRCLS,
+    ASM_ARM_MRCGE,
+    ASM_ARM_MRCLT,
+    ASM_ARM_MRCGT,
+    ASM_ARM_MRCLE,
+    ASM_ARM_MRC,
+    ASM_ARM_MRC2
+  };
+
+/* toarm (1bit) | cond (4bit)  */
+int	arm_coproc_mov2_table[32] =
+  {
+    /* MCRR */
+    ASM_ARM_MCRREQ,
+    ASM_ARM_MCRRNE,
+    ASM_ARM_MCRRCS,
+    ASM_ARM_MCRRCC,
+    ASM_ARM_MCRRMI,
+    ASM_ARM_MCRRPL,
+    ASM_ARM_MCRRVS,
+    ASM_ARM_MCRRVC,
+    ASM_ARM_MCRRHI,
+    ASM_ARM_MCRRLS,
+    ASM_ARM_MCRRGE,
+    ASM_ARM_MCRRLT,
+    ASM_ARM_MCRRGT,
+    ASM_ARM_MCRRLE,
+    ASM_ARM_MCRR,
+    ASM_ARM_,
+
+    /* MRRC */
+    ASM_ARM_MRRCEQ,
+    ASM_ARM_MRRCNE,
+    ASM_ARM_MRRCCS,
+    ASM_ARM_MRRCCC,
+    ASM_ARM_MRRCMI,
+    ASM_ARM_MRRCPL,
+    ASM_ARM_MRRCVS,
+    ASM_ARM_MRRCVC,
+    ASM_ARM_MRRCHI,
+    ASM_ARM_MRRCLS,
+    ASM_ARM_MRRCGE,
+    ASM_ARM_MRRCLT,
+    ASM_ARM_MRRCGT,
+    ASM_ARM_MRRCLE,
+    ASM_ARM_MRRC,
+    ASM_ARM_
+  };
+
+/* load/store (1bit) | cond (4bit) | long (1bit) */
+int	arm_coproc_ldst_table[64] =
+  {
+    /* STC/STC2 */
+    ASM_ARM_STCEQ,
+    ASM_ARM_STCEQL,
+    ASM_ARM_STCNE,
+    ASM_ARM_STCNEL,
+    ASM_ARM_STCCS,
+    ASM_ARM_STCCSL,
+    ASM_ARM_STCCC,
+    ASM_ARM_STCCCL,
+    ASM_ARM_STCMI,
+    ASM_ARM_STCMIL,
+    ASM_ARM_STCPL,
+    ASM_ARM_STCPLL,
+    ASM_ARM_STCVS,
+    ASM_ARM_STCVSL,
+    ASM_ARM_STCVC,
+    ASM_ARM_STCVCL,
+    ASM_ARM_STCHI,
+    ASM_ARM_STCHIL,
+    ASM_ARM_STCLS,
+    ASM_ARM_STCLSL,
+    ASM_ARM_STCGE,
+    ASM_ARM_STCGEL,
+    ASM_ARM_STCLT,
+    ASM_ARM_STCLTL,
+    ASM_ARM_STCGT,
+    ASM_ARM_STCGTL,
+    ASM_ARM_STCLE,
+    ASM_ARM_STCLEL,
+    ASM_ARM_STC,
+    ASM_ARM_STCL,
+    ASM_ARM_STC2,
+    ASM_ARM_STC2L,
+
+    /* LDC/LDC2 */
+    ASM_ARM_LDCEQ,
+    ASM_ARM_LDCEQL,
+    ASM_ARM_LDCNE,
+    ASM_ARM_LDCNEL,
+    ASM_ARM_LDCCS,
+    ASM_ARM_LDCCSL,
+    ASM_ARM_LDCCC,
+    ASM_ARM_LDCCCL,
+    ASM_ARM_LDCMI,
+    ASM_ARM_LDCMIL,
+    ASM_ARM_LDCPL,
+    ASM_ARM_LDCPLL,
+    ASM_ARM_LDCVS,
+    ASM_ARM_LDCVSL,
+    ASM_ARM_LDCVC,
+    ASM_ARM_LDCVCL,
+    ASM_ARM_LDCHI,
+    ASM_ARM_LDCHIL,
+    ASM_ARM_LDCLS,
+    ASM_ARM_LDCLSL,
+    ASM_ARM_LDCGE,
+    ASM_ARM_LDCGEL,
+    ASM_ARM_LDCLT,
+    ASM_ARM_LDCLTL,
+    ASM_ARM_LDCGT,
+    ASM_ARM_LDCGTL,
+    ASM_ARM_LDCLE,
+    ASM_ARM_LDCLEL,
+    ASM_ARM_LDC,
+    ASM_ARM_LDCL,
+    ASM_ARM_LDC2,
+    ASM_ARM_LDC2L
+  };
+
 char 	*arm_instr_list[ASM_ARM_BAD + 1] = 
   {
     "(unimpl)",

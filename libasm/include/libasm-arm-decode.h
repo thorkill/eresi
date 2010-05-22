@@ -116,11 +116,57 @@ struct s_arm_decode_ldst_mult
   u_int32_t	reg_list:16;
 };
 
-struct s_arm_decode_ldstcop
+struct s_arm_decode_bkpt
+{
+  u_int32_t none1:12;
+  u_int32_t immed1:12;
+  u_int32_t none2:4;
+  u_int32_t immed2:4;
+};
+
+struct s_arm_decode_coproc_dataproc
+{
+  u_int32_t cond:4;
+  u_int32_t none:4;
+  u_int32_t op1:4;
+  u_int32_t crn:4;
+  u_int32_t crd:4;
+  u_int32_t cpnum:4;
+  u_int32_t op2:3;
+  u_int32_t zero:1;
+  u_int32_t crm:4;
+};
+
+struct s_arm_decode_coproc_mov
 {
   u_int32_t	cond:4;
-  u_int32_t	op:2;
-  u_int32_t	none:1;
+  u_int32_t	none:4;
+  u_int32_t	op1:3;
+  u_int32_t	toarm:1;
+  u_int32_t	crn:4;
+  u_int32_t	rd:4;
+  u_int32_t	cpnum:4;
+  u_int32_t	op2:3;
+  u_int32_t	one:1;
+  u_int32_t	crm:4;
+};
+
+struct s_arm_decode_coproc_mov2
+{
+  u_int32_t	cond:4;
+  u_int32_t	none:7;
+  u_int32_t	toarm:1;
+  u_int32_t	rn:4;
+  u_int32_t	rd:4;
+  u_int32_t	cpnum:4;
+  u_int32_t	op:4;
+  u_int32_t	crm:4;
+};
+
+struct s_arm_decode_coproc_ldst
+{
+  u_int32_t	cond:4;
+  u_int32_t	none:3;
   u_int32_t	p:1;
   u_int32_t	u:1;
   u_int32_t	n:1;
@@ -128,9 +174,8 @@ struct s_arm_decode_ldstcop
   u_int32_t	l:1;
   u_int32_t	rn:4;
   u_int32_t	crd:4;
-  u_int32_t	cp_nbr:4;
+  u_int32_t	cpnum:4;
   u_int32_t	offset:8;
 };
-
 
 #endif /* LIBASM_ARM_DECODE_H */

@@ -110,8 +110,15 @@ void	arm_decode_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr,
   op->shift_type = opcode->shift;
 
   op->offset_added = opcode->u;
-  op->preindexed = opcode->p;
-  op->writeback = opcode->w;
+  if (!opcode->p)
+    op->indexing = ASM_ARM_ADDRESSING_POSTINDEXED;
+  else
+    {
+      if (opcode->w)
+        op->indexing = ASM_ARM_ADDRESSING_PREINDEXED;
+      else
+        op->indexing = ASM_ARM_ADDRESSING_OFFSET;
+    }
 
   if (!opcode->reg_offset)
     /* Immediate offset */
@@ -134,8 +141,15 @@ void	arm_decode_ldst_misc_offop(asm_instr *ins, u_char *buf, u_int op_nr,
   op->baser = opcode->rn;
 
   op->offset_added = opcode->u;
-  op->preindexed = opcode->p;
-  op->writeback = opcode->w;
+  if (!opcode->p)
+    op->indexing = ASM_ARM_ADDRESSING_POSTINDEXED;
+  else
+    {
+      if (opcode->w)
+        op->indexing = ASM_ARM_ADDRESSING_PREINDEXED;
+      else
+        op->indexing = ASM_ARM_ADDRESSING_OFFSET;
+    }
 
   if (opcode->i)
     /* Immediate offset */
@@ -166,3 +180,34 @@ void	arm_decode_multiply_long(asm_instr *ins, u_char *buf,
   asm_arm_op_fetch(&ins->op[3], buf, ASM_ARM_OTYPE_REGISTER, ins);
 }
 
+void	arm_decode_coproc_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr,
+                                     struct s_arm_decode_coproc_ldst *opcode)
+{
+  asm_operand *op;
+
+  op = &ins->op[op_nr];
+
+  op->baser = opcode->rn;
+
+  op->offset_added = opcode->u;
+  if (!opcode->p)
+    {
+      if (opcode->w)
+        op->indexing = ASM_ARM_ADDRESSING_POSTINDEXED;
+      else
+        op->indexing = ASM_ARM_ADDRESSING_UNINDEXED;
+    }
+  else
+    {
+      if (opcode->w)
+        op->indexing = ASM_ARM_ADDRESSING_PREINDEXED;
+      else
+        op->indexing = ASM_ARM_ADDRESSING_OFFSET;
+    }
+
+  op->imm = opcode->offset;
+  if (op->indexing != ASM_ARM_ADDRESSING_UNINDEXED)
+    op->imm *= 4;
+
+  asm_arm_op_fetch(op, buf, ASM_ARM_OTYPE_REG_OFFSET, ins);
+}

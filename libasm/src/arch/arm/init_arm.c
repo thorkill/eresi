@@ -54,8 +54,8 @@ int     asm_fetch_arm(asm_instr *ins, u_char *buf, u_int len, asm_processor *pro
   ins->ptr_instr = buf;
   ins->nb_op = 0;
   ins->type = ASM_TYPE_NONE;
-  ins->flagsread = ASM_ARM_FLAG_NUM;
-  ins->flagswritten = ASM_ARM_FLAG_NUM;
+  ins->flagsread = ASM_ARM_FLAG_NONE;
+  ins->flagswritten = ASM_ARM_FLAG_NONE;
   clear_operands(ins);
 
   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_ARM);
@@ -124,6 +124,10 @@ int     asm_init_arm(asm_processor *proc)
   inter->dsp_arith_table = arm_dsp_arith_table;
   inter->branch1_table = arm_branch1_table;
   inter->branch2_table = arm_branch2_table;
+  inter->coproc_dataproc_table = arm_coproc_dataproc_table;
+  inter->coproc_mov_table = arm_coproc_mov_table;
+  inter->coproc_mov2_table = arm_coproc_mov2_table;
+  inter->coproc_ldst_table = arm_coproc_ldst_table;
 
   asm_arch_register(proc, 0);
 
@@ -414,5 +418,6 @@ void	clear_operands(asm_instr *ins)
       ins->op[i].indexr = ASM_ARM_REG_NUM;
       ins->op[i].shift_type = ASM_ARM_SHIFT_NUM;
       ins->op[i].regset = ASM_ARM_REGSET_NUM;
+      ins->op[i].indexing = ASM_ARM_ADDRESSING_NUM;
     }
 }
