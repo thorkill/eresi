@@ -151,10 +151,13 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
         strcat(buf, "]");
 
       if (op->indexr == ASM_ARM_REG_NUM)
-        /* Immediate offset */
-        sprintf(buf + strlen(buf), ", #%s%i",
-                (op->offset_added ? "" : "-"),
-                op->imm);
+        {
+          /* Immediate offset */
+          if (op->imm != 0)
+            sprintf(buf + strlen(buf), ", #%s%i",
+                    (op->offset_added ? "" : "-"),
+                    op->imm);
+        }
       else
         {
           sprintf(buf + strlen(buf), ", %s%s",

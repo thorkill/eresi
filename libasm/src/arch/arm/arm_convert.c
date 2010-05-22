@@ -136,6 +136,27 @@ void	arm_convert_ldst_mult(struct s_arm_decode_ldst_mult *opcode, u_char *buf)
 #endif
 }
 
+void	arm_convert_swap(struct s_arm_decode_ldst *opcode, u_char *buf)
+{
+  /* Many fields of the structure aren't used for swap */
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  int 	converted;
+
+  memcpy(&converted,buf,4);
+
+  opcode->cond = (converted >> 28) & 0x0F;
+  opcode->b = (converted >> 22) & 0x01;
+  opcode->rn = (converted >> 16) & 0x0F;
+  opcode->rd = (converted >> 12) & 0x0F;
+  opcode->imm_offset = converted & 0xFFF;
+
+#else
+  memcpy(opcode,buf,4);
+#endif
+
+  opcode->rm = opcode->imm_offset & 0x0F;
+}
+
 void    arm_convert_branch1(struct s_arm_decode_branch1 *opcode, u_char *buf)
 {
 #if __BYTE_ORDER == __LITTLE_ENDIAN

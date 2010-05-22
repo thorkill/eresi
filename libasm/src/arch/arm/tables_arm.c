@@ -1025,6 +1025,46 @@ int	arm_ldst_mult_table[128] =
     ASM_ARM_
   };
 
+/* Ba (1bit) | cond (4bit) */
+int arm_swap_table[32] =
+  {
+    /* SWP */
+    ASM_ARM_SWPEQ,
+    ASM_ARM_SWPNE,
+    ASM_ARM_SWPCS,
+    ASM_ARM_SWPCC,
+    ASM_ARM_SWPMI,
+    ASM_ARM_SWPPL,
+    ASM_ARM_SWPVS,
+    ASM_ARM_SWPVC,
+    ASM_ARM_SWPHI,
+    ASM_ARM_SWPLS,
+    ASM_ARM_SWPGE,
+    ASM_ARM_SWPLT,
+    ASM_ARM_SWPGT,
+    ASM_ARM_SWPLE,
+    ASM_ARM_SWP,
+    ASM_ARM_,
+
+    /* SWPB */
+    ASM_ARM_SWPEQB,
+    ASM_ARM_SWPNEB,
+    ASM_ARM_SWPCSB,
+    ASM_ARM_SWPCCB,
+    ASM_ARM_SWPMIB,
+    ASM_ARM_SWPPLB,
+    ASM_ARM_SWPVSB,
+    ASM_ARM_SWPVCB,
+    ASM_ARM_SWPHIB,
+    ASM_ARM_SWPLSB,
+    ASM_ARM_SWPGEB,
+    ASM_ARM_SWPLTB,
+    ASM_ARM_SWPGTB,
+    ASM_ARM_SWPLEB,
+    ASM_ARM_SWPB,
+    ASM_ARM_
+  };
+
 /* op (3bit) | cond (4bit) | S (1bit)  */
 int	arm_multiply_table[256] =
   {
