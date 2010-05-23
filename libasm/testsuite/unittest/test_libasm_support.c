@@ -17,5 +17,9 @@ int main()
     printf("[x] MIPS supported\n");
   else
     printf("[ ] MIPS unsupported\n");
+  if (asm_init_arch(&proc, ASM_PROC_ARM))
+    printf("[x] ARM supported\n");
+  else
+    printf("[ ] ARM unsupported\n");
   return (0);
 }
