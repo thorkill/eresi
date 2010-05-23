@@ -13,8 +13,6 @@ int     asm_arm_bkpt(asm_instr * ins, u_char * buf, u_int len,
 
   arm_convert_bkpt(&opcode, buf);
 
-  ins->conditional = 0;
-
   ins->instr = ASM_ARM_BKPT;
 
   ins->name = ins->proc->instr_table[ins->instr];

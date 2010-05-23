@@ -92,8 +92,6 @@ struct s_asm_instr
   int annul;
   /* prediction bit (sparc only) */
   int prediction;
-  /* Whether instruction is conditional or not (arm only) */
-  u_char conditional;
   /* number of operand */
   int nb_op;
   /* Array of operands */

@@ -6,10 +6,8 @@
 
 void	arm_decode_condition(asm_instr *ins, u_char condition)
 {
-  ins->conditional = 0;
   if (condition < 0x0E)
     {
-      ins->conditional = 1;
       MASSIGNTYPE(ins, ASM_TYPE_CONDCONTROL);
       MASSIGNTYPE(ins, ASM_TYPE_READFLAG);
       ins->flagsread = arm_cond_flagsread_table[condition];
