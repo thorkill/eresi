@@ -27,20 +27,14 @@ int     asm_arm_smlalxy(asm_instr * ins, u_char * buf, u_int len,
   ins->nb_op = 4;
 
   /* Decode operands */
-  // TODO: verify if we can do like smlal
-  ins->op[0].baser = opcode.r2; /* This is RdLo */
-  ins->op[0].destination = 1;
-  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
+  arm_decode_multiply_long(ins, buf, &opcode);
 
-  ins->op[1].baser = opcode.r1; /* This is RdHi */
-  ins->op[1].destination = 1;
-  asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
-
-  ins->op[2].baser = opcode.r4; /* This is Rm */
-  asm_arm_op_fetch(&ins->op[2], buf, ASM_ARM_OTYPE_REGISTER, ins);
-
-  ins->op[3].baser = opcode.r3; /* This is Rs */
-  asm_arm_op_fetch(&ins->op[3], buf, ASM_ARM_OTYPE_REGISTER, ins);
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
+    }
 
   LIBASM_PROFILE_FOUT(4);
 

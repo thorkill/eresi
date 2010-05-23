@@ -116,6 +116,9 @@ int     asm_init_arm(asm_processor *proc)
   proc->internals = inter = malloc(sizeof (struct s_asm_proc_arm)); 
 
   inter->dataproc_table = arm_dataproc_table;
+  inter->movpsr_table = arm_movpsr_table;
+  inter->clz_table = arm_clz_table;
+  inter->swi_table = arm_swi_table;
   inter->ldst_table = arm_ldst_table;
   inter->ldst_misc_table = arm_ldst_misc_table;
   inter->ldst_mult_table = arm_ldst_mult_table;

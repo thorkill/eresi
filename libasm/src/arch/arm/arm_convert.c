@@ -31,6 +31,11 @@ void	arm_convert_dataproc(struct s_arm_decode_dataproc *opcode, u_char *buf)
   opcode->shift = ((opcode->shifter_operand >> 5) & 0x03);
   opcode->shift_imm = ((opcode->shifter_operand >> 7) & 0x01F);
   opcode->reg_shift = ((opcode->shifter_operand >> 4) & 0x01);
+
+  /* MSR/MRS */
+  opcode->r = (opcode->op2 >> 1) & 0x01;
+  opcode->topsr = opcode->op2 & 0x01;
+  opcode->field_mask = opcode->rn;
 }
 
 void	arm_convert_multiply(struct s_arm_decode_multiply *opcode, u_char *buf)

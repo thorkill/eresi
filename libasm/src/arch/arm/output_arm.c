@@ -38,6 +38,27 @@ char *asm_arm_get_register(int reg)
     }
 }
 
+char *asm_arm_get_psr_fields(u_int field_mask)
+{
+  static char buf[6];
+
+  if (!(field_mask & 0x0F))
+    return "";
+  else
+    {
+      strcat(buf, "_");
+      if (field_mask & 0x08)
+        strcat(buf, "f");
+      if (field_mask & 0x04)
+        strcat(buf, "s");
+      if (field_mask & 0x02)
+        strcat(buf, "x");
+      if (field_mask & 0x01)
+        strcat(buf, "c");
+      return buf;
+    }
+}
+
 char *asm_arm_get_shift_type(u_int shift_type)
 {
   switch (shift_type)
@@ -124,6 +145,8 @@ void	asm_arm_dump_operand(asm_instr *ins, int num,
     {
     case ASM_ARM_OTYPE_REGISTER:
       sprintf(buf, "%s", asm_arm_get_register(op->baser));
+      if (op->baser == ASM_ARM_REG_CPSR || op->baser == ASM_ARM_REG_SPSR)
+        strcat(buf, asm_arm_get_psr_fields(op->imm));
       if (op->indexing == ASM_ARM_ADDRESSING_PREINDEXED
           || op->indexing == ASM_ARM_ADDRESSING_POSTINDEXED)
         strcat(buf, "!");

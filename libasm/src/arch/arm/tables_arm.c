@@ -595,6 +595,90 @@ int	arm_dataproc_table[512] =
     ASM_ARM_
   };
 
+/* topsr (1bit) | cond (4bit) */
+int arm_movpsr_table[32] = 
+  {
+    /* MRS */
+    ASM_ARM_MRSEQ,
+    ASM_ARM_MRSNE,
+    ASM_ARM_MRSCS,
+    ASM_ARM_MRSCC,
+    ASM_ARM_MRSMI,
+    ASM_ARM_MRSPL,
+    ASM_ARM_MRSVS,
+    ASM_ARM_MRSVC,
+    ASM_ARM_MRSHI,
+    ASM_ARM_MRSLS,
+    ASM_ARM_MRSGE,
+    ASM_ARM_MRSLT,
+    ASM_ARM_MRSGT,
+    ASM_ARM_MRSLE,
+    ASM_ARM_MRS,
+    ASM_ARM_,
+
+    /* MSR */
+    ASM_ARM_MSREQ,
+    ASM_ARM_MSRNE,
+    ASM_ARM_MSRCS,
+    ASM_ARM_MSRCC,
+    ASM_ARM_MSRMI,
+    ASM_ARM_MSRPL,
+    ASM_ARM_MSRVS,
+    ASM_ARM_MSRVC,
+    ASM_ARM_MSRHI,
+    ASM_ARM_MSRLS,
+    ASM_ARM_MSRGE,
+    ASM_ARM_MSRLT,
+    ASM_ARM_MSRGT,
+    ASM_ARM_MSRLE,
+    ASM_ARM_MSR,
+    ASM_ARM_
+  };
+
+/* cond (4bit) */
+int arm_clz_table[16] = 
+  {
+    /* CLZ */
+    ASM_ARM_CLZEQ,
+    ASM_ARM_CLZNE,
+    ASM_ARM_CLZCS,
+    ASM_ARM_CLZCC,
+    ASM_ARM_CLZMI,
+    ASM_ARM_CLZPL,
+    ASM_ARM_CLZVS,
+    ASM_ARM_CLZVC,
+    ASM_ARM_CLZHI,
+    ASM_ARM_CLZLS,
+    ASM_ARM_CLZGE,
+    ASM_ARM_CLZLT,
+    ASM_ARM_CLZGT,
+    ASM_ARM_CLZLE,
+    ASM_ARM_CLZ,
+    ASM_ARM_
+  };
+
+/* cond (4bit) */
+int arm_swi_table[16] = 
+  {
+    /* SWI */
+    ASM_ARM_SWIEQ,
+    ASM_ARM_SWINE,
+    ASM_ARM_SWICS,
+    ASM_ARM_SWICC,
+    ASM_ARM_SWIMI,
+    ASM_ARM_SWIPL,
+    ASM_ARM_SWIVS,
+    ASM_ARM_SWIVC,
+    ASM_ARM_SWIHI,
+    ASM_ARM_SWILS,
+    ASM_ARM_SWIGE,
+    ASM_ARM_SWILT,
+    ASM_ARM_SWIGT,
+    ASM_ARM_SWILE,
+    ASM_ARM_SWI,
+    ASM_ARM_
+  };
+
 /* L (1bit) | T (1bit) | B (1bit) | cond (4bit) */
 int	arm_ldst_table[128] =
   {
@@ -704,7 +788,7 @@ int	arm_ldst_table[128] =
     ASM_ARM_LDRGTB,
     ASM_ARM_LDRLEB,
     ASM_ARM_LDRB,
-    ASM_ARM_,
+    ASM_ARM_, /* PLD */
 
     /* LDRT */
     ASM_ARM_LDREQT,

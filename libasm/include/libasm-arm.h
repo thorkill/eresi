@@ -29,6 +29,7 @@ eresi_Addr asm_dest_resolve_arm(eresi_Addr addr, u_int disp, u_char half);
 char *asm_arm_display_instr(asm_instr *instr, eresi_Addr addr);
 char *asm_arm_get_op_name(asm_operand *op);
 char *asm_arm_get_register(int reg);
+char *asm_arm_get_psr_fields(u_int field_mask);
 char *asm_arm_get_regset_suffix(int regset);
 char *asm_arm_get_shift_type(u_int shift_type);
 char *asm_arm_get_coprocessor(int coproc);
@@ -149,6 +150,9 @@ void arm_decode_coproc_ldst_offop(asm_instr *ins, u_char *buf, u_int op_nr, stru
 struct  s_asm_proc_arm
 {
   int   *dataproc_table;
+  int   *movpsr_table;
+  int   *clz_table;
+  int   *swi_table;
   int   *ldst_table;
   int   *ldst_mult_table;
   int   *ldst_misc_table;
@@ -468,7 +472,7 @@ enum e_arm_instr
     ASM_ARM_BIC,
     ASM_ARM_BICS,
 
-    ASM_ARM_BKPT, /* uncond teq */
+    ASM_ARM_BKPT, /* uncond TEQ */
 
     /* BL */
     ASM_ARM_BLEQ,
@@ -1121,7 +1125,7 @@ enum e_arm_instr
     ASM_ARM_ORR,
     ASM_ARM_ORRS,
 
-    ASM_ARM_PLD, /* uncond ldr */
+    ASM_ARM_PLD, /* uncond LDRB */
 
     /* QADD */
     ASM_ARM_QADDEQ,
@@ -1985,6 +1989,9 @@ enum e_arm_instr
 
 extern char	*arm_instr_list[ASM_ARM_BAD + 1];
 extern int	arm_dataproc_table[512];
+extern int	arm_movpsr_table[32];
+extern int	arm_clz_table[16];
+extern int	arm_swi_table[16];
 extern int	arm_ldst_table[128];
 extern int	arm_ldst_misc_table[128];
 extern int	arm_ldst_mult_table[128];

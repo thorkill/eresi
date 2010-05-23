@@ -21,13 +21,15 @@ int     asm_arm_smlawy(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, ASM_TYPE_ARITH);
+  MASSIGNTYPE(ins, ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG);
+
+  ins->flagswritten = ASM_ARM_FLAG_Q;
 
   ins->nb_op = 4;
 
   /* Decode operands */
-
-  ins->op[0].baser = opcode.r2; /* This is Rd */
+  // TODO: create a function for smlawy|smlaxy (mla)
+  ins->op[0].baser = opcode.r1; /* This is Rd */
   ins->op[0].destination = 1;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
@@ -37,9 +39,15 @@ int     asm_arm_smlawy(asm_instr * ins, u_char * buf, u_int len,
   ins->op[2].baser = opcode.r3; /* This is Rs */
   asm_arm_op_fetch(&ins->op[2], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
-  // TODO: check this operand, its repeated
   ins->op[3].baser = opcode.r2; /* This is Rn */
   asm_arm_op_fetch(&ins->op[3], buf, ASM_ARM_OTYPE_REGISTER, ins);
+
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
+    }
 
   LIBASM_PROFILE_FOUT(4);
 

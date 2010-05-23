@@ -47,6 +47,11 @@ struct s_arm_decode_dataproc
   u_int32_t	shift_imm;
   u_int32_t	rotate_imm;
   u_int32_t	reg_shift;
+
+  /* MRS/MSR */
+  u_int8_t r;
+  u_int8_t topsr;
+  u_int8_t field_mask;
 };
 
 struct s_arm_decode_multiply

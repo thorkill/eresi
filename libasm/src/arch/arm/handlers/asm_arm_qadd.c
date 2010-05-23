@@ -26,7 +26,6 @@ int     asm_arm_qadd(asm_instr * ins, u_char * buf, u_int len,
   ins->nb_op = 3;
 
   /* Decode operands */
-
   ins->op[0].baser = opcode.r2; /* This is Rd */
   ins->op[0].destination = 1;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
