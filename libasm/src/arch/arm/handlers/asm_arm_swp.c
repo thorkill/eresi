@@ -42,5 +42,12 @@ int     asm_arm_swp(asm_instr * ins, u_char * buf, u_int len,
   ins->op[2].offset_added = 1;
   asm_arm_op_fetch(&ins->op[2], buf, ASM_ARM_OTYPE_REG_OFFSET, ins);
 
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
+    }
+
   LIBASM_PROFILE_FOUT(4);
 }

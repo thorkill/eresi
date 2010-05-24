@@ -21,7 +21,7 @@ int     asm_arm_ldm1(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, ASM_TYPE_LOAD);
+  MASSIGNTYPE(ins, ASM_TYPE_LOAD | ASM_TYPE_ARCH);
 
   ins->nb_op = 2;
 

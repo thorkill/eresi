@@ -34,5 +34,12 @@ int     asm_arm_stm1(asm_instr * ins, u_char * buf, u_int len,
   ins->op[1].imm = opcode.reg_list;
   asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REG_LIST, ins);
 
+  if (MISTYPE(ins, ASM_TYPE_BRANCH)
+      || MISTYPE(ins, ASM_TYPE_CALLPROC)
+      || MISTYPE(ins, ASM_TYPE_RETPROC))
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_INDCONTROL);
+    }
+
   LIBASM_PROFILE_FOUT(4);
 }

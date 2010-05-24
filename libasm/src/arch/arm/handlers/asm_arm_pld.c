@@ -21,7 +21,7 @@ int     asm_arm_pld(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, ASM_TYPE_ARCH);
+  MASSIGNTYPE(ins, ASM_TYPE_NOP | ASM_TYPE_ARCH);
 
   ins->nb_op = 1;
 

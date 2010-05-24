@@ -21,7 +21,10 @@ int     asm_arm_ldm3(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, ASM_TYPE_LOAD);
+  MASSIGNTYPE(ins, ASM_TYPE_LOAD | ASM_TYPE_WRITEFLAG | ASM_TYPE_ARCH);
+
+  /* If any flag is added to e_arm_flags, please update this assignment */
+  ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V | ASM_ARM_FLAG_Q;
 
   ins->nb_op = 2;
 

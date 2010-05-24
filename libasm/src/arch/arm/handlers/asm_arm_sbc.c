@@ -21,7 +21,9 @@ int     asm_arm_sbc(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, ASM_TYPE_ARITH);
+  MASSIGNTYPE(ins, ASM_TYPE_ARITH | ASM_TYPE_READFLAG);
+
+  ins->flagsread |= ASM_ARM_FLAG_C;
 
   ins->nb_op = 3;
 

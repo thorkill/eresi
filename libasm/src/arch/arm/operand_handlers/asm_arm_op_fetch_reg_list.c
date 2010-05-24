@@ -22,10 +22,12 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
       if (operand->imm & (1 << 15))
         {
           /* PC */
-          /* LDMIA (POP) is usually used as return of a function */
-          
-          if (ins->instr == ASM_ARM_LDMIA)
+
+          if (ins->instr == ASM_ARM_LDMIA
+              && ins->op[0].baser == ASM_ARM_REG_R13
+              && ins->op[0].indexing == ASM_ARM_ADDRESSING_POSTINDEXED)
             {
+              /* LDMIA SP!, {Reg list} (POP) is usually used as return of a function */
               MASSIGNTYPE(ins, ASM_TYPE_RETPROC);
             }
           else

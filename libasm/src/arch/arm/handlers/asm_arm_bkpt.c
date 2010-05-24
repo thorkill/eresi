@@ -25,7 +25,5 @@ int     asm_arm_bkpt(asm_instr * ins, u_char * buf, u_int len,
   ins->op[0].imm = (opcode.immed1 << 4) | opcode.immed2;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_IMMEDIATE, ins);
 
-  // TODO: try to understand if we shall flag as READFLAG/WRITEFLAG
-
   LIBASM_PROFILE_FOUT(4);
 }

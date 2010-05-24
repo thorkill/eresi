@@ -22,6 +22,11 @@ int     asm_arm_mul(asm_instr * ins, u_char * buf, u_int len,
   ins->name = ins->proc->instr_table[ins->instr];
 
   MASSIGNTYPE(ins, ASM_TYPE_ARITH);
+  if (opcode.s)
+    {
+      MASSIGNTYPE(ins, ASM_TYPE_WRITEFLAG);
+      ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z;
+    }
 
   ins->nb_op = 3;
 

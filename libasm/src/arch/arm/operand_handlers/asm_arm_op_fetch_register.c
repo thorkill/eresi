@@ -27,9 +27,7 @@ int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode,
         case ASM_ARM_REG_PC:
           MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
           break;
-          // TODO: should be the two or just CPSR
         case ASM_ARM_REG_CPSR:
-        case ASM_ARM_REG_SPSR:
           if (operand->imm & 0x08)
             {
               MASSIGNTYPE(ins, ASM_TYPE_WRITEFLAG);

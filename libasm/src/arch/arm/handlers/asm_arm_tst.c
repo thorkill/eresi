@@ -21,7 +21,7 @@ int     asm_arm_tst(asm_instr * ins, u_char * buf, u_int len,
 
   ins->name = ins->proc->instr_table[ins->instr];
 
-  MASSIGNTYPE(ins, ASM_TYPE_BITTEST);
+  MASSIGNTYPE(ins, ASM_TYPE_COMPARISON | ASM_TYPE_BITTEST);
 
   ins->nb_op = 2;
 
