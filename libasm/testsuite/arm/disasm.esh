@@ -1,0 +1,5 @@
+#!../../../elfsh/elfsh32
+nocolor
+load $1
+disasm test
+
