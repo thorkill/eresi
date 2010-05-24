@@ -46,7 +46,7 @@ char *asm_arm_get_psr_fields(u_int field_mask)
     return "";
   else
     {
-      strcat(buf, "_");
+      sprintf(buf, "_");
       if (field_mask & 0x08)
         strcat(buf, "f");
       if (field_mask & 0x04)

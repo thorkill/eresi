@@ -17,7 +17,7 @@ int     asm_arm_clz(asm_instr * ins, u_char * buf, u_int len,
 
   arm_decode_condition(ins, opcode.cond);
 
-  ins->instr = inter->dataproc_table[opcode.cond];
+  ins->instr = inter->clz_table[opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];
 

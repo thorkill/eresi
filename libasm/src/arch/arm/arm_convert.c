@@ -47,7 +47,7 @@ void	arm_convert_multiply(struct s_arm_decode_multiply *opcode, u_char *buf)
 
   opcode->cond = (converted >> 28) & 0x0F;
   opcode->none = (converted >> 24) & 0x03;
-  opcode->op = (converted >> 21) & 0x01;
+  opcode->op = (converted >> 21) & 0x07;
   opcode->s = (converted >> 20) & 0x01;
   opcode->r1 = (converted >> 16) & 0x0F;
   opcode->r2 = (converted >> 12) & 0x0F;

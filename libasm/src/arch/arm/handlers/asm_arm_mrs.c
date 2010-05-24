@@ -30,8 +30,8 @@ int     asm_arm_mrs(asm_instr * ins, u_char * buf, u_int len,
   ins->op[0].destination = 1;
   asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
-  ins->op[0].baser = (opcode.r ? ASM_ARM_REG_SPSR : ASM_ARM_REG_CPSR);
-  asm_arm_op_fetch(&ins->op[0], buf, ASM_ARM_OTYPE_REGISTER, ins);
+  ins->op[1].baser = (opcode.r ? ASM_ARM_REG_SPSR : ASM_ARM_REG_CPSR);
+  asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
   LIBASM_PROFILE_FOUT(4);
 }
