@@ -38,9 +38,10 @@ CFLAGS64		+= -fPIC -g3 -Wall -Iinclude $(DYNOPT) $(BUILDOP) 	 \
 			-DERESI64
 
 LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
-			-L../libetrace/ -letrace32 -L../libstderesi -lstderesi32    \
+			-L../libetrace/ -letrace32				    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm32          \
 			-L../libaspect/ -laspect32 -L../librevm/ -lrevm32           \
+			-L../libstderesi -lstderesi32  \
 			-L../libmjollnir -lmjollnir32 -g3 \
 			-L../libui/ -lui32 -L../libedfmt -ledfmt32  	    \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
@@ -48,9 +49,10 @@ LDFLAGS32		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh32 \
 			$(LDMJOLLNIR) $(NCURSESLNOPT) $(READLNOPT)
 
 LDFLAGS64		+= -L../liballocproxy -lallocproxy -L../libelfsh/ -lelfsh64 \
-			-L../libetrace/ -letrace64 -L../libstderesi -lstderesi64    \
+			-L../libetrace/ -letrace64     				    \
 			-L../libdump/ -L/usr/pkg/lib/ -L../libasm/ -lasm64          \
 			-L../libaspect/ -laspect64 -L../librevm/ -lrevm64           \
+			-L../libstderesi -lstderesi64 				    \
 			-L../libmjollnir -lmjollnir64 -g3 \
 			-L../libui/ -lui64 -L../libedfmt -ledfmt64 \
 			$(LDREADLNOPT) $(DLOPT) -L/usr/freeware/lib32/ $(DYNOPT)    \
