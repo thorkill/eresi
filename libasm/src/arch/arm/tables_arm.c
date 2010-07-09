@@ -1,11 +1,11 @@
 /**
-* @file libasm/src/arch/arm/tables_arm.c
-** @ingroup arm
-*/
-#include <libasm.h>
+ * @file libasm/src/arch/arm/tables_arm.c
+ * @ingroup arm
+ */
+#include "libasm.h"
 
 /* Flags read by condition */
-int	arm_cond_flagsread_table[16] =
+int	arm_cond_flagsread_table[17] =
   {
     ASM_ARM_FLAG_Z, /* ASM_ARM_COND_EQ */
     ASM_ARM_FLAG_Z, /* ASM_ARM_COND_NE */

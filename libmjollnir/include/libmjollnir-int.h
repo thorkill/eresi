@@ -9,9 +9,9 @@
 
 #define __DEBUG_MJOLLNIR__	1
 #define __DEBUG_CALLS__		1
-#define __DEBUG_READ__		0
-#define __DEBUG_PTR__		0
-#define __DEBUG_OPERAND__	0
+#define __DEBUG_READ__		1
+#define __DEBUG_PTR__		1
+#define __DEBUG_OPERAND__	1
 #define __DEBUG_BLOCKS__	1
 #define __DEBUG_BLK_LOOKUP__	1
 #define __DEBUG_FLOW__		1

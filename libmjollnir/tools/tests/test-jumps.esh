@@ -1,4 +1,4 @@
-#!/usr/local/bin/elfsh32
+#!/usr/bin/elfsh32
 
 load test-jumps
 analyse

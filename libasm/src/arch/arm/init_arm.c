@@ -1,7 +1,7 @@
 /**
-* @file libasm/src/arch/arm/init_arm.c
-** @ingroup arm
-*/
+ * @file libasm/src/arch/arm/init_arm.c
+ * @ingroup arm
+ */
 // TODO: file comments
 
 #include <libasm.h>

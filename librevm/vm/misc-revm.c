@@ -180,7 +180,6 @@ void	revm_error(char *label, char *param)
   char	buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
   snprintf(buf, BUFSIZ, " [!] %s [%s] \n\n", label, param);
   revm_output(buf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);

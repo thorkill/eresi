@@ -611,7 +611,7 @@ int		revm_graph_function(container_t		*cntnr,
   if (hash_get(&dumped, vaddr_str) || (maxdepth > 0 && curdepth >= maxdepth))
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-  hash_add(&dumped, vaddr_str, cntnr);
+
   
   n1 = elfsh_reverse_metasym(world.curjob->curfile,fnc->vaddr, &offset);
 
@@ -668,6 +668,8 @@ int		revm_graph_function(container_t		*cntnr,
       child = mjr_lookup_container(world.mjr_session.cur, curlnk->id);
       revm_graph_function(child, fd, direction, type, maxdepth, curdepth + 1);
     }
+
+  hash_add(&dumped, vaddr_str, cntnr);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

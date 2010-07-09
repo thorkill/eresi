@@ -20,6 +20,8 @@ graph
 set $entnbr 1.sht[.symtab].size
 div $entnbr 1.sht[.symtab].entsize
 
+print $entnbr
+
 # walk it and dump all functions
 foreach $idx of 0 until $entnbr
 	cmp 1.symtab[$idx].type 2

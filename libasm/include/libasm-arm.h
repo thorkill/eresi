@@ -2007,7 +2007,7 @@ extern int	arm_coproc_mov2_table[32];
 extern int	arm_coproc_ldst_table[64];
 
 
-extern int	arm_cond_flagsread_table[16];
+extern int	arm_cond_flagsread_table[17];
 extern int	arm_dataproc_flagswritten_table[16];
 
 #endif /* _LIBASM_ARM_H_ */

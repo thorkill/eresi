@@ -4,6 +4,8 @@
 # The workspace is an interactive command. See help workspace.
 #
 
+profile enable all
+
 load /bin/ls
 e
 workspace

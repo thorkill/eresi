@@ -249,6 +249,7 @@ elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
       sname = elfsh_get_section_name(file, section);
       if (sname == NULL)
 	continue;
+
       if (!strcmp(name, sname))
 	{
 	  if (idx != NULL)
@@ -262,7 +263,7 @@ elfshsect_t	*elfsh_get_section_by_name_withlist(elfshobj_t   *file,
 	}
     }
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Section not found", NULL);
+	       "Section not found", NULL);
 }
 
 /**
@@ -286,11 +287,11 @@ elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
 
   if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Invalid NULL parameter", NULL);
+		 "Invalid NULL parameter", NULL);
 
   else if (file->sht == NULL && elfsh_get_sht(file, NULL) == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "No SHT", NULL);
+		 "No SHT", NULL);
 
   sect = elfsh_get_section_by_name_withlist(file, name, idx, strindex, num, 
 					    file->sectlist);
@@ -300,7 +301,7 @@ elfshsect_t	*elfsh_get_section_by_name(elfshobj_t	*file,
 
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Section not found", NULL);
+		 "Section not found", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect));
 }

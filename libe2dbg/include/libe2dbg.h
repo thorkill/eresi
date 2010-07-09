@@ -2,16 +2,19 @@
  * @defgroup libe2dbg libe2dbg: The Embedded ERESI debugger library.
  * @ingroup e2dbg
  */
+
 /**
-* @file libe2dbg/include/libe2dbg.h
-** @brief The Embedded ERESI debugger header file.
-** @ingroup libe2dbg
-**
-** Started on Sun 05 Jun 2005 17:54:01 jfv
-** $Id$
-*/
+ * @file libe2dbg/include/libe2dbg.h
+ * @brief The Embedded ERESI debugger header file.
+ * @ingroup libe2dbg
+ *
+ * Started on Sun 05 Jun 2005 17:54:01 jfv
+ * $Id$
+ */
 #ifndef __E2DBG_H__
  #define __E2DBG_H__
+
+#define _GNU_SOURCE
 
 #if defined(__OpenBSD__)
 #include <sys/time.h>
@@ -21,6 +24,7 @@ extern char **environ;
 #endif
 
 #include <sys/resource.h>
+#include <features.h>
 #include <sys/types.h>
 
 #include "revm.h"
@@ -35,7 +39,7 @@ extern char **environ;
  #include <sys/link.h>
 #endif
 
-#define __USE_GNU
+#define _GNU_SOURCE
 #include <sys/ucontext.h>
 
 #define		__DEBUG_E2DBG__	        FALSE

@@ -1,5 +1,7 @@
 #!../../../evarista/evarista32
 
+config graph.autoview 0
+
 load $1
 analyse
 graph

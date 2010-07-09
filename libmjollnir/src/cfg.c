@@ -8,7 +8,7 @@
  */
 #include "libmjollnir.h"
 
-/** 
+/**
  * @brief This function trace execution flow and creates block depending on instruction.
  *
  * If instruction break execution flow, block is considerated finished and added 
@@ -148,7 +148,6 @@ int			mjr_trace_control(mjrcontext_t	*context,
     }
   else if (curins->type & ASM_TYPE_RETPROC)
     {
-
       if (context->func_stack->elmnbr > 1)
 	{
 	  context->curfunc = elist_pop(context->func_stack);
@@ -158,7 +157,6 @@ int			mjr_trace_control(mjrcontext_t	*context,
 	      curvaddr, (context->curfunc && context->curfunc->data ? 
 			 ((mjrfunc_t *) context->curfunc->data)->name : "NULL"));
 #endif
-
 	}
 
 #if __DEBUG_FLOW__
@@ -178,17 +176,11 @@ int			mjr_trace_control(mjrcontext_t	*context,
     }
 #endif
 
-
   /* Return the delay slot size if any */
   addend = (context->proc.type == ASM_PROC_MIPS || 
 	    context->proc.type == ASM_PROC_SPARC ? 4 : 0);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addend);
 }
-
-
-
-
-
 
 /**
  * @brief Support function pointers computations
@@ -252,7 +244,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr,
 	     (unsigned long) dest, (unsigned long) dest);
 #endif
-      
+
       printf(" [*] RESOLVED function pointer called from 0x%08lx -> 0x%08lx \n", 
 	     (unsigned long) context->hist[MJR_HISTORY_CUR].vaddr, 
 	     (unsigned long) dest);

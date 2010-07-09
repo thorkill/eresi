@@ -16,8 +16,9 @@
 
 /* Do not put all those headers when compiling for kernel */
 #ifndef __KERNEL__
+#define _GNU_SOURCE
 
-#define __USE_ISOC99
+#include <features.h>
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -39,7 +40,6 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <dirent.h>
-#define __USE_GNU
 
 #if defined(__BEOS__)
  #include <ucontext.h>

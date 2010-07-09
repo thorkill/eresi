@@ -119,7 +119,7 @@ int		cmd_workspace()
       /* $ workspace name */
     case 1:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-                    revm_create_new_workspace(revm_get_cur_job_parameter(0)));
+		   revm_create_new_workspace(revm_get_cur_job_parameter(0)));
 
       /* Unknown command format */
     default:
