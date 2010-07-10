@@ -1,13 +1,14 @@
 /**
  * @defgroup ERESI The ERESI runtime environment
  */
+
 /**
-* @file librevm/include/revm.h
-** @ingroup librevm
-**
-** Started on  Thu Feb 22 07:19:04 2001 jfv
-** $Id$
-*/
+ * @file librevm/include/revm.h
+ * @ingroup librevm
+ *
+ * Started on  Thu Feb 22 07:19:04 2001 jfv
+ * $Id$
+ */
 #ifndef __REVM_H_
  #define __REVM_H_
 
@@ -18,7 +19,9 @@
 #ifndef __KERNEL__
 #define _GNU_SOURCE
 
+#if defined(__linux__)
 #include <features.h>
+#endif
 
 #include <sys/types.h>
 #include <stdio.h>

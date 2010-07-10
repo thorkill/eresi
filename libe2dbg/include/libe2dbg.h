@@ -24,7 +24,11 @@ extern char **environ;
 #endif
 
 #include <sys/resource.h>
+
+#if defined(__linux__)
 #include <features.h>
+#endif
+
 #include <sys/types.h>
 
 #include "revm.h"
