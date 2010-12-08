@@ -25,27 +25,52 @@ if (! -e $ARGV[0]) {
 open(FP , $ARGV[0]);
 # skip the 6 lines of information and get the function name
 while (<FP>) {
-  $i++;
-  if ($i >= 6) {
-    ($function_name) = ($_ =~ /<([a-zA-Z0-9_]+)>/);
-    last;
-  }
+
+  #print "BEG Zero loop \n";
+    if ($_ =~ /<([a-zA-Z0-9_]+)>/)
+    {
+	($function_name) = $1;
+	last;
+    }
+
+  #print "Zero loop \n";
+
 }
 
 # get the opcodes
-while (<FP>) {
+ITER: while (<FP>) {
+
+  #print "BEG First loop \n";
+
   ($op) = ($_ =~ /.*:\t([^\t]+)/);
   $op =~ s/[^a-z0-9]+$//g;
-  $op =~ s/ /\\x/g;
-  $op = "\\x".$op;
-  $hex .= $op;
-}
 
+  #print "OP before: $op \n";
+
+  if ($op eq "") { next ITER; }
+
+  $op =~ s/ /\\x/g;
+
+  #print "OP middle: $op \n";
+
+  $op = "\\x".$op;
+
+  #print "OP after: $op \n";
+
+  $hex .= $op;
+
+  #print "First loop \n";
+}
+ 
 # build the string
 $i = 0;
 $code = "#define ".uc($function_name)." \\\n";
 $code .= "  \"";
+
 while ($hex) {
+
+#  print "BEG Second loop with hex = $hex\n";
+
   ($op) = ($hex =~ /^(\\x[a-z0-9]+)/);
   $code .= $op;
   $hex =~ s/^(\\x[a-z0-9]+)//g;
@@ -55,6 +80,9 @@ while ($hex) {
     $i = 0;
     $code .= "\" \\\n  \"";
   }
+
+ # print "Second loop \n";
+
 }
 $code .= "\"\n\n";
 print($code);
