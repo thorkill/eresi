@@ -37,9 +37,22 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
+#if __DEBUG_READ__
+  fprintf(stderr, " [D] ENTERING ANALYSE-REC: curdepth=%u maxdepth=%u \n", curdepth, maxdepth);
+#endif
+
   /* Check if we have reached the limit bound */
   if (maxdepth > 0 && curdepth >= maxdepth)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      if (sess->cur->func_stack->elmnbr > 1)
+	{
+	  sess->cur->curfunc = elist_pop(sess->cur->func_stack);
+#if __DEBUG_FLOW__
+	  fprintf(stderr, " [*] New CURFUNC @ %s \n", ((mjrfunc_t*)sess->cur->curfunc->data)->name);
+#endif
+	}
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   trueaddr = falseaddr = MJR_BLOCK_INVALID;
   delayslotsize = 0;
@@ -153,18 +166,23 @@ int		mjr_analyse_rec(mjrsession_t *sess, eresi_Addr vaddr, int curdepth, int max
       /* If we have found a contiguous block, stop this recursion now */
       if (trueaddr == MJR_BLOCK_EXIST)
 	{
+
+#if __DEBUG_READ__
+	  fprintf(stderr, " [D] FOUND contiguous block at "XFMT" - breaking\n", trueaddr);
+#endif
 	  block->size -= ilen;
 	  break;
 	}
 
-      /* Recurse on next blocks */
+      /* Recurse on next blocks -- might be the beginning of a new func */
       if (trueaddr != MJR_BLOCK_INVALID)
 	{
 	  depthinc = (instr.type & ASM_TYPE_CALLPROC ? 1 : 0);
 	  mjr_analyse_rec(sess, trueaddr, curdepth + depthinc, maxdepth);
 	}
 
-      if (falseaddr != MJR_BLOCK_INVALID)
+      /* Recurse on false block -- might be the return block for a function */
+      if (falseaddr != MJR_BLOCK_INVALID) 
 	mjr_analyse_rec(sess, falseaddr, curdepth, maxdepth);
 
       /* If we have recursed, the current block is over */
