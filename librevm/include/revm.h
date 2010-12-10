@@ -12,6 +12,9 @@
 #ifndef __REVM_H_
  #define __REVM_H_
 
+/* Debug variables */
+#include "revm-debug.h"
+
 /* User defined configuration */
 #include "revm-vars.h"
 
@@ -80,18 +83,6 @@
 #include <libasm.h>
  
 extern asm_processor	proc;
-
-/* Now come INTERNAL DEBUGGING VARIABLES for various part of the ERESI code */
-#define	__DEBUG_SIGHANDLER__	0
-#define	__DEBUG_LANG__		0
-#define	__DEBUG_SCANNER__	0
-#define	__DEBUG_ASLR__		0
-#define __DEBUG_NETWORK__	0
-#define __DEBUG_RESOLVE__	0
-#define __DEBUG_TEST__		0
-#define	__DEBUG_EXPRS__		0
-#define	__DEBUG_EXPRS_MORE__	0
-#define	__DEBUG_INFORM__	0
 
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
