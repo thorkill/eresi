@@ -202,7 +202,7 @@ int			mjr_trace_control(mjrcontext_t	*context,
  *  ...
  *  804936c:       ff d2                   call   *%edx
  *
- * FIXME : this function must be ported to the SPARC architecture
+ * FIXME : this function must be ported to other architectures
  * @ingroup libmjollnir
  */
 eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
@@ -221,8 +221,8 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
 
   /* Specific pattern (simple one) */
   /* As we dont do any real dataflow analysis yet, we dont handle automatically
-     complex case where addresses are  constructed in a complex way */
-
+     cases where target addresses are constructed in a complex way */
+  /* TOO NAIVE EVEN FOR THE SIMPLEST CASE. -- DISABLE  
   if (context->hist[MJR_HISTORY_CUR].instr.instr   == ASM_CALL &&
       context->hist[MJR_HISTORY_PREV].instr.instr  == ASM_MOV  &&
       context->hist[MJR_HISTORY_PPREV].instr.instr == ASM_MOV)
@@ -251,6 +251,7 @@ eresi_Addr	mjr_compute_fctptr(mjrcontext_t	*context)
       
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
     }
+  */
 
   /* Instead we have a hash table that we can add element to using the 'addgoto'
      command of elfsh. That allow to tell which is the target address manually
