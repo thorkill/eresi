@@ -8,7 +8,7 @@ type listent          = key:string data:long next:*listent
 type list             = head:*listent elmnbr:int type:int linearity:byte name:string
 type hash             = ent:*listent size:int elmnbr:int type:int linearity:byte name:string
 type container        = id:int type:int nbrinlinks:int nbroutlinks:int inlinks:*list outlinks:*list data:long 
-type op               = len:int ptr:*byte sem:int name:string size:int content:int regset:int prefix:int imm:int baser:int indexr:int sbaser:string sindex:string address_space:int scale:int
+type op               = len:int ptr:*byte sem:int name:string size:int content:int regset:int prefix:int imm:int baser:int indexr:int sbaser:string sindex:string isdst:int aspace:int scale:int st:int it:int oa:int
 
 type instr::container = ptrins:long proc:long name:string icode:int sem:int prefix:int spdiff:int wflags:int rflags:int ptr_prefix:long annul:int prediction:int nb_op:int op1:op op2:op op3:op op4:op len:int 
 type bloc::container  = vaddr:caddr size:int symoff:int seen:byte

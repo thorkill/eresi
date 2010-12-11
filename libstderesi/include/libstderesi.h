@@ -39,7 +39,6 @@
 #define	__DEBUG_DISASM__	0
 #define __DEBUG_HIJACK__	0
 #define	__DEBUG_GRAPH__		0
-#define __DEBUG_ARG_COUNT__	0
 
 /* User defined configuration */
 #include "revm.h"

@@ -163,11 +163,11 @@ int	elfsh_void_munprotecthandler(elfshobj_t *obj, eresi_Addr addr, uint32_t sz)
 /**
  * @brief Default argument counting handler.
  */
-int	elfsh_default_argchandler(eresi_Addr addr)
+int	*elfsh_default_argchandler(eresi_Addr addr)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unsupported Arch, ELF type, or OS", -1);
+		    "Unsupported Arch, ELF type, or OS", NULL);
 }
 
 /**

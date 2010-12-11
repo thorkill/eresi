@@ -40,7 +40,7 @@ struct s_asm_op
   /* String for index register */
   char	*sindex;
   /* Determines if this register is source or destination */
-  u_char destination;
+  int destination;
 
   /* address space (sparc only) 
    * 

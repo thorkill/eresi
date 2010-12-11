@@ -590,6 +590,10 @@ void		elfsh_setup_hooks()
   /* Usual ARGC targets for ET_EXEC/i386 */
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			  ELFSH_OS_LINUX, elfsh_args_count_ia32);
+
+  elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB, 
+			  ELFSH_OS_LINUX, elfsh_args_count_ia32);
+
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 
 			  ELFSH_OS_FREEBSD, elfsh_args_count_ia32);
   elfsh_register_argchook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC, 

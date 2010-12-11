@@ -1,9 +1,8 @@
 /*
 * @file libelfsh/include/libelfsh.h
+* @ingroup libelfsh
 **
 ** Started on  Mon Jul 23 15:47:12 2001 jfv
-**
-**
 ** $Id$
 **
 */
@@ -1527,7 +1526,7 @@ void		elfsh_setup_hooks() __attribute__ ((constructor));
 int		elfsh_default_plthandler(elfshobj_t *n, elfsh_Sym *n2, eresi_Addr n3);
 int		elfsh_default_relhandler(elfshsect_t *n, elfsh_Rel *n2, eresi_Addr *n3, eresi_Addr n4, elfshsect_t *n5);
 int		elfsh_default_cflowhandler(elfshobj_t *n, char *n1, elfsh_Sym *n2, eresi_Addr n3);
-int		elfsh_default_argchandler(eresi_Addr addr);
+int		*elfsh_default_argchandler(eresi_Addr addr);
 void		*elfsh_default_readmem(elfshsect_t *sect);
 int		elfsh_default_writemem(elfshobj_t *file, eresi_Addr addr, void *data, u_int size);
 int		elfsh_default_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int sz);

@@ -48,9 +48,13 @@ int		cmd_argcount()
 		 "Failed to count arguments", -1);
   snprintf(buf, sizeof(buf), " [*] Argument counting on function <%s> ("XFMT")\n",
 	   name, addr);
+
+  /* Offset 8 is always first argument, at least on x86 */
+  off = 8;
   for (idx = 0; args[idx]; idx++)
     {
-      snprintf(buf, sizeof(buf), "  VAR %u - of size %d bytes \n", idx, args[idx]);
+      snprintf(buf, sizeof(buf), "  VAR %u - stack offset %d - size %u bytes \n", idx, off, args[idx]);
+      off += args[idx];
       revm_output(buf);
     }
   revm_output("\n");

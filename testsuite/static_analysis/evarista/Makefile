@@ -37,12 +37,12 @@ SRC	= 1.simple_appel_de_methode.cpp                         \
 	  34.interprocedural_heap_corruption_static.c
 
 OBJ	 = $(SRC:.cpp=.o)
-CC	 = g++ #sparc-sun-solaris2.9-g++
-LD	 = g++ #sparc-sun-solaris2.9-g++
-CXX	 = g++ #sparc-sun-solaris2.9-g++
-CFLAGS	 = #-m64 -mcpu=v9 
-CXXFLAGS = #-m64 -mcpu=v9 
-LDFLAGS  = #-m64 -mcpu=v9 -march=v9 -L/opt/sfw/lib/sparcv9/ -lstdc++
+CC	 = g++
+LD	 = g++
+CXX	 = g++
+CFLAGS	 = 
+CXXFLAGS = 
+LDFLAGS  = 
 
 all	: ${OBJ}
 

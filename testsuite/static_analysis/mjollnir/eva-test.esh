@@ -3,6 +3,7 @@
 config graph.autoview 0
 
 load $1
+#config mjr.cfg_depth 0
 analyse
 graph
 graph bloc main

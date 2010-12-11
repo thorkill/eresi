@@ -82,6 +82,7 @@ static revmexpr_t	*revm_inform_subtype(char		*curpath,
 	  if (!newexpr->value)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Failed to lookup terminal object", NULL);
+
 	  len = snprintf(pathbuf + pathsize, BUFSIZ - pathsize, ".%s", curtype->fieldname);
 	  revm_inform_type(curtype->name, pathbuf, childaddr, newexpr, 0, 0);
 	  bzero(pathbuf + pathsize, len);

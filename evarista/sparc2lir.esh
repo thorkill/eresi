@@ -11,6 +11,9 @@ set $curaddr $1
 set $begaddr $1
 reflect $curaddr
 
+#tables instrlists 0001076C
+#exec sleep 20
+
 # Start the transformation
 foreach $instr of $hash[instrlists:$begaddr]
 

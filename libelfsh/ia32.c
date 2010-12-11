@@ -16,9 +16,6 @@
 #define ELFSH_IA32_PROLOG_MSTEP 3
 static asm_processor	proc;
 static u_char		proc_init = 0;
-static int      	args[ELFSH_TRACE_MAX_ARGS+1];
-static u_int		arg_count;
-static u_int		max_arg_offset;
 
 #define ELFSH_IA32_PUSH_REGBASE(_i)			\
 (_i.instr == ASM_PUSH 					\
@@ -636,11 +633,17 @@ static int    elfsh_ac_is_arg_esp(asm_operand *op, int sub)
 }
 
 /**
- *
- * @param add
+ * @brief Add the infered parameter to the function parameters list.
+ * @param add Size of current reserved stack frame (does not include parameters)
+ * @param args The function parameter sizes array pointer.
+ * @param arg_count A pointer on the argument counter.
+ * @param max_arg_offset A pointer on the current biggest argument stack offset.
  * @return
  */
-static int    elfsh_ac_largs_add(int add)
+static int    elfsh_ac_largs_add(int	add,
+				 int    *args,
+				 u_int	*arg_count,
+				 u_int	*max_arg_offset)
 {
   u_int                 index;
 #if __DEBUG_ARG_COUNT__
@@ -654,20 +657,20 @@ static int    elfsh_ac_largs_add(int add)
 		 "Invalid argument", -1);
 
   /* Empty list or next value is > to current max_arg_offset */
-  if ((arg_count == 0 && args[arg_count] == 0)
-      || max_arg_offset < add)
+  if ((*arg_count == 0 && args[*arg_count] == 0)
+      || *max_arg_offset < add)
     {
 #if __DEBUG_ARG_COUNT__
       printf("[DEBUG_ARG_COUNT] MAX OR FIRST = %d\n", add);
 #endif
 
-      max_arg_offset = add;
-      args[arg_count++] = add;
+      *max_arg_offset = add;
+      args[(*arg_count)++] = add;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Already got it */
-  if (max_arg_offset == add)
+  if (*max_arg_offset == add)
     {
 #if __DEBUG_ARG_COUNT__
       printf("[DEBUG_ARG_COUNT] ALREADY = %d\n", add);
@@ -691,34 +694,34 @@ static int    elfsh_ac_largs_add(int add)
       /* We sort result */
       if (args[index] > add)
 	{
-	  if (arg_count == ELFSH_TRACE_MAX_ARGS)
+	  if (*arg_count == ELFSH_TRACE_MAX_ARGS)
 	    {
 #if __DEBUG_ARG_COUNT__
 	      printf("[DEBUG_ARG_COUNT] MAX ARGUMENT\n");
 #endif
 
-	      arg_count--;
+	      (*arg_count)--;
 	    }
 
 #if __DEBUG_ARG_COUNT__
 	  printf("[DEBUG_ARG_COUNT] Next values (b):\n");
 
-	  for (z = index; z < arg_count; z++)
+	  for (z = index; z < *arg_count; z++)
 	    printf("[DEBUG_ARG_COUNT] :%d -> %d\n", z, args[z]);
 #endif
 
 	  /* Move arguments */
-	  memmove(&args[index + 1], &args[index], (arg_count - index)*sizeof(int));
+	  memmove(&args[index + 1], &args[index], (*arg_count - index) * sizeof(int));
 
 #if __DEBUG_ARG_COUNT__
 	  printf("[DEBUG_ARG_COUNT] Next values (a):\n");
 
-	  for (z = index; z < arg_count + 1; z++)
+	  for (z = index; z < *arg_count + 1; z++)
 	    printf("[DEBUG_ARG_COUNT] :%d -> %d\n", z, args[z]);
 #endif
 
 	  args[index] = add;
-	  arg_count++;
+	  (*arg_count)++;
 	  break;
 	}
     }
@@ -842,6 +845,11 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
   u_int		icount, regicount;
   int		regbased = -1;
   int		next_regbased = -1;
+
+  int      	args[ELFSH_TRACE_MAX_ARGS+1];
+  u_int		arg_count;
+  u_int		max_arg_offset;
+
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -970,7 +978,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] EBP (1) @ +%d (%x) - %d\n", index, index, op);
 #endif
-		  elfsh_ac_largs_add(op);
+		  elfsh_ac_largs_add(op, args, &arg_count, &max_arg_offset);
 		}
 		  
 	      op = elfsh_ac_is_arg_ebp(&i.op[1], regbased);
@@ -980,85 +988,88 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] EBP (2) @ +%d (%x) - %d\n", index, index, op);
 #endif
-		  elfsh_ac_largs_add(op);
+		  elfsh_ac_largs_add(op, args, &arg_count, &max_arg_offset);
 		}
 
 #if __DEBUG_ARG_COUNT__
 	      printf("[DEBUG_ARG_COUNT] @ +%d (%x) i.instr = %d\n", index, index, i.instr);
 #endif
 	    }
+
 	  else
+	  {
+	    // WRONG: We can have ESP based parameters even with a valid EBP.
+	    
+	  /* sub $esp, x */
+	  if (i.instr == ASM_SUB && i.op[0].baser == ASM_REG_ESP)
 	    {
-	      /* sub $esp, x */
-	      if (i.instr == ASM_SUB && i.op[0].baser == ASM_REG_ESP)
-		{
-		  reserv += i.op[1].imm;
-
+	      reserv += i.op[1].imm;
+	      
 #if __DEBUG_ARG_COUNT__
-		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
-			 i.op[1].imm, reserv);
+	      printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
+		     i.op[1].imm, reserv);
 #endif
-		  continue;
-		}
-	      /* add $esp, x */
-	      else if (i.instr == ASM_ADD && i.op[0].baser == ASM_REG_ESP)
-		{
-		  reserv -= i.op[1].imm;
-
+	      continue;
+	    }
+	  /* add $esp, x */
+	  else if (i.instr == ASM_ADD && i.op[0].baser == ASM_REG_ESP)
+	    {
+	      reserv -= i.op[1].imm;
+	      
 #if __DEBUG_ARG_COUNT__
-		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
-			 i.op[1].imm, reserv);
+	      printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
+		     i.op[1].imm, reserv);
 #endif
-		  continue;
-		}
-
-	      /* ESP based argument */
-	      op = elfsh_ac_is_arg_esp(&i.op[0], reserv);
-
-	      if (op > 0)
-		{
+	      continue;
+	    }
+	  
+	  /* ESP based argument */
+	  op = elfsh_ac_is_arg_esp(&i.op[0], reserv);
+	  
+	  if (op > 0)
+	    {
 #if __DEBUG_ARG_COUNT__
 		  printf("[DEBUG_ARG_COUNT] ESP (1) @ +%d (%x) - %d\n", index, index, op);
 #endif
-		  elfsh_ac_largs_add(op);
-		}
-
-	      op = elfsh_ac_is_arg_esp(&i.op[1], reserv);
-
-	      if (op > 0)
-		{
-#if __DEBUG_ARG_COUNT__
-		  printf("[DEBUG_ARG_COUNT] ESP (2) @ +%d (%x) - %d\n", index, index, op);
-#endif
-		  elfsh_ac_largs_add(op);
-		}
-
-	      /* On esp based functions, sometimes compiler optimisation is to not
-	         clear argument after a call (just at the end). Then we need to update
-	         stack state. Problem found in setupterm() */
-	      if (i.instr == ASM_PUSH) 
-		{
-		  reserv += sizeof(eresi_Addr);
-#if __DEBUG_ARG_COUNT__
-		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
-			 sizeof(eresi_Addr), reserv);
-#endif
-		}
-	      else if (i.instr == ASM_POP)
-		{
-		  reserv -= sizeof(eresi_Addr);
-#if __DEBUG_ARG_COUNT__
-		  printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
-			 sizeof(eresi_Addr), reserv);
-#endif
-		}
-	      else
-		{
-#if __DEBUG_ARG_COUNT__
-		  printf("[DEBUG_ARG_COUNT] @ +%d (%x) i.instr = %d\n", index, index, i.instr);
-#endif
-		}
+		  elfsh_ac_largs_add(op, args, &arg_count, &max_arg_offset);
 	    }
+	  
+	  op = elfsh_ac_is_arg_esp(&i.op[1], reserv);
+	  
+	  if (op > 0)
+	    {
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] ESP (2) @ +%d (%x) - %d\n", index, index, op);
+#endif
+	      elfsh_ac_largs_add(op, args, &arg_count, &max_arg_offset);
+	    }
+	  
+	  /* On esp based functions, sometimes compiler optimisation is to not
+	     clear argument after a call (just at the end). Then we need to update
+	     stack state. Problem found in setupterm() */
+	  if (i.instr == ASM_PUSH) 
+	    {
+	      reserv += sizeof(eresi_Addr);
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) += %d / %d\n", index, index,
+		     sizeof(eresi_Addr), reserv);
+#endif
+	    }
+	  else if (i.instr == ASM_POP)
+	    {
+	      reserv -= sizeof(eresi_Addr);
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] reserv @ +%d (%x) -= %d / %d\n", index, index,
+		     sizeof(eresi_Addr), reserv);
+#endif
+	    }
+	  else
+	    {
+#if __DEBUG_ARG_COUNT__
+	      printf("[DEBUG_ARG_COUNT] @ +%d (%x) i.instr = %d\n", index, index, i.instr);
+#endif
+	    }
+	  }
 	}
       else
 	break;
@@ -1102,7 +1113,6 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
 	}
     }
 
-
   setargs:
   */
 
@@ -1115,7 +1125,7 @@ int           	*elfsh_args_count_ia32(elfshobj_t *file, u_int foffset, eresi_Add
      Sometimes first argument is not use (__xstat64() case)
      which creates a bug into arguments number 
      Offset 8 should always be first argument */
-  elfsh_ac_largs_add(0x8);
+  elfsh_ac_largs_add(0x8, args, &arg_count, &max_arg_offset);
 
   for (index = 0; index < ELFSH_TRACE_MAX_ARGS && index < arg_count; index++)
     {

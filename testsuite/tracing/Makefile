@@ -22,8 +22,8 @@ CC	= gcc
 
 LIB32    =$(shell eresi-config32 libstderesi --libs)
 LIB64	 =$(shell eresi-config64 libstderesi --libs)
-CFLAGS32 =$(shell eresi-config32 libstderesi --cflags) -gdwarf-2
-CFLAGS64 =$(shell eresi-config64 libstderesi --cflags) -gdwarf-2
+CFLAGS32 =$(shell eresi-config32 libstderesi --cflags) #-gdwarf-2
+CFLAGS64 =$(shell eresi-config64 libstderesi --cflags) #-gdwarf-2
 
 all: all32 all64
 
