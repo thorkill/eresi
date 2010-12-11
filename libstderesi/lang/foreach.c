@@ -54,8 +54,7 @@ static revmexpr_t	*revm_induction_get(char *name)
       if (world.curjob->curloop + 1 == REVM_MAXSRCNEST)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Maximum foreach depth reached, increase REVM_MAXSRCNEST value !", NULL);
-      if (strcmp(world.curjob->iter[world.curjob->curloop].end,
-		 world.curjob->curcmd->endlabel))
+      if (world.curjob->iter[world.curjob->curloop].end != world.curjob->curcmd->endlabel)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "An existing induction variable already has this name", NULL);
 

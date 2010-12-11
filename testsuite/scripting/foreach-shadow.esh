@@ -1,6 +1,6 @@
 #!../../elfsh/elfsh32
 
-#profile enable warn
+profile enable warn
 #quiet
 
 add $list[test] Intel

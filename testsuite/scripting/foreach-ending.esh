@@ -1,6 +1,6 @@
 #!../../elfsh/elfsh32
 
-quiet
+#quiet
 
 add $hash[test2] Intel
 add $hash[test2] Alpha
