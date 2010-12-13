@@ -23,9 +23,8 @@ char *asm_name_pool_alloc() {
     free(asm_name_pool[index]);
 
   ret = asm_name_pool[index] = (char *) malloc(ASM_OP_NAME_LEN);
-  
-  index = (index+1)%ASM_POOL_SIZE;
-  
+  if (ret != NULL)
+    index = (index + 1) % ASM_POOL_SIZE;
   return ret;
 }
 
@@ -47,7 +46,8 @@ char *asm_sparc_get_op_name(asm_operand *op) {
 
     case ASM_SP_OTYPE_IMM_ADDRESS:
       buf = asm_name_pool_alloc();
-      sprintf(buf, "[ %s", get_sparc_register(op->baser));
+      op->sbaser = get_sparc_register(op->baser);
+      sprintf(buf, "[ %s", op->sbaser);
       if (op->imm)
         sprintf(buf+strlen(buf), " + 0x%x", op->imm);
         
@@ -59,13 +59,16 @@ char *asm_sparc_get_op_name(asm_operand *op) {
       return buf;
     case ASM_SP_OTYPE_REG_ADDRESS:
       buf = asm_name_pool_alloc();
+      op->sbaser = get_sparc_register(op->baser);
+
       if (op->indexr > 0)
-        sprintf(buf, "[ %s + %s ]", get_sparc_register(op->baser),
-      								get_sparc_register(op->indexr));
-      								
-  	  else
-  	    sprintf(buf, "[ %s ]", get_sparc_register(op->baser));
-      								
+	{
+	  op->sindex = get_sparc_register(op->indexr);
+	  sprintf(buf, "[ %s + %s ]", op->sbaser, op->sindex);
+	}
+      else
+	sprintf(buf, "[ %s ]", op->sbaser);
+      
       if (op->address_space != ASM_SP_ASI_P)
         sprintf(buf+strlen(buf), " 0x%x", op->address_space);
 

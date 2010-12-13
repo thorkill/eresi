@@ -4,7 +4,7 @@
 #
 
 #print Now SPARC2LIR at addr $curaddr
-#quiet
+quiet
 #verb
 
 set $curaddr $1
@@ -19,7 +19,7 @@ foreach $instr of $hash[instrlists:$begaddr]
 
 #print TRANSFORMING instruction $instr at addr $curaddr
 #D $curaddr%1
-print $instr
+#print $instr
 
 rewrite $instr into
 

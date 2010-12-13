@@ -54,7 +54,6 @@ static revmexpr_t	*revm_induction_get(char *name)
       if (world.curjob->curloop + 1 == REVM_MAXSRCNEST)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Maximum foreach depth reached, increase REVM_MAXSRCNEST value !", NULL);
-      //if (world.curjob->iter[world.curjob->curloop].end != world.curjob->curcmd->endlabel)
       if (NULL != world.curjob->iter[world.curjob->curloop].end && 
 	  NULL != world.curjob->curcmd->endlabel && 
 	  strcmp(world.curjob->iter[world.curjob->curloop].end, world.curjob->curcmd->endlabel))
