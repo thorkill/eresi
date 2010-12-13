@@ -37,10 +37,13 @@ asm_sparc_xor(asm_instr * ins, u_char * buf, u_int len,
     asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
-  if (ins->op[0].baser == ins->op[2].baser) {
-    ins->instr = ASM_SP_BTOG;
-    ins->nb_op = 2;
-  }
+  if (asm_config_get_synthinstr())
+    {
+      if (ins->op[0].baser == ins->op[2].baser) {
+	ins->instr = ASM_SP_BTOG;
+	ins->nb_op = 2;
+      }
+    }
 
   return 4;
 }

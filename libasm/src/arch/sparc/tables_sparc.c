@@ -1058,14 +1058,14 @@ char *sparc_instr_list[ASM_SP_BAD + 1] = {
   "casl",
   "casx",
   "casxl",
-  "inc",
-  "inccc",
-  "dec",
-  "deccc",
+  "inc",   // inc is a add
+  "inccc", //inccc = addcc
+  "dec",   // dec is a sub
+  "deccc", // deccc is a subcc
   "btst",
   "bset",
   "bclr",
-  "btog",
+  "btog",   // btog is a xor
   "clr",
   "clrb",
   "clrh",

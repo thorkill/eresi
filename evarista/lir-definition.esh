@@ -76,13 +76,14 @@ type Interrupt::Ins  = dst:Immed
 type Return::Ins     = dst:Immed
 
 # Ternary operations
-type TernopMI::Ins  = dst:Mem msrc:Mem isrc:Immed
-type TernopMR::Ins  = dst:Mem msrc:Mem rsrc:Reg
-type TernopRM::Ins  = dst:Reg rsrc:Reg msrc:Mem
-type TernopRMI::Ins = dst:Reg rsrc:Reg msrc:Mem isrc:Immed
-type TernopR3::Ins  = dst:Reg src1:Reg src2:Reg
-type TernopM3::Ins  = dst:Mem msrc1:Mem msrc2:Mem
-type TernopRI::Ins  = dst:Reg rsrc:Reg isrc:Immed
+type Ternop::Ins      = arop:int
+type TernopMI::Ternop = dst:Mem msrc:Mem isrc:Immed
+type TernopMR::Ternop = dst:Mem msrc:Mem rsrc:Reg
+type TernopRM::Ternop = dst:Reg rsrc:Reg msrc:Mem
+type TernopRMI::Ternop = dst:Reg rsrc:Reg msrc:Mem isrc:Immed
+type TernopR3::Ternop = dst:Reg src1:Reg src2:Reg
+type TernopM3::Ternop = dst:Mem msrc1:Mem msrc2:Mem
+type TernopRI::Ternop = dst:Reg rsrc:Reg isrc:Immed
 
 # Assignments
 type AssignIR::Ins  = dst:Reg src:Immed

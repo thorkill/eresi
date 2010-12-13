@@ -218,6 +218,12 @@ int	asm_init_arch(asm_processor *proc, int arch);
  */
 int asm_config_get_endian();
 
+
+/**
+ * Return synthetic instructions enabled flag
+ */
+int asm_config_get_synthinstr();
+
 /**
  * return build date.
  */

@@ -362,12 +362,15 @@ typedef struct	s_container
 /**
  * @brief libasm related config 
  */
-#define		CONFIG_ASM_ENDIAN_FLAG "libasm.endian.flag"
-#define		CONFIG_ASM_LITTLE_ENDIAN 0
-#define		CONFIG_ASM_BIG_ENDIAN 1
+#define		CONFIG_ASM_ENDIAN_FLAG		"libasm.endian.flag"
+#define		CONFIG_ASM_LITTLE_ENDIAN	0
+#define		CONFIG_ASM_BIG_ENDIAN		1
 
 #define		CONFIG_ASM_ATT_MARGIN_DEFAULT	14
-#define		CONFIG_ASM_ATT_MARGIN_FLAG "libasm.output.att.margin"
+#define		CONFIG_ASM_ATT_MARGIN_FLAG	"libasm.output.att.margin"
+
+#define		CONFIG_ASM_SYNTHINSTRS_DEFAULT	1
+#define		CONFIG_ASM_SYNTHINSTRS		"libasm.output.synth.instrs"
 
 /* A configuration item */
 typedef struct	s_config_item

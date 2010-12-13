@@ -38,23 +38,26 @@ asm_sparc_subcc(asm_instr * ins, u_char * buf, u_int len,
     asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
-  if (ins->op[0].baser == ASM_REG_G0) 
+  if (asm_config_get_synthinstr())
     {
-      ins->instr = ASM_SP_CMP;
-      ins->type  = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
-      ins->nb_op = 2;
-      ins->op[0] = ins->op[1];
-      ins->op[1] = ins->op[2];
+      if (ins->op[0].baser == ASM_REG_G0) 
+	{
+	  ins->instr = ASM_SP_CMP;
+	  ins->type  = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
+	  ins->nb_op = 2;
+	  ins->op[0] = ins->op[1];
+	  ins->op[1] = ins->op[2];
+	}
+      else if ((ins->op[0].baser == ins->op[2].baser) &&
+	       ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) 
+	{
+	  ins->instr = ASM_SP_DECCC;
+	  if (ins->op[1].imm == 1)
+	    ins->nb_op = 1;
+	  else
+	    ins->nb_op = 2;
+	}
     }
-  else if ((ins->op[0].baser == ins->op[2].baser) &&
-	   ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) 
-    {
-    ins->instr = ASM_SP_DECCC;
-    if (ins->op[1].imm == 1)
-      ins->nb_op = 1;
-    else
-      ins->nb_op = 2;
-  }
 
   return 4;
 }

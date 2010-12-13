@@ -36,10 +36,13 @@ asm_sparc_stw(asm_instr * ins, u_char * buf, u_int len,
   ins->op[1].baser = opcode.rd;
   asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_REGISTER, ins);
 
-  if (ins->op[1].baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLR;
-    ins->nb_op = 1;
-  }
+  if (asm_config_get_synthinstr())
+    {
+      if (ins->op[1].baser == ASM_REG_G0) {
+	ins->instr = ASM_SP_CLR;
+	ins->nb_op = 1;
+      }
+    }
 
   return 4;
 }

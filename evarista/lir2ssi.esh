@@ -11,7 +11,6 @@ set $curaddr $curb.vaddr
 #inspect $curb
 #profile enable warn
 
-
 # Start the transformation for the current block
 
 # Note  : do we need rdst(inlist/innbr) linked to rsrc ?

@@ -275,6 +275,12 @@ char		*asm_sparc_display_instr(asm_instr *instr, eresi_Addr addr)
   memset(buffer, 0, 1024);
   sprintf(buffer, "%s", instr->proc->instr_table[instr->instr]);  
 
+  // just debugging to be able to break
+  if (!strcmp(instr->proc->instr_table[instr->instr], "btog"))
+    {
+      *buffer = *buffer;
+    }
+
   if ((instr->type & ASM_TYPE_BRANCH) && (instr->type & ASM_TYPE_CONDCONTROL))
     {
       if (instr->annul)

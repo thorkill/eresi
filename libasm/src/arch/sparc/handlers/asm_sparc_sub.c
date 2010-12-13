@@ -37,25 +37,28 @@ asm_sparc_sub(asm_instr * ins, u_char * buf, u_int len,
     asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
-  if ((ins->op[0].baser == ins->op[2].baser) &&
-        ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) {
-
-    ins->instr = ASM_SP_DEC;
-
-    if (ins->op[1].imm == 1)
-      ins->nb_op = 1;
-    else
-      ins->nb_op = 2;
-  }
-  else if (ins->op[2].baser == ASM_REG_G0 &&
-            ins->op[1].content == ASM_SP_OTYPE_REGISTER) {
-
-    ins->instr = ASM_SP_NEG;
-    if (ins->op[1].baser == ins->op[0].baser)
-      ins->nb_op = 1;
-    else
-      ins->nb_op = 2;
-  }
+  if (asm_config_get_synthinstr())
+    {
+      if ((ins->op[0].baser == ins->op[2].baser) &&
+	  ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) {
+	
+	ins->instr = ASM_SP_DEC;
+	
+	if (ins->op[1].imm == 1)
+	  ins->nb_op = 1;
+	else
+	  ins->nb_op = 2;
+      }
+      else if (ins->op[2].baser == ASM_REG_G0 &&
+	       ins->op[1].content == ASM_SP_OTYPE_REGISTER) {
+	
+	ins->instr = ASM_SP_NEG;
+	if (ins->op[1].baser == ins->op[0].baser)
+	  ins->nb_op = 1;
+	else
+	  ins->nb_op = 2;
+      }
+    }
 
   return 4;
 }

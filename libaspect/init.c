@@ -163,6 +163,9 @@ static void	aspect_config_init()
 
   aspectworld.proflevel = PROFILE_NONE;
 
+
+  /* XXX: should go in their respective library */
+
   config_add_item(CONFIG_CFGDEPTH,
                   CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
@@ -177,11 +180,16 @@ static void	aspect_config_init()
 		  CONFIG_TYPE_INT,
 		  CONFIG_MODE_RW,
 		  (void *) CONFIG_ASM_LITTLE_ENDIAN);
-
- config_add_item(CONFIG_ASM_ATT_MARGIN_FLAG,
-		 CONFIG_TYPE_INT,
-		 CONFIG_MODE_RW,
-		 (void *) CONFIG_ASM_ATT_MARGIN_DEFAULT);
+  
+  config_add_item(CONFIG_ASM_ATT_MARGIN_FLAG,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) CONFIG_ASM_ATT_MARGIN_DEFAULT);
+  
+  config_add_item(CONFIG_ASM_SYNTHINSTRS,
+		  CONFIG_TYPE_INT,
+		  CONFIG_MODE_RW,
+		  (void *) CONFIG_ASM_SYNTHINSTRS_DEFAULT);
 
 }
 

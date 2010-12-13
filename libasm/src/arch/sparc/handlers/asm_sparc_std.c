@@ -36,22 +36,25 @@ asm_sparc_std(asm_instr * ins, u_char * buf, u_int len,
   ins->op[1].baser = opcode.rd;
   asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_REGISTER, ins);
 
-  if (ins->instr == ASM_SP_STB && ins->op[1].baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLRB;
-    ins->nb_op = 1;
-  }
-  else if (ins->instr == ASM_SP_STH && ins->op[1].baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLRH;
-    ins->nb_op = 1;
-  }
-  else if (ins->instr == ASM_SP_STW && ins->op[1].baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLR;
-    ins->nb_op = 1;
-  }
-  else if (ins->instr == ASM_SP_STX && ins->op[1].baser == ASM_REG_G0) {
-    ins->instr = ASM_SP_CLRX;
-    ins->nb_op = 1;
-  }
+  if (asm_config_get_synthinstr())
+    {
+      if (ins->instr == ASM_SP_STB && ins->op[1].baser == ASM_REG_G0) {
+	ins->instr = ASM_SP_CLRB;
+	ins->nb_op = 1;
+      }
+      else if (ins->instr == ASM_SP_STH && ins->op[1].baser == ASM_REG_G0) {
+	ins->instr = ASM_SP_CLRH;
+	ins->nb_op = 1;
+      }
+      else if (ins->instr == ASM_SP_STW && ins->op[1].baser == ASM_REG_G0) {
+	ins->instr = ASM_SP_CLR;
+	ins->nb_op = 1;
+      }
+      else if (ins->instr == ASM_SP_STX && ins->op[1].baser == ASM_REG_G0) {
+	ins->instr = ASM_SP_CLRX;
+	ins->nb_op = 1;
+      }
+    }
 
   return 4;
 }

@@ -3,6 +3,9 @@
 #by default, fast print the main function only -- uncomment lines for whole program analysis
 #config mjr.cfg_depth 0
 
+# disable synthetic instructions as they make IR less easy to generate
+config libasm.output.synth.instrs 0
+
 vlist
 cmp  $# 1
 jne end

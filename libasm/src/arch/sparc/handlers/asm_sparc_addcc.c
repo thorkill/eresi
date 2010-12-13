@@ -38,17 +38,20 @@ asm_sparc_addcc(asm_instr * ins, u_char * buf, u_int len,
     asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
   }
 
-  if ((ins->op[0].baser == ins->op[2].baser) &&
-  		ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) {
-
-    ins->instr = ASM_SP_INCCC;
-
-    if (ins->op[1].imm == 1)
+  if (asm_config_get_synthinstr())
+    {
+      if ((ins->op[0].baser == ins->op[2].baser) &&
+	  ins->op[1].content == ASM_SP_OTYPE_IMMEDIATE) {
+	
+	ins->instr = ASM_SP_INCCC;
+	
+	if (ins->op[1].imm == 1)
 	  ins->nb_op = 1;
-    else
+	else
 	  ins->nb_op = 2;
-  }
-  
+      }
+    }
+
   return 4;
 
 }

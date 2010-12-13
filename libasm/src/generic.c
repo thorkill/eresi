@@ -394,6 +394,14 @@ int asm_config_get_endian()
 }
 
 /**
+ * get the synthetic instruction enabled flag
+ */
+int asm_config_get_synthinstr()
+{
+  return (int) config_get_data(CONFIG_ASM_SYNTHINSTRS);
+}
+
+/**
  *
  *
  */

@@ -38,28 +38,31 @@ asm_sparc_or(asm_instr * ins, u_char * buf, u_int len,
       ins->op[1].imm = opcode.imm;
       asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_IMMEDIATE, ins);
     }
-  
-  if (ins->op[0].baser == ins->op[2].baser) 
-    {
-      ins->instr = ASM_SP_BSET;
-      ins->nb_op = 2;
-      ins->type = ASM_TYPE_BITSET;
-    }
-  else if (ins->op[2].baser == ASM_REG_G0) 
-    {
-      if (ins->op[1].content == ASM_SP_OTYPE_REGISTER &&
-	  ins->op[1].baser == ASM_REG_G0) 
-	{
-	  ins->instr = ASM_SP_CLR;
-	  ins->nb_op = 1;
-	}
-      else 
-	{
-	  ins->instr = ASM_SP_MOV;
-	  ins->nb_op = 2;
-	  ins->type = ASM_TYPE_ASSIGN;
-	}
-    }
 
+  if (asm_config_get_synthinstr())
+    {  
+      if (ins->op[0].baser == ins->op[2].baser) 
+	{
+	  ins->instr = ASM_SP_BSET;
+	  ins->nb_op = 2;
+	  ins->type = ASM_TYPE_BITSET;
+	}
+      else if (ins->op[2].baser == ASM_REG_G0) 
+	{
+	  if (ins->op[1].content == ASM_SP_OTYPE_REGISTER &&
+	      ins->op[1].baser == ASM_REG_G0) 
+	    {
+	      ins->instr = ASM_SP_CLR;
+	      ins->nb_op = 1;
+	    }
+	  else 
+	    {
+	      ins->instr = ASM_SP_MOV;
+	      ins->nb_op = 2;
+	      ins->type = ASM_TYPE_ASSIGN;
+	    }
+	}
+    }
+  
   return 4;
 }
