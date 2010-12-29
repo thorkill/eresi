@@ -143,6 +143,21 @@ enum e_instr_types
     ASM_TYPE_OTHER        = 0x1000000, //!< Type that doesn't fit the ones above.
   };
 
+/* Indicate arithmetic operation for ASM_TYPE_ARITH instructions */
+enum e_arith_types
+  {
+    ASM_ARITH_ADD = 0x1,
+    ASM_ARITH_SUB = 0x2,
+    ASM_ARITH_MUL = 0x4,
+    ASM_ARITH_DIV = 0x8,
+    ASM_ARITH_OR  = 0x10,
+    ASM_ARITH_XOR = 0x20,
+    ASM_ARITH_AND = 0x40,
+    ASM_ARITH_SL  = 0x80,
+    ASM_ARITH_SR  = 0x100,
+    ASM_ARITH_NOT = 0x200,    
+  };
+
 
 /**
  * Architecture-independant operand types 

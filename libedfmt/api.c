@@ -844,42 +844,38 @@ hash_t *edfmt_hfuncs_get()
 
 }
 
-char *edfmt_srcline_get(char *buf, eresi_Addr addr)
+char		*edfmt_srcline_get(char *buf, eresi_Addr addr)
 {
-	hash_t		*htable;
-	int			keynbr;
-	char		**keys;
-	int			index;
-	edfmtfunc_t *lfunc;
+  hash_t	*htable;
+  int		keynbr;
+  char		**keys;
+  int		index;
+  edfmtfunc_t   *lfunc;
+  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!uniinfo)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Global pointer uninitialise", NULL);
 
-	PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-	if (!uniinfo)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			      "Global pointer uninitialise", NULL);
-	/* Setup hash table depending of current scope */
-	htable = API_GET_FROM_SCOPE(hfunc);
-
-	keys = hash_get_keys(&htable, &keynbr);
-
-
-	buf = NULL;
-	if (keys)
+  /* Setup hash table depending of current scope */
+  htable = API_GET_FROM_SCOPE(hfunc);
+  keys = hash_get_keys(htable, &keynbr);
+  buf = NULL;
+  if (keys)
+    {
+      for (index = 0; index < keynbr; index++)
 	{
-		for (index = 0; index < keynbr; index++)
-			{
-				lfunc = (edfmtfunc_t *)hash_get(&htable, keys[index]);
-			  if (lfunc->start <= addr && lfunc->end >= addr)
-			  {
-				buf = lfunc->srcLine;
-			    return buf;;
-			  }
-			}
-
-
+	  lfunc = (edfmtfunc_t *) hash_get(htable, keys[index]);
+	  if (lfunc->start <= addr && lfunc->end >= addr)
+	    {
+	      // FIXME: srcLine is an integer! need to open file and read line!
+	      //buf = lfunc->srcLine;
+	      buf = "READ FILE!";
+	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
+	    }
 	}
-	return buf;
-
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
 /**

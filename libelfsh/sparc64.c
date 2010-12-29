@@ -112,7 +112,7 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
 {
   int		foffset;
   uint32_t	addrh, addrl;
-  uint32_t	opcode[11];
+  uint32_t	opcode[12];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

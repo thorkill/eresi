@@ -36,6 +36,7 @@ eresi_Addr	elfsh_map_userland(elfshobj_t *file, u_int memsz, int prot)
 #endif
 
   /* Put the mapping rights in mmap format */
+  rights = 0;
   if (prot & PF_R)
     rights |= PROT_READ;
   if (prot & PF_W);

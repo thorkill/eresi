@@ -976,10 +976,10 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
   if (adst->value && asrc->value && (!asrc->next || !adst->next))
     {
       /* See if object conversion is necessary and/or possible */
-      if (ret = revm_nextconds_atomics(adst, asrc) < 0)
+      if ((ret = revm_nextconds_atomics(adst, asrc)) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to set scalar variable", -1);
-      if (ret = revm_object_set(adst, asrc) < 0)
+      if ((ret = revm_object_set(adst, asrc)) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to set scalar variable", -1);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1044,7 +1044,7 @@ int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
   /* Necessary for comparison with constants without a tree/field structure */
   if (orig->value && candid->value && !orig->next && !candid->next)
     {
-      if (ret = revm_object_compare(orig, candid, &val) < 0)
+      if ((ret = revm_object_compare(orig, candid, val)) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Invalid name for expression", -1);    
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1114,7 +1114,7 @@ int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
   /* For simple objects */
   if (orig->value && candid->value && !orig->next && !candid->next)
     {
-      if (ret = revm_object_compare(orig, candid, val) < 0)
+      if ((ret = revm_object_compare(orig, candid, val)) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Invalid name for expression", -1);    
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -19,7 +19,8 @@ asm_sparc_or(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-  
+
+  ins->arith = ASM_ARITH_OR;        
   ins->type = ASM_TYPE_ARITH;
 
   ins->nb_op = 3;

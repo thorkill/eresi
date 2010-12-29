@@ -89,6 +89,8 @@ int		mjr_init_session(mjrsession_t *);
 int		mjr_create_context_as_current(mjrsession_t *, elfshobj_t *);
 mjrcontext_t	*mjr_create_context(elfshobj_t *);
 int		mjr_setup_processor(mjrsession_t *, asm_processor *proc);
+int		mjr_set_current_context(mjrsession_t *sess, char *name);
+int		mjr_del_context(mjrsession_t *sess, char *name);
 
 /* core.c */
 int		mjr_analyse(mjrsession_t *sess, eresi_Addr addr, int maxdepth, int flags);

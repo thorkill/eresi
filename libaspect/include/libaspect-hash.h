@@ -57,6 +57,7 @@ void		hash_free_keys(char **keys);		/* Free keys */
 int             hash_apply(hash_t *h, void *ptr, 
 			   int (*f)(listent_t *e, void *p)); /* Apply function */
 int		hash_merge(hash_t *dst, hash_t *src);	/* Fuse hashes */
+int		hash_inter(hash_t *dst, hash_t *src);   /* intersect hashes */
 int		hash_unmerge(hash_t *dst, hash_t *src); /* Quotient hashes */
 int		hash_size(hash_t *hash);		/* Return the elm nbr */
 void*		hash_get_one(hash_t *hash);		/* Get any object */

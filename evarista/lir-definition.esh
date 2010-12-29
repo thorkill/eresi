@@ -76,7 +76,7 @@ type Interrupt::Ins  = dst:Immed
 type Return::Ins     = dst:Immed
 
 # Ternary operations
-type Ternop::Ins      = arop:int
+type Ternop::Ins      = op:int
 type TernopMI::Ternop = dst:Mem msrc:Mem isrc:Immed
 type TernopMR::Ternop = dst:Mem msrc:Mem rsrc:Reg
 type TernopRM::Ternop = dst:Reg rsrc:Reg msrc:Mem

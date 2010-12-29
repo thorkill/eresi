@@ -98,6 +98,8 @@ struct s_asm_instr
   asm_operand	op[6];
   /* instruction/operands full lengh */
   u_int len;   
+  /* If arithmetic, make explicit what kind of operation is done */
+  u_int arith;
 };
 
 

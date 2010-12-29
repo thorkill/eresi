@@ -489,6 +489,7 @@ char		*revm_get_prompt();
 char		*revm_modename_get();
 int             e2dbg_self();
 int		e2dbg_kill(int pid, int sig);
+int		e2dbg_step();
 
 /* Linkmap related API */
 int		e2dbg_linkmap_load(char *name);

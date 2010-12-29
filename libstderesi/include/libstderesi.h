@@ -246,7 +246,7 @@ extern char	prompt_token[512];
 extern u_char   quit_msg_setup;
 
 /* Used to store ascii description for different structures types in data.c */
-#define	ELFSH_INSTRTYPE_MAX	24
+#define	ELFSH_INSTRTYPE_MAX	26
 #define	ELFSH_OPTYPE_MAX	4
 #define ELFSH_SEGTYPE_MAX	7
 #define	ELFSH_SHTYPE_MAX	16

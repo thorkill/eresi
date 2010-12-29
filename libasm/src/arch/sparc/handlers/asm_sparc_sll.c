@@ -18,6 +18,7 @@ asm_sparc_sll(asm_instr * ins, u_char * buf, u_int len,
   sparc_convert_format3(&opcode, buf);
 
   inter = proc->internals;
+  ins->arith = ASM_ARITH_SL;        
   ins->type = ASM_TYPE_ARITH;
 
   ins->instr = inter->shift_table[opcode.op3 - 0x25 +

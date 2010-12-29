@@ -69,7 +69,7 @@ do							    \
   if ((a = (void *) calloc(b, 1)) == NULL)		    \
   {							    \
     int wret = write(1, "Out of memory\n", 14);		    \
-    exit(1);						    \
+    exit(wret);						    \
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,          \
 		      (char *)"Out of memory .", c);	    \
   }							    \
@@ -89,7 +89,7 @@ do							    \
   if ((a = (void *) realloc(b, c)) == NULL)		    \
   {							    \
     int wret = write(1, "Out of memory\n", 14);		    \
-    exit(1);						    \
+    exit(wret);						    \
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,	    \
 		      "Out of memory .", d);		    \
   }							    \

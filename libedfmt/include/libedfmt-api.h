@@ -90,7 +90,7 @@ typedef struct		s_efunc
   eresi_Addr		end;		/* End address */
 
   struct s_efunc	*next;
-  u_int srcLine;
+  u_int			srcLine;
 }			edfmtfunc_t;
 
 

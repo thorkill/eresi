@@ -217,7 +217,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  candid->annot->inhash = 1;
 
 	  /*
-	    XXX: Disabled -- do not remove -- to renable when SSA transform is ready to be done
+	    XXX: Disabled -- do not remove -- to renable when SSA transform is ready
 	    if (revm_links_propagate(candid, matchme) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 	    "Error while propagating dataflow links", -1);

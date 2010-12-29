@@ -19,7 +19,8 @@ asm_sparc_andcc(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-  
+
+  ins->arith = ASM_ARITH_AND;        
   ins->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
   ins->flagswritten = ASM_SP_FLAG_C | ASM_SP_FLAG_V | ASM_SP_FLAG_Z | ASM_SP_FLAG_N;
   ins->nb_op = 3;  

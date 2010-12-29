@@ -5,7 +5,7 @@
 
 #print Now SPARC2LIR at addr $curaddr
 #quiet
-verb
+#verb
 
 set $curaddr $1
 set $begaddr $1
@@ -87,20 +87,20 @@ into Nop(addr:$curaddr)
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg)				 		
 # XXX: lack flags translation
 case instr(sem:ar-wf, nb_op:3, op2(sem:reg))
-into TernopR3(addr:$curaddr, dst(rid:$instr.op1.name), src1(rid:$instr.op2.name), src2(rid:$instr.op3.name), uflags:$instr.wflags)
+into TernopR3(op:$instr.aop, addr:$curaddr, dst(rid:$instr.op1.name), src1(rid:$instr.op2.name), src2(rid:$instr.op3.name), uflags:$instr.wflags)
 
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = immed)
 # XXX: lack flags translation
 case instr(sem:ar-wf, nb_op:3, op2(sem:imm))
-into TernopRI(addr:$curaddr, dst(rid:$instr.op1.name), isrc(val:$instr.op2.imm), rsrc(rid:$instr.op3.name), uflags:$instr.wflags)
+into TernopRI(op:$instr.aop, addr:$curaddr, dst(rid:$instr.op1.name), isrc(val:$instr.op2.imm), rsrc(rid:$instr.op3.name), uflags:$instr.wflags)
 
 # sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 immed) 					 		
 case instr(sem:ar, nb_op:3, op2(sem:imm))
-into TernopRI(addr:$curaddr, dst(rid:$instr.op1.name), isrc(val:$instr.op2.imm), rsrc(rid:$instr.op3.name))
+into TernopRI(op:$instr.aop, addr:$curaddr, dst(rid:$instr.op1.name), isrc(val:$instr.op2.imm), rsrc(rid:$instr.op3.name))
 
 # sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 reg)  						 	
 case instr(sem:ar, nb_op:3, op2(sem:reg))
-into TernopR3(addr:$curaddr, dst(rid:$instr.op1.name), src1(rid:$instr.op2.name), src2(rid:$instr.op3.name))
+into TernopR3(op:$instr.aop, addr:$curaddr, dst(rid:$instr.op1.name), src1(rid:$instr.op2.name), src2(rid:$instr.op3.name))
 
 # clrx, clrh, clrb, clr (op1 = reg)  										 	
 #case instr(sem:ar, nb_op:1, op1(sem:reg))

@@ -179,7 +179,7 @@ int		revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
   elfsh_init_symbol_hashtables(new);
 
   /* Parse debugging informations */
-  arch = elfsh_get_archtype(world.curjob);
+  arch = elfsh_get_archtype(world.curjob->curfile);
   if (arch == ELFSH_ARCH_IA32     ||
       arch == ELFSH_ARCH_SPARC32  ||
       arch == ELFSH_ARCH_SPARC64)
