@@ -525,19 +525,21 @@ int		hash_merge(hash_t *dst, hash_t *src)
 /* Intersect hash tables in the first one */
 int		hash_inter(hash_t *dst, hash_t *src)
 {
-  listent_t     *actual;
-  int           index;
+  char		**keys;
+  int		keynbr;
+  int		idx;
+  char		*curkey;
   int		ret;
 
-  /* Make sure we dont inject element already presents */
   if (!src || !dst || src->elmnbr == 0 || dst->elmnbr == 0)
     return (0);
-  for (ret = index = 0; index < src->size; index++)
-    for (actual = &src->ent[index];
-	 actual != NULL && actual->key != NULL;
-	 actual = actual->next)
-      if (hash_get(dst, actual->key))
-	ret += hash_del(dst, actual->key);
+  keys = hash_get_keys(dst, &keynbr);
+  for (ret = idx = 0; idx < keynbr; idx++)
+    {
+      curkey = keys[idx];
+      if (!hash_get(src, curkey))
+	ret += hash_del(dst, curkey);
+    }
   return ret;
 }
 

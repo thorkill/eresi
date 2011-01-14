@@ -196,7 +196,7 @@ typedef  uint64_t       va64;
 #include "libaspect-btree.h"
 #include "libaspect-profiler.h"
 
-/* Those types are only the builtin types */
+/* Those types are built-in */
 #define         ASPECT_TYPE_UNKNOW       0  /*!< Unknown           */
 #define         ASPECT_TYPE_RAW          1  /*!< Raw               */
 #define		ASPECT_TYPE_BYTE	 2  /*!< Byte	           */
@@ -210,19 +210,19 @@ typedef  uint64_t       va64;
 #define		ASPECT_TYPE_OID		10  /*!< object identifier */
 #define		ASPECT_TYPE_CORENUM	11  /*!< Core types number */
 
-/* Vectors, tables and hash are considered simple types : 
-   you cannot copy them or look inside them without foreach */
-#define	        ASPECT_TYPE_VECT	11  /*!< Vector type	   */
-#define		ASPECT_TYPE_HASH	12  /*!< Hash table type   */
-#define		ASPECT_TYPE_LIST	13  /*!< List type         */
-#define		ASPECT_TYPE_SIMPLENUM	14  /*!< SIMPLE TYPES NUMBER */
+/* Vectors, tables and hash are parts of "simple types"
+   Note: you cannot copy them or look inside them without foreach */
+#define	        ASPECT_TYPE_VECT	ASPECT_TYPE_CORENUM         /*!< Vector type	   */
+#define		ASPECT_TYPE_HASH	(ASPECT_TYPE_CORENUM + 1)   /*!< Hash table type   */
+#define		ASPECT_TYPE_LIST	(ASPECT_TYPE_CORENUM + 2)   /*!< List type         */
+#define		ASPECT_TYPE_SIMPLENUM	(ASPECT_TYPE_CORENUM + 3)   /*!< SIMPLE TYPES NUMBER */
 
 /* Now come complex types which are part of the base types */
-#define		ASPECT_TYPE_EXPR	14  /*!< Expression type   */
-#define		ASPECT_TYPE_BLOC	15  /*!< Block type        */
-#define		ASPECT_TYPE_FUNC	16  /*!< Function type     */
-#define		ASPECT_TYPE_LINK	17
-#define         ASPECT_TYPE_BASENUM     18  /*!< BASE TYPES NUMBER */
+#define		ASPECT_TYPE_EXPR	ASPECT_TYPE_SIMPLENUM       /*!< Expression type   */
+#define		ASPECT_TYPE_BLOC	(ASPECT_TYPE_SIMPLENUM + 1) /*!< Block type        */
+#define		ASPECT_TYPE_FUNC	(ASPECT_TYPE_SIMPLENUM + 2) /*!< Function type     */
+#define		ASPECT_TYPE_LINK	(ASPECT_TYPE_SIMPLENUM + 3)
+#define         ASPECT_TYPE_BASENUM     (ASPECT_TYPE_SIMPLENUM + 4) /*!< BASE TYPES NUMBER */
 
 /* Type names */
 #define		ASPECT_TYPENAME_UNKNOW	"unknown"
