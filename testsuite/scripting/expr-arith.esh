@@ -1,0 +1,26 @@
+#!../../elfsh/elfsh32
+
+int a = 1
+int b = 3
+int c = 5
+int d = 7
+set $e ($a+$c-$b)*$d/2
+print $a $b $c $d $e
+
+cmp $b-$a+$c $d
+cmp $b+$c $d-$a
+cmp $b*2 $d-$a
+
+set $f 0xFF<4
+print $f
+
+set $f 0xFF0>4
+print $f
+
+quiet
+foreach i of 0 until 10
+print main+$i contains byte value *(main+$i) 
+endfor
+verb
+
+quit
