@@ -214,7 +214,7 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
   bsrc = (mjrblock_t *) csrc->data;
 
   /* If TRUE < SRC: split it and set the new one as csrc */
-  if (bsrc->vaddr < src)
+  if (dst > bsrc->vaddr && dst <= src)
     {
       csrc = mjr_block_split(ctxt, src, MJR_LINK_BLOCK_COND_ALWAYS);
     }
