@@ -351,7 +351,7 @@ revmobj_t	*revm_object_lookup_real(aspectype_t *type,
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_EXPRS__
+#if __DEBUG_EXPRS_MORE__
   fprintf(stderr, "REVMOBJ_LOOKUP_REAL (%s.%s of type %s)\n", 
 	  objname, objpath, type->name);
 #endif

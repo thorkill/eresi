@@ -7,7 +7,7 @@
 include ../../config.h
 
 SRC			= declare.c hashes.c lists.c inform.c reflect.c types.c   \
-			vectors.c
+			vectors.c sets.c
 OBJ32			= $(SRC:.c=.32.o)
 OBJ64			= $(SRC:.c=.64.o)
 CC			?= gcc

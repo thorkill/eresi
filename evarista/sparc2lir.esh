@@ -9,7 +9,12 @@
 
 set $curaddr $1
 set $begaddr $1
+
+verb
+
+#profile enable warn
 reflect $curaddr
+#profile disable warn
 
 #tables instrlists 0001076C
 #exec sleep 20
@@ -19,7 +24,9 @@ foreach $instr of $hash[instrlists:$begaddr]
 
 #print TRANSFORMING instruction $instr at addr $curaddr
 #D $curaddr%1
-print $instr
+#print $instr
+
+#profile enable warn
 
 rewrite $instr into
 
@@ -29,28 +36,35 @@ into IndBranchR(addr:$curaddr, dst(rid:$instr.op1.baser))
 
 # direct always branch (b, bp) 										
 case instr(sem:b, nb_op:1, op1(sem:imm))
-into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
+pre print $instr.op1.imm
+into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
+post print $instr
 
 # direct always branch (b, bp) with 2 parameters					
 # XXX lacks flag translation
 case instr(sem:b, nb_op:2, op1(sem:imm))
-into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
+pre print $instr.op1.imm
+into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
+post print $instr
 
 # indirect conditional branch without link
 # XXX lacks flag translation
-case instr(sem:b-cnd, nb_op:1, op1(sem:reg))
+case instr(sem:b|cnd, nb_op:1, op1(sem:reg))
 into IndBranchR(addr:$curaddr, dst(rid:$instr.op1.baser))
 
 # direct always branch (bcc, bpcc) 					
 # XXX lacks flag translation
-case instr(sem:b-cnd, nb_op:1, op1(sem:imm))
-into Branch(addr:$curaddr, dst(val:$instr.op1.imm))
+case instr(sem:b|cnd, nb_op:1, op1(sem:imm))
+pre print $instr.op1.imm
+into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
+post print $instr
 
 # direct always branch (bcc, bpcc) with 2 args 					
 # XXX lacks flag translation
-case instr(sem:b-cnd, nb_op:2, op1(sem:imm))
-into Branch(addr:$curaddr, dst(val:$instr.op1.imm))::
-     Nop(addr:$curaddr)
+case instr(sem:b|cnd, nb_op:2, op1(sem:imm))
+#into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))::Nop(addr:$curaddr)
+pre print $instr.op1.imm
+into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
 
 # indirect call (op1 reg) 								
 case instr(sem:c, nb_op:1, op1(sem:reg))
@@ -58,7 +72,9 @@ into IndCallR(addr:$curaddr, dst(rid:$instr.op1.baser))
 
 # direct call (op1 addr) 									
 case instr(sem:c, nb_op:1, op1(sem:imm))
-into Call(addr:$curaddr, dst(val:$instr.op1.imm))
+pre print $instr.op1.imm
+into Call(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
+post print $instr
 
 # ta* (traps)
 case instr(sem:i)
@@ -86,12 +102,12 @@ into Nop(addr:$curaddr)
 
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = reg)				 		
 # XXX: lack flags translation
-case instr(sem:ar-wf, nb_op:3, op2(sem:reg))
+case instr(sem:ar|wf, nb_op:3, op2(sem:reg))
 into TernopR3(op:$instr.aop, addr:$curaddr, dst(rid:$instr.op1.name), src1(rid:$instr.op2.name), src2(rid:$instr.op3.name), uflags:$instr.wflags)
 
 # andcc,subcc,orcc,addcc,inccc,deccc (op2 = immed)
 # XXX: lack flags translation
-case instr(sem:ar-wf, nb_op:3, op2(sem:imm))
+case instr(sem:ar|wf, nb_op:3, op2(sem:imm))
 into TernopRI(op:$instr.aop, addr:$curaddr, dst(rid:$instr.op1.name), isrc(val:$instr.op2.imm), rsrc(rid:$instr.op3.name), uflags:$instr.wflags)
 
 # sllx,sll,srl,srlx,add,sub,or,xor,and,sdivx,udivx,sra,srax,mulx (op2 immed) 					 		
@@ -131,15 +147,15 @@ into AssignRR(addr:$curaddr, dst(rid:$instr.op1.name), src(rid:$instr.op2.name))
 #into TernopRI(addr:$curaddr, dst(rid:$instr.op1.name), isrc(val:$instr.op2.imm), rsrc(imm:$instr.op1.name))
 
 # ld,ldd,ldub,ldx,lduw,lduh,ldsw,ldsb  									 		
-case instr(sem:a-rm)
+case instr(sem:a|rm)
 into AssignMR(addr:$curaddr, src(name:$instr.op2.name, base(rid:$instr.op2.sbaser), off(val:$instr.op2.imm)), dst(rid:$instr.op1.name))
 
 # st,stb,stw,sth,std,stx (src = reg)
-case instr(sem:a-wm, op2(sem:reg))
+case instr(sem:a|wm, op2(sem:reg))
 into AssignRM(addr:$curaddr, src(rid:$instr.op2.name), dst(name:$instr.op1.name, base(rid:$instr.op1.sbaser), off(val:$instr.op1.imm)))
 
 # st,stb,stw,sth,std,stx (src = immed)
-case instr(sem:a-wm, op2(sem:imm))
+case instr(sem:a|wm, op2(sem:imm))
 into AssignIM(addr:$curaddr, src(val:$instr.op2.imm), dst(name:$instr.op1.name base(rid:$instr.op1.sbaser), off(val:$instr.op1.imm)))
 
 # bset (op1 immed) 																
@@ -152,12 +168,12 @@ into CmpRI(addr:$curaddr, snd(rid:$instr.op1.name), fst(val:0))
 
 # cmp (op2 register)
 # XXX lacks flag translation
-case instr(sem:cmp-wf, nb_op:2, op1(sem:reg), op2(sem:reg))
+case instr(sem:cmp|wf, nb_op:2, op1(sem:reg), op2(sem:reg))
 into CmpRR(addr:$curaddr, fst(rid:$instr.op1.name), snd(rid:$instr.op2.name))
 
 # cmp (op2 immed) 										 		
 # XXX lacks flag translation
-case instr(sem:cmp-wf, nb_op:2, op1(sem:imm), op2(sem:reg))
+case instr(sem:cmp|wf, nb_op:2, op1(sem:imm), op2(sem:reg))
 into CmpRI(addr:$curaddr, snd(rid:$instr.op2.name), fst(val:$instr.op1.imm))
 
 # Defaultcase 								  

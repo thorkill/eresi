@@ -24,10 +24,9 @@ revmobj_t	*revm_create_IMMED(char type, char perm, u_int val)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Please use create_IMMEDSTR or create_LONG for that */
-  if (type == ASPECT_TYPE_STR || type == ASPECT_TYPE_CADDR ||
-      type == ASPECT_TYPE_CADDR)
+  if (type == ASPECT_TYPE_STR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid type for immed", (NULL));
+		 "Invalid type for immed", (NULL));
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__,new, sizeof(revmobj_t), NULL);
   new->immed = 1;

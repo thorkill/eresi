@@ -137,6 +137,9 @@ int			revm_arithmetics(revmexpr_t *dest, revmexpr_t *e1, revmexpr_t *e2, u_char 
     case REVM_OP_SHR:
       dst = dst >> src;
       break;
+    case REVM_OP_OR:
+      dst = dst | src;				
+      break;
 
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -502,11 +505,15 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	}
       else if (o1->parent == str || !o1->parent)
 	o1->parent = (str ? strdup(str) : NULL);
-      else if (o1->set_name(o1->root, o1->parent, str) < 0)
+      else
 	{
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, str);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unable to set string variable", -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, o1->parent, strlen(str), -1);
+	  if (o1->set_name(o1->root, o1->parent, str) < 0)
+	    {
+	      XFREE(__FILE__, __FUNCTION__, __LINE__, str);
+	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+			   "Unable to set string variable", -1);
+	    }
 	}
       break;
 

@@ -103,7 +103,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
       fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n", 
 	      expr->label, expr->strval);
 #endif
-
+      
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
     }
   
@@ -168,7 +168,7 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Failed to read expression value", NULL);	  
 
-      /* If we are at the root expression, type might have been implicit */
+      /* If we are at the root expression and that type was explicitly given, perform type checking */
       if (toplevel && newexpr->label)
 	{
 
@@ -188,58 +188,23 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 	  toplevel = 0;
 	  continue;
 	}
+
+      /* Implicit type for this expression -- no type checking */
       else if (!curexpr && !newexpr->label)
 	{
 	  toplevel = 0;
 	  datavalue = newexpr->strval;
-
+	  
 #if __DEBUG_EXPRS_MORE__
 	  fprintf(stderr, " [D] No explicit top-level type, continuing with datavalue = %s \n", 
 		  datavalue);
 #endif
-
+	  
 	  continue;
 	}
       else
 	toplevel = 0;
       
-      /* If the substructure is initialized with the value of another expression, no need to
-	 do any additional read, init or inform on the current field */
-      if (*newexpr->strval == REVM_VAR_PREFIX)
-	{
-	  expr = revm_expr_get(newexpr->strval);
-	  if (!expr)
-	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
-	      pathsize = 0;
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Unable to get root field or type name", NULL);
-	    }
-	  
-#if __DEBUG_EXPRS__
-	  fprintf(stderr, " [D] FOUND EXISTING INITIAL REVMEXPR = %s :: %s (doing copy) \n", 
-		  expr->label, expr->strval);
-#endif
-	  
-	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,	".%s", newexpr->label);
-	  newexpr = revm_expr_copy(expr, recpath, 1);
-	  bzero(recpath + pathsize, len);
-	  if (!newexpr)
-	    {
-	      pathsize = 0;
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Unable to copy existing initial subexpression", NULL);
-	    }
-
-#if __DEBUG_EXPRS__
-	  fprintf(stderr, " [D] COPIED EXISTING INITIAL REVMEXPR = %s :: %s (new name) \n", 
-		  newexpr->label, newexpr->strval);
-#endif
-	  
-	  goto loopend;
-	}
-
-      /* Else we check if the field has children */
       childtype = aspect_type_get_child(curtype, newexpr->label);
       if (!childtype)
 	{
@@ -249,132 +214,169 @@ static revmexpr_t	*revm_expr_init(char		*curpath,
 		       "Invalid child structure for variable", NULL);
 	}
       newexpr->type = childtype;
-
+      
       /* Duplicate names cause they are on the stack now */
       newexpr->label = (char *) strdup(newexpr->label);
       newexpr->strval = (char *) strdup(newexpr->strval);
-
+      
       /* Non-terminal case : we will need to recurse */
       if (childtype->childs && !childtype->dimnbr)
-	{
-
-#if __DEBUG_EXPRS_MORE__
-	  fprintf(stderr, " [D] NOW RECORD field, recursing ! \n");
-#endif
-
-	  childata = (char *) srcdata + childtype->off;
-	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,			
-			 ".%s", childtype->fieldname);
-	  revm_inform_type_addr(childtype->name, recpath, 
-				(eresi_Addr) childata, newexpr, 0, 0);
-	  pathsize += len;
-
-	  /* Insert child where necessary */ 
-	  if (!revm_expr_init(recpath, newexpr, childtype, 
-			      childata, newexpr->strval))
+	{    
+	  
+	  /* If the substructure is initialized with the value of another expression, no need to
+	     do any additional read, init or inform on the current field */
+	  if (*newexpr->strval == REVM_VAR_PREFIX)
 	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
-	      pathsize = 0;
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Invalid child tree for variable", NULL);
-	    }   
+	      expr = revm_expr_get(newexpr->strval);
+	      if (!expr)
+		{
+		  XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
+		  pathsize = 0;
+		  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			       "Unable to get root field or type name", NULL);
+		}
+		
+#if __DEBUG_EXPRS__
+		fprintf(stderr, " [D] FOUND EXISTING INITIAL REVMEXPR = %s :: %s (doing copy) \n", 
+			expr->label, expr->strval);
+#endif
+		
+		len = snprintf(recpath + pathsize, BUFSIZ - pathsize, ".%s", newexpr->label);
+		newexpr = revm_expr_copy(expr, recpath, 1);
+		bzero(recpath + pathsize, len);
+		if (!newexpr)
+		  {
+		    pathsize = 0;
+		    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+				 "Unable to copy existing initial subexpression", NULL);
+		  }
+		
+#if __DEBUG_EXPRS__
+		fprintf(stderr, " [D] COPIED EXISTING INITIAL REVMEXPR = %s :: %s (new name) \n", 
+			newexpr->label, newexpr->strval);
+#endif
+		
+		goto loopend;
+	    }
+
+	  /* No initial variable value, initialize with immediates */
+#if __DEBUG_EXPRS_MORE__
+	    fprintf(stderr, " [D] RECORD field -- recursing ! \n");
+#endif
 	    
-	  pathsize -= len;
-	  bzero(pathbuf + pathsize, len);
-	}
-      
-       /* Terminal case : no recursion */
-      else
-	{
-
+	    childata = (char *) srcdata + childtype->off;
+	    len = snprintf(recpath + pathsize, BUFSIZ - pathsize,			
+			   ".%s", childtype->fieldname);
+	    revm_inform_type_addr(childtype->name, recpath, 
+				  (eresi_Addr) childata, newexpr, 0, 0);
+	    pathsize += len;
+	    
+	    /* Insert child where necessary */ 
+	    if (!revm_expr_init(recpath, newexpr, childtype, 
+				childata, newexpr->strval))
+	      {
+		XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
+		pathsize = 0;
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			     "Invalid child tree for variable", NULL);
+	      }   
+	    
+	    pathsize -= len;
+	    bzero(pathbuf + pathsize, len);
+	  }
+	
+	/* Terminal case : no recursion */
+	else
+	  {
+	    
 #if __DEBUG_EXPRS_MORE__
-	  fprintf(stderr, " [D] NOW Terminal field, setting its value\n");
+	    fprintf(stderr, " [D] NOW Terminal field, setting its value\n");
 #endif
-
-	  /* Handle RAW terminal field */
-	  if (childtype->type == ASPECT_TYPE_RAW)			       
-	    {
-	      //FIXME: Call hexa converter curval.datastr and set field
-	      fprintf(stderr, " [E] Raw object initialization yet unsupported.\n");
-	      continue;
-	    }
-
-	  /* Lookup scalar value and assign it to the field */
-	  newexpr->value = revm_object_lookup_real(curtype, recpath, 
-						   childtype->fieldname, 0);	
-	  curdata  = revm_lookup_param(newexpr->strval, 1);
-	  if (!newexpr->value || !curdata)
-	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
-	      pathsize = 0;
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Unable to lookup src or dst object", NULL);
-	    }
-
-	  /* Convert source data to recipient type and set it */
-	  if (newexpr->type->type != curdata->type->type)
-	    revm_convert_object(curdata, newexpr->type->type);
-	  if (revm_object_set(newexpr, curdata) < 0)
-	    {
-	      XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
-	      pathsize = 0;
-	      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			   "Failed to set destination object", NULL);
-	    }
-
-	  /* Destroy the temporary variable we have created for the right-hand-side value */
-	  if (revm_variable_istemp(curdata))
-	    revm_expr_destroy_by_name(curdata->label);
-
-	  /* Handle terminal Array fields */
-	  if (childtype->dimnbr && childtype->elemnbr)			
-	    {
-	      //FIXME: Use child->elemnbr[idx] foreach size of dim (Use previous code in loop)
-	      fprintf(stderr, 
-		      " [E] Arrays objects initialization unsupported\n");
-	      continue;
-	    }
-
-	  /* Inform the runtime system about this terminal field */
-	  childata = (char *) srcdata + childtype->off;			
-	  len = snprintf(recpath + pathsize, BUFSIZ - pathsize,		
-			 ".%s", childtype->fieldname);			
-	  revm_inform_type_addr(childtype->name, recpath,		
-				(eresi_Addr) childata, newexpr, 0, 0); 
-	  bzero(recpath + pathsize, len);				
-	}
-
-      /* Link next field of current structure */
+	    
+	    /* Handle RAW terminal field */
+	    if (childtype->type == ASPECT_TYPE_RAW)			       
+	      {
+		//FIXME: Call hexa converter curval.datastr and set field
+		fprintf(stderr, " [E] Raw object initialization yet unsupported.\n");
+		continue;
+	      }
+	    
+	    /* Lookup scalar value and assign it to the field */
+	    newexpr->value = revm_object_lookup_real(curtype, recpath, 
+						     childtype->fieldname, 0);	
+	    curdata = revm_compute(newexpr->strval);
+	    if (!newexpr->value || !curdata)
+	      {
+		XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
+		pathsize = 0;
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			     "Unable to lookup src or dst object", NULL);
+	      }
+	    
+	    /* Convert source data to recipient type and set it */
+	    if (newexpr->type->type != curdata->type->type)
+	      revm_convert_object(curdata, newexpr->type->type);
+	    if (revm_object_set(newexpr, curdata) < 0)
+	      {
+		XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
+		pathsize = 0;
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			     "Failed to set destination object", NULL);
+	      }
+	    
+	    /* Destroy the temporary variable we have created for the right-hand-side value */
+	    if (revm_variable_istemp(curdata))
+	      revm_expr_destroy_by_name(curdata->label);
+	    
+	    /* Handle terminal Array fields */
+	    if (childtype->dimnbr && childtype->elemnbr)			
+	      {
+		//FIXME: Use child->elemnbr[idx] foreach size of dim (Use previous code in loop)
+		fprintf(stderr, 
+			" [E] Arrays objects initialization unsupported\n");
+		continue;
+	      }
+	    
+	    /* Inform the runtime system about this terminal field */
+	    childata = (char *) srcdata + childtype->off;			
+	    len = snprintf(recpath + pathsize, BUFSIZ - pathsize,		
+			   ".%s", childtype->fieldname);			
+	    revm_inform_type_addr(childtype->name, recpath,		
+				  (eresi_Addr) childata, newexpr, 0, 0); 
+	    bzero(recpath + pathsize, len);				
+	  }
+	
+	/* Link next field of current structure */
     loopend:
-      newexpr->parent = curexpr;
-      if (curexpr)
-	{
-	  rootexpr = curexpr;
-	  if (prevexpr)
-	    {
-	      prevexpr->next = newexpr;
-	      prevexpr = newexpr;
-	    }
-	  else
-	    {
-	      curexpr->childs = newexpr;
-	      prevexpr = newexpr;
-	    }
-	}
-      else
-	{
-	  if (prevexpr)
-	    {
-	      prevexpr->next = newexpr;
-	      prevexpr = newexpr;
-	    }
-	  else
-	    rootexpr = prevexpr = newexpr;
-	}
-      
-
+	newexpr->parent = curexpr;
+	if (curexpr)
+	  {
+	    rootexpr = curexpr;
+	    if (prevexpr)
+	      {
+		prevexpr->next = newexpr;
+		prevexpr = newexpr;
+	      }
+	    else
+	      {
+		curexpr->childs = newexpr;
+		prevexpr = newexpr;
+	      }
+	  }
+	else
+	  {
+	    if (prevexpr)
+	      {
+		prevexpr->next = newexpr;
+		prevexpr = newexpr;
+	      }
+	    else
+	      rootexpr = prevexpr = newexpr;
+	  }
+	
+	
     }
-
+  
   /* Return success or error */
   if (!rootexpr)
     {
@@ -502,7 +504,6 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	  else
 	    revm_output("(");
 	  revm_endline();
-	  
 	  newtaboff = taboff + len - revm_color_size(buf) - 7;
 	  revm_expr_printrec(expr->childs, (newtaboff < 0 ? 1 : newtaboff),
 			     typeoff, iter, quiet);
@@ -525,7 +526,6 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	  /* Do not add offset if we are in union */
 	  if (expr->next && expr->next->type->off != curtype->off)
 	    typeoff += (expr->type->isptr ? 4 : curtype->size);
-
 	  continue;
 	}
       
@@ -1193,6 +1193,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
 
 #if __DEBUG_EXPRS__
   revm_expr_print_by_name(expr->label, 0);
+  revm_output("\n");
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
@@ -1243,11 +1244,16 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
   char		*typename;
   u_int		typenamelen;
   char		*curexprvalue;
+  revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!exprvalue)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameter", NULL);
+  expr = revm_expr_get(exprvalue);
+  if (expr)
+    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr->type);
+
   type = NULL;
   for (curexprvalue = exprvalue, typenamelen = 0; *curexprvalue != '('; typenamelen++)
     curexprvalue++;
@@ -1321,7 +1327,7 @@ static int	revm_expr_unlink(revmexpr_t *expr, u_char exprfree, u_char datafree)
   if (exprfree)
     {
       
-#if __DEBUG_EXPRS__
+#if __DEBUG_EXPRS_MORE__
       fprintf(stderr, "\n [D] UNLINK EXPR %s (exprfree = %hhu) \n", expr->label, exprfree);
 #endif
       
@@ -1460,5 +1466,3 @@ revmexpr_t	*revm_expr_lookup(u_int oid)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
-
-

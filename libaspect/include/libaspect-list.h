@@ -41,6 +41,7 @@ list_t		*elist_reverse(list_t *l);		/* Reverse the list */
 void		elist_destroy(list_t *h);		/* Free the list */
 list_t		*elist_copy(list_t *h);			/* Copy a list */
 int		elist_add(list_t *h, char *k, void *d);	/* Add an entry */
+int		elist_append(list_t *h, char *key, void *data); /* Append element to list */
 int		elist_del(list_t *h, char *key);		/* Delete an entry */
 void		*elist_get(list_t *h, char *key);	/* Get data from key */
 void 		*elist_select(list_t *h, char *key);	/* Get an entry pointer */

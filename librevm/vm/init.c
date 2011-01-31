@@ -10,11 +10,8 @@
 
 #include "revm.h"
 
-
 /* The ELFsh world */
 revmworld_t	world;
-
-
 
 /** 
  * Signal handler for SIGINT 

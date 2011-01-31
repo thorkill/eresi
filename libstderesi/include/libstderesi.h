@@ -205,10 +205,15 @@
 #define	CMD_LIST2		 "l"
 #define	CMD_WORKSPACE		 "workspace"
 #define	CMD_WORKSPACE2		 "w"
+
+/* Type related commands */
 #define	CMD_VECTORS		 "vectors"
 #define	CMD_TABLES		 "tables"
 #define	CMD_LISTS		 "lists"
 #define	CMD_EMPTY		 "empty"
+#define CMD_SETUNION		 "U"
+#define CMD_SETINTER		 "I"
+#define CMD_SETINTER2		 "inter"
 
 /* Code analysis commands */
 #define CMD_FLOWJACK		"flowjack"
@@ -416,6 +421,8 @@ int		cmd_lists();
 int		cmd_empty();
 int		cmd_inform();
 int		cmd_uninform();
+int		cmd_union();
+int		cmd_inter();
 
 /* Scripting only commands */
 int		cmd_jmp();

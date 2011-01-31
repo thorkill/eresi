@@ -205,13 +205,45 @@ int		elist_add(list_t *h, char *key, void *data)
   if (!h || !key || !data)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-	 cur, sizeof(listent_t), -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, cur, sizeof(listent_t), -1);
   next = h->head;
   cur->key = key;
   cur->data = data;
   cur->next = next;
   h->head = cur;
+  h->elmnbr++;
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+/** 
+ * @brief Add an element at the head of the list 
+ */
+int		elist_append(list_t *h, char *key, void *data)
+{
+  listent_t	*cur;
+  listent_t	*next;
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!h || !key || !data)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL parameters", -1);
+  if (!h->head)
+    {
+      ret = elist_add(h, key, data);
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Unable to append list element", -1);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, cur, sizeof(listent_t), -1);
+  cur->key = key;
+  cur->data = data;
+  cur->next = NULL;
+  next = h->head;
+  while (next->next)
+    next = next->next;
+  next->next = cur;
   h->elmnbr++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

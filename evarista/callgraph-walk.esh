@@ -9,7 +9,7 @@ set $func $hash[$2_functions:$1]
 set $hash[visitedfuncs:$1] 1
 print Entering FUNCTION: $func
 
-graph bloc $func.vaddr
+#graph bloc $func.vaddr
 cfg-walk $func.vaddr $2
 graph bloc $func.vaddr
 

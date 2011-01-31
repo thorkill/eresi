@@ -283,7 +283,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_INTO    , (void *) cmd_into   , (void *) revm_getcaseparams , 0, HLP_INTO);
 
   revm_command_add(CMD_DEFAULT , (void *) cmd_default , (void *) revm_getvarparams , 0, HLP_DEFAULT);
-  revm_command_add(CMD_REFLECT , (void *) cmd_reflect , (void *) revm_getoption    , 0, HLP_REFLECT);
+  revm_command_add(CMD_REFLECT , (void *) cmd_reflect , (void *) revm_getvarparams , 1, HLP_REFLECT);
 
   revm_command_add(CMD_SDIR    , (void *) cmd_scriptsdir, (void *) revm_getoption  , 0, HLP_SDIR);
   revm_command_add(CMD_VLIST   , (void *) cmd_vlist   , (void *) revm_getregxoption, 0, HLP_VLIST);
@@ -311,6 +311,9 @@ void		eresi_commands_init()
   revm_command_add(CMD_UNINFORM , cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
   revm_command_add(CMD_INFORM2  , cmd_inform          , revm_getvarparams, 1, HLP_INFORM);
   revm_command_add(CMD_UNINFORM2, cmd_uninform        , revm_getvarparams, 0, HLP_UNINFORM);
+  revm_command_add(CMD_SETUNION , cmd_union           , revm_getoption2, 0, HLP_SETUNION);
+  revm_command_add(CMD_SETINTER , cmd_inter           , revm_getoption2, 0, HLP_SETINTER);
+  revm_command_add(CMD_SETINTER2, cmd_inter           , revm_getoption2, 0, HLP_SETINTER);
 
 #if defined(ERESI_NET)
   /* DUMP network commands */
@@ -321,7 +324,7 @@ void		eresi_commands_init()
   revm_command_add(CMD_PEERSLIST , (void *) cmd_peerslist, (void *) NULL            , 0, HLP_PEERSLIST);
   revm_command_add(CMD_CONNECT   , (void *) cmd_connect  , (void *) revm_getoption    , 0, HLP_CONNECT);
   revm_command_add(CMD_DISCON    , (void *) cmd_discon   , (void *) revm_getoption    , 0, HLP_DISCON);
-  revm_command_add(CMD_RCMD       , (void *) cmd_rcmd     , (void *) revm_getvarparams , 0, HLP_RCMD);
+  revm_command_add(CMD_RCMD      , (void *) cmd_rcmd    , (void *) revm_getvarparams , 0, HLP_RCMD);
 #endif
 
   /* Flow analysis commands */

@@ -66,7 +66,9 @@
 #define	HLP_INFO		"Print ELF objects usage for scripting"
 #define	HLP_PROC		"Print information about currently used processor"
 #define	HLP_METACMD		"Execute a UNIX shell"
-#define	HLP_WRITE		"Write raw data to ELF section"
+#define	HLP_WRITE		"\t Write raw data to ELF section. \n\n" \
+				" Syntax: write addr|section string|data \n"
+
 #define	HLP_APPEND		"Append raw data to ELF section"
 #define	HLP_EXTEND		"Extend ELF section with zeros"
 #define	HLP_FIXUP		"Mark BSS section to be included in disk file"
@@ -256,6 +258,11 @@
 				 CMD_LISTS"      : Print all lists \n\t"        \
 				 CMD_LISTS" regx : Print matching lists \n\n\t" \
 				 "If a single list matches, its content is printed"
+
+
+#define	HLP_SETUNION		"Compute union of all input set/hash/tables parameters"
+#define	HLP_SETINTER		"Compute intersection of all input set/hash/tables parameters"
+
 
 #define	HLP_VECTORS		 "Act on reflective objects \n\n\t"				       \
 				 "vectors                                \t List existing vectors\n\t" \

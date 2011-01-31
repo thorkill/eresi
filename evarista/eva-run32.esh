@@ -24,7 +24,7 @@ print
 load $1
 analyse main
 
-graph
+#graph
 #graph bloc main
 
 sym main
@@ -47,7 +47,12 @@ print
 quit
 
 end:
-print Syntax: evarista <ELF_binary_file_path>
+print Evarista cmd-line syntax:
+print
+print For 32b binaries: eva-run32.esh <ELF32_binary_file_path>
+print For 64b binaries: eva-run64.esh <ELF64_binary_file_path>
+print
+print Quitting.
 print
 quit
  

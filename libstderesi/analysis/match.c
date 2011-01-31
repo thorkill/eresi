@@ -154,6 +154,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   char		*rname;
   revmexpr_t	*candid;
   list_t	*looplist;
+  char		*dstvalue;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -181,12 +182,12 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 		       "Invalid target type(s) for transformation", -1);
 	}
       candid->annot->inhash = 1;
-      elist_add(exprlist, rname, candid);
+      elist_append(exprlist, rname, candid);
       if (!foundptr)
 	break;
     }
 
-  /* UNIMPLEMENTED: The rewritten element is not part of any list or is part of an alien list */
+  /* UNIMPLEMENTED: Case where the rewritten element is not part of an iterated list -- unsupported */
   looplist = (list_t *) world.curjob->iter[world.curjob->curloop].list;
   if (!looplist)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -208,7 +209,9 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	candid = matchme;
       else
 	{
-	  rname = revm_tmpvar_create();
+
+	  /* Case where we did not have a simple value here but a real expression */
+	  rname = revm_tmpvar_create();	  
 	  type   = revm_exprtype_get(destvalue);
 	  candid = revm_expr_create(type, rname, destvalue);
 	  if (!candid || !candid->annot)
@@ -223,7 +226,6 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	    "Error while propagating dataflow links", -1);
 	  */
 
-	  /* FIXME: Subexpr initialization is buggy (names first field by top-level variable name) */
 	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
 	  rname = strdup(matchme->label);
 	  revm_expr_destroy_by_name(matchme->label);
@@ -239,7 +241,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	}
     }
 
-  /* Insert a list at a certain offset of the list */
+  /* Insert a list at a certain offset of the list and remove matched element */
   else
     {
       elist_replace(looplist, world.curjob->iter[world.curjob->curloop].curkey, elist_copy(exprlist));
@@ -266,6 +268,8 @@ static int	revm_case_execmd(char *str)
   snprintf(actual, sizeof(actual), "job%u_rec%u_labels", world.curjob->id, world.curjob->curscope);
   hash_init(&world.curjob->recur[world.curjob->curscope].labels, 
 	    strdup(actual), 11, ASPECT_TYPE_STR);
+  snprintf(actual, sizeof(actual), "job%u_rec%u_exprs", world.curjob->id, world.curjob->curscope);
+  hash_init(&world.curjob->recur[world.curjob->curscope].exprs, strdup(actual), 1, ASPECT_TYPE_EXPR);
 
   curcmd = world.curjob->curcmd;
 
@@ -281,6 +285,9 @@ static int	revm_case_execmd(char *str)
 
   world.curjob->recur[world.curjob->curscope].script = NULL;
   hash_destroy(&world.curjob->recur[world.curjob->curscope].labels);
+
+  hash_destroy(&world.curjob->recur[world.curjob->curscope].exprs);
+
   world.curjob->curscope--;
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -329,7 +336,7 @@ int		cmd_pre()
   str = revm_string_get(world.curjob->curcmd->param);
   if (revm_case_execmd(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Pre-side-effects commands failed", -1);
+		 "PRE side-effects command failed", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -352,7 +359,7 @@ int		cmd_post()
   str = revm_string_get(world.curjob->curcmd->param);
   if (revm_case_execmd(str) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Post-side-effects commands failed", -1);
+		 "POST side-effects command failed", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

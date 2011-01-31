@@ -1,0 +1,50 @@
+#!../../evarista/evarista32
+
+#quiet
+
+# Declare some basic types to work with
+type listent          = key:string data:long next:*listent
+type list             = head:*listent elmnbr:int type:int linearity:byte name:string
+type hash             = ent:*listent size:int elmnbr:int type:int linearity:byte name:string
+type container        = id:int type:int nbrinlinks:int nbroutlinks:int inlinks:*list outlinks:*list data:long 
+type op               = len:int ptr:*byte sem:int name:string size:int content:int regset:int prefix:int imm:int baser:int indexr:int sbaser:string sindex:string isdst:int aspace:int scale:int st:int it:int oa:int
+type instr::container = ptrins:long proc:long name:string icode:int sem:long prefix:int spdiff:int wflags:int rflags:int ptr_prefix:long annul:int prediction:int nb_op:int op1:op op2:op op3:op op4:op op5:op op6:op len:int aop:int
+type bloc::container  = vaddr:caddr size:int symoff:int seen:byte
+type func::container  = vaddr:caddr size:int name:byte[64] first:*bloc md5:byte[34]
+type link             = id:oid type:byte scope:byte
+
+load /bin/ls
+
+write 1.section[.text].raw 0x50515253
+hexa   ^.text$%5
+disasm ^.text$%5
+
+set $curaddr 1.sht[.text].addr
+print 1.sht[.text].addr
+
+#profile enable warn
+reflect 1.sht[.text].addr 4
+
+#lists 08048B50
+#print $instr-0x08048B50
+#print $instr-0x08048B51
+#print $instr-0x08048B52
+#print $instr-0x08048B53
+
+set $first "first"
+set $second "second"
+set $off 1
+
+foreach $instr of $hash[instrlists:$curaddr]
+rewrite $instr into
+case instr(sem:0x4020)
+into instr(name:$first, sem:0xFE+$off, icode:$off+254, nb_op:$off+$instr.op1.sem, op1:$instr.op1)
+rwtend
+forend
+
+#this confirms that translation from 1 to 2 works!
+foreach $instr of $hash[instrlists:$curaddr]
+print $instr
+forend
+
+quit

@@ -36,6 +36,7 @@ static revmexpr_t	*revm_ename_get(char **str)
       case ')':
       case '<':
       case '>':
+      case '|':
 	goto end;
       default:
 	name[idx++] = **str;
@@ -44,6 +45,7 @@ static revmexpr_t	*revm_ename_get(char **str)
  end:
   (*str)--;
   res = revm_lookup_param(name, 1);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
@@ -190,6 +192,7 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	break;
       case '/':
 	if (op != REVM_OP_UNKNOW || !left || deref)
+
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_DIV;
@@ -211,6 +214,12 @@ static revmexpr_t	*revm_compute_rec(char **str)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Invalid arithmetic syntax", NULL);
 	op = REVM_OP_SHR;
+	break;
+      case '|':
+	if (op != REVM_OP_UNKNOW || !left || deref)
+	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		       "Invalid arithmetic syntax", NULL);
+	op = REVM_OP_OR;
 	break;
 
 	/* Maybe we found the beginning of a variable/constant/etc name */
@@ -248,6 +257,8 @@ revmexpr_t	*revm_compute(char *str)
   u_int		nbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  /* First round is just a quick sanity check */
   nbr = open = close = 0;
   for (back = str; *back; back++)
     switch (*back)
@@ -269,6 +280,8 @@ revmexpr_t	*revm_compute(char *str)
   if (open != close)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid parenthesing in expression : remove spaces ?", NULL);
+
+  /* This will make the real job */
   res = revm_compute_rec(&str);
   if (!res)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

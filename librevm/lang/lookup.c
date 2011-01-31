@@ -442,7 +442,7 @@ elfshobj_t		*revm_lookup_file(char *param)
 
 
 /** 
- * Parse the parameter and fill the revmobj_t 
+ * Parse the parameter and fill the revmexpr_t 
  */
 revmexpr_t		*revm_lookup_param(char *param, u_char existing)
 {

@@ -3,8 +3,6 @@
 # Definition for the ELIR form
 #
 
-verb
-
 # Attributes for ASM instructions
 define non  ASM_TYPE_NONE
 define b    ASM_TYPE_BRANCH
@@ -33,25 +31,6 @@ define cnd  ASM_TYPE_CONDCONTROL
 define ind  ASM_TYPE_INDCONTROL
 define oth  ASM_TYPE_OTHER
 
-# Combinations of flags
-define i-r      i  r
-define ar-wf    ar wf
-define ar-wm    ar wm
-define a-rm     a  rm
-define a-wm     a  wm
-define cmp-wf   cmp wf
-define io-rm    io  rm
-define io-wm    io  wm
-define i-rf-bt  i   rf bt
-define a-rm-wm  a   rm wm
-define sp-rm    sp  rm
-define sp-rm-wf sp  rm wf
-define sp-wm-rf sp  wm rf
-define wm-rm    wm  rm
-define b-cnd    b   cnd
-
-#return 0
-
 # Attributes for ASM operands
 define reg	ASM_OPTYPE_REG
 define imm	ASM_OPTYPE_IMM
@@ -59,6 +38,7 @@ define mem	ASM_OPTYPE_MEM
 
 # Types of LIR operands
 type Immed             = val:long
+type Addr              = val:caddr
 type Reg::container    = rid:string
 type Mem::container    = base:Reg off:Immed name:string index:Reg scale:Immed
 type Ins               = uflags:Immed addr:caddr
@@ -68,8 +48,8 @@ type Ins               = uflags:Immed addr:caddr
 # Control-flow operations
 type IndBranchR::Ins = dst:Reg
 type IndBranchM::Ins = dst:Mem
-type Branch::Ins     = dst:Immed
-type Call::Ins       = dst:Immed
+type Branch::Ins     = dst:Addr
+type Call::Ins       = dst:Addr
 type IndCallR::Ins   = dst:Reg
 type IndCallM::Ins   = dst:Mem
 type Interrupt::Ins  = dst:Immed
