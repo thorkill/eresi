@@ -41,7 +41,7 @@ type Immed             = val:long
 type Addr              = val:caddr
 type Reg::container    = rid:string
 type Mem::container    = base:Reg off:Immed name:string index:Reg scale:Immed
-type Ins               = uflags:Immed addr:caddr
+type Ins               = uflags:Immed addr:caddr szaffect:byte
 
 # Types of LIR instructions
 

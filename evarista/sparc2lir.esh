@@ -36,16 +36,12 @@ into IndBranchR(addr:$curaddr, dst(rid:$instr.op1.baser))
 
 # direct always branch (b, bp) 										
 case instr(sem:b, nb_op:1, op1(sem:imm))
-pre print $instr.op1.imm
-into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
-post print $instr
+into Branch(addr:$curaddr, dst(val:$curaddr+($instr.op1.imm*4)))
 
 # direct always branch (b, bp) with 2 parameters					
 # XXX lacks flag translation
 case instr(sem:b, nb_op:2, op1(sem:imm))
-pre print $instr.op1.imm
-into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
-post print $instr
+into Branch(addr:$curaddr, dst(val:$curaddr+($instr.op1.imm*4)))
 
 # indirect conditional branch without link
 # XXX lacks flag translation
@@ -55,16 +51,14 @@ into IndBranchR(addr:$curaddr, dst(rid:$instr.op1.baser))
 # direct always branch (bcc, bpcc) 					
 # XXX lacks flag translation
 case instr(sem:b|cnd, nb_op:1, op1(sem:imm))
-pre print $instr.op1.imm
-into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
-post print $instr
+into Branch(addr:$curaddr, dst(val:$curaddr+($instr.op1.imm*4)))
+
 
 # direct always branch (bcc, bpcc) with 2 args 					
 # XXX lacks flag translation
 case instr(sem:b|cnd, nb_op:2, op1(sem:imm))
 #into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))::Nop(addr:$curaddr)
-pre print $instr.op1.imm
-into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
+into Branch(addr:$curaddr, dst(val:$curaddr+($instr.op1.imm*4)))
 
 # indirect call (op1 reg) 								
 case instr(sem:c, nb_op:1, op1(sem:reg))
@@ -72,9 +66,7 @@ into IndCallR(addr:$curaddr, dst(rid:$instr.op1.baser))
 
 # direct call (op1 addr) 									
 case instr(sem:c, nb_op:1, op1(sem:imm))
-pre print $instr.op1.imm
-into Call(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
-post print $instr
+into Call(addr:$curaddr, dst(val:$curaddr+($instr.op1.imm*4)))
 
 # ta* (traps)
 case instr(sem:i)
