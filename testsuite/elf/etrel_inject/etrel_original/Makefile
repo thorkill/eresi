@@ -28,11 +28,11 @@ NAME64	  = relinject64
 all: all32 all64
 
 all32: $(OBJ32) $(RELOBJ32)
-	$(CC) $(LDFLAGS32) $(OBJ32) -o $(NAME32)
+	$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32)
 	$(CC) $(VULN) -o hijackme32
 
 all64: $(OBJ64) $(RELOBJ64)
-	$(CC) $(LDFLAGS64) $(OBJ64) -o $(NAME64)
+	$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64) 
 	$(CC) -m64 $(VULN) -o hijackme64
 
 fclean: clean

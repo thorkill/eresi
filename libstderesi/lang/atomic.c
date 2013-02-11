@@ -90,10 +90,15 @@ int			cmd_set()
 		     "Unable to create source object", (-1));
     }
   
-  /* Fix the destination expression */
+  /* Fix the destination expression if we need to extend expression dynamically */
   if (!e1)
     {
-      e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0);
+      if (world.curjob->curcmd->param[0][0] == REVM_VAR_PREFIX)
+	{
+	  e1 = revm_expr_extend(world.curjob->curcmd->param[0], world.curjob->curcmd->param[1]);
+	  if (e1) goto end;
+	}
+      e1 = revm_lookup_param(world.curjob->curcmd->param[0], 0); 
       if (!e1)
 	{
 	  revm_expr_destroy_by_name(e2->label);
@@ -154,9 +159,11 @@ int			cmd_set()
     }
 
   /* Copy the result in the last result variable */
+ end:
   if (e2->type->type != ASPECT_TYPE_HASH && e2->type->type != ASPECT_TYPE_LIST)
     {
-      revm_expr_destroy_by_name(last->label);
+      //fprintf(stderr, "DESTROY EXPR %s AT BUG LOCATION \n", last->label);
+      revm_expr_destroy_by_name(last->label); // 
       last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
       if (!last)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 

@@ -33,8 +33,11 @@ revmannot_t	*revm_annot_get(char *name)
   thash = hash_find(newname);
   annot = hash_get(thash, name);
   if (!annot)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to find annotation for expression", NULL);
+    {
+      //fprintf(stderr, "UNABLE TO FIND ANNOT FOR : NAME = %s \n", name);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Unable to find annotation for expression", NULL);
+    }
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, annot);
 }
 
@@ -154,14 +157,13 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   char		*rname;
   revmexpr_t	*candid;
   list_t	*looplist;
-  char		*dstvalue;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* We matched : first find how many elements there is in the target (list) type */
+  exprlist = world.curjob->recur[world.curjob->curscope].rwrt.transformed;
   dstnbr = 1;
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, exprlist, sizeof(list_t), -1);
-  elist_init(exprlist, "curdestlist", ASPECT_TYPE_EXPR);
+
   for (curidx = world.curjob->iter[world.curjob->curloop].listidx - 1, curptr = destvalue; 
        curptr && *curptr; 
        curptr = foundptr + 2, curidx++, dstnbr++)
@@ -176,11 +178,8 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
       rname = strdup(namebuf);
       candid = revm_expr_create(type, rname, curptr);
       if (!candid || !candid->annot)
-	{
-	  elist_destroy(exprlist);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Invalid target type(s) for transformation", -1);
-	}
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Invalid target type(s) for transformation", -1);
       candid->annot->inhash = 1;
       elist_append(exprlist, rname, candid);
       if (!foundptr)
@@ -202,8 +201,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   /* Just one element to swap */
   else if (dstnbr == 1)
     {
-      elist_destroy(exprlist);
-      
+
       /* No transformation, keep the original expression */
       if (!strcmp(destvalue, "."))
 	candid = matchme;
@@ -227,26 +225,16 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  */
 
 	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
-	  rname = strdup(matchme->label);
-	  revm_expr_destroy_by_name(matchme->label);
-	  matchme = revm_expr_copy(candid, rname, 0);
-	  world.curjob->iter[world.curjob->curloop].curind = matchme;
-
-	  //XXX: if we free it now, ->matchexpr and maybe other exprs will be dangling
-	  //revm_expr_destroy_by_name(candid->label);
-	  XFREE(__FILE__, __FUNCTION__, __LINE__, rname);
-	  if (!matchme)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Unable to write back list element", -1);
+	  elist_append(exprlist, strdup(rname), candid);
 	}
     }
 
   /* Insert a list at a certain offset of the list and remove matched element */
   else
     {
-      elist_replace(looplist, world.curjob->iter[world.curjob->curloop].curkey, elist_copy(exprlist));
+      elist_replace(looplist, world.curjob->iter[world.curjob->curloop].curkey, 
+		    elist_copy(exprlist, ELIST_DATA_NOCOPY));
       world.curjob->iter[world.curjob->curloop].listidx += exprlist->elmnbr - 1;
-      elist_destroy(exprlist);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -386,7 +374,7 @@ int		cmd_case()
 
   /* If a previous case has already matched, simply end the transformation now :
      We must do that here because some "post" commands can be put after a matching 
-     "case", so we only stop rewriting at the first case -following- a matchcase */
+     "case", so we only stop rewriting at the first case -following- a matching case */
   if (world.curjob->recur[world.curjob->curscope].rwrt.matched)
     {
       revm_move_pc(world.curjob->curcmd->endlabel);
@@ -439,11 +427,17 @@ int			cmd_match()
   /* The first time we enter this command, we have to fetch the params */
   list = (list_t *) world.curjob->iter[world.curjob->curloop].list;
   ind  = world.curjob->iter[world.curjob->curloop].curind;
+
+  if (!list || !ind || strcmp(ind->label, world.curjob->curcmd->param[0]) || 
+      list->type != ASPECT_TYPE_EXPR)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Match/Rewrite only acts on iterated lists of expressions", -1);
+
+  /*
   if (list && ind && !strcmp(ind->label, world.curjob->curcmd->param[0]))
     {
       if (list->type != ASPECT_TYPE_EXPR)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Match/Rewrite can only works on expressions", -1);
+
 #if __DEBUG_REWRITE__
       fprintf(stderr, "\n [DEBUG] We -ARE- matching elements of a list *** \n");
 #endif
@@ -458,6 +452,15 @@ int			cmd_match()
 
   ind = revm_lookup_param(world.curjob->curcmd->param[0], 1);
   world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
+  */
+
+  world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	 world.curjob->recur[world.curjob->curscope].rwrt.transformed, sizeof(list_t), -1);
+  elist_init(world.curjob->recur[world.curjob->curscope].rwrt.transformed, 
+	     "transformed", ASPECT_TYPE_EXPR);
+  world.curjob->recur[world.curjob->curscope].rwrt.idloop = world.curjob->curloop;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -468,7 +471,14 @@ int			cmd_match()
 int		cmd_matchend()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  bzero(&world.curjob->recur[world.curjob->curscope].rwrt, sizeof(revmrewrite_t));
+
+  //elist_destroy(world.curjob->recur[world.curjob->curscope].rwrt.transformed);
+  //bzero(&world.curjob->recur[world.curjob->curscope].rwrt, sizeof(revmrewrite_t));
+
+  world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = NULL;
+  world.curjob->recur[world.curjob->curscope].rwrt.matched = 0;
+  world.curjob->recur[world.curjob->curscope].rwrt.replaced = 0;
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

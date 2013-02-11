@@ -59,7 +59,7 @@ static revmexpr_t	*revm_induction_get(char *name)
 	  strcmp(world.curjob->iter[world.curjob->curloop].end, world.curjob->curcmd->endlabel))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "An existing induction variable already has this name", NULL);
-
+      
       /* We are executing a deeper instance of the same foreach structure */
       if (world.curjob->iter[world.curjob->curloop].reclevel != world.curjob->curscope)
 	{
@@ -353,7 +353,7 @@ static int	revm_induction_process(hash_t *table, list_t *list, char *curkey,
     }
   
 #if __DEBUG_FOREACH__
-  printf("INDUCTION_PROCESS: Got elem = %p (%s) for key = %s \n", elem, elem, curkey);
+  printf("INDUCTION_PROCESS: Got elem = %p for key = %s \n", elem, curkey);
 #endif
 
   /* If the element is already an expression, copy it to the induction variable */
@@ -513,6 +513,15 @@ int		cmd_foreach()
 int		cmd_forend()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  if (world.curjob->recur[world.curjob->curscope].rwrt.transformed &&
+      world.curjob->recur[world.curjob->curscope].rwrt.idloop == world.curjob->curloop)
+    {
+      elist_destroy(world.curjob->recur[world.curjob->curscope].rwrt.transformed);
+      world.curjob->recur[world.curjob->curscope].rwrt.transformed = NULL;
+      world.curjob->recur[world.curjob->curscope].rwrt.idloop = 0;
+    }
+
   revm_move_pc(world.curjob->curcmd->endlabel);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

@@ -139,12 +139,16 @@ aspectype_t	*revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off, u_c
   aspectype_t	*child;
   int		index;
   char		fieldname[256];
+  int		len;
   char		*str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Truncate the name to keep only the field identifier */
-  memcpy(fieldname, field, sizeof(fieldname) - 1);
+  len = strlen(field);
+  if (len >= sizeof(fieldname) - 1) len = sizeof(fieldname) - 1;
+  memcpy(fieldname, field, len);
+  fieldname[len] = 0x00;
   str = strchr(fieldname, '[');
   if (str)
     {

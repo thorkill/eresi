@@ -1,0 +1,28 @@
+#!../../elfsh/elfsh32
+
+type struct2 = field4:int field5:int
+type struct1 = field1:int field3:struct2 field2:int
+type struct3::struct2 = field6:int
+
+struct1 one = (field1:0)
+print $one
+
+set $one.field2 42
+print $one
+
+set $one.field3 (field4:666,field5:31337)
+print $one
+
+set $one.field3.field5 4
+print $one.field3.field5
+
+struct3 three = (field6:42)
+print $three
+set $three.field4 999
+print $three
+
+
+# error
+print Now a line that should give an error
+set $one.field3        42
+quit

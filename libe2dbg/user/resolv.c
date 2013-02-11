@@ -165,23 +165,27 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 #endif
 
   if (!found_ref)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Unable to find reference symbol in object", 0);
+    {
+      //write(2, "Unable to find reference symbol in object\n", 42);
+      PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find reference symbol in object\n", 0);
+    }
+		 
 
 #if __DEBUG_E2DBG__
   write(2, " Success !\n", 11);
-  len = snprintf(buf, sizeof(buf), 
-		 " [*] REFADDR = " XFMT " / FOUNDREF = " XFMT " / GOT = " XFMT " \n", 
-		 refaddr, found_ref, got);
-  write(2, buf, len);
+  //len = snprintf(buf, sizeof(buf), 
+  //		 " [*] REFADDR = " XFMT " / FOUNDREF = " XFMT " / GOT = " XFMT " \n", 
+  //		 refaddr, found_ref, got);
+  //write(2, buf, len);
 #endif
 
   /* Close the file */
   XCLOSE(obj.fd, 0);
 
   /* The reference addr is useful to deduce library base addresses */
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     got + refaddr - found_ref);
+  write(2, "Now returning from e2dbg_dlsect \n", 33);
+  
+  return (got + refaddr - found_ref);
 }
 
 
@@ -330,7 +334,7 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
 elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 {
   eresi_Addr		baseaddr;
-  char			path[BUFSIZ];
+  char			path[BUFSIZ] = {0x00};
   eresi_Addr		*got;
   elfshlinkmap_t	*lm;
   char			*version;
@@ -347,8 +351,7 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif	
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] e2dbg_linkmap_getaddr called\n");
-  write(2, buf, len);
+  write(2, " [*] e2dbg_linkmap_getaddr called\n", 34);
 #endif
 
 #if defined(ERESI32)
@@ -356,11 +359,18 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #elif defined(ERESI64)
   version = "64";
 #else
-  printf("Unknown debugger version : fatal error \n");
+  write(2, "Unknown debugger version : fatal error \n", 40);
   exit(-1);
 #endif
 
-  snprintf(path, BUFSIZ, "%s/libe2dbg%s.so", E2DBG_PATH, version);
+  write(2, " [e2dbg_linkmap_getaddr] Before constructing libe2dbg path \n", 60);
+  
+  strcat(path, E2DBG_PATH);
+  strcat(path, "/libe2dbg");
+  strcat(path, version);
+  strcat(path, ".so");
+
+  write(2, " [e2dbg_linkmap_getaddr] After constructing libe2dbg path \n", 59);
 
 #if defined(linux)
   baseaddr = e2dbg_dlsect(path, ".got.plt", 
@@ -371,15 +381,15 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] Base address - 1st = " XFMT "\n", baseaddr);
-  write(2, buf, len);
+  //len = sprintf(buf, " [*] Base address - 1st = " XFMT "\n", baseaddr);
+  //write(2, buf, len);
 #endif
 
   got = (eresi_Addr *) baseaddr;
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, " [*] GOT address = " XFMT "\n", (eresi_Addr) got);
-  write(2, buf, len);
+  //len = sprintf(buf, " [*] GOT address = " XFMT "\n", (eresi_Addr) got);
+  //write(2, buf, len);
 #endif
 
   /* BSD and Solaris have an intermediate structure between GOT[1] and the linkmap entry */
@@ -393,11 +403,13 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  len = sprintf(buf, 
-		" [*] Guessed Linkmap address = " XFMT " \n--------------\n", 
-		(eresi_Addr) lm);
-  write(2, buf, len);
+  //len = sprintf(buf, 
+  //		" [*] Guessed Linkmap address = " XFMT " \n--------------\n", 
+  //		(eresi_Addr) lm);
+  //write(2, buf, len);
 #endif
+
+  write(2, "Now returning from e2dbg_linkmap_getaddr \n", 42);
 
   return (lm);
 }

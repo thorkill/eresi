@@ -23,10 +23,10 @@ NAME64	= shtrebuild64
 all: all32 all64
 
 all32: $(OBJ32)
-	$(CC) $(LDFLAGS32) $(OBJ32) -o $(NAME32)
+	$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32) 
 
 all64: $(OBJ64)
-	$(CC) $(LDFLAGS64) $(OBJ64) -o $(NAME64)
+	$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64) 
 
 fclean: clean
 	$(RM) $(NAME32) $(NAME64)

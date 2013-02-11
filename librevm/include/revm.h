@@ -331,7 +331,7 @@ typedef struct		s_revmcontext
 /* We use a separate header for defnition of object structures */
 #include "revm-objects.h"
 
-/* This structure stores the current FOREACH iteration state for a job */
+/* This structure stores the current state of FOREACH iteration (job specific) */
 typedef struct		s_revmiter
 {
   char			*curkey;	/* Key of currently processed variable */
@@ -343,10 +343,12 @@ typedef struct		s_revmiter
   char			*end;		/* END loop label */
 }			revmiter_t;  
 
-/* This structure stores the current REWRITE transformation state for a job */
+/* This structure stores the current state of a REWRITE transformation (job specific) */
 typedef struct	      s_revmrewrite
 {
   revmexpr_t	      *matchexpr;	/* Expression to rewrite */
+  list_t	      *transformed;     /* List of produced expressions in latest transformation */
+  u_int		      idloop;           /* Loop scope at which the rewrite happens */
   u_char	      matched;		/* Matched flag : just 0 or 1 depending on last try */
   u_char	      replaced;		/* Indicate if we have already transformed */
 }		      revmrewrite_t;
@@ -804,6 +806,7 @@ int		revm_expr_hide(char *ename);
 int		revm_expr_clean(char *ename);
 revmexpr_t	*revm_expr_lookup(u_int oid);
 revmexpr_t	*revm_compute(char *str);
+revmexpr_t	*revm_expr_extend(char *dstname, char *srcvalue);
 
 /* May not be defined */
 #ifndef __KERNEL__

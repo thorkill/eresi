@@ -1,6 +1,7 @@
 #!../../../evarista/evarista32
 
 load $1
+config mjr.cfg_depth 10
 analyse
 graph
 graph bloc main

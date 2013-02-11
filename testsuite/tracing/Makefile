@@ -20,20 +20,20 @@ NAM64	= tracer64
 RM	= rm -f 
 CC	= gcc
 
-LIB32    =$(shell eresi-config32 libstderesi --libs)
-LIB64	 =$(shell eresi-config64 libstderesi --libs)
-CFLAGS32 =$(shell eresi-config32 libstderesi --cflags) #-gdwarf-2
-CFLAGS64 =$(shell eresi-config64 libstderesi --cflags) #-gdwarf-2
+LIB32    =$(shell eresi-config32 libetrace libstderesi --libs)
+LIB64	 =$(shell eresi-config64 libetrace libstderesi --libs)
+CFLAGS32 =$(shell eresi-config32 libetrace libstderesi --cflags) #-gdwarf-2
+CFLAGS64 =$(shell eresi-config64 libetrace libstderesi --cflags) #-gdwarf-2
 
 all: all32 all64
 
 all32	: $(OBJ32)
-	$(CC) $(HOSTLIB) $(HOSTSRC) -o $(HOSTNAM32)
-	$(CC) $(OBJ32) $(LIB32) -o $(NAM32)
+	$(CC) $(HOSTSRC) -o $(HOSTNAM32) $(HOSTLIB) 
+	$(CC) $(OBJ32) -o $(NAM32) $(LIB32) 
 
 all64	: $(OBJ64)
-	$(CC) $(HOSTLIB) $(HOSTSRC) -o $(HOSTNAM64)
-	$(CC) $(OBJ64) $(LIB64) -o $(NAM64)
+	$(CC) $(HOSTSRC) -o $(HOSTNAM64) $(HOSTLIB) 
+	$(CC) $(OBJ64) -o $(NAM64) $(LIB64) 
 
 clean	:
 	$(RM) $(OBJ32) $(HOSTOBJ32) $(OBJ64) $(HOSTOBJ64) *~ \#* *\#

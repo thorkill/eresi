@@ -194,7 +194,7 @@ int			revm_arithmetics(revmexpr_t *dest, revmexpr_t *e1, revmexpr_t *e2, u_char 
 int			revm_hash_add(hash_t *h, revmexpr_t *e)
 {
   eresi_Addr		elem;
-  u_char		*key;
+  char		*key;
   hash_t		*src;
   revmobj_t		*o;
   revmobj_t		*copy;
@@ -228,7 +228,7 @@ int			revm_hash_add(hash_t *h, revmexpr_t *e)
       o = e->value = copy;
     }
   else
-    key = (u_char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
+    key = (char *) (o->kname ? o->kname : (o->hname ? o->hname : o->get_name(o->root, o->parent)));
 	   
   if (!key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -507,7 +507,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	o1->parent = (str ? strdup(str) : NULL);
       else
 	{
-	  XALLOC(__FILE__, __FUNCTION__, __LINE__, o1->parent, strlen(str), -1);
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, o1->parent, strlen(str) + 1, -1);
 	  if (o1->set_name(o1->root, o1->parent, str) < 0)
 	    {
 	      XFREE(__FILE__, __FUNCTION__, __LINE__, str);
@@ -740,7 +740,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
   /* Set the last result variable */
   last = revm_expr_get(REVM_VAR_RESULT);
   if (last)
-    revm_expr_destroy_by_name(REVM_VAR_RESULT);
+    revm_expr_destroy_by_name(REVM_VAR_RESULT); //
   res = revm_create_IMMED(ASPECT_TYPE_INT, 1, *val);
   last = revm_expr_create_from_object(res, REVM_VAR_RESULT, 1);
   if (!last)

@@ -450,7 +450,7 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
   char			**keys;
   int			keynbr;
   char			*parm;
-  unsigned int		sepnbr;
+  unsigned short	sepnbr;
   int			index;
   revmobj_t		*res;
   revmexpr_t		*expr;
@@ -471,8 +471,7 @@ revmexpr_t		*revm_lookup_param(char *param, u_char existing)
   for (sepnbr = 0, parm = param; *parm; parm++)
     if (*parm == REVM_SEP[0] || *parm == ':' || *parm == '%')
       {
-	if (parm > param && parm[-1] == '[')
-	  continue;
+	if (parm > param && parm[-1] == '[') continue;
 	sepnbr++;
       }
   

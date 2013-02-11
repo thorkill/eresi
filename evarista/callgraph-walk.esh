@@ -11,7 +11,7 @@ print Entering FUNCTION: $func
 
 #graph bloc $func.vaddr
 cfg-walk $func.vaddr $2
-graph bloc $func.vaddr
+#graph bloc $func.vaddr
 
 quiet
 

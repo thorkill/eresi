@@ -1,0 +1,9 @@
+#!../../elfsh/elfsh32
+
+load ../../elfsh/elfsh32
+print main
+profile enable warn
+set $mainddr main
+profile disable warn
+print $mainddr
+quit

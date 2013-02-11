@@ -10,6 +10,9 @@
 #ifndef _LIBLIST_H_
  #define _LIBLIST_H_ 1
 
+#define ELIST_DATA_COPY		0
+#define ELIST_DATA_NOCOPY	1
+
 /** 
  * @brief List entry data structure 
  */
@@ -39,7 +42,7 @@ int		elist_register(list_t *h, char *name);	/* Register a list */
 list_t		*elist_empty(char *name);		/* Empty the list */
 list_t		*elist_reverse(list_t *l);		/* Reverse the list */
 void		elist_destroy(list_t *h);		/* Free the list */
-list_t		*elist_copy(list_t *h);			/* Copy a list */
+list_t		*elist_copy(list_t *h, u_char dflag);	/* Copy a list */
 int		elist_add(list_t *h, char *k, void *d);	/* Add an entry */
 int		elist_append(list_t *h, char *key, void *data); /* Append element to list */
 int		elist_del(list_t *h, char *key);		/* Delete an entry */

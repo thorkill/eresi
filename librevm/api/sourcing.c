@@ -211,7 +211,7 @@ int	       revm_context_restore(int		savedfd,
   for (idx = 0; idx < keynbr; idx++)
     {
 
-      /* Only free top-level expressions, the rest will be freed recursively by revm_expr_destroy_by_name() */
+      /* Only free top-level expressions, the rest is freed recursively by revm_expr_destroy_by_name() */
       if (strstr(keys[idx], REVM_SEP))
 	continue;
       
@@ -221,7 +221,7 @@ int	       revm_context_restore(int		savedfd,
 	  res = revm_expr_get(keys[idx]);
 	  oldres = hash_get(&world.curjob->recur[world.curjob->curscope - 1].exprs, REVM_VAR_RESULT);
 	  if (oldres)
-	    revm_expr_destroy(oldres);
+	    revm_expr_destroy(oldres); //
 	  hash_add(&world.curjob->recur[world.curjob->curscope - 1].exprs, strdup(keys[idx]), res);
 	  revm_expr_print(res, 0);
 	  continue;

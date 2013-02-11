@@ -1,42 +1,4 @@
 #!evarista64
 
-vlist
-cmp  $# 1
-jne end
-sdir .
+source eva-main.esh $1
 
-eva-typedecl 42
-quiet
-
-print 
-print ******************** The Evarista static analyzer .::. Welcome *********************
-print
-
-load $1
-configure mjr.cfg_depth 2
-analyse main
-
-#graph func main
-
-set $mainaddr main
-print Main-Function found at addr $mainaddr
-
-set $mainfunc $hash[$1_functions:$mainaddr]
-
-callgraph-walk $mainfunc.vaddr $1
-
-print 
-print ******************** The Evarista static analyzer .::. Good bye *********************
-print
-quit
-
-end:
-
-print Evarista cmd-line syntax:
-print
-print For 32b binaries: eva-run32.esh <ELF32_binary_file_path>
-print For 64b binaries: eva-run64.esh <ELF64_binary_file_path>
-print
-print Quitting.
-print
-quit

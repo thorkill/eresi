@@ -17,11 +17,18 @@ print ************ Now declarations of variables *****************
 long mylong = 42
 vlist
 
+type
+
+#profile enable warn
+#profile enable trace
+
 struct0 mystruct0  = (field0:42)
 struct0 mystruct0b = struct0(field0:42)
 struct0 mystruct0c = struct0(field0:43)
 
 struct1 mystruct1  = (field1:42,field2:43)
+
+print $mystruct1
 
 struct1 mystruct1b = $mystruct1
 #struct1 mystruct1b  = (field1:42,field2:43)

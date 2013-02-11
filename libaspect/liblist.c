@@ -156,7 +156,7 @@ void		elist_destroy(list_t *h)
 }
 
 /* Copy a list */
-list_t		*elist_copy(list_t *h)
+list_t		*elist_copy(list_t *h, u_char datacopy)
 {
   list_t	*newlist;
   listent_t	*newent;
@@ -166,6 +166,10 @@ list_t		*elist_copy(list_t *h)
   int		size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (datacopy != ELIST_DATA_COPY && datacopy != ELIST_DATA_NOCOPY)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid datacopy flag parameter", NULL);
+
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newlist, sizeof(list_t), NULL);
   *newlist = *h;
   prevent = NULL;
@@ -176,9 +180,17 @@ list_t		*elist_copy(list_t *h)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, newent, sizeof(listent_t), NULL);
       *newent = *curent;
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, newelem, size, NULL);
-      memcpy(newelem, curent->data, size);
+
+      if (datacopy == ELIST_DATA_COPY)
+	{
+	  XALLOC(__FILE__, __FUNCTION__, __LINE__, newelem, size, NULL);
+	  memcpy(newelem, curent->data, size);
+	}
+      else
+	newelem = curent->data;
+
       newent->data = newelem;
+
       newent->key = strdup(curent->key);
       newent->next = NULL;
       if (prevent)

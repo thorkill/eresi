@@ -157,8 +157,6 @@ void		hash_destroy(hash_t *hash)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  //printf("DESTROY HASH %s \n", hash->name);
-
   /* We should not destroy the elements as they might be in other hashes */
   keys = hash_get_keys(hash, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
@@ -192,8 +190,6 @@ int		hash_add(hash_t *h, char *key, void *data)
   if (!h || !key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
-  
-  //printf("ADD %s in HASH %s \n", key, h->name);
 
   /* If the element already exist, make sure we erase the existing one */
   actual = hash_get(h, key);
@@ -447,7 +443,7 @@ void            hash_print(hash_t *h)
  * @return
 */
 int   hash_apply(hash_t      *h, 
-		 void        *ptr, 
+ 		 void        *ptr, 
 		 int         (*func)(listent_t *ph, void *pptr))
 {
   listent_t     *actual;

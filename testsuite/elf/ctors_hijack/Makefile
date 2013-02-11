@@ -1,11 +1,11 @@
 ##
-## Makefile for ctors_hijack in ERESI testsuite
+## Makefile for dtors_hijack in ERESI testsuite
 ## 
 ## Started on  Sun Mar 10 01:19:24 2002 jfv
-## Last update Sun Dec 15 01:54:50 2002 jfv
+## Last update Sun Dec 15 01:55:25 2002 jfv
 ##
 
-include	../../../config.h
+include ../../../config.h
 
 SRC	= ctors_hijack.c
 CC	= gcc
@@ -24,11 +24,11 @@ NAME64	= ctors_hijacker64
 all: all32 all64
 
 all32: $(OBJ32)
-	$(CC) $(LDFLAGS32) $(OBJ32) -o $(NAME32)
+	$(CC) $(OBJ32) -o $(NAME32) $(LDFLAGS32)
 	$(CC) $(VULN) -o hijackme32
 
 all64: $(OBJ64)
-	$(CC) $(LDFLAGS64) $(OBJ64) -o $(NAME64)
+	$(CC) $(OBJ64) -o $(NAME64) $(LDFLAGS64)
 	$(CC) -m64 $(VULN) -o hijackme64
 
 fclean: clean

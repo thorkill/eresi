@@ -16,4 +16,6 @@ type link             = id:oid type:byte scope:byte
 
 source lir-definition.esh
 
+source sparc-instr-size-table.esh
+
 type

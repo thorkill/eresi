@@ -115,11 +115,11 @@ container_t	*container_create(u_int type, void *data, list_t *inlist, list_t *ou
 
   /* Create lists if not specified */
   if (inlist)
-    newcntnr->inlinks = elist_copy(inlist);
+    newcntnr->inlinks = elist_copy(inlist, ELIST_DATA_COPY);
   else
     container_linklists_create(newcntnr, CONTAINER_LINK_IN, uniqid);
   if (outlist)
-    newcntnr->outlinks = elist_copy(outlist);
+    newcntnr->outlinks = elist_copy(outlist, ELIST_DATA_COPY);
   else
     container_linklists_create(newcntnr, CONTAINER_LINK_OUT, uniqid);
 

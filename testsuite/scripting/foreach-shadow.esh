@@ -1,4 +1,7 @@
 #!../../elfsh/elfsh32
+#
+# this tests should fail as induction variable is redefined improperly
+#
 
 profile enable warn
 #quiet

@@ -34,9 +34,9 @@
 #define REVM_DUMP_MSG	2
 
 #define REVM_NAME	"revm"
-#define	REVM_VERSION	"0.82"
-#define	REVM_RELEASE	"b2"
-#define REVM_EDITION	"dev"
+#define	REVM_VERSION	"0.83"
+#define	REVM_RELEASE	"a1"
+#define REVM_EDITION	"phoenix"
 
 /* Unused, feel free to try it, its awesome */
 #define ELFSH_CIRCUS_PROMPT \

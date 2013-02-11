@@ -28,87 +28,87 @@ LIBDIR=/usr/local/lib
 # Dependancies is managed next in the ouput part of the script.
 
 if [ $TESTING = 1 ] ; then
-LIBASM_CFLAGS="-I ${TESTING_ROOT}/libasm/include"
+LIBASM_CFLAGS="-I${TESTING_ROOT}/libasm/include"
 LIBASM_DEFINES=
-LIBASM_LIBS="-L ${TESTING_ROOT}/libasm/ -lasm32"
+LIBASM_LIBS="-L${TESTING_ROOT}/libasm/ -lasm32"
 
-LIBASPECT_CFLAGS="-DERESI32 -I ${TESTING_ROOT}/libaspect/include"
+LIBASPECT_CFLAGS="-DERESI32 -I${TESTING_ROOT}/libaspect/include"
 LIBASPECT_DEFINES=
-LIBASPECT_LIBS="-L ${TESTING_ROOT}/libaspect/ -laspect32"
+LIBASPECT_LIBS="-L${TESTING_ROOT}/libaspect/ -laspect32"
 
-LIBGDBWRAP_CFLAGS="-I ${TESTING_ROOT}/libgdbwrap/include"
+LIBGDBWRAP_CFLAGS="-I${TESTING_ROOT}/libgdbwrap/include"
 LIBGDBWRAP_DEFINES=
-LIBGDBWRAP_LIBS="-L ${TESTING_ROOT}/libgdbwrap/ -lgdbwrap32"
+LIBGDBWRAP_LIBS="-L${TESTING_ROOT}/libgdbwrap/ -lgdbwrap32"
 
-LIBELFSH_CFLAGS="-I ${TESTING_ROOT}/libelfsh/include"
+LIBELFSH_CFLAGS="-I${TESTING_ROOT}/libelfsh/include"
 LIBELFSH_DEFINES=
-LIBELFSH_LIBS="-L ${TESTING_ROOT}/libelfsh/ -lelfsh32"
+LIBELFSH_LIBS="-L${TESTING_ROOT}/libelfsh/ -lelfsh32"
 
-LIBKERNSH_CFLAGS="-I ${TESTING_ROOT}/libkernsh/include"
+LIBKERNSH_CFLAGS="-I${TESTING_ROOT}/libkernsh/include"
 LIBKERNSH_DEFINES=
-LIBKERNSH_LIBS="-L ${TESTING_ROOT}/libkernsh/ -lkernsh32"
+LIBKERNSH_LIBS="-L${TESTING_ROOT}/libkernsh/ -lkernsh32"
 
-LIBREVM_CFLAGS="-I ${TESTING_ROOT}/librevm/include"
+LIBREVM_CFLAGS="-I${TESTING_ROOT}/librevm/include"
 LIBREVM_DEFINES=
-LIBREVM_LIBS="-L ${TESTING_ROOT}/librevm/ -lrevm32"
+LIBREVM_LIBS="-L${TESTING_ROOT}/librevm/ -lrevm32"
 
-LIBSTDERESI_CFLAGS="-I ${TESTING_ROOT}/libstderesi/include"
+LIBSTDERESI_CFLAGS="-I${TESTING_ROOT}/libstderesi/include"
 LIBSTDERESI_DEFINES=
-LIBSTDERESI_LIBS="-L ${TESTING_ROOT}/libstderesi/ -lstderesi32"
+LIBSTDERESI_LIBS="-L${TESTING_ROOT}/libstderesi/ -lstderesi32"
 
-LIBETRACE_CFLAGS="-I ${TESTING_ROOT}/libetrace/include"
+LIBETRACE_CFLAGS="-I${TESTING_ROOT}/libetrace/include"
 LIBETRACE_DEFINES=
-LIBETRACE_LIBS="-L ${TESTING_ROOT}/libetrace/ -letrace32"
+LIBETRACE_LIBS="-L${TESTING_ROOT}/libetrace/ -letrace32"
 
-LIBEDFMT_CFLAGS="-I ${TESTING_ROOT}/libedfmt/include"
+LIBEDFMT_CFLAGS="-I${TESTING_ROOT}/libedfmt/include"
 LIBEDFMT_DEFINES=
-LIBEDFMT_LIBS="-L ${TESTING_ROOT}/libedfmt/ -ledfmt32"
+LIBEDFMT_LIBS="-L${TESTING_ROOT}/libedfmt/ -ledfmt32"
 
-LIBMJOLLNIR_CFLAGS="-I ${TESTING_ROOT}/libmjollnir/include"
+LIBMJOLLNIR_CFLAGS="-I${TESTING_ROOT}/libmjollnir/include"
 LIBMJOLLNIR_DEFINES=
-LIBMJOLLNIR_LIBS="-L ${TESTING_ROOT}/libmjollnir/ -lmjollnir32"
+LIBMJOLLNIR_LIBS="-L${TESTING_ROOT}/libmjollnir/ -lmjollnir32"
 
 else
 
 LIBASM_CFLAGS="-DERESI32 -I ${INCDIR}"
 LIBASM_DEFINES=
-LIBASM_LIBS="-L ${LIBDIR} -lasm32"
+LIBASM_LIBS="-L${LIBDIR} -lasm32"
 
-LIBASPECT_CFLAGS="-I ${INCDIR}"
+LIBASPECT_CFLAGS="-I${INCDIR}"
 LIBASPECT_DEFINES=
-LIBASPECT_LIBS="-L ${LIBDIR} -laspect32"
+LIBASPECT_LIBS="-L${LIBDIR} -laspect32"
 
-LIBGDBWRAP_CFLAGS="-I ${INCDIR}"
+LIBGDBWRAP_CFLAGS="-I${INCDIR}"
 LIBGDBWRAP_DEFINES=
-LIBGDBWRAP_LIBS="-L ${LIBDIR} -lgdbwrap32"
+LIBGDBWRAP_LIBS="-L${LIBDIR} -lgdbwrap32"
 
-LIBKERHSH_CFLAGS="-I ${INCDIR}"
+LIBKERHSH_CFLAGS="-I${INCDIR}"
 LIBKERNSH_DEFINES=
-LIBKERNSH_LIBS="-L ${LIBDIR} -lkernsh32"
+LIBKERNSH_LIBS="-L${LIBDIR} -lkernsh32"
 
-LIBREVM_CFLAGS="-I ${INCDIR}"
+LIBREVM_CFLAGS="-I${INCDIR}"
 LIBREVM_DEFINES=
-LIBREVM_LIBS="-L ${LIBDIR} -lrevm32"
+LIBREVM_LIBS="-L${LIBDIR} -lrevm32"
 
-LIBSTDERESI_CFLAGS="-I ${INCDIR}"
+LIBSTDERESI_CFLAGS="-I${INCDIR}"
 LIBSTDERESI_DEFINES=
-LIBSTDERESI_LIBS="-L ${LIBDIR} -lstderesi32"
+LIBSTDERESI_LIBS="-L${LIBDIR} -lstderesi32"
 
-LIBELFSH_CFLAGS="-I ${INCDIR}"
+LIBELFSH_CFLAGS="-I${INCDIR}"
 LIBELFSH_DEFINES=
-LIBELFSH_LIBS="-L ${LIBDIR} -lelfsh32"
+LIBELFSH_LIBS="-L${LIBDIR} -lelfsh32"
 
-LIBEDFMT_CFLAGS="-I ${INCDIR}"
+LIBEDFMT_CFLAGS="-I${INCDIR}"
 LIBEDFMT_DEFINES=
-LIBEDFMT_LIBS="-L ${LIBDIR} -ledfmt32"
+LIBEDFMT_LIBS="-L${LIBDIR} -ledfmt32"
 
-LIBETRACE_CFLAGS="-I ${INCDIR}"
+LIBETRACE_CFLAGS="-I${INCDIR}"
 LIBETRACE_DEFINES=
-LIBETRACE_LIBS="-L ${LIBDIR} -letrace32"
+LIBETRACE_LIBS="-L${LIBDIR} -letrace32"
 
-LIBMJOLLNIR_CFLAGS="-I ${INCDIR}"
+LIBMJOLLNIR_CFLAGS="-I${INCDIR}"
 LIBMJOLLNIR_DEFINES=
-LIBMJOLLNIR_LIBS="-L ${LIBDIR} -lmjollnir32"
+LIBMJOLLNIR_LIBS="-L${LIBDIR} -lmjollnir32"
 
 fi
 
@@ -144,6 +144,9 @@ while [ "_$1" != "_" ] ; do
     ;;
     libstderesi)
     LIBSTDERESI=1
+    ;;
+    libetrace)
+    LIBETRACE=1
     ;;
 
     --libs)
@@ -241,6 +244,25 @@ if [ "$showDEFINES" = 1 ] ; then
 fi
 
 fi
+
+
+##########################################
+############ LIBETRACE ####################
+
+if [ "$LIBETRACE" = 1 ] ; then
+if [ "$showCFLAGS" = 1 ] ; then
+	echo ${LIBEDFMT_CFLAGS} ${LIBELFSH_CFLAGS} ${LIBASPECT_CFLAGS} ${LIBASM_CFLAGS} ${LIBETRACE_CFLAGS}
+fi
+if [ "$showLIBS" = 1 ] ; then
+	echo ${LIBEDFMT_LIBS} ${LIBELFSH_LIBS} ${LIBASPECT_LIBS} ${LIBASM_LIBS} ${LIBETRACE_LIBS}
+fi
+if [ "$showDEFINES" = 1 ] ; then
+	echo ${LIBEDFMT_DEFINES} ${LIBELFSH_DEFINES} ${LIBASPECT_DEFINES} ${LIBASM_DEFINES} ${LIBETRACE_DEFINES}
+fi
+
+fi
+
+
 
 ##########################################
 ############ LIBGDBWRAP ##################

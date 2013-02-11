@@ -300,7 +300,7 @@ void		bpdebug(char *str, elfshbp_t *bp, eresi_Addr pc, elfshobj_t *parent)
   sect   = elfsh_get_parent_section(parent, addr, NULL);
   name   = revm_resolve(parent, addr, &off);
   sym    = elfsh_get_metasym_by_value(parent, addr, &off, ELFSH_LOWSYM);
-  revm_object_display(sect, sym, 16, off, 0, addr, name, REVM_VIEW_DISASM, 0);
+  revm_object_display(sect, sym, 16, off, 0, addr, name, REVM_VIEW_DISASM, 0, 0);
 }
 #endif
 
