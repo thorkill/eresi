@@ -838,10 +838,9 @@ edfmtvar_t		*edfmt_add_var_global(edfmttype_t *type, char *name, eresi_Addr addr
 
 hash_t *edfmt_hfuncs_get()
 {
-	if (uniinfo == NULL || uniinfo->lfile == NULL)
-		return (NULL);
-	return &(uniinfo->lfile->hfunc);
-
+  if (uniinfo == NULL || uniinfo->lfile == NULL)
+    return (NULL);
+  return &(uniinfo->lfile->hfunc);
 }
 
 char		*edfmt_srcline_get(char *buf, eresi_Addr addr)

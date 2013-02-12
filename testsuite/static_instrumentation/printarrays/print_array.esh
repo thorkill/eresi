@@ -2,6 +2,7 @@
 
 quiet
 
+exec gcc test-multidim-arrays.c
 load a.out
 
 type bint = sys:int[2][3]

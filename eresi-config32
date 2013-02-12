@@ -158,6 +158,14 @@ while [ "_$1" != "_" ] ; do
     --defines)
     showDEFINES=1
     ;;
+    *)
+    echo
+    echo '***********************'
+    echo eresi-config32: Unknown option $1 EXITING
+    echo '***********************'
+    echo
+    exit
+    ;;
     esac
     shift 1
 done

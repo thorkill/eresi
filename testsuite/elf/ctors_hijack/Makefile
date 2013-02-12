@@ -1,8 +1,7 @@
 ##
-## Makefile for dtors_hijack in ERESI testsuite
+## Makefile for ctors_hijack in ERESI testsuite
 ## 
-## Started on  Sun Mar 10 01:19:24 2002 jfv
-## Last update Sun Dec 15 01:55:25 2002 jfv
+## $Id
 ##
 
 include ../../../config.h

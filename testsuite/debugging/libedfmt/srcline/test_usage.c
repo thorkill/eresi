@@ -34,8 +34,8 @@ int			main(int ac, char **av)
     printf("Failed to load DWARF2 format information\n");
 
   htable = edfmt_hfuncs_get();
-  keys = hash_get_keys(&htable, &keynbr);
-  printf("keynbr = %d\n", &keynbr);
+  keys = hash_get_keys(htable, &keynbr);
+  printf("keynbr = %d\n", keynbr);
   if (keys)
     {
       for (index = 0; index < keynbr; index++)
@@ -48,7 +48,7 @@ int			main(int ac, char **av)
 		}
 	      return (NULL);
 	    }
-	  lfunc = (edfmtfunc_t *)hash_get(&htable, keys[index]);
+	  lfunc = (edfmtfunc_t *) hash_get(htable, keys[index]);
 	  printf("here edfmt_srcline_get will be called\n");
 	}
     }

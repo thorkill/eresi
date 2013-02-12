@@ -8,7 +8,7 @@ all32: all
 all: $(OBJ)
 
 test-ptrfn1.o: 
-	$(CC) test-ptrfn1.c -o test-ptrfn1.elf
+	$(CC) test-ptrfn1.c -o test-ptrfn1.elf32
 
 test-ptrfn2.o: 
 	$(CC) test-ptrfn2.c -o test-ptrfn2.elf

@@ -67,11 +67,11 @@ into Branch(addr:$curaddr, dst(val:$curaddr+$instr.op1.imm))
 
 # indirect call (op1 reg) 								
 case instr(sem:c, nb_op:1, op1(sem:reg))
-into IndCallR(dst(rid:$instr.op1.baser))
+into IndCallR(dst(rid:$instr.op1.baser))::Nop()
 
 # direct call (op1 addr) 									
 case instr(sem:c, nb_op:1, op1(sem:imm))
-into Call(dst(val:$curaddr+($instr.op1.imm*4)))
+into Call(dst(val:$curaddr+($instr.op1.imm*4)))::Nop()
 #post profile disable warn
 
 # ta* (traps)
@@ -84,7 +84,7 @@ into Return(dst(val:$instr.op1.imm))
 
 # save 												
 case instr(sem:p)
-into Prolog(framesz(val:$instr.op2.imm))
+into Prolog(framesz(val:$instr.op2.imm))::Nop(addr:$curaddr)
 
 # restore 												
 case instr(sem:e)
@@ -181,19 +181,20 @@ default print Unsupported instruction at address $curaddr $instr
 
 rwtend
 
-# This is not properly reflected for some reason as it doesnt show up in output IR - WIP FIXME.
+# Add fields: XXX: fail if list size is more than 1 (field extension works well on 1 element)
 foreach $trans of $list[transformed]
-
-   print TRANSFORMED = $trans
-   print INSTRSZ     = $instrsz
-   print ADDR        = $curaddr
-
+   print $trans
    set $trans.szaffect $instrsz
    set $trans.addr     $curaddr
-
-   print TRANSFORMED AFTER FIELD ADDITION = $trans
-
+   print $trans
 forend
+foreach $trans of $list[transformed]
+   print $trans
+forend
+
+lists transformed
+
+exec sleep 3600
 
 add $curaddr 4 
 

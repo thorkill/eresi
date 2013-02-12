@@ -80,6 +80,7 @@ edfmtfuncarg_t	*edfmt_add_arg(edfmtfunc_t *func, char *name,
 edfmttype_t	*edfmt_check_type(char *name);
 edfmtvar_t	*edfmt_check_var(char *name);
 edfmtfunc_t	*edfmt_check_func(char *name);
+hash_t		*edfmt_hfuncs_get();
 
 /* edfmt.c */
 int		edfmt_format(elfshobj_t *file);
