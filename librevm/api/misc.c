@@ -319,7 +319,7 @@ int		revm_doerror(void (*fct)(char *str), char *str)
   else
     {
       revm_help(NULL);
-      exit(-1);
+      revm_exit(-1);
     }
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		    "Bypassed error printing", (-1));
