@@ -182,19 +182,19 @@ default print Unsupported instruction at address $curaddr $instr
 rwtend
 
 # Add fields: XXX: fail if list size is more than 1 (field extension works well on 1 element)
-foreach $trans of $list[transformed]
-   print $trans
-   set $trans.szaffect $instrsz
-   set $trans.addr     $curaddr
-   print $trans
-forend
-foreach $trans of $list[transformed]
-   print $trans
-forend
+#foreach $trans of $list[transformed]
+#   print $trans
+#   set $trans.szaffect $instrsz
+#   set $trans.addr     $curaddr
+#   print $trans
+#forend
+#foreach $trans of $list[transformed]
+#   print $trans
+#forend
 
-lists transformed
+#lists transformed
 
-exec sleep 3600
+#exec sleep 3600
 
 add $curaddr 4 
 

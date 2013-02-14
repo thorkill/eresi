@@ -36,7 +36,7 @@ char		*revm_modename_get()
 int		revm_system(char *cmd)
 {
   char		buf[BUFSIZ];
-  int		ret;
+  int		ret = 0;
   char		**av;
   int		nbr;
   int		argc;

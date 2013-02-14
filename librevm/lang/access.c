@@ -83,6 +83,7 @@ int		revm_arrayoff_get(char *field, u_int elmsize,
   iter   = strlen(field);
   lfield = alloca(iter + 1);
   memcpy(lfield, field, iter);
+  lfield[iter] = 0x00;
 
   /* Compute offset for each dimension in the first pass */
   for (iter = 0; 

@@ -241,7 +241,7 @@ static int		revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype, vo
   childata = (char *) srcdata + childtype->off;			
   len = snprintf(recpath + ctx->pathsize, BUFSIZ - ctx->pathsize,		
 		 ".%s", childtype->fieldname);			
-  revm_inform_type_addr(childtype->name, recpath,		
+  revm_inform_type_addr(childtype->name, strdup(recpath),		
 			(eresi_Addr) childata, newexpr, 0, 0); 
   bzero(recpath + ctx->pathsize, len);				
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -313,7 +313,7 @@ static int	revm_expr_init_rec(revmexprctx_t *ctx, void *srcdata)
   
   childata = (char *) srcdata + childtype->off;
   len = snprintf(recpath + ctx->pathsize, BUFSIZ - ctx->pathsize, ".%s", childtype->fieldname);
-  revm_inform_type_addr(childtype->name, recpath, (eresi_Addr) childata, newexpr, 0, 0);			
+  revm_inform_type_addr(childtype->name, strdup(recpath), (eresi_Addr) childata, newexpr, 0, 0);
   
   /* Insert child where necessary */ 
   ctx->pathsize += len;
@@ -1003,7 +1003,7 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
       if (!data)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to dereference object", NULL);
-      if (!revm_inform_type_addr(type->name, name, (eresi_Addr) data, dest, 0, 1))
+      if (!revm_inform_type_addr(type->name, strdup(name), (eresi_Addr) data, dest, 0, 1))
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to create expression from complex object", NULL);
     }
@@ -1365,7 +1365,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   /* Else we create and initialize a new expression */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, databuff, datatype->size, NULL);
   realname = dataname;
-  revm_inform_type_addr(datatype->name, realname, (eresi_Addr) databuff, NULL, 0, 0);
+  revm_inform_type_addr(datatype->name, strdup(realname), (eresi_Addr) databuff, NULL, 0, 0);
   
   exprctx = revm_expr_context_init(NULL, NULL, 1, dataname);
   if (!exprctx)
@@ -1375,7 +1375,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, expr, sizeof(revmexpr_t), NULL);
       expr->strval = strdup(datavalue);
-      expr->label  = dataname;
+      expr->label  = strdup(dataname);
       expr->type   = datatype;
       expr->childs = revm_expr_init(exprctx, datatype, databuff, datavalue);
     }
@@ -1387,7 +1387,7 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);    
 
-  revm_inform_type_addr(datatype->name, realname, (eresi_Addr) databuff, expr, 0, 0);
+  revm_inform_type_addr(datatype->name, strdup(realname), (eresi_Addr) databuff, expr, 0, 0);
 
 #if __DEBUG_EXPRS__
   revm_expr_print_by_name(expr->label, 0);
@@ -1555,7 +1555,7 @@ static int	revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree, u_char datafree
 				 "Cannot find type hash for shadowed expression type", -1);
 		}
 
-	      hash_set(thash, ctx->pathbuf, prevexpr->annot);
+	      hash_set(thash, strdup(ctx->pathbuf), prevexpr->annot);
 	    }
 	}
 

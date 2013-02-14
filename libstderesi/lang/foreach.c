@@ -360,6 +360,11 @@ static int	revm_induction_process(hash_t *table, list_t *list, char *curkey,
   if (typeid == ASPECT_TYPE_EXPR)
     {
       indname = strdup(induction->label);
+      
+#if 1
+      fprintf(stderr, "INDUCTION_PROCESS: cleaning existing expr %s \n", induction->label);
+#endif
+
       revm_expr_clean(induction->label);
       induction = revm_expr_copy((revmexpr_t *) elem, indname, 0);
       world.curjob->iter[world.curjob->curloop].curind = induction;
