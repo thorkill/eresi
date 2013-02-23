@@ -18,23 +18,14 @@ int i386_movzbl_rv_rmb(asm_instr *new, u_char *opcode, u_int len,
     else
       new->instr = ASM_MOVZBL;
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,				  new, 0);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODEDBYTE, new);
 #else
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,				  new);
+  new->op[0].content = ASM_CONTENT_GENERAL;
+  new->op[0].size = ASM_OSIZE_VECTOR;
+  new->op[1].content = ASM_CONTENT_ENCODED;
+  new->op[1].size = ASM_OSIZE_BYTE;
+  operand_rv_rmb(new, opcode + 1, len - 1, proc);
 #endif
-#if WIP
-    new->len += asm_operand_fetch(&new->op[1], opcode + 1,				  ASM_CONTENT_ENCODEDBYTE, new, 0);
-#else
-    new->len += asm_operand_fetch(&new->op[1], opcode + 1,				  ASM_CONTENT_ENCODEDBYTE, new);
-#endif
-#else
-
-    new->op[0].content = ASM_CONTENT_GENERAL;
-    new->op[0].size = ASM_OSIZE_VECTOR;
-    new->op[1].content = ASM_CONTENT_ENCODED;
-    new->op[1].size = ASM_OSIZE_BYTE;
-    operand_rv_rmb(new, opcode + 1, len - 1, proc);
-#endif
-    return (new->len);
+  return (new->len);
 }

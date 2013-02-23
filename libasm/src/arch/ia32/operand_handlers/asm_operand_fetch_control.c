@@ -17,13 +17,8 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
-int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otype, 
+int asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otype, 
                                   asm_instr *ins)
-#endif
 {
   struct s_modrm        *modrm;
 
@@ -37,5 +32,5 @@ int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otyp
   operand->len = 0;
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   operand->sindex = get_reg_intel(operand->indexr, operand->regset);
-  return (1);
+  return (0);
 }

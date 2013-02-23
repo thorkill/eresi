@@ -46,7 +46,8 @@ int op_immed_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
       break;
     case 5:
       new->instr = ASM_SUB;
-      if (new->op[0].type == ASM_OP_BASE &&
+      if (new->op[0].type = ASM_OPTYPE_MEM &&
+			      new->op[0].memtype == ASM_OP_BASE &&
             new->op[0].baser == ASM_REG_ESP)
         new->type |= ASM_TYPE_EPILOG;
       break;
@@ -60,16 +61,8 @@ int op_immed_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
       break;
   }
 
-#if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_CONTENT_ENCODED, new, 0));
-#else
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,                                        ASM_CONTENT_ENCODED, new));
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_CONTENT_IMMEDIATE, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,                                ASM_CONTENT_IMMEDIATE, new);
-#endif
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new));
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen, ASM_CONTENT_IMMEDIATE, new);
 
   return (new->len);
 }

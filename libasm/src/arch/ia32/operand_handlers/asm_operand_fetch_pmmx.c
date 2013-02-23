@@ -27,7 +27,6 @@ int     asm_operand_fetch_pmmx(asm_operand *operand, u_char *opcode,
   int len;
   operand->content = ASM_CONTENT_PMMX;
   len = operand_rmv(operand, opcode, ins->proc);
-  asm_content_pack(operand, operand->type, operand->content);
   operand->regset = ASM_REGSET_MM;
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   return (len);

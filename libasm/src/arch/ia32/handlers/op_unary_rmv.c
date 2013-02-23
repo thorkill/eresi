@@ -62,22 +62,11 @@ int op_unary_rmv(asm_instr *new, u_char *opcode, u_int len,
     break;
   } /* switch */
 
-#if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                        ASM_CONTENT_ENCODED, new, 0));
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new));
 
   if (new->instr == ASM_TEST) {
-    new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                  ASM_CONTENT_IMMEDIATE, new, 0);
+    new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen, ASM_CONTENT_IMMEDIATE, new);
   }
-#else
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                        ASM_CONTENT_ENCODED, new));
 
-  if (new->instr == ASM_TEST) {
-    new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                  ASM_CONTENT_IMMEDIATE, new);
-  }
-#endif
   return (new->len);
 }

@@ -22,13 +22,7 @@ int op_pop_rmv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_ASSIGN | ASM_TYPE_LOAD;
   new->spdiff = 4;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
-                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
-                                new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 
   return (new->len);
 }

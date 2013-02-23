@@ -20,16 +20,8 @@ int op_mov_rb_rmb(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_MOV;
   new->ptr_instr = opcode;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERALBYTE,                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERALBYTE,                                new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODEDBYTE,                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODEDBYTE,                                new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERALBYTE, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODEDBYTE, new);
 
   return (new->len);
 }

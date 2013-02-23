@@ -18,11 +18,7 @@ int  op_jb(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_BRANCH_U_LESS;
   new->ptr_instr = opcode;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SHORTJUMP,                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SHORTJUMP,                                new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SHORTJUMP, new);
 
   return (new->len);
 }

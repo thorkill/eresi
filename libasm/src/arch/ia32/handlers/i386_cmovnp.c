@@ -16,16 +16,8 @@ int     i386_cmovnp(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_CMOVNP;
 
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,				new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,				new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED,				new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED,				new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new);
 #else
   new->op[0].content = ASM_CONTENT_GENERAL;
   new->op[1].content = ASM_CONTENT_ENCODED;

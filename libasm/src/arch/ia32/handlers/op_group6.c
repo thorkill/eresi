@@ -32,14 +32,10 @@ int     op_group6(asm_instr *new, u_char *opcode, u_int len,
     break;
   }
 
-  #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				new);
-#endif
+#if LIBASM_USE_OPERAND_VECTOR
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
   new->op[0].regset = ASM_REGSET_R16;
-  #else
+#else
   new->op[0].content = ASM_CONTENT_ENCODED;
   new->op[0].size = ASM_OSIZE_VECTOR;
   operand_rmv(&new->op[0], opcode + 1, len - 1, proc);

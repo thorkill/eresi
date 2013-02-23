@@ -35,13 +35,7 @@ int op_shift_rmv_1(asm_instr *new, u_char *opcode, u_int len,
     break;
   }
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
-                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
-                                new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 
   return (new->len);
 }

@@ -19,16 +19,8 @@ int op_mov_ref_iv_eax(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->ptr_instr = opcode;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_OFFSET,                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_OFFSET,                                new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL,                                new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL,                                new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_OFFSET, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL, new);
 
   return (new->len);
 }

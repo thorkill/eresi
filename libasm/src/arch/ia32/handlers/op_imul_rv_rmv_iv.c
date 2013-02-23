@@ -25,20 +25,9 @@ int     op_imul_rv_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
   new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF;
 
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
-#endif
-#if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new, 0));
-#else
   new->len += (olen = asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new));
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen, ASM_CONTENT_IMMEDIATE, new, 0);
-#else
   new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen, ASM_CONTENT_IMMEDIATE, new);
-#endif
+
   return (new->len);
 }

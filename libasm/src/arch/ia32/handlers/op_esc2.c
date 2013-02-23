@@ -48,19 +48,18 @@ int op_esc2(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
       new->instr = ASM_FIDIVR;
       break;
     }
+
   if (!(*(opcode + 1) == 0xe9)) {
-    #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				  new, 0);
+#if LIBASM_USE_OPERAND_VECTOR
+    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 #else
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				  new);
-#endif
-    #else
     new->op[0].content = ASM_CONTENT_ENCODED;
     operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
     new->len += new->op[0].len;
-    #endif
-  } else
+#endif
+  }
+	else
     new->len += 1;
+
   return (new->len);
 }

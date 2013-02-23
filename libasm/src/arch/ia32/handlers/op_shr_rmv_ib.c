@@ -41,16 +41,7 @@ int op_shr_rmv_ib(asm_instr *new, u_char *opcode, u_int len,
     new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
   }
 
-#if WIP
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                        ASM_CONTENT_ENCODED, new, 0));
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                ASM_CONTENT_IMMEDIATEBYTE, new, 0);
-#else
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
-                                        ASM_CONTENT_ENCODED, new));
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
-                                ASM_CONTENT_IMMEDIATEBYTE, new);
-#endif
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new));
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen, ASM_CONTENT_IMMEDIATEBYTE, new);
   return (new->len);
 }

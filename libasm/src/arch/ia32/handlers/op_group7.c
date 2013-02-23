@@ -18,11 +18,7 @@ int     op_group7(asm_instr *new, u_char *opcode, u_int len,
     case 0:
       new->instr = ASM_SGDT;
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 #else
       new->op[0].content = ASM_CONTENT_ENCODED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
@@ -35,11 +31,7 @@ int     op_group7(asm_instr *new, u_char *opcode, u_int len,
     case 2:
       new->instr = ASM_LGDT;
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 #else
       new->op[0].content = ASM_CONTENT_ENCODED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
@@ -49,11 +41,7 @@ int     op_group7(asm_instr *new, u_char *opcode, u_int len,
     case 3:
       new->instr = ASM_LIDT;
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new, 0);
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,				    new);
-#endif
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 #else
       new->op[0].content = ASM_CONTENT_ENCODED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);

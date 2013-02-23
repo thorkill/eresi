@@ -41,10 +41,11 @@ int     asm_operand_fetch(asm_operand *operand, u_char *opcode, int otype,
     }
   else
     {
-      operand->sbaser = ((operand->type & ASM_OP_BASE) ? 
-		    get_reg_intel(operand->baser, operand->regset) : "");
-      operand->sindex = ((operand->type & ASM_OP_BASE) ? 
-		    get_reg_intel(operand->indexr, operand->regset) : "");
+      operand->sbaser = (operand->type == ASM_OPTYPE_REG) ||
+			((operand->type == ASM_OPTYPE_MEM) && (operand->memtype & ASM_OP_BASE)) ? 
+		    get_reg_intel(operand->baser, operand->regset) : "";
+      operand->sindex = (operand->type == ASM_OPTYPE_MEM) && (operand->memtype & ASM_OP_INDEX) ? 
+		    get_reg_intel(operand->indexr, operand->regset) : "";
     }
   return (to_ret);
 }

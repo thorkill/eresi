@@ -64,19 +64,16 @@ int op_esc7(asm_instr *instr, u_char *opcode, u_int len, asm_processor *proc)
   }
   if (*(opcode + 1) != 0xe0) {
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-    instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODED,
-				  instr, 0);
-#else
     instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_ENCODED,
 				  instr);
-#endif
 #else
     instr->op[0].content = ASM_CONTENT_ENCODED;
     operand_rmv(&instr->op[0], opcode + 1, len - 1, proc);
     instr->len += instr->op[0].len;
 #endif
-  } else
-  instr->len++;
+  } 
+	else
+    instr->len++;
+
   return (instr->len);
 }

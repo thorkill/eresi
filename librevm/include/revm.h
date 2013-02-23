@@ -601,7 +601,6 @@ int		revm_isnbr(char *string);
 void		revm_workfiles_load();
 int		revm_implicit(revmcmd_t *actual);
 int	        revm_workfiles_unload();
-int		dprintf(int fd, char *format, ...);
 void	        revm_pht_print(elfsh_Phdr *phdr, uint16_t num, eresi_Addr base);
 char		*revm_fetch_sht_typedesc(elfsh_Word typenum);
 int             revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag);

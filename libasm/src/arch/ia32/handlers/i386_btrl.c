@@ -25,16 +25,8 @@ int     i386_btrl(asm_instr *new, u_char *opcode, u_int len,
   new->type = ASM_TYPE_BITTEST | ASM_TYPE_BITSET | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_CF;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_CONTENT_ENCODED, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1,				ASM_CONTENT_ENCODED, new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_CONTENT_IMMEDIATEBYTE, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,				ASM_CONTENT_IMMEDIATEBYTE, new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new);
 
   return (new->len);
 }

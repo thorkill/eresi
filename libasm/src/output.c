@@ -53,20 +53,35 @@ int	asm_debug_operand(asm_operand * op)
   fprintf(stderr, "[*] Operand Dump\n[*] len: %d type: %d size: %d content: %d\n",
 	  op->len, op->type, op->size, op->content);
   
-  fprintf(stderr, "[*] Type: %s %s %s %s %s %s %s\n",
-	  (op->type & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
-	  (op->type & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
-	  (op->type & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
-	  (op->type & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
-	  (op->type & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
-	  (op->type & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
+  switch (op->type)
+  {
+    case ASM_OPTYPE_REG:
+      fprintf(stderr, "[*] Type: ASM_OPTYPE_REG\n");
+      break;
+    case ASM_OPTYPE_IMM:
+      fprintf(stderr, "[*] Type: ASM_OPTYPE_IMM\n");
+      break;
+    case ASM_OPTYPE_MEM:
+      fprintf(stderr, "[*] Type: ASM_OPTYPE_MEM\n");
+      fprintf(stderr, "[*] Memory Type: %s %s %s %s %s %s\n",
+  	    (op->memtype & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
+    	  (op->memtype & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
+    	  (op->memtype & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
+    	  (op->memtype & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
+    	  (op->memtype & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
+    	  (op->memtype & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
+      break;
+    default:
+      fprintf(stderr, "[*] Type: UNKNOWN!\n");
+      break;
+  }
   
   return 0;
 }
 
 /**
- * @brief Return a string describing the instruction content flag
- * @param content Instruction type
+ * @brief Return a string describing the operand content
+ * @param content Operand content
  * @return A pointer to a static string
  */
 
@@ -103,9 +118,20 @@ char	*asm_operand_content_string(int content)
   return ("undocumented content");
 }
 
+/**
+ * @brief Return a string describing the operand type
+ * @param content Operand type
+ * @return A pointer to a static string
+ */
 
-
-
-
-
+char	*asm_operand_type_string(int type)
+{
+  switch (type)
+  {
+    case ASM_OPTYPE_REG: return ("register");
+    case ASM_OPTYPE_IMM: return ("immediate");
+    case ASM_OPTYPE_MEM: return ("memory");
+    case ASM_OPTYPE_NONE: default: return ("none");
+  }
+}
 

@@ -13,10 +13,10 @@ typedef struct s_asm_i386_processor	asm_i386_processor;
 typedef struct s_asm_i386_table		asm_i386_table;
 
 /* Prototypes for IA32 specific API */
-void		asm_resolve_ia32(void *d, eresi_Addr, char *, u_int);
-int		asm_ia32_get_mode(asm_processor *proc);
-eresi_Addr	asm_dest_resolve(asm_processor *proc, eresi_Addr, u_int shift);
-int		asm_ia32_switch_mode(asm_processor *proc, int mode);
+void asm_resolve_ia32(void *d, eresi_Addr, char *, u_int);
+int asm_ia32_get_mode(asm_processor *proc);
+eresi_Addr asm_dest_resolve(asm_processor *proc, eresi_Addr, u_int shift);
+int asm_ia32_switch_mode(asm_processor *proc, int mode);
 
 /** Are we in protected mode or real mode ? */
 enum e_asm_proc_mode 
@@ -24,11 +24,6 @@ enum e_asm_proc_mode
   INTEL_REAL,
   INTEL_PROT
 };
-
-
-/** IA32 related functions */
-int	asm_content_pack(asm_operand *, int, int);
-int	asm_fixed_pack(int, int, int, int);
 
 
 /**

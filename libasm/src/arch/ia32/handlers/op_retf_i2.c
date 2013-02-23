@@ -19,12 +19,6 @@ int op_retf_i2(asm_instr *instr, u_char *opcode, u_int len,
   instr->len += 1;
   instr->type = ASM_TYPE_RETPROC | ASM_TYPE_TOUCHSP | ASM_TYPE_EPILOG;
 
-#if WIP
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1,
-                                ASM_CONTENT_IMMEDIATEWORD, instr, 0);
-#else
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1,
-                                ASM_CONTENT_IMMEDIATEWORD, instr);
-#endif
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_IMMEDIATEWORD, instr);
   return (instr->len);
 }
