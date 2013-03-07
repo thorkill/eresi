@@ -158,7 +158,7 @@ int		revm_initio()
     {
       initial->recur[i].script = NULL;
       initial->recur[i].lstcmd = NULL;
-      initial->iter[i].listidx = REVM_IDX_UNINIT;
+      initial->iter[i].elmidx = REVM_IDX_UNINIT;
     }
 
   initial->recur[0].funcname = "top-level";
