@@ -194,7 +194,7 @@ int     elfsh_set_reladdend(elfsh_Rela *r, eresi_Addr val)
   if (r == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid NULL parameter", -1);
-  r->r_addend = (elfsh_Sword) val;
+  r->r_addend = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
