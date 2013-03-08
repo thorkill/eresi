@@ -87,7 +87,6 @@ void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontex
       fprintf(stderr, "\n\n ******* SIGNAL : entering E2dbg ******** \n\n");
       break;
     }
-  sleep(1);
 
   params.ac = 1;
   params.av = argv;
@@ -293,7 +292,7 @@ void		bpdebug(char *str, elfshbp_t *bp, eresi_Addr pc, elfshobj_t *parent)
   addr = (bp ? bp->addr : pc - off);
   
   fprintf(stderr, "%s (PC = %08X) ::: parent = %s (BP DESCRIPTOR = %08X) \n",
-	  str, pc, (parent ? parent->name : "NONE !!!!"), (eresi_Addr) bp);
+	  str, pc, (parent ? parent->name : "NO PARENT NAME"), (eresi_Addr) bp);
   if (!bp)
     return;
   
@@ -355,7 +354,7 @@ void			e2dbg_do_breakpoint()
   bp = hash_get(&e2dbgworld.bp, buf);
 
 #if __DEBUG_BP__
-  bpdebug("BEFORE", bp, *pc, parent);
+  //bpdebug("BEFORE", bp, *pc, parent);
   if (bp)
     fprintf(stderr, " SAVED INSTR BYTE = %02X and PC-BPSZ BYTE = %02X \n",
 	    bp->savedinstr[0], *((u_char *) *pc - bpsz));
@@ -464,7 +463,8 @@ void			e2dbg_do_breakpoint()
       else
 	fprintf(stderr, "Breakpoint was deleted from " AFMT " : not reinstalling ! \n",
 		e2dbgworld.stoppedthread->past);
-      bpdebug("AFTER SETBREAK", bp, *pc, parent);
+      //bpdebug("AFTER SETBREAK", bp, *pc, parent);
+      fprintf(stderr, "AFTER SETBREAK\n");
 #endif
       
       /* remove trace flag */	  
@@ -477,7 +477,6 @@ void			e2dbg_do_breakpoint()
 	  return;
 	}
     }
-
 
   /* Breakpoint case */
   else
@@ -517,18 +516,19 @@ void			e2dbg_do_breakpoint()
       bp->tid                         = (uint32_t) e2dbgworld.stoppedthread->tid;
 
 #if __DEBUG_BP__
-      bpdebug("AFTER RESET BREAK", bp, (eresi_Addr) *pc + bpsz, parent);
+      //bpdebug("AFTER RESET BREAK", bp, (eresi_Addr) *pc + bpsz, parent);
+      fprintf(stderr, "AFTER RESET BREAK\n");
 #endif
 
 #if __DEBUG_BP__
-      fprintf(stderr, " Breakpoint desinstalled at addr %08X \n", *pc);
+      //bpdebug("BREAK UNINSTALLED FROM ", bp, (eresi_Addr) *pc, parent);
 #endif
 
       if (bp->cmdnbr)
 	e2dbg_display(bp->cmd, bp->cmdnbr);
       else
 	e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
-	
+
 #if __DEBUG_BP__
       fprintf(stderr, " e2dbg display ! \n");
 #endif
@@ -536,6 +536,7 @@ void			e2dbg_do_breakpoint()
 #if __DEBUG_BP__
       fprintf(stderr, "PC before entry is addr %08X \n", *pc);
 #endif
+      
       
       savedpc = *pc;
       e2dbg_entry(NULL);

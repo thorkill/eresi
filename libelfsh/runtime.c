@@ -95,14 +95,15 @@ int		elfsh_munprotect_userland(elfshobj_t *file, eresi_Addr addr, uint32_t sz)
     prot |= PROT_EXEC;
 
   retval = mprotect((void *) (addr - addr % getpagesize()), 
-		    getpagesize(), PROT_READ | PROT_WRITE);
+		    getpagesize(), PROT_READ | PROT_WRITE | PROT_EXEC);
 
   if (retval != 0)
     {
-      perror("mprotect");
+      perror("munprotect");
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 			"Failed mprotect", -1);
     }
+
   /* Return the original rights */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
 		     prot);
@@ -126,8 +127,11 @@ int		elfsh_mprotect_userland(elfshobj_t *file, eresi_Addr addr, uint32_t sz, int
   retval = mprotect((void *) (long) addr - (long) addr % getpagesize(), 
 		    getpagesize(), prot);
   if (retval != 0)
+    {
+      perror("mprotect");
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Failed munprotect", -1);
+		   "Failed munprotect", -1);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, retval);
 }

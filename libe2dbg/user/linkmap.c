@@ -34,6 +34,7 @@ int			e2dbg_linkmap_load(char *name)
   elfsh_Ehdr		*hdr;
   u_int			elftypenum;
   elfsh_Sym		*endsym;
+  char			buff[64];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (done)
@@ -212,6 +213,10 @@ int			e2dbg_linkmap_load(char *name)
   e2dbg_output("\n");
   //elfsh_set_runtime_mode();
   revm_doswitch(1);
+
+  snprintf(buff, sizeof(buff), " [*] Target PID = %u \n", getpid());
+  e2dbg_output(buff);
+
   done = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
