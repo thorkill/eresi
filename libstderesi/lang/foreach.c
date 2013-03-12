@@ -134,7 +134,7 @@ static int	revm_induction_record(revmexpr_t *induction, char *curkey,
 
   /* If we have to process this element (default, or when using regex, if match) */
   if (world.curjob->iter[world.curjob->curloop].looptype != REVM_LOOP_REGEX ||
-      !regexec(&world.curjob->curcmd->regx[0], curkey, 0, 0, 0))
+      !regexec(world.curjob->iter[world.curjob->curloop].usedregx, curkey, 0, 0, 0))
     {
 
       /* Case of simply typed induction variable */
@@ -477,6 +477,7 @@ int		cmd_foreach()
   /* Depends the mode we are in */
   looptype = (world.curjob->curcmd->argc == 3   ? REVM_LOOP_SIMPLE : 
 	      world.curjob->curcmd->use_regx[0] ? REVM_LOOP_REGEX  : REVM_LOOP_RANGE);
+
   world.curjob->iter[world.curjob->curloop].looptype = looptype;
 
   /* Create or get the induction variable */
@@ -491,6 +492,7 @@ int		cmd_foreach()
       /* Syntax: foreach elmvar of list/hash [as regx] */
     case REVM_LOOP_SIMPLE:
     case REVM_LOOP_REGEX:
+      world.curjob->iter[world.curjob->curloop].usedregx = &world.curjob->curcmd->regx[0];
       container = revm_iterator_get(world.curjob->curcmd->param[2], &keys, &keynbr, &tableorlist);
       if (!container)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,

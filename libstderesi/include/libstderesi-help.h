@@ -285,6 +285,7 @@
 #define	HLP_DELETE		"Delete breakpoint by symbol, addr, or ID"
 #define	HLP_CONTINUE		"Continue executing debuggee program after break"
 #define	HLP_NEXT		"Step debuggee program to next instruction"
+#define HLP_STEP		"Enable stepping (kedbg only)"
 #define	HLP_DISPLAY		"List or add displayed commands on breakpoints hits or step"
 #define	HLP_UNDISPLAY		"UNIMPLEMENTED : Remove a display command"
 #define HLP_THREADS		"Print existing threads list or switch to a given thread view"

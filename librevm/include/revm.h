@@ -352,6 +352,7 @@ typedef struct		s_revmiter
 #define REVM_LOOP_REGEX   2
 #define REVM_LOOP_RANGE   3
   u_char		looptype;	/* Loop construct type */
+  regex_t		*usedregx;	/* Regx */
 }			revmiter_t;  
 
 /* This structure stores the current state of a REWRITE transformation (job specific) */
