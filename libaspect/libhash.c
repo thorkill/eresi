@@ -185,8 +185,6 @@ int		hash_add(hash_t *h, char *key, void *data)
   u_int		index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //Weaken the check : do not hash_get(h, key) check and do not check !data
   if (!h || !key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
@@ -232,6 +230,8 @@ int		hash_del(hash_t *h, char *key)
   listent_t	*todel;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
+  //fprintf(stderr, " DEL %s from %s \n", key, h->name);
 
   /* Check the first entry for this hash */
   actual = hash_get_head(h, key);
@@ -318,9 +318,14 @@ int		hash_set(hash_t *h, char *key, void *data)
 {
   listent_t	*ent;
 
+  //fprintf(stderr, " SET %s in %s \n", key, h->name);
+
   ent = hash_get_ent(h, key);
   if (!ent || (!ent->key && !ent->data))
-    return (hash_add(h, key, data));
+    {
+      //fprintf(stderr, " NEWSET %s in %s \n", key, h->name);
+      return (hash_add(h, key, data));
+    }
   ent->data = data;
   return (0);
 }

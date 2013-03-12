@@ -12,6 +12,7 @@ void     kedbg_register_command(void)
   revm_command_add(CMD_START,     cmd_kedbgcont, NULL, 0, HLP_START);
   revm_command_add(CMD_CONTINUE,  cmd_kedbgcont, NULL, 0, HLP_CONTINUE);
   revm_command_add(CMD_CONTINUE2, cmd_kedbgcont, NULL, 0, HLP_CONTINUE);
+  revm_command_add(CMD_CONTINUE3, cmd_kedbgcont, NULL, 0, HLP_CONTINUE);
 
   /* Debugger only script commands */
   revm_command_add(CMD_MODE, cmd_mode, revm_getvarparams, 0, HLP_MODE);

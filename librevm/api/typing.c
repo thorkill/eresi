@@ -267,23 +267,14 @@ int		revm_type_reflect(hash_t *hash, char *typename)
      snprintf(logbuf, sizeof(logbuf), "%c%s_%s", 
 	      REVM_VAR_PREFIX, typename, keys[index]);
 
-     //if (!strcmp(typename, "func"))
-     //sleep(10);
-
      result = revm_inform_type_addr(typename, logbuf, (eresi_Addr) data, NULL, 0, 1);
-     
-     /*
      if (!result)
-       {
-	 fprintf(stderr, "FAILED TO REFLECT %s OBJECT OF KEY %s \n", typename, keys[index]);
-	 sleep(10);
-       }
-     else
-       {
-	 fprintf(stderr, "SUCCESS TO REFLECT %s OBJECT OF KEY %s \n", typename, keys[index]);
-	 revm_expr_print(result, 0);
-       }
-     */
+       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Failed to reflect data type", -1);
+     
+#if __DEBUG_REFLECT__
+     fprintf(stderr, "SUCCESS TO REFLECT %s OBJECT OF KEY %s \n", typename, keys[index]);
+     revm_expr_print(result, 0);
+#endif
 
    }
  hash_free_keys(keys);

@@ -92,6 +92,7 @@ static int	revm_print_block_handler(listent_t *e, void *null)
   revmexpr_t	*expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  fprintf(stderr, "Called revm_print_block_handler\n");
   expr = (revmexpr_t *) e->data;
   revm_expr_print(expr, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

@@ -42,11 +42,6 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   u_int			curoff;
   eresi_Addr		found_ref = 0;
 
-#if __DEBUG_E2DBG__
-  char		buf[BUFSIZ];
-  u_int		len;
-#endif
-
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_E2DBG__
@@ -128,7 +123,7 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
 
   if (!obj.strsz)
     {
-      write(2, " Unable to find STRSZ from PT_DYNAMIC\n", 39);
+      write(2, " Unable to find STRSZ from PT_DYNAMIC\n", 38);
       return (-1);
     }
   
@@ -139,14 +134,14 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
     }
  
 #if __DEBUG_E2DBG__
-  write(1, "6", 1);
+  write(2, "6", 1);
 #endif
 
   XSEEK(obj.fd, obj.stroff, SEEK_SET, 0);
   XREAD(obj.fd, strtab, obj.strsz, 0);
 
 #if __DEBUG_E2DBG__
-  write(1, "7", 1);
+  write(2, "7", 1);
 #endif
 
   /* XXX: Assume that strtab is always just after symtab */
@@ -167,24 +162,17 @@ eresi_Addr		e2dbg_dlsect(char *objname, char *sect2resolve,
   if (!found_ref)
     {
       //write(2, "Unable to find reference symbol in object\n", 42);
-      PROFILE_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find reference symbol in object\n", 0);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unable to find reference symbol in object\n", 0);
     }
 		 
-
-#if __DEBUG_E2DBG__
-  write(2, " Success !\n", 11);
-  //len = snprintf(buf, sizeof(buf), 
-  //		 " [*] REFADDR = " XFMT " / FOUNDREF = " XFMT " / GOT = " XFMT " \n", 
-  //		 refaddr, found_ref, got);
-  //write(2, buf, len);
-#endif
-
   /* Close the file */
   XCLOSE(obj.fd, 0);
 
+#if __DEBUG_E2DBG__
   /* The reference addr is useful to deduce library base addresses */
-  write(2, "Now returning from e2dbg_dlsect \n", 33);
-  
+  write(2, " [*] Succesfully resolved all needed symbols \n", 46);
+#endif
+
   return (got + refaddr - found_ref);
 }
 
@@ -208,10 +196,12 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
   elfshlinkmap_t	*curobj;
   elfsh_Ehdr		hdr;
 
+  /*
 #if __DEBUG_E2DBG__
   char		buf[BUFSIZ];
   u_int		len;
 #endif
+  */
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -286,12 +276,17 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
 	  return (-1);
 	}
       
-#if __DEBUG_E2DBG__
+      /* 
+      ** You may not be able to call snprintf at this stage
+      ** as some libc snprintf will call malloc (yuk).
+      **
+      #if __DEBUG_E2DBG__
       len = snprintf(buf, sizeof(buf), 
-		     " [*] SYMOFF = "UFMT" ("XFMT"), STROFF = "UFMT" ("XFMT"), STRSZ = "UFMT" \n",
-		     obj.symoff, obj.symoff, obj.stroff, obj.stroff, obj.strsz);
+      " [*] SYMOFF = "UFMT" ("XFMT"), STROFF = "UFMT" ("XFMT"), STRSZ = "UFMT" \n",
+      obj.symoff, obj.symoff, obj.stroff, obj.stroff, obj.strsz);
       write(2, buf, len);
-#endif
+      #endif
+      */
 
       XCLOSE(obj.fd, 0);
       
@@ -306,15 +301,20 @@ eresi_Addr		e2dbg_dlsym(char *sym2resolve)
 	    {
 	      found_sym = cursym.st_value;
       
-#if __DEBUG_E2DBG__
-	      len = snprintf(buf, sizeof(buf), 
-			     " [*] FOUNDSYM (%s) = " XFMT "\n", 
-			     strtab + cursym.st_name, found_sym);
-	      write(2, buf, len);
-#endif
+	      /*
+	      ** You may not be able to call snprintf on all OS
+	      ** as some implementations call malloc. Disabled
+	      ** formatted debugging.
+		#if __DEBUG_E2DBG__
+		len = snprintf(buf, sizeof(buf), 
+		" [*] FOUNDSYM (%s) = " XFMT "\n", 
+		strtab + cursym.st_name, found_sym);
+		write(2, buf, len);
+		#endif
+	      */
 
 	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-				 curobj->laddr + found_sym);
+			    curobj->laddr + found_sym);
 	    }
 	}
     }
@@ -343,7 +343,6 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #elif defined(sun)
   Dl_info		info;
 #endif
-
 
 #if __DEBUG_E2DBG__
   char      buf[BUFSIZ];
@@ -403,13 +402,8 @@ elfshlinkmap_t*		e2dbg_linkmap_getaddr()
 #endif
 
 #if __DEBUG_E2DBG__
-  //len = sprintf(buf, 
-  //		" [*] Guessed Linkmap address = " XFMT " \n--------------\n", 
-  //		(eresi_Addr) lm);
-  //write(2, buf, len);
-#endif
-
   write(2, "Now returning from e2dbg_linkmap_getaddr \n", 42);
+#endif
 
   return (lm);
 }

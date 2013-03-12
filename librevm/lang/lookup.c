@@ -290,14 +290,12 @@ char			*revm_lookup_string(char *param)
 {
   revmexpr_t		*expr;
   revmobj_t		*ptr;
-  char			*oldparam;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!param)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		     "Invalid NULL parameter", (NULL));
 
-  oldparam = param;
   param = strdup(param);
 
   /* Support for lazy creation of variables */

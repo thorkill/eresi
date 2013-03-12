@@ -54,13 +54,16 @@ void		revm_print_actual(revmargv_t *cur)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(logbuf, BUFSIZ - 1, "~%s ", cur->name);
-  revm_output(logbuf);
+  //revm_output(logbuf);
+  fprintf(stderr, "%s ", logbuf);
   for (idx = 0; cur->param[idx] && idx < 10; idx++)
     {
       snprintf(logbuf, BUFSIZ - 1, "%s ", cur->param[idx]);
-      revm_output(logbuf);
+      fprintf(stderr, "%s", logbuf);
+      //revm_output(logbuf);
     }
-  putchar('\n');
+  //putchar('\n');
+  fprintf(stderr, "\n");
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

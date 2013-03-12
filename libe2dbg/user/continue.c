@@ -69,6 +69,15 @@ int	        cmd_cont()
   if (!world.state.revm_quiet)
     e2dbg_output(" [*] Continuing process\n");
 
+  if (e2dbgworld.curthread->step)
+    {
+      if (e2dbg_resetstep() < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			  "Failed to disable stepping", -1);
+      e2dbgworld.curthread->step = 0;
+      e2dbgworld.curthread->count = E2DBG_BREAK_FINISHED;
+    }
+
   /* Set back the current thread to the stopped thread */
   e2dbg_setregs();
   if (e2dbgworld.stoppedthread->tid != e2dbgworld.curthread->tid)

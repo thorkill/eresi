@@ -67,11 +67,11 @@ void		e2dbg_watch()
 void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontext)
 {
   char		*argv[2];
-  ucontext_t	*context;
+  //ucontext_t	*context;
   e2dbgparams_t	params;
 
   CLRSIG;
-  context = (ucontext_t *) pcontext;
+  //context = (ucontext_t *) pcontext;
   argv[0] = E2DBG_ARGV0;
   argv[1] = NULL;
 
@@ -106,12 +106,12 @@ void            e2dbg_sigsegv_handler(int signum, siginfo_t *info, void *pcontex
 void            e2dbg_internal_sigsegv_handler(int signum, siginfo_t *info, 
 					       void *pcontext)
 {
-  ucontext_t	*context;
+  //ucontext_t	*context;
 
   CLRSIG;
   if (profiler_enabled())
     profiler_disable_all();
-  context = (ucontext_t *) pcontext;
+  //context = (ucontext_t *) pcontext;
   fprintf(stderr, "\n [!] Segfault in E2dbg, exiting ...\n\n");
   e2dbg_bt();
   cmd_quit();
@@ -221,7 +221,7 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 	  (unsigned int) curthread->tid);
 #endif
   
-  /* Make it wait until the breakpoint is finished to process */
+  /* Make it wait until the breakpoint was processed by all other threads */
   e2dbgworld.threadsyncnbr++;
   e2dbg_mutex_lock(&e2dbgworld.dbgbp);
   e2dbg_mutex_unlock(&e2dbgworld.dbgbp);
@@ -247,7 +247,7 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info, void *pcontext
 void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontext)
 {
   char		*argv[2];
-  ucontext_t	*context;
+  //ucontext_t	*context;
   e2dbgparams_t	params;
 
   CLRSIG;
@@ -260,7 +260,7 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info, void *pcontex
     e2dbg_output(" [*] Debugger in SIGTRAP handler\n");
 #endif
 
-  context = (ucontext_t *) pcontext;
+  //context = (ucontext_t *) pcontext;
   argv[0] = E2DBG_ARGV0;
   argv[1] = NULL;
   e2dbg_output(" [*] SIGTRAP : Entering E2dbg.\n");
@@ -304,13 +304,61 @@ void		bpdebug(char *str, elfshbp_t *bp, eresi_Addr pc, elfshobj_t *parent)
 #endif
 
 
-/**
- * Signal handler for SIGUSR1 in debugger 
- *
- */
-void			e2dbg_do_breakpoint()
+
+
+/** Reinstall a breakpoint */
+void			e2dbg_breakpoint_reinstall()
 {
-  char			*argv[2];
+  elfshbp_t		*bp;
+  char			buf[32];
+  int			ret;
+
+  /* Test if we need to reinstall a breakpoint */
+  snprintf(buf, sizeof(buf), XFMT, e2dbgworld.stoppedthread->past);
+  bp = hash_get(&e2dbgworld.bp, buf);
+  
+  /* Call the architecture dependant hook for putting back the breakpoint */
+  if (bp)
+    {
+      ret = e2dbg_setbreak(bp->obj, bp);
+      if (ret < 0)
+	{
+	  e2dbg_output(" [E] Breakpoint reinsertion failed");
+	  return;
+	}
+      
+      //#if __DEBUG_BP__
+      fprintf(stderr, " [D] Breakpoint reinserted at " AFMT " ! \n", bp->addr);
+      //#endif
+      
+      e2dbgworld.stoppedthread->past = 0;
+    }
+  else
+    fprintf(stderr, " [D] Breakpoint was deleted from " AFMT " : not reinstalling ! \n",
+	    e2dbgworld.stoppedthread->past);
+}
+
+
+
+
+/**
+ * The Real routine that handles each thread-specific breakpoint state machine.
+ * 
+ * breakpoint case:
+ * 
+ * 0-1: restore old instr, enable step, set bp addr in ->past, reset pc to orig bp addr
+ * 1-2: do nothing (just executed instr)
+ * 2-3: reinstall, resetstep, thread_contall, curthread->was_step = 0, 
+ *     stoppedthread->count = NONE; e2dbgworld.curbp = NULL; stoppedthread = RUNNING
+ *
+ * stepping case:
+ * 
+ * 0-1: print current instr; reinstall
+ *      stoppedthread->state = BREAKING; thread_contall; 
+ *      was_step = 0; count = NONE; curbp = NULL; stoppedthread->state = RUNNING
+ */
+void			e2dbg_breakpoint_process()
+{
   char			buf[32];
   elfshbp_t		*bp;
   int			prot;
@@ -327,12 +375,10 @@ void			e2dbg_do_breakpoint()
   elfsh_Sym		*sym;
 
 #if __DEBUG_BP__
-  fprintf(stderr, "Entering breakpoint handler ... \n");
+  fprintf(stderr, " [D] Entering breakpoint handler\n");
 #endif
 
   /* Set all registers as variables and get PC */
-  argv[0] = "e2dbg";
-  argv[1] = NULL;
   e2dbg_user_hooks_install();
   e2dbg_getregs(); 
   pc = e2dbg_getpc();
@@ -346,7 +392,7 @@ void			e2dbg_do_breakpoint()
 
   /* Try to find the breakpoint at current instruction pointer */
 #if __DEBUG_BP__
-  fprintf(stderr, "[PC = %08X] Trying to find breakpoint at addr %08X (bpsize = %u)\n", 
+  fprintf(stderr, " [D] At PC = %08X : Trying to find breakpoint at addr %08X (bpsize = %u)\n", 
 	  *pc, *pc - bpsz, bpsz);
 #endif
 
@@ -354,15 +400,14 @@ void			e2dbg_do_breakpoint()
   bp = hash_get(&e2dbgworld.bp, buf);
 
 #if __DEBUG_BP__
-  //bpdebug("BEFORE", bp, *pc, parent);
   if (bp)
-    fprintf(stderr, " SAVED INSTR BYTE = %02X and PC-BPSZ BYTE = %02X \n",
+    fprintf(stderr, " [D] Saved instruction BYTE = %02X and PC-BPSZ BYTE = %02X \n",
 	    bp->savedinstr[0], *((u_char *) *pc - bpsz));
   else
-    fprintf(stderr, "No BP found at %08X ! \n", *pc);
+    fprintf(stderr, " [D] No BP found at %08X ! \n", *pc);
 #endif
 
-  /* If we are single-stepping or if we are stepping the breaked instruction */
+  /* Case of processing breakpoint, or if we are single-stepping */
   if (!bp || (bp->savedinstr[0] == *((u_char *) *pc - bpsz)))
     {
 
@@ -371,7 +416,7 @@ void			e2dbg_do_breakpoint()
 	{
 
 #if __DEBUG_BP__
-	  fprintf(stderr, "Single-stepping -IS- enabled \n");
+	  fprintf(stderr, " [D] Single-stepping -IS- enabled \n");
 #endif
 
 	  ret = asm_read_instr(&ptr, (u_char *) *pc, 16, world.curjob->proc);
@@ -384,8 +429,9 @@ void			e2dbg_do_breakpoint()
 					      &off, ELFSH_LOWSYM);
 
 #if __DEBUG_BP__
-	  printf("Found parent = %08X (%s) in step (name = %s, parentsect = %s) off = %u\n", 
-		 (eresi_Addr) parent, parent->name, name, sect->name, off);
+	  fprintf(stderr, 
+		  " [D] Found parent = %08X (%s) in step (name = %s, parentsect = %s) off = %u\n", 
+		  (eresi_Addr) parent, parent->name, name, sect->name, off);
 #endif
 
 	  revm_instr_display(-1, *pc, 0, 20, name, off, (char *) *pc);
@@ -394,11 +440,13 @@ void			e2dbg_do_breakpoint()
 	    e2dbg_entry(NULL);
 	  else
 	    e2dbg_watch();
+
+	  e2dbg_breakpoint_reinstall();
 	  return;
 	}
+
 #if __DEBUG_BP__
-      else
-	fprintf(stderr, "Single-stepping is -NOT- enabled \n");
+      fprintf(stderr, " [D] Single-stepping is -NOT- enabled \n");
 #endif
 
       /* Here starts the real stuff 
@@ -410,86 +458,53 @@ void			e2dbg_do_breakpoint()
       e2dbgworld.stoppedthread->count++;	
       
 #if __DEBUG_BP__
-      printf(" [C] Count %u -> %u for thread ID %u \n", 
+      fprintf(stderr, " [C] Count %u -> %u for thread ID %u \n", 
 	     e2dbgworld.stoppedthread->count - 1, 
 	     e2dbgworld.stoppedthread->count, 
 	     ((unsigned int) e2dbgworld.stoppedthread->tid));
 #endif
-
+      
       /* execute the previously restored instruction */
-      if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_EXEC &&
-	  !e2dbgworld.stoppedthread->step)
+      if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_EXEC)
 	{
 #if __DEBUG_BP__
-	  printf(" [*] [pc = %08x] Debuggee executed restored instruction \n", *pc);
+	  printf(" [D] At PC = 0x%X : Debuggee executed restored instruction \n", *pc);
 #endif
 	  return;
 	}
       
       /* Suggested by andrewg, useful when debugging valgrind */
-      if (e2dbgworld.stoppedthread->count > E2DBG_BREAK_MAX &&
-	  !e2dbgworld.stoppedthread->step)
+      if (e2dbgworld.stoppedthread->count > E2DBG_BREAK_MAX)
 	{
 	  printf(".::- E2DBG WARNING -::.\n"
 		 "Breakpoint triggered at location " AFMT " which we don't know about.\n\n"
-		 "This may be an anti-debug trick or the program MAY be inside another\n"
-		 "debugger that uses breakpoints. (count = " UFMT ", step is off)\n\n" 
-		 "This use of e2dbg is unsupported for now, exiting .. \n\n", 
+		 "This may be an anti-debug trick or the program may be inside another\n"
+		 "debugger. Exiting (DEBUG: count = " UFMT ", step is off)\n\n",
 		 *pc - bpsz, e2dbgworld.stoppedthread->count);
 	  return;
 	}
 
-      /* Test if we need to reinstall a breakpoint */
-      snprintf(buf, sizeof(buf), XFMT, e2dbgworld.stoppedthread->past);
-      bp = hash_get(&e2dbgworld.bp, buf);
-
-      /* Call the architecture dependant hook for putting back the breakpoint */
-      if (bp)
-	{
-	  ret = e2dbg_setbreak(bp->obj, bp);
-	  if (ret < 0)
-	    {
-	      e2dbg_output(" [E] Breakpoint reinsertion failed");
-	      return;
-	    }
-
-#if __DEBUG_BP__
-	  fprintf(stderr, " Breakpoint reinserted at " AFMT " ! \n", bp->addr);
-#endif
-
-	  e2dbgworld.stoppedthread->past = 0;
-	}
-#if __DEBUG_BP__
-      else
-	fprintf(stderr, "Breakpoint was deleted from " AFMT " : not reinstalling ! \n",
-		e2dbgworld.stoppedthread->past);
-      //bpdebug("AFTER SETBREAK", bp, *pc, parent);
-      fprintf(stderr, "AFTER SETBREAK\n");
-#endif
+      e2dbg_breakpoint_reinstall();
       
       /* remove trace flag */	  
-      if (!e2dbgworld.stoppedthread->step)
-	{
 #if __DEBUG_BP__
-	  fprintf(stderr, " [S] [PC = " AFMT "] RESETING STEP MODE ! \n", *pc);
+      fprintf(stderr, " [D] At PC = " AFMT " Resetting STEP mode\n", *pc);
 #endif
-	  e2dbg_resetstep();
-	  return;
-	}
+      e2dbg_resetstep();
+      return;
     }
 
-  /* Breakpoint case */
+  /* Case of newly hit breakpoint */
   else
     {
       name = revm_resolve(parent, (eresi_Addr) *pc - bpsz, &off);
       s    = (e2dbg_is_watchpoint(bp) ? "Watch" : "Break");
 
-
 #if __DEBUG_BP__
-      printf(" [C] Count set to 1 for thread ID %u \n", 
-	     (unsigned int) e2dbgworld.stoppedthread->tid);
+      fprintf(stderr, " [C] Count set to 1 (HIT) for thread ID %u \n", 
+		(unsigned int) e2dbgworld.stoppedthread->tid);
 #endif      
-
+      
       if (off)
 	printf(" [*] %spoint found at " XFMT " <%s + " DFMT "> in thread %u \n\n", 
 	       s, *pc - bpsz, name, off, (unsigned int) e2dbgworld.stoppedthread->tid);
@@ -504,10 +519,11 @@ void			e2dbg_do_breakpoint()
       prot = elfsh_munprotect(bp->obj, *pc,  bpsz);
       memcpy((u_char *) *pc, bp->savedinstr, bpsz);
       elfsh_mprotect(bp->obj, *pc, bpsz, prot);
+
       e2dbg_setstep();
 
 #if __DEBUG_BP__
-      fprintf(stderr, " [S] SETTING STEP MODE ! \n");
+      fprintf(stderr, " [D] Setting Step mode \n");
 #endif
 
       e2dbgworld.stoppedthread->past  = *pc;
@@ -516,12 +532,7 @@ void			e2dbg_do_breakpoint()
       bp->tid                         = (uint32_t) e2dbgworld.stoppedthread->tid;
 
 #if __DEBUG_BP__
-      //bpdebug("AFTER RESET BREAK", bp, (eresi_Addr) *pc + bpsz, parent);
-      fprintf(stderr, "AFTER RESET BREAK\n");
-#endif
-
-#if __DEBUG_BP__
-      //bpdebug("BREAK UNINSTALLED FROM ", bp, (eresi_Addr) *pc, parent);
+      fprintf(stderr, " [D] Reset break \n");
 #endif
 
       if (bp->cmdnbr)
@@ -530,20 +541,19 @@ void			e2dbg_do_breakpoint()
 	e2dbg_display(e2dbgworld.displaycmd, e2dbgworld.displaynbr);
 
 #if __DEBUG_BP__
-      fprintf(stderr, " e2dbg display ! \n");
+      fprintf(stderr, " [D] After BP display \n");
 #endif
 
 #if __DEBUG_BP__
-      fprintf(stderr, "PC before entry is addr %08X \n", *pc);
+      fprintf(stderr, " [D] PC before entry is addr 0x%X \n", *pc);
 #endif
-      
       
       savedpc = *pc;
       e2dbg_entry(NULL);
       *pc = savedpc;
 
 #if __DEBUG_BP__
-      fprintf(stderr, "[PC = %08X] RETURNED FROM HANDLER WITH STEP ENABLED \n",
+      fprintf(stderr, " [D] At PC = 0x%X : returned from BP handler with step enabled\n",
 	      *pc);
 #endif
     }
@@ -551,10 +561,10 @@ void			e2dbg_do_breakpoint()
 
 
 /**
- * The breakpoint routine. Save registers and callback 
- * @param signum
- * @param info
- * @param pcontext
+ * SIGTRAP signal handler (The breakpoint routine). Save registers and callback. Multi-thread safe.
+ * @param signum Received signal number.
+ * @param info Signal info structure from breakpoint.
+ * @param pcontext Context data pointer containing register values and more.
  * @return
 */
 void			e2dbg_generic_breakpoint(int		signum, 
@@ -575,22 +585,14 @@ void			e2dbg_generic_breakpoint(int		signum,
       e2dbg_mutex_lock(&e2dbgworld.dbgbp);
 
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
-      e2dbg_output("-------------- ON-BREAK REGISTERS ----------------------->\n");
+      //e2dbg_output("-------------- ON-BREAK REGISTERS ----------------------->\n");
       //cmd_dumpregs();
-      e2dbg_output("<------------------------------------------------------\n");
+      //e2dbg_output("<------------------------------------------------------\n");
       e2dbg_output("------------------------------------->\n");
       e2dbg_output(" [*] BP MUTEX LOCKED [e2dbg_generic_breakpoint] \n");
       //e2dbg_threads_print();
 #endif
     }
-  
-  /*
-  if (e2dbgworld.stoppedthread == NULL)
-    {
-      fprintf(stderr, "************** STOPPED THREAD == NULL !!!!!!!!! *********************** \n");
-      sleep(20);
-    }
-  */
 
   /* Get the current thread */
   stopped = (pthread_t) e2dbg_self();
@@ -623,7 +625,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 #endif
 
   /* Call the real breakpoint code */
-  e2dbg_do_breakpoint();
+  e2dbg_breakpoint_process();
 
   /* Continue all threads */
   if (e2dbgworld.stoppedthread->count == E2DBG_BREAK_FINISHED || 
@@ -634,6 +636,8 @@ void			e2dbg_generic_breakpoint(int		signum,
       e2dbgworld.stoppedthread->count = E2DBG_BREAK_NONE;
       e2dbgworld.curbp                = NULL;
   
+      fprintf(stderr, " [D] Thread ID %lu now has Count = 0 (NONE) \n", e2dbgworld.curthread->tid);
+
       /* Allow another breakpoint to be processed */
       if (e2dbg_mutex_unlock(&e2dbgworld.dbgbp) != 0)
 	e2dbg_output(" [*] Debuggee Cannot unlock breakpoint mutex ! \n");
@@ -648,7 +652,7 @@ void			e2dbg_generic_breakpoint(int		signum,
 
 #if (__DEBUG_THREADS__ || __DEBUG_E2DBG__ || __DEBUG_MUTEX__ || __DEBUG_BP__)
   else
-    fprintf(stderr, " NOT CONTINUING BECAUSE STOPPED THREAD (%u) STATE COUNT = %u \n", 
+    fprintf(stderr, " [D] No SIGCONT as thread (%u) is stopped with state count = %u \n", 
 	    (u_int) e2dbgworld.stoppedthread->tid, e2dbgworld.stoppedthread->count);
 #endif
 
@@ -657,7 +661,7 @@ void			e2dbg_generic_breakpoint(int		signum,
   SETSIG;
 
 #if __DEBUG_BP__
-  fprintf(stderr, " RETURNING FROM GENERIC SIGNAL HANDLER \n");
+  fprintf(stderr, " [D] Returning from generic signal handler\n");
 #endif
 }
 

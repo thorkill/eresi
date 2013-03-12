@@ -248,14 +248,14 @@ while(0)
 #define	INTERVAL(a, b, c) (a <= b && b < c)
 
 /**
- * Profiling macros 
+ * Profiling macros - some artifact to shut gcc up
  */
-#define	NOPROFILER_IN()    int profileme = 0
+#define	NOPROFILER_IN()  int profileme = 0
 
 #define	NOPROFILER_OUT()	\
 do				\
 {				\
-  profileme = 0;		\
+  if (profileme);		\
   return;			\
 }				\
 while (0)
@@ -263,7 +263,7 @@ while (0)
 #define	NOPROFILER_ROUT(r)	\
 do				\
 {				\
-  profileme = 0;		\
+  if (profileme);		\
   return (r);			\
 }				\
 while (0)

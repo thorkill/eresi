@@ -162,12 +162,11 @@ int			cmd_set()
  end:
   if (e2->type->type != ASPECT_TYPE_HASH && e2->type->type != ASPECT_TYPE_LIST)
     {
-      //fprintf(stderr, "DESTROY EXPR %s AT BUG LOCATION \n", last->label);
-      revm_expr_destroy_by_name(last->label); // 
+      revm_expr_destroy_by_name(last->label); 
       last = revm_expr_copy(e2, REVM_VAR_RESULT, 0);
       if (!last)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Unable to set result expression", (-1));
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+      	       "Unable to set result expression", (-1));
     }
 
   /* Everything OK */

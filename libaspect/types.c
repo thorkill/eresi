@@ -317,7 +317,6 @@ aspectype_t		*aspect_type_create(u_char isunion,
   u_int			idx;
   u_int			size;
   hash_t		fields_hash;
-  u_char		updatetype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -327,7 +326,6 @@ aspectype_t		*aspect_type_create(u_char isunion,
 		 "Invalid NULL parameter", NULL);
 
   /* Subtyping was specified */
-  updatetype = 0;
   supertype = NULL;
   typename = strstr(label, "::");
   if (typename)

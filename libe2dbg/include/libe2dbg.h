@@ -571,6 +571,7 @@ int		cmd_start();
 int		cmd_dumpregs();
 int		cmd_cont();
 int		cmd_threads();
+int		cmd_next();
 
 /* Undefined on FreeBSD */
 #if defined(__FreeBSD__)

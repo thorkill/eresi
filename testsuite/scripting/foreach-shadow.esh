@@ -3,7 +3,7 @@
 # this tests should fail as induction variable is redefined improperly
 #
 
-profile enable warn
+#profile enable warn
 #quiet
 
 add $list[test] Intel

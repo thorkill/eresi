@@ -483,6 +483,7 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   o1 = e1->value;
   o2 = e2->value;
+  str = NULL;
 
   /* Do the real assignation */
   switch (o1->otype->type)
@@ -529,8 +530,8 @@ int			revm_object_set(revmexpr_t *e1, revmexpr_t *e2)
 	    revm_hash_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
 			  (void *) (eresi_Addr) val8, ASPECT_TYPE_BYTE);
 	  else if (o1->contype == CONT_LIST)
-	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, str,
-			ASPECT_TYPE_STR);
+	    revm_elist_set(o1->hname, o1->kname ? o1->kname : o2->kname, 
+			  (void *) (eresi_Addr) val8, ASPECT_TYPE_BYTE);
 	}
       else if (o1->set_obj(o1->parent, val8) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
@@ -673,6 +674,7 @@ int			revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
       revm_convert_object(e2, o1->otype->type);
       if (o2->otype->type != o1->otype->type)
 	{
+	  str = o2->immed_val.str;
 	  if (!o2->perm && o2->immed && 
 	      o2->otype->type == ASPECT_TYPE_STR && str != NULL)
 	    XFREE(__FILE__, __FUNCTION__, __LINE__,str);

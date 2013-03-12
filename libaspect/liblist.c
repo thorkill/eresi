@@ -465,7 +465,8 @@ char**		elist_get_keys(list_t *h, int* n)
 void		elist_free_keys(char **keys)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
+  if (keys)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 

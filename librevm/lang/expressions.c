@@ -526,9 +526,6 @@ revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  printf("Calling revm_expr_extend\n");
-  fflush(stdout);
-
   /* Find longest valid prefix */
   if (*dstname != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1150,7 +1147,7 @@ int		revm_expr_set_by_name(char *dest, char *source)
 /* Set an expression to the value of another (only if compatible) */
 int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 {
-  int		ret;
+  int		ret = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!adst || !asrc)
@@ -1221,7 +1218,7 @@ int		revm_expr_compare_by_name(char *original, char *candidate, eresi_Addr *val)
 /* Compare 2 typed expressions */
 int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
 {
-  int		ret;
+  int		ret = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -1288,8 +1285,8 @@ int		revm_expr_match_by_name(char *original, char *candidate)
 /* Match or not 2 typed expressions */
 int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
 {
-  int		ret;
-  eresi_Addr	*val;
+  int		ret  = 0;
+  eresi_Addr	*val = NULL;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!candid || !orig)
@@ -1465,146 +1462,205 @@ aspectype_t	*revm_exprtype_get(char *exprvalue)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
+/** Erase the expression from hash tables */
+static int	revm_expr_erase(revmexprctx_t *ctx)
+{
+  int		index;
+  revmexpr_t	*curexpr;
+  hash_t	*thash;
+  char		newname[BUFSIZ];
+  revmexpr_t	*prevexpr;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  
+  /* Remove expression from the most inner scope */
+  for (index = world.curjob->curscope; index >= 0; index--)
+    {
+      curexpr = hash_get(&world.curjob->recur[index].exprs, ctx->pathbuf);
+      if (curexpr)
+	{
+	  if (hash_del(&world.curjob->recur[index].exprs, ctx->pathbuf))
+	    {
+#if __DEBUG_EXPRS__
+	      fprintf(stderr, "\n [D] FAILED TO UNLINK EXPR %s from recur[%u].exprs\n", 
+		      ctx->pathbuf, index);
+#endif
+	    }
+	  else
+	    {
+#if __DEBUG_EXPRS__
+	      fprintf(stderr, "\n [D] UNLINKED EXPR %s from recur[%u].exprs\n", 
+		      ctx->pathbuf, index);
+#endif
+	    }	  
+	  break;
+	}
+    }
+  /* Update the global type hashes too by recovering a previous expression of that name, if any */
+  if (ctx->curexpr->type)
+    {
+      snprintf(newname, sizeof(newname), "type_%s", ctx->curexpr->type->name);
+      thash = hash_find(newname);
+      if (!thash)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Cannot find hash table for this expression type", -1);
+      if (hash_del(thash, ctx->pathbuf))
+	{
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, "\n [D] FAILED TO UNLINK EXPR %s from hash[type_%s] \n", 
+		  ctx->pathbuf, ctx->curexpr->type->name);
+#endif
+	}
+      else
+	{
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, "\n [D] UNLINKED EXPR %s from hash[type_%s] \n", 
+		  ctx->pathbuf, ctx->curexpr->type->name);
+#endif
+	}
+      
+      prevexpr = revm_expr_get(ctx->pathbuf);
+      if (prevexpr)
+	{
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n", 
+		  ctx->pathbuf, ctx->curexpr->type->name);
+#endif
+	  
+	  // In case previous (shadowed) variable with same name was not of the same type
+	  if (prevexpr->type->type != ctx->curexpr->type->type)	
+	    {
+	      snprintf(newname, sizeof(newname), "type_%s", prevexpr->type->name);
+	      thash = hash_find(newname);
+	      if (!thash)
+		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			     "Cannot find type hash for shadowed expression type", -1);
+	    }	  
+	  hash_set(thash, strdup(ctx->pathbuf), prevexpr->annot);
+	}
+    }
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
 
 /** Unlink an expression */
-static int	revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree, u_char datafree)
+static int	revm_expr_unlinkrec(revmexprctx_t *ctx, u_char exprfree, u_char datafree)
 {
-  revmexpr_t	*curexpr;
-  revmexpr_t	*prevexpr;
   revmexpr_t	*next;
   revmexpr_t	*supernext;
   revmexpr_t	*backupexpr;
-  char		newname[BUFSIZ];
-  hash_t	*thash;
-  int		index;
   int		len;
+  u_char	removeme;
+  int		ret;
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+  if (!ctx || !ctx->curexpr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid NULL context/curexpr parameter", -1);
+  for (next = ctx->curexpr; next; next = supernext)
+    {
+      supernext = next->next; 
+#if __DEBUG_EXPRS__
+      fprintf(stderr, "New loop iter on ->next with pathbuf = %s (will extend) \n", ctx->pathbuf);
+#endif
+      len = snprintf(ctx->pathbuf + ctx->pathsize, sizeof(ctx->pathbuf) - ctx->pathsize,
+		     ".%s", next->label);
+      ctx->pathsize += len;
+#if __DEBUG_EXPRS__
+      fprintf(stderr, "Now with pathbuf = %s (extended) \n", ctx->pathbuf);
+#endif
+      backupexpr = ctx->curexpr;
+      ctx->curexpr = next;
+      ret = revm_expr_erase(ctx);
+      ctx->curexpr = backupexpr;
+
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed to find expression in scope", -1);
+      removeme = (((next->annot && next->annot->inhash) || exprfree == 0) ? 0 : 1);
+      if (!removeme)
+	{
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, 
+		  " [D] NOT FREED EXPR %s because still in hash table (exprfree = %u, datafree = %u) \n", 
+		  ctx->pathbuf, exprfree, datafree);
+#endif
+	  ctx->pathsize -= len;
+	  bzero(ctx->pathbuf + ctx->pathsize, len);
+	  continue;
+	}
+      // Recurse on children!
+      if (next->childs)
+	{
+#if __DEBUG_EXPRS__
+	  fprintf(stderr, " [D] UNLINK RECURSION FOR %s (exprfree = %u, datafree = %u) \n", 
+		  ctx->pathbuf, exprfree, datafree);
+#endif 
+	  backupexpr = ctx->curexpr;
+	  ctx->curexpr = next->childs;
+	  if (revm_expr_unlinkrec(ctx, exprfree, datafree) < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Failed to destroy child expression", -1);
+	  ctx->curexpr = backupexpr;
+	}
+      /* If the expression in present in some hash table, we dont free it */
+#if __DEBUG_EXPRS_MORE__
+      fprintf(stderr, "\n [D] UNLINK EXPR %s (exprfree = %hhu) \n", ctx->pathbuf, exprfree);
+#endif
+
+      if (next->value)
+	revm_destroy_object(next->value, datafree);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, next);
+      ctx->pathsize -= len;
+      bzero(ctx->pathbuf + ctx->pathsize, len);
+
+#if __DEBUG_EXPRS_MORE__
+      fprintf(stderr, "\n [D] Came back to pathbuf = %s \n", ctx->pathbuf);
+#endif
+
+    }
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+}
+
+
+/** Unlink an expression : top level */
+static int	revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree, u_char datafree)
+{
+  int		ret;
+  revmexpr_t	*backupexpr;
   u_char	removeme;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!ctx || !ctx->curexpr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL context/curexpr parameter", -1);
-
-  for (next = ctx->curexpr; next; next = supernext)
+  if (ctx->curexpr->childs)
     {
-      supernext = next->next;
-      
-      /* Remove expression from the most inner scope */
-      for (index = world.curjob->curscope; index >= 0; index--)
-	{
-	  curexpr = hash_get(&world.curjob->recur[index].exprs, ctx->pathbuf);
-	  if (curexpr)
-	    {
-	      if (hash_del(&world.curjob->recur[index].exprs, ctx->pathbuf))
-		{
-#if __DEBUG_EXPRS__
-		  fprintf(stdout, "\n [D] FAILED TO UNLINK EXPR %s from recur[%u].exprs\n", 
-			  ctx->pathbuf, index);
-#endif
-		}
-	      else
-		{
-#if __DEBUG_EXPRS__
-		  fprintf(stdout, "\n [D] UNLINKED EXPR %s from recur[%u].exprs\n", 
-			  ctx->pathbuf, index);
-#endif
-		}
-
-	      break;
-	    }
-	}
-
-      /* Update the global type hashes too by recovering a previous expression of that name, if any */
-      if (next->type)
-	{
-	  snprintf(newname, sizeof(newname), "type_%s", next->type->name);
-	  thash = hash_find(newname);
-	  if (!thash)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
- 			 "Cannot find hash table for this expression type", -1);
-	  if (hash_del(thash, ctx->pathbuf))
-	    {
-#if __DEBUG_EXPRS__
-	      fprintf(stdout, "\n [D] FAILED TO UNLINK EXPR %s from hash[type_%s] \n", 
-		      ctx->pathbuf, next->type->name);
-#endif
-	    }
-	  else
-	    {
-#if __DEBUG_EXPRS__
-	      fprintf(stdout, "\n [D] UNLINKED EXPR %s from hash[type_%s] \n", 
-		      ctx->pathbuf, next->type->name);
-#endif
-	    }
-	  
-	  prevexpr = revm_expr_get(ctx->pathbuf);
-	  if (prevexpr)
-	    {
-#if __DEBUG_EXPRS__
-	      fprintf(stdout, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n", 
-		      ctx->pathbuf, next->type->name);
-#endif
-
-	      // In case previous (shadowed) variable with same name was not of the same type
-	      if (prevexpr->type->type != next->type->type)	
-		{
-		  snprintf(newname, sizeof(newname), "type_%s", prevexpr->type->name);
-		  thash = hash_find(newname);
-		  if (!thash)
-		    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-				 "Cannot find type hash for shadowed expression type", -1);
-		}
-
-	      hash_set(thash, strdup(ctx->pathbuf), prevexpr->annot);
-	    }
-	}
-
-      removeme = ((next->annot && next->annot->inhash) || 0 == exprfree ? 0 : 1);
-      if (!removeme)
-	{
-#if __DEBUG_EXPRS__
-	  fprintf(stdout, 
-		  " [D] NOT FREED EXPR %s because still in hash table (exprfree = %u, datafree = %u) \n", 
-		  ctx->pathbuf, exprfree, datafree);
-#endif
-	  continue;
-	}
-
-      // Recurse on children!
-      if (next->childs)
-	{
-#if __DEBUG_EXPRS__
-	  fprintf(stdout, " [D] UNLINK RECURSION FOR %s (exprfree = %u, datafree = %u) \n", 
-		  ctx->pathbuf, exprfree, datafree);
-#endif
-	  
-	  backupexpr = ctx->curexpr;
-	  ctx->curexpr = next->childs;
-	  len = snprintf(ctx->pathbuf + ctx->pathsize, sizeof(ctx->pathbuf) - ctx->pathsize,
-			 ".%s", ctx->curexpr->label);
-	  ctx->pathsize += len;
-
-	  if (revm_expr_unlink(ctx, exprfree, datafree) < 0)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Failed to destroy child expression", -1);
-
-	  
-	  ctx->curexpr = backupexpr;
-	  ctx->pathsize -= len;
-	  bzero(ctx->pathbuf + ctx->pathsize, len);
-
-	}
-
-      /* If the expression in present in some hash table, we dont free it */
-#if __DEBUG_EXPRS_MORE__
-      fprintf(stdout, "\n [D] UNLINK EXPR %s (exprfree = %hhu) \n", ctx->pathbuf, exprfree);
-#endif
-      if (next->value)
-	revm_destroy_object(next->value, datafree);
-      XFREE(__FILE__, __FUNCTION__, __LINE__, next);
-      
+      backupexpr = ctx->curexpr;
+      ctx->curexpr = ctx->curexpr->childs;
+      ret = revm_expr_unlinkrec(ctx, exprfree, datafree);
+      ctx->curexpr = backupexpr;
+      if (ret < 0)
+	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		     "Failed unlink recursion", -1);
     }
-  
+
+  ret = revm_expr_erase(ctx);
+  if (ret < 0)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Failed to erase top-level expression", -1);
+		
+  /*
+  removeme = (((ctx->curexpr->annot && ctx->curexpr->annot->inhash) || exprfree == 0) ? 0 : 1);
+  if (removeme)
+    {
+      if (ctx->curexpr->value)
+	revm_destroy_object(ctx->curexpr->value, datafree);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, ctx->curexpr);
+    }
+  */
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -1623,18 +1679,8 @@ int		revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree)
 		 "Invalid NULL parameter", -1);
 
   /* Find in which scope it was defined, and unregister it, possibly unshadowing previous variables */
-  for (index = world.curjob->curscope; index >= 0; index--)
-    {
-      expr = hash_get(&world.curjob->recur[index].exprs, e);
-      if (expr)
-	{
-	  // this is in revm_expr_unlink() now
-	  //hash_del(&world.curjob->recur[index].exprs, e);
-	  // --> sometimes not well hash_del and poison expr context apparently
-
-	  break;
-	}
-    }
+  for (index = world.curjob->curscope; !expr && index >= 0; index--)
+    expr = hash_get(&world.curjob->recur[index].exprs, e);
 
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1643,7 +1689,7 @@ int		revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree)
   ctx = revm_expr_context_init(expr, NULL, 0, expr->label);
   if (!ctx)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to allocate context", NULL);
+		 "Unable to allocate context", -1);
   ret = revm_expr_unlink(ctx, exprfree, datafree);
   revm_expr_context_destroy(ctx);
   if (ret < 0)

@@ -229,12 +229,12 @@ int		aspect_register_vector(char		*name,
 
   if (!defaultfunc || !dimsz || !dimensions)
     {
-      (void) write(1, "Invalid NULL parameters\n", 24);
+      write(1, "Invalid NULL parameters\n", 24);
       return (-1);
     }
   if (vectype >= aspect_type_nbr)
     {
-      (void) write(1, "Invalid vector element type\n", 28);
+      write(1, "Invalid vector element type\n", 28);
       return (-1);
     }
 

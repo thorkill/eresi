@@ -205,7 +205,8 @@ int		revm_execscript()
 
 	  /* Test for (embedded or not) debugger scripting */
 	  if ((world.curjob->curfile && world.curjob->curfile->iotype != ELFSH_HOST_GDB) && 
-	      (!strcmp(cur->name, CMD_CONTINUE) || !strcmp(cur->name, CMD_CONTINUE2)))
+	      (!strcmp(cur->name, CMD_CONTINUE)  || !strcmp(cur->name, CMD_CONTINUE2) ||
+	       !strcmp(cur->name, CMD_CONTINUE3)))
 	    {
 	      next                    = cur->next;
 	      world.context.curcmd    = next;

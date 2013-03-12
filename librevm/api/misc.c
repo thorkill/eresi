@@ -160,6 +160,9 @@ int		revm_openscript(char **av)
 
   new = revm_create_IMMED(ASPECT_TYPE_INT, 1, idx - 1);
   expr = revm_expr_create_from_object(new, REVM_VAR_ARGC, 0);
+  if (!expr)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+		 "Failed to create ARGC expression", -1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 

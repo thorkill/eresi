@@ -34,8 +34,11 @@ void            e2dbg_register_command(void)
   revm_command_add(CMD_DELETE   , (void *) cmd_delete   , revm_getvarparams,    1, HLP_DELETE);
   revm_command_add(CMD_CONTINUE , (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
   revm_command_add(CMD_CONTINUE2, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
+  revm_command_add(CMD_CONTINUE3, (void *) cmd_cont     , (void *) NULL,   1, HLP_CONTINUE);
+  revm_command_add(CMD_NEXT,      (void *) cmd_next     , (void *) NULL,   1, HLP_NEXT);
+  revm_command_add(CMD_NEXT2,     (void *) cmd_next     , (void *) NULL,   1, HLP_NEXT);
   revm_command_add(CMD_START    , (void *) cmd_start    , (void *) NULL,   1, HLP_START);
-  revm_command_add(CMD_STEP     , (void *) cmd_step     , (void *) NULL,   1, HLP_STEP);
+  revm_command_add(CMD_STEP     , (void *) cmd_next     , (void *) NULL,   1, HLP_NEXT);
   revm_command_add(CMD_DISPLAY  , (void *) cmd_display  , revm_getvarparams, 1, HLP_DISPLAY);
   revm_command_add(CMD_UNDISPLAY, (void *) cmd_undisplay, revm_getvarparams, 1, HLP_UNDISPLAY);
   revm_command_add(CMD_RSHT     , (void *) cmd_rsht     , revm_getregxoption, 1, HLP_RSHT);

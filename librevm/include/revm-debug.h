@@ -1,7 +1,6 @@
 /**
  * @defgroup ERESI The ERESI runtime environment
  */
-
 /**
  * @file librevm/include/revm-debug.h
  * @ingroup librevm
@@ -23,5 +22,6 @@
 #define	__DEBUG_EXPRS__		0
 #define	__DEBUG_EXPRS_MORE__	0
 #define	__DEBUG_INFORM__	0
+#define	__DEBUG_REFLECT__	0
 
 #endif

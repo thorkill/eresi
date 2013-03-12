@@ -144,7 +144,6 @@ void			revm_replace_speblanks(u_int argc, char **argv)
  */
 u_int		revm_findblanks(char *buf)
 {
-  int		index;
   int		len;
   int		nbr;
   char		*ptr;
@@ -154,7 +153,6 @@ u_int		revm_findblanks(char *buf)
 #endif
 
   len = strlen(buf);
-  index = 0;
   nbr = 1;
   sav = buf;
   do

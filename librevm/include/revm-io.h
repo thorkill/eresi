@@ -244,7 +244,7 @@ typedef struct        s_state
   char                revm_mode;        /*! Command line, scripting, interactive, debugger ? */
 #define	      REVM_SIDE_CLIENT		0
 #define	      REVM_SIDE_SERVER		1
-  char		      revm_side;	      /*! Useful for the bi-partite debugger */
+  char		      revm_side;	/*! Useful for the bi-partite debugger */
   char		      revm_sourcing;    /*! Are we sourcing a script ? */
   char                revm_stopped;     /*! We are in a signal handler */
   char                revm_shared;      /*! Next opened object must be shared */

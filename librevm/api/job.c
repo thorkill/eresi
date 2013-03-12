@@ -53,7 +53,7 @@ revmjob_t	*revm_clone_job(char *newname, revmjob_t *job)
       new->recur[i].script   = NULL;
       new->recur[i].lstcmd   = NULL;
       new->recur[i].funcname = NULL;
-      new->iter[i].listidx = REVM_IDX_UNINIT;
+      new->iter[i].elmidx = REVM_IDX_UNINIT;
     }
 
   new->recur[0].funcname = "top-level";

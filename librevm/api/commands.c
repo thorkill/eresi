@@ -60,7 +60,7 @@ int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
 }
 
 /* Add a command */
-int		revm_command_add(char *cmd, int (*exec)(void), void *reg,
+int		revm_command_add(char *cmd, int (*exec)(void*,void*), void *reg,
 				 u_int needfile, char *help)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

@@ -87,11 +87,14 @@ extern asm_processor	proc;
 /* Parsing related defines */
 #define	REVM_MAXNEST_LOOP	10
 
-/* XXX: REVM still needs those definition somewhere ... modularity weaknesses w/ libstderesi */
+/* XXX: REVM still needs those definitions somewhere, they should go into a new libstderesi/debugging/ */
 #define	E2DBG_NAME		"Embedded ELF Debugger"
 #define	E2DBG_ARGV0		"e2dbg"
-#define	CMD_CONTINUE		"continue"
-#define	CMD_CONTINUE2		"cont"
+#define	CMD_CONTINUE		"c"
+#define	CMD_CONTINUE2		"continue"
+#define	CMD_CONTINUE3		"cont"
+#define	CMD_NEXT		"n"
+#define	CMD_NEXT2		"next"
 #define	CMD_QUIT		 "quit"
 #define	CMD_QUIT2		 "exit"
 #define	CMD_RETURN		"return"
@@ -335,12 +338,20 @@ typedef struct		s_revmcontext
 typedef struct		s_revmiter
 {
   char			*curkey;	/* Key of currently processed variable */
-#define			REVM_IDX_UNINIT ((unsigned int) (-1))
-  u_int		        listidx;	/* Index of currently processed variable */
   revmexpr_t		*curind;	/* Induction variable if any */
-  void			*list;		/* Current list (or hash) being iterated */
+#define REVM_CONTAINER_HASH 1
+#define REVM_CONTAINER_LIST 2
+  char			tcontainer;	/* type of container */
+  void			*container;	/* Current list (or hash) being iterated over */
+#define REVM_IDX_UNINIT ((unsigned int) (-1))
+  u_int		        elmidx;		/* Index of currently processed variable */
   u_int			reclevel;	/* Current recursion level on loop start */
   char			*end;		/* END loop label */
+#define REVM_LOOP_UNKNOWN 0
+#define REVM_LOOP_SIMPLE  1
+#define REVM_LOOP_REGEX   2
+#define REVM_LOOP_RANGE   3
+  u_char		looptype;	/* Loop construct type */
 }			revmiter_t;  
 
 /* This structure stores the current state of a REWRITE transformation (job specific) */
@@ -525,7 +536,7 @@ int		revm_convert2caddr(revmobj_t *obj);
 
 /* Command API */
 int		revm_command_set(char *cmd, void *exec, void *reg, u_int needcur);
-int		revm_command_add(char *cmd, int (*exec)(void), void *reg, 
+int		revm_command_add(char *cmd, int (*exec)(void*,void*), void *reg, 
 				 u_int needfile, char *help);
 int		revm_command_del(char *cmd);
 

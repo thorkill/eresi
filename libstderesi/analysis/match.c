@@ -164,7 +164,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   exprlist = world.curjob->recur[world.curjob->curscope].rwrt.transformed;
   dstnbr = 1;
 
-  for (curidx = world.curjob->iter[world.curjob->curloop].listidx - 1, curptr = destvalue; 
+  for (curidx = world.curjob->iter[world.curjob->curloop].elmidx - 1, curptr = destvalue; 
        curptr && *curptr; 
        curptr = foundptr + 2, curidx++, dstnbr++)
     {
@@ -187,7 +187,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
     }
 
   /* UNIMPLEMENTED: Case where the rewritten element is not part of an iterated list -- unsupported */
-  looplist = (list_t *) world.curjob->iter[world.curjob->curloop].list;
+  looplist = (list_t *) world.curjob->iter[world.curjob->curloop].container;
   if (!looplist)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Rewriting of non-list element unimplemented", -1);
@@ -234,7 +234,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
     {
       elist_replace(looplist, world.curjob->iter[world.curjob->curloop].curkey, 
 		    elist_copy(exprlist, ELIST_DATA_NOCOPY));
-      world.curjob->iter[world.curjob->curloop].listidx += exprlist->elmnbr - 1;
+      world.curjob->iter[world.curjob->curloop].elmidx += exprlist->elmnbr - 1;
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -425,7 +425,7 @@ int			cmd_match()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* The first time we enter this command, we have to fetch the params */
-  list = (list_t *) world.curjob->iter[world.curjob->curloop].list;
+  list = (list_t *) world.curjob->iter[world.curjob->curloop].container;
   ind  = world.curjob->iter[world.curjob->curloop].curind;
 
   if (!list || !ind || strcmp(ind->label, world.curjob->curcmd->param[0]) || 
