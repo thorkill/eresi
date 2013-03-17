@@ -24,6 +24,7 @@ int		revm_help(char *command)
 	       " General purpose commands   .::. help, info, cat, exec, edit, sdir, lscripts, profile \n"
 	       "                                 quit, exit, load, unload, switch, list, workspace    \n"
 	       "                                 setcolor, nocolor, configure, add, sub, mul, div,    \n"
+	       "                                 eval						      \n"
 	       "                                 mod, cmp, print, stop                                \n"
 	       " Ondisk/Memory ELF commands .::. elf, interp, pht, got, sht, rel, notes, dyn, dynsym  \n"
 	       "                                 findrel, ctors, write, set, reladd, coreinfo,        \n"

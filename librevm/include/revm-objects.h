@@ -143,4 +143,179 @@ typedef struct	s_L1handler
 
 
 
+
+/* Regx option, a module of struct s_args */
+typedef struct		s_list
+{
+  regex_t		name;
+  char			*rname;
+  u_int			off;
+  u_int			size;
+  char			otype;
+}			revmlist_t;
+
+
+/* Structure for constants */
+typedef struct		s_const
+{
+  const char	        *desc;
+  const char	        *name;
+  eresi_Addr	       	val;
+}			revmconst_t;
+
+
+/* ELFsh command handlers */
+typedef struct		s_cmdhandler
+{
+  int			(*reg)(u_int i, u_int s, char **a);	/* Registration handler */
+  int			(*exec)();				/* Execution handler */
+  char			*arg1;					/* Option activation variable ptr */
+  void			*arg2;					/* Option regex ptr */
+  char			*arg3;					/* Regex switch ptr */
+  char			wflags;					/* 1 if the cmd need a valid curfile */
+  char			*help;					/* Help string */
+}			revmcmd_t;
+
+
+/* Thats the command line options registering structure */
+typedef struct		s_args
+{
+  char			*param[REVM_MAXARGC];	/* Parameters */
+  char			use_regx[2];		/* 1 if the option use a regx */
+  regex_t		regx[2];		/* Regx */
+  revmlist_t		disasm[2];		/* D/X parameters */
+  char			argc;			/* Number of args in param[] */
+  revmcmd_t		*cmd;			/* Command descriptor */
+  char			*name;			/* Command name */
+  char		        *endlabel;		/* Co-Label for foreach/forend */
+  struct s_args		*next;
+  struct s_args		*prev;
+}			revmargv_t;
+
+#include <libmjollnir.h>
+
+/* REVM module structure */
+typedef struct	      s_module
+{
+  char		      *path;	      /* Name */
+#ifdef __BEOS__
+  image_id            handler;        /* Object handler */
+#else
+  void                *handler;       /* Object handler */
+#endif
+  void                (*help)();      /* Help wrapper */
+  void                (*init)();      /* Constructor pointer */
+  void                (*fini)();      /* Destructor pointer */
+  u_int               id;             /* Object ID */
+  time_t              loadtime;       /* Load time stamp */
+  struct s_module     *next;          /* Next module of the list */
+}                     revmmod_t;
+
+
+/* This structure contains the control flow context for e2dbg scripts */
+typedef struct		s_revmcontext
+{
+  int			savedfd;
+  char			savedmode;
+  revmargv_t		*savedcmd;
+  char			*(*savedinput)();
+  char			**savedargv;
+  char			*savedname;
+  revmargv_t		*curcmd;
+}			revmcontext_t;
+
+/* We use a separate header for the generic IO sublib */
+#include "revm-io.h"
+
+/* We use a separate header for defnition of object structures */
+#include "revm-objects.h"
+
+/* This structure stores the current state of FOREACH iteration (job specific) */
+typedef struct		s_revmiter
+{
+  char			*curkey;	/* Key of currently processed variable */
+  revmexpr_t		*curind;	/* Induction variable if any */
+#define REVM_CONTAINER_HASH 1
+#define REVM_CONTAINER_LIST 2
+  char			tcontainer;	/* type of container */
+  void			*container;	/* Current list (or hash) being iterated over */
+#define REVM_IDX_UNINIT ((unsigned int) (-1))
+  u_int		        elmidx;		/* Index of currently processed variable */
+  u_int			reclevel;	/* Current recursion level on loop start */
+  char			*end;		/* END loop label */
+#define REVM_LOOP_UNKNOWN 0
+#define REVM_LOOP_SIMPLE  1
+#define REVM_LOOP_REGEX   2
+#define REVM_LOOP_RANGE   3
+  u_char		looptype;	/* Loop construct type */
+  regex_t		*usedregx;	/* Regx */
+}			revmiter_t;  
+
+/* This structure stores the current state of a REWRITE transformation (job specific) */
+typedef struct	      s_revmrewrite
+{
+  revmexpr_t	      *matchexpr;	/* Expression to rewrite */
+  list_t	      *transformed;     /* List of produced expressions in latest transformation */
+  u_int		      idloop;           /* Loop scope at which the rewrite happens */
+  u_char	      matched;		/* Matched flag : just 0 or 1 depending on last try */
+  u_char	      replaced;		/* Indicate if we have already transformed */
+}		      revmrewrite_t;
+
+/* This structure stores the current function recursion state for a job */
+typedef struct		s_revmrecur
+{
+  char			*funcname;	/* Names of call-stack functions */
+  revmargv_t		*script;	/* Script commands at this depth */
+  revmargv_t		*lstcmd;	/* Last command at this depth */
+  hash_t		labels;		/* Defined labels */
+  hash_t		exprs;		/* Expressions */
+  revmrewrite_t		rwrt;		/* "rewrite" matching context */  
+}			revmrecur_t;
+
+/* REVM job structure, one per client */
+typedef struct        s_job
+{
+  u_int		      id;				/* Job identifier */
+  revmworkspace_t     ws;				/* The job workspace */
+
+  /* Job recursion and iteration contexts */
+#define		      REVM_MAXSRCNEST  50
+  revmrecur_t	      recur[REVM_MAXSRCNEST];		/* Recursion contexts */
+  u_int               curscope;				/* Current recursion depth */
+  revmiter_t	      iter[REVM_MAXSRCNEST];		/* "foreach" iteration context */
+  u_int		      curloop;				/* Current iteration depth */
+
+  /* Job files context */
+  revmargv_t	      *curcmd;				/* Next command to be executed */
+  hash_t              loaded;				/* List of loaded ELF objects */
+  elfshobj_t          *curfile;				/* Current working ELF object */
+  asm_processor       *proc;				/* Processor structure */
+
+  /* Job debugger context */
+  hash_t              dbgloaded;			/* List of objects loaded into e2dbg */
+  elfshobj_t          *dbgcurrent;			/* Current working e2dbg file */
+}                     revmjob_t;
+
+
+/* The REVM world */
+typedef struct        s_world
+{
+  revmstate_t         state;          /* Flags structure */
+  revmcontext_t       context;        /* Save the VM context before sourcing */
+  revmmod_t	      *modlist;       /* ELFsh loaded modules list */
+  hash_t	      jobs;           /* Hash table of jobs */
+  revmjob_t	      *initial;       /* Main initial job */
+  revmjob_t	      *curjob;        /* Current job */
+  hash_t	      shared_hash;    /* Hash of shared descriptors */
+  char                *scriptsdir;    /* Directory which contains script commands */
+  asm_processor       proc_ia32;      /* Libasm Intel */
+  asm_processor	      proc_sparc;     /* Libasm Sparc */
+  asm_processor	      proc_mips;      /* Libasm Mips */
+  asm_processor	      proc_arm;	      /* Libasm ARM */
+  mjrsession_t        mjr_session;    /* Session holding contexts for mjollnir */
+  int		      fifo_s2c;	      /* Fd for the debugger IO FIFO */
+  int		      fifo_c2s;	      /* Fd for the debugger IO FIFO */
+  void		      (*cmd_init)();  /* Command constructor from libstderesi */
+}		      revmworld_t;
+
 #endif

@@ -38,7 +38,7 @@
 #define	REVM_RELEASE	"a3"
 #define REVM_EDITION	"phoenix"
 
-/* Unused, feel free to try it, its awesome */
+/* Unused, yet very funny prompt */
 #define ELFSH_CIRCUS_PROMPT \
 "\033[00;01;30m("        \
 "\033[00;01;31me"        \
