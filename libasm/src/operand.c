@@ -96,19 +96,22 @@ int     asm_operand_get_basereg(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      if (ins->op[0].type & ASM_OP_BASE)
+      if (ins->op[0].type == ASM_OPTYPE_REG ||
+            ((ins->op[0].type == ASM_OPTYPE_MEM) && (ins->op[0].memtype & ASM_OP_BASE)))
         *val = ins->op[0].baser;
       else
         return (-1);  
       break;
     case 2:
-      if (ins->op[1].type & ASM_OP_BASE)
+      if (ins->op[1].type == ASM_OPTYPE_REG ||
+            ((ins->op[1].type == ASM_OPTYPE_MEM) && (ins->op[1].memtype & ASM_OP_BASE)))
         *val = ins->op[1].baser;
       else
         return (-1);
       break;
     case 3:
-      if (ins->op[2].type & ASM_OP_BASE)
+      if (ins->op[2].type == ASM_OPTYPE_REG ||
+            ((ins->op[2].type == ASM_OPTYPE_MEM) && (ins->op[2].memtype & ASM_OP_BASE)))
         *val = ins->op[2].baser;
       else
         return (-1);        
@@ -134,19 +137,19 @@ int     asm_operand_get_indexreg(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      if (ins->op[0].type & ASM_OP_INDEX)
+      if ((ins->op[0].type == ASM_OPTYPE_MEM) && (ins->op[0].memtype & ASM_OP_INDEX))
         *val = ins->op[0].indexr;
       else
         return (-1);  
       break;
     case 2:
-      if (ins->op[1].type & ASM_OP_INDEX)
+      if ((ins->op[1].type == ASM_OPTYPE_MEM) && (ins->op[1].memtype & ASM_OP_INDEX))
         *val = ins->op[1].indexr;
       else
         return (-1);  
       break;
     case 3:
-      if (ins->op[2].type & ASM_OP_INDEX)
+      if ((ins->op[2].type == ASM_OPTYPE_MEM) && (ins->op[2].memtype & ASM_OP_INDEX))
         *val = ins->op[2].indexr;
       else
         return (-1);    
@@ -171,19 +174,22 @@ int     asm_operand_get_scale(asm_instr *ins, int num,
   switch(num)
     {
     case 1:
-      if (ins->op[0].type && (ins->op[0].type & ASM_OP_SCALE))
+      if (((ins->op[0].type == ASM_OPTYPE_REG) && (ins->op[0].content == ASM_CONTENT_FPU_SCALED)) ||
+          ((ins->op[0].type == ASM_OPTYPE_MEM) && (ins->op[0].memtype & ASM_OP_SCALE)))
         *val = ins->op[0].scale;
       else
 	return (-1);  
       break;
     case 2:
-      if (ins->op[1].type && (ins->op[1].type & ASM_OP_SCALE))
+      if (((ins->op[1].type == ASM_OPTYPE_REG) && (ins->op[1].content == ASM_CONTENT_FPU_SCALED)) ||
+          ((ins->op[1].type == ASM_OPTYPE_MEM) && (ins->op[1].memtype & ASM_OP_SCALE)))
         *val = ins->op[1].scale;
       else
 	return (-1);  
       break;
     case 3:
-      if (ins->op[2].type && (ins->op[2].type & ASM_OP_SCALE))
+      if (((ins->op[2].type == ASM_OPTYPE_REG) && (ins->op[2].content == ASM_CONTENT_FPU_SCALED)) ||
+          ((ins->op[2].type == ASM_OPTYPE_MEM) && (ins->op[2].memtype & ASM_OP_SCALE)))
         *val = ins->op[2].scale;
       else
 	return (-1);        
@@ -268,19 +274,19 @@ int    asm_operand_set_indexreg(asm_instr *ins, int num,
   asm_operand		*op;
 
   return (-1);
-  if (op->type & ASM_OP_INDEX) {
+  if ((op->type == ASM_OPTYPE_MEM) && (op->memtype & ASM_OP_INDEX)) {
     sidbyte = (struct s_sidbyte *) (op->ptr + 1);
     val = (int *) valptr;
-    switch(op->type) {
-    case ASM_CONTENT_ENCODED:
-    case ASM_CONTENT_MEMORY:
-      if (!op->ptr)
-        fprintf(stderr, "ptr field NULL, cannot set index reg\n");
-      else
-        sidbyte->index = *val;
-      break;
-    default:
-      fprintf(stderr, "unsupported operand type to set index register\n");
+    switch(op->content) {
+      case ASM_CONTENT_ENCODED:
+      case ASM_CONTENT_MEMORY:
+        if (!op->ptr)
+          fprintf(stderr, "ptr field NULL, cannot set index reg\n");
+        else
+          sidbyte->index = *val;
+        break;
+      default:
+        fprintf(stderr, "unsupported operand type to set index register\n");
     }
   }
 
@@ -304,9 +310,11 @@ int    asm_operand_set_scale(asm_instr *ins, int num,
   return (-1);
   op = &ins->op[0];
   val = (int *) valptr;
-  if (op && op->type & ASM_OP_SCALE) {
+
+  if (((op->type == ASM_OPTYPE_REG) && (op->content == ASM_CONTENT_FPU_SCALED)) ||
+      ((op->type == ASM_OPTYPE_MEM) && (op->memtype & ASM_OP_SCALE))) {
     
-    if (op->content == ASM_CONTENT_FPU)
+    if (op->content == ASM_CONTENT_FPU_SCALED)
       sidbyte->sid = *val;
     else
       switch(*val) {
@@ -412,6 +420,6 @@ int	asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr)
  */
 int	asm_operand_is_reference(asm_operand *op)
 {
-  return(op->type & ASM_OP_REFERENCE);
+  return((op->type == ASM_OPTYPE_MEM) && (op->memtype & ASM_OP_REFERENCE));
 }
 

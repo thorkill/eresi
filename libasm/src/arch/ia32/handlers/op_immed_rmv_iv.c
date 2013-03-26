@@ -46,7 +46,7 @@ int op_immed_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
       break;
     case 5:
       new->instr = ASM_SUB;
-      if (new->op[0].type = ASM_OPTYPE_MEM &&
+      if (new->op[0].type == ASM_OPTYPE_MEM &&
 			      new->op[0].memtype == ASM_OP_BASE &&
             new->op[0].baser == ASM_REG_ESP)
         new->type |= ASM_TYPE_EPILOG;
