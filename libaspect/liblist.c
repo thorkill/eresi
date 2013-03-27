@@ -181,6 +181,7 @@ list_t		*elist_copy(list_t *h, u_char datacopy)
       XALLOC(__FILE__, __FUNCTION__, __LINE__, newent, sizeof(listent_t), NULL);
       *newent = *curent;
 
+      // XXX: This is incorrect if linked data structures are stored in list
       if (datacopy == ELIST_DATA_COPY)
 	{
 	  XALLOC(__FILE__, __FUNCTION__, __LINE__, newelem, size, NULL);
@@ -394,6 +395,8 @@ int		elist_set(list_t *h, char *key, void *data)
 	cur->data = data;
 	return (0);
       }
+
+  printf("ELIST_SET: FAILED to set list (%s) element with key %s \n", h->name, key);
   return (-1);
 }
 

@@ -21,7 +21,7 @@ void		revm_object_print(revmobj_t *obj)
   uint32_t	word;
   eresi_Addr   	val;
   char		*str;
-  char		logbuf[BUFSIZ];
+  char		logbuf[BUFSIZ] = {0x00};
   u_int		idx;
   aspectype_t	*type;
 
@@ -74,7 +74,7 @@ void		revm_object_print(revmobj_t *obj)
 	str = (char *) (obj->immed ? obj->immed_val.str : 
 			obj->get_name ? obj->get_name(obj->root, obj->parent) : "");
 	for (idx = 0; idx < 10 && str[idx]; idx++)
-	  snprintf(logbuf, BUFSIZ, "%02X%s", 
+	  snprintf(logbuf, BUFSIZ - 1, "%02X%s", 
 		   (u_char) str[idx], (idx < 9 && str[idx + 1] ? " " : ""));
 	break;
 	
@@ -121,7 +121,7 @@ int			cmd_print()
 {
   revmexpr_t		*expr;
   volatile u_int	idx;
-  char			logbuf[BUFSIZ];
+  char			logbuf[BUFSIZ] = {0x00};
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -154,7 +154,7 @@ int			cmd_print()
 	}
       else if (!expr)
 	{
-	  snprintf(logbuf, BUFSIZ, "%s ", world.curjob->curcmd->param[idx]);
+	  snprintf(logbuf, BUFSIZ - 1, "%s ", world.curjob->curcmd->param[idx]);
 	  revm_output(logbuf);
 	  continue;
 	}

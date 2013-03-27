@@ -150,8 +150,6 @@ int		elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
 		      "Invalid virtual address", -1);
 
-  printf("Found sect %s at off %u\n", sect->name, foffset);
-
   sect_off = foffset - sect->shdr->sh_offset;
   if (sect_off + len > sect->shdr->sh_size)
     len -= (sect_off + len - sect->shdr->sh_size);

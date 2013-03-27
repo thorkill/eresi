@@ -2,7 +2,14 @@
 
 quiet
 
-# Declare some basic types to work with
+#########################################
+# Declare some basic types to work with #
+#########################################
+# If the script fails, make sure you have the 
+# same as in $ERESI_ROOT/evarista/eva-typedecl.esh
+# or copy the latest definitions here 
+#########################################
+
 type listent          = key:string data:long next:*listent
 type list             = head:*listent elmnbr:int type:int linearity:byte name:string
 type hash             = ent:*listent size:int elmnbr:int type:int linearity:byte name:string
@@ -12,39 +19,36 @@ type instr::container = ptrins:long proc:long name:string icode:int sem:long pre
 type bloc::container  = vaddr:caddr size:int symoff:int seen:byte
 type func::container  = vaddr:caddr size:int name:byte[64] first:*bloc md5:byte[34]
 type link             = id:oid type:byte scope:byte
+type irinstr::container = localid:int otherid:int
 
+# Write a few bytes in the ELF text section to be analyzed
 load /bin/ls
-
 write 1.section[.text].raw 0x50515253
 hexa   ^.text$%5
 disasm ^.text$%5
 
 set $curaddr 1.sht[.text].addr
-print 1.sht[.text].addr
+reflect 1.sht[.text].addr 1
 
-#profile enable warn
-reflect 1.sht[.text].addr 4
-
-#lists 08048B50
-#print $instr-0x08048B50
-#print $instr-0x08048B51
-#print $instr-0x08048B52
-#print $instr-0x08048B53
-
-set $first "first"
-set $second "second"
-set $off 1
-
+# Change some fields in the instruction structures
+set $curid 42
 foreach $instr of $hash[instrlists:$curaddr]
-rewrite $instr into
-case instr(sem:0x4020)
-into instr(name:$first, sem:0xFE+$off, icode:$off+254, nb_op:$off+$instr.op1.sem, op1:$instr.op1)
-rwtend
+
+ rewrite $instr into
+  case instr(sem:0x4020)
+  into irinstr(localid:$curid)::irinstr(localid:$curid+100)
+  #into irinstr(localid:$curid)
+ rwtend
+ add $curid 1
+
+foreach $instr2 of $list[transformed]
+  set $instr2.otherid ($instr2.localid+1)
 forend
 
-#this confirms that translation from 1 to 2 works!
-foreach $instr of $hash[instrlists:$curaddr]
-print $instr
+forend
+
+foreach $instr5 of $hash[instrlists:$curaddr]
+ print $instr5
 forend
 
 quit

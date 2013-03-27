@@ -10,7 +10,7 @@
 set $curaddr $1
 set $begaddr $1
 
-verb
+#verb
 
 #profile enable warn
 reflect $curaddr
@@ -29,10 +29,6 @@ foreach $instr of $hash[instrlists:$begaddr]
 #profile enable warn
 
 set $instrsz $hash[sparcinstsz:$instr.name]
-
-#print Found size $instrsz for instruction $instr.name
-
-#exec sleep 3
 
 rewrite $instr into
 
@@ -129,7 +125,6 @@ case instr(sem:a, nb_op:2, op1(sem:reg), op2(sem:imm))
 #pre namegen $newtmp
 into AssignIR(dst(rid:$instr.op1.name), src(val:$instr.op2.imm))
 
-
 # mov
 case instr(sem:a, nb_op:2, op1(sem:reg), op2(sem:reg))
 into AssignRR(dst(rid:$instr.op1.name), src(rid:$instr.op2.name))
@@ -181,27 +176,30 @@ default print Unsupported instruction at address $curaddr $instr
 
 rwtend
 
-lists transformed
+#lists transformed
 
-##### fixme #####
-# Add fields: XXX: fail if list size is more than 1 (field extension works well on 1 element)
 foreach $trans1 of $list[transformed]
-   print $trans1
+   #print $trans1
    set $trans1.szaffect $instrsz
    set $trans1.addr     $curaddr
-   print $trans1
+   #print $trans1
 forend
 
-lists transformed
+#lists transformed
 
-foreach $trans2 of $list[transformed]
-   print $trans2
-forend
+#foreach $trans2 of $list[transformed]
+#   print $trans2
+#forend
 
 ###########
 
 add $curaddr 4 
 
+#profile enable warn
 forend
 
-quiet
+print Next iteration
+
+#print FINISHED SPARC2LIR EXECUTION FOR THUS BLOCK
+
+#quiet

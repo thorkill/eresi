@@ -104,8 +104,11 @@ char		*revm_filter_param(char *buf, char *ptr)
   c = *(ptr + 2);
   d = *(ptr + 3);
   if (c == '0' && !((d >= 'A' && d <= 'F') || (d >= '1' && d <= '9')))
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr + 4);
-
+    {
+      u_int off = (*(ptr + 3) == 0x00 ? 3 : 4);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr + off);
+    }
+  
   sscanf(ptr + 2, "%X", &nbr);
   *ptr = (char) nbr;
   buf = ptr + 4;

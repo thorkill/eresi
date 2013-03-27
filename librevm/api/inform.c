@@ -1,5 +1,5 @@
 /*
-* @file librevm/api/inform.c
+** @file librevm/api/inform.c
 ** @ingroup api
 ** @brief API for annotating program objects.
 **
@@ -221,7 +221,7 @@ revmexpr_t	*revm_inform_toplevel(char *type, char *varname,
     straddr = varname;
 
 #if __DEBUG_INFORM__
-  fprintf(stderr, "\n [D] Variable %40s TOPLEVEL INFORM ENTER \n", varname);
+  printf("\n [D] Variable %40s TOPLEVEL INFORM ENTER \n", varname);
 #endif
 
   /* The address is given, look it up */
@@ -233,7 +233,7 @@ revmexpr_t	*revm_inform_toplevel(char *type, char *varname,
 
   /* Adding expression and its type to hash tables */
 #if __DEBUG_INFORM__
-  fprintf(stderr, " [D] Variable %40s TO BE added to local exprs table with type %s \n", 
+  printf(" [D] Variable %40s TO BE added to local exprs table with type %s \n", 
 	  realname, type);
 #endif
 
@@ -339,8 +339,8 @@ revmexpr_t	*revm_inform_type(char *type, char *realname,
 
   /* Adding expression and its type to hash tables */
 #if __DEBUG_INFORM__
-  fprintf(stderr, " [D] Variable %40s ADDED to local exprs hash with type %s \n", 
-	  realname, rtype->name);
+  printf(" [D] Variable %40s ADDED to local exprs hash (scope %u) with type %s \n", 
+	 realname, world.curjob->curscope, rtype->name);
 #endif
 
   /* Success message and exit */

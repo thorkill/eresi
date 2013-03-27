@@ -51,10 +51,10 @@ int		revm_system_nowait(char *cmd)
  */
 void		revm_graph_legend(int fd, char *fnc)
 {
-  char	buf[BUFSIZ];
+  char	buf[BUFSIZ+1] = {0x00};
   
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  snprintf(buf,BUFSIZ-1,
+  snprintf(buf,BUFSIZ,
 	   "graph [label=<\n\
 		<table border=\"1\">\n				\
 			<tr><td>Legend:</td><td>%s</td></tr>\\"
@@ -135,7 +135,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   int		revm_colors;
   int		cur;
   u_int		reloff;
-  char		tmpbuf[20];
+  char		tmpbuf[21] = {0x00};
   u_int		len;
   list_t	*instrlist;
   u_int		totaloff;
@@ -149,7 +149,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   cur = 1;
 
   /* Check if we have a list of expressions for this block already */
-  snprintf(tmpbuf, sizeof(tmpbuf), AFMT, blk->vaddr);
+  snprintf(tmpbuf, sizeof(tmpbuf)-1, AFMT, blk->vaddr);
   instrlist = hash_get(&instrlists_hash, tmpbuf);
   if (instrlist)
     {
@@ -158,7 +158,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
       PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
     }
 
-  /* Read data to be graphed */
+  /* Read raw opcodes to graph */
   if (kernsh_is_present() || kedbg_is_present())
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, buffer, blk->size, );
@@ -174,7 +174,7 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
   name = elfsh_reverse_metasym(world.curjob->curfile, blk->vaddr, &off);
   for (totaloff = 0; totaloff < blk->size; totaloff += cur)
     {
-      len = snprintf(tmpbuf, sizeof(tmpbuf), "%3u: ", reloff);
+      len = snprintf(tmpbuf, sizeof(tmpbuf)-1, "%3u: ", reloff);
       write(fd, tmpbuf, len);
       cur = revm_instr_display(fd, blk->vaddr + totaloff, 0, blk->size - totaloff,
 			       name, off + totaloff, buffer + totaloff);
@@ -202,19 +202,19 @@ static void	revm_disasm_block(int fd, mjrblock_t *blk)
  */
 int	revm_graph_compile_graphic(char *dotfile)
 {
-  char	buf[BUFSIZ];
+  char	buf[BUFSIZ+1] = {0x00};
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if ((int) config_get_data(ERESI_CONFIG_GRAPH_AUTOBUILD))
     {
-      snprintf(buf,sizeof(buf),"dot -Tpng -o %s.png %s",dotfile,dotfile);
+      snprintf(buf,sizeof(buf)-1,"dot -Tpng -o %s.png %s",dotfile,dotfile);
       setenv("LD_PRELOAD", "", 1);
       system(buf);
 
       if ((int) config_get_data(ERESI_CONFIG_GRAPH_AUTOVIEW))
 	{
-	  snprintf(buf,sizeof(buf),
+	  snprintf(buf,sizeof(buf)-1,
 		   "%s %s.png",
 		   (char *)config_get_data(ERESI_CONFIG_GRAPH_VIEWCMD),
 		   dotfile);
@@ -355,7 +355,7 @@ char		*revm_get_colored_str(char *str,int type)
   u_int		t2;
   char		**keys;
   char		*color;
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ] = {0x00};
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -373,7 +373,7 @@ char		*revm_get_colored_str(char *str,int type)
 	  t2 = (u_int) hash_get(&fg_color_hash, keys[c]);
 	  if (t2 == t->fground)
 	    {
-	      snprintf(buf, sizeof(buf), "\"%s\"", keys[c]);
+	      snprintf(buf, sizeof(buf)-1, "\"%s\"", keys[c]);
 	      color = strdup(buf);
 	      break;
 	    }
@@ -430,18 +430,18 @@ int		revm_graph_get_function_type(mjrfunc_t *fnc)
 /* Write the header dot description for a node */
 char		*revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr, u_int size)
 {
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ] = {0x00};
   char		*name;
   elfsh_SAddr	offset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   name = elfsh_reverse_metasym(obj, addr, &offset);
   if (name && !offset)
-    snprintf(buf, sizeof(buf),
+    snprintf(buf, sizeof(buf)-1,
 	     "\"%s\" [shape=\"box\" color=%s label=\"<%s@%u>:\\l",
 	     name, "\"grey\"", name, size);
   else
-    snprintf(buf, sizeof(buf),
+    snprintf(buf, sizeof(buf)-1,
 	     "\"" AFMT "\" [shape=\"box\" color=%s label=\"<" AFMT "@%u>:\\l",
 	     addr, "\"grey\"", addr, size);
   write(fd, buf, strlen(buf));
@@ -451,7 +451,7 @@ char		*revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr, u_int size)
 /* Write the footer dot description for a node */
 int		revm_write_endnode(int fd)
 {
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ] = {0x00};
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   snprintf(buf, sizeof(buf), "\"];\n");
@@ -470,7 +470,7 @@ int		revm_graph_blocks(container_t   *cntnr,
 {
   mjrblock_t	*blk,*cblk;
   mjrlink_t	*lnk;
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ] = {0x00};
   char		*vaddr_str;
   char		*col_arrow;
   container_t	*nextcnt;
@@ -532,19 +532,19 @@ int		revm_graph_blocks(container_t   *cntnr,
       if (name)
 	{
 	  if (sname && !soffset)
-	    snprintf(buf, sizeof(buf), "\"%s\" -> \"%s\" [color=%s];\n",
+	    snprintf(buf, sizeof(buf)-1, "\"%s\" -> \"%s\" [color=%s];\n",
 		     name, sname, col_arrow);
 	  else
-	    snprintf(buf, sizeof(buf), "\"%s\" -> \"" AFMT "\" [color=%s];\n",
+	    snprintf(buf, sizeof(buf)-1, "\"%s\" -> \"" AFMT "\" [color=%s];\n",
 		     name, cblk->vaddr, col_arrow);
 	}
       else
 	{
 	  if (sname && !soffset)
-	    snprintf(buf, sizeof(buf), "\"" AFMT "\" -> \"%s\" [color=%s];\n",
+	    snprintf(buf, sizeof(buf)-1, "\"" AFMT "\" -> \"%s\" [color=%s];\n",
 		     blk->vaddr, sname, col_arrow);
 	  else
-	    snprintf(buf, sizeof(buf), "\"" AFMT "\" -> \"" AFMT "\" [color=%s];\n",
+	    snprintf(buf, sizeof(buf)-1, "\"" AFMT "\" -> \"" AFMT "\" [color=%s];\n",
 		     blk->vaddr, cblk->vaddr, col_arrow);
 	}
 
@@ -595,7 +595,7 @@ int		revm_graph_function(container_t		*cntnr,
   mjrfunc_t	*fnc, *tmpfnc;
   mjrlink_t	*curlnk;
   char		*n1, *n2, *vaddr_str;
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ] = {0x00};
   list_t	*linklist;
   listent_t	*curent;
   container_t	*child;
@@ -618,7 +618,7 @@ int		revm_graph_function(container_t		*cntnr,
 
   ftype = revm_graph_get_function_type(fnc);
   
-  snprintf(buf, sizeof(buf), "\"%s\" [color=%s];\n",
+  snprintf(buf, sizeof(buf)-1, "\"%s\" [color=%s];\n",
       	   (n1 && !offset ? n1 : fnc->name), 
 	   revm_get_colored_str((n1) ? n1 : fnc->name, ftype));
   
@@ -637,7 +637,7 @@ int		revm_graph_function(container_t		*cntnr,
       
       if (type)
 	{
-	  snprintf(buf, sizeof(buf),
+	  snprintf(buf, sizeof(buf)-1,
 		   "\"%s\" [color=%s];\n",
 		   (n2) ? n2 : tmpfnc->name,
 		   revm_get_colored_str((n2) ? n2 : tmpfnc->name, ftype));
@@ -646,14 +646,14 @@ int		revm_graph_function(container_t		*cntnr,
 	}
       
       if (direction == CONTAINER_LINK_OUT)
-	snprintf(buf,sizeof(buf),
+	snprintf(buf,sizeof(buf)-1,
 		 "\"%s\" -> \"%s\";\n",
 		 (n1) ? n1 : fnc->name,
 		 (n2) ? n2 : tmpfnc->name);
       
       else if (direction == CONTAINER_LINK_IN)
 	{
-	  snprintf(buf,sizeof(buf),
+	  snprintf(buf,sizeof(buf)-1,
 		   "\"%s\" -> \"%s\";\n",
 		   (n2) ? n2 : tmpfnc->name,
 		   (n1) ? n1 : fnc->name);
@@ -725,7 +725,7 @@ int		cmd_graph(void)
 {
   container_t	*cntnr;
   int		fd;
-  char		buf[BUFSIZ];
+  char		buf[BUFSIZ] = {0x00};
   eresi_Addr	min;
   char		*dotfile;
   int		maxdepth;
@@ -753,7 +753,7 @@ int		cmd_graph(void)
 
       dotfile = revm_get_dotfile_name(NULL, "object");
       revm_open_dot_file(dotfile, &fd);
-      snprintf(buf, sizeof(buf),"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
+      snprintf(buf, sizeof(buf)-1,"strict digraph prof {\n ratio=fill;node [style=\"filled\"];\n");
       write(fd, buf, strlen(buf));
       printf(" [*] Dumping %d functions\n\n", world.mjr_session.cur->funchash.elmnbr);
       cntnr = mjr_get_container_by_vaddr(world.mjr_session.cur, 
@@ -817,7 +817,7 @@ int		cmd_graph(void)
 			 "Block not found",-1);
 	  dotfile = revm_get_dotfile_name(_vaddr2str(min), "block");
 	  revm_open_dot_file(dotfile, &fd);
-	  snprintf(buf, sizeof(buf), "strict digraph prof {\n");
+	  snprintf(buf, sizeof(buf)-1, "strict digraph prof {\n");
 	  write(fd, buf, strlen(buf));
 	  revm_graph_legend(fd, "DEFAULT");
 	  revm_graph_blocks(cntnr, fd, 0, 0, 1);

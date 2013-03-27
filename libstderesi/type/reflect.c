@@ -100,8 +100,6 @@ int		cmd_reflect()
     }
   */
 
-  printf("REFLECT ARGC = %u \n", world.curjob->curcmd->argc);
-
   /* One more param enables lightweight mode: lookup data from a binary file section - no CFG needed */
   if (world.curjob->curcmd->argc == 2)
     {
@@ -126,9 +124,6 @@ int		cmd_reflect()
 		     "Failed to find bloc at this virtual address", -1);
       curblock = (mjrblock_t *) container->data;
       readsize = curblock->size;
-      
-      printf("REFLECT DEBUG: Curblock size = %u \n", readsize);
-
       blocdata = alloca(readsize);
       reqnbr = 0;
     }

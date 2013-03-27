@@ -74,7 +74,7 @@ int		revm_output(char *str)
 
   revm_log(str);
 
-  /* No -- more -- in some modes */
+  /* No -- more -- output breaks in non-interactive, non embedded, remote modes */
   if ((world.state.revm_mode != REVM_STATE_INTERACTIVE &&
        world.state.revm_mode != REVM_STATE_EMBEDDED)
       || world.curjob->ws.io.type == REVM_IO_DUMP

@@ -26,10 +26,6 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
 
 
 /** Create a context for a (sub)expression initialization */
-// BUG!!! FIXME: NEED LOCK!
-// BUG: this function is called twice on the path revm_expr_create->revm_expr_init->revm_expr_init_field():222
-// when removing a TMPVAR, we erase the first context --> should not have a static context!
-
 revmexprctx_t		*revm_expr_context_init(revmexpr_t *curexpr, revmexpr_t *prevexpr, 
 						u_short toplevel, char *pathbuf)
 {
@@ -170,7 +166,6 @@ static revmexpr_t *revm_expr_read(char **datavalue)
 }
 
 
-
 /* Initialize a field for an ERESI expression */
 static int		revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype, void *srcdata)
 {
@@ -191,13 +186,14 @@ static int		revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype, vo
   childtype = newexpr->type;
   
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] expr_init_field: setting TERMINAL value (recpath = %s) \n", recpath);
+  printf(" [D] expr_init_field: setting TERMINAL value (recpath = %s, newexpr = %p) \n", 
+	 recpath, newexpr);
 #endif
   
   /* Handle RAW terminal field */
   if (childtype->type == ASPECT_TYPE_RAW)			       
     {
-      //FIXME: Call hexa converter curval.datastr and set field
+      // XXX-FIXME: Call hexa converter curval.datastr and set field
       fprintf(stderr, " [E] Raw object initialization yet unsupported.\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
@@ -505,13 +501,12 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
 }
 
 
-
-
-/* This function is called when a "set $base.field val" command is used and $base might
-be partially constructed. If the DSTNAME parameter starts with a variable prefix and contains 
-a field delimiter, we extract the variable name and the field path. If such a prefix variable
-exists and the (remaining) field name is valid and passes type-checking, we create the field 
-on the fly for this instance */
+/* This function is called when the LHS is an unknown variable which has to be created */
+/* When the command has a LHS of the form "set $base.field val" and $base has no current 
+value for $field. If the DSTNAME parameter starts with a variable prefix and contains 
+a field delimiter, we extract the variable name and the field path. If such base ariable
+exists and the (remaining) field name is valid and passes type-checking, we create a new field 
+value for this instance */
 revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
 {
   revmexpr_t		*expr = NULL;
@@ -525,7 +520,7 @@ revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
   char			valuestr[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
+  
   /* Find longest valid prefix */
   if (*dstname != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1067,7 +1062,6 @@ int		revm_expr_print(revmexpr_t *expr, u_char quiet)
     revm_output(")\\l");
 
   revm_endline();
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

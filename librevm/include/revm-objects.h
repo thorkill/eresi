@@ -1,5 +1,5 @@
 /**
- * @defgroup librevm librevm: The Reverse Engineering Vector Machine.
+ * @defgroup librevm The Reflective ERESI Virtual Machine object types.
  * @ingroup ERESI
  */
 /**

@@ -1,0 +1,59 @@
+#!evarista32
+
+#by default, fast print the main function only -- uncomment lines for whole program analysis
+#config mjr.cfg_depth 0
+
+# disable synthetic instructions as they make IR less easy to generate
+config libasm.output.synth.instrs 0
+
+set $binname $1
+quiet
+print BINNAME = $binname
+
+vlist
+cmp  $# 1
+jne end
+sdir .
+eva-typedecl
+
+print 
+print ******************** The Evarista static analyzer .::. Welcome *********************
+print
+#verb
+#vlist
+
+load $binname
+analyse main
+
+#graph
+#graph bloc main
+
+sym main
+set $mainaddr main
+print Main-Function found at addr $mainaddr
+
+#profile enable warn
+
+#print $hash[$binname_functions:$mainaddr]
+
+type func
+
+set $mainfunc $hash[$binname_functions:$mainaddr]
+
+callgraph-walk $mainfunc.vaddr $binname
+
+quiet
+print 
+print ******************** The Evarista static analyzer .::. Good bye *********************
+print
+quit
+
+end:
+print Evarista cmd-line syntax:
+print
+print For 32b binaries: eva-run32.esh <ELF32_binary_file_path>
+print For 64b binaries: eva-run64.esh <ELF64_binary_file_path>
+print
+print Quitting.
+print
+quit

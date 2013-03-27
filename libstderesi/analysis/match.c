@@ -157,6 +157,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
   char		*rname;
   revmexpr_t	*candid;
   list_t	*looplist;
+  int		ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -186,7 +187,7 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	break;
     }
 
-  /* UNIMPLEMENTED: Case where the rewritten element is not part of an iterated list -- unsupported */
+  /* XXX: Case where the rewritten element is not part of an iterated list -- unsupported */
   looplist = (list_t *) world.curjob->iter[world.curjob->curloop].container;
   if (!looplist)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -217,15 +218,28 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 			 "Malformed destination type", -1);
 	  candid->annot->inhash = 1;
 
-	  /*
-	    XXX: Disabled -- do not remove -- to renable when SSA transform is ready
-	    if (revm_links_propagate(candid, matchme) < 0)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-	    "Error while propagating dataflow links", -1);
-	  */
+	  /** 
+	   **
+	   ** XXX: Disabled -- do not remove -- to enable when SSA transform is ready
+	   ** if (revm_links_propagate(candid, matchme) < 0)
+	   ** PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+	   ** "Error while propagating dataflow links", -1);
+	   **
+	   ** XXX: Also address the propagate for the case where dstnbr != 1
+	   */
 
-	  elist_set(looplist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
-	  elist_append(exprlist, strdup(rname), candid);
+	  ret = elist_set(looplist, world.curjob->iter[world.curjob->curloop].curkey, candid);
+	  if (ret < 0)
+	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+			 "Failed to store transformed expr in input list", -1);
+
+	  /* 
+	  ** We reuse the same key for transform list, so that any change in transform list
+	  ** can be recorded back to the element of the original list. We also refresh the
+	  ** induction variable of current loop context.
+	  */
+	  elist_append(exprlist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
+	  world.curjob->iter[world.curjob->curloop].curind = candid;
 	}
     }
 
@@ -396,14 +410,17 @@ int		cmd_case()
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
   
-
   /* Matched : transform and execute post side effects if any */
   world.curjob->recur[world.curjob->curscope].rwrt.matched = 1;
 
   /* Sometimes the case command comes directly with appended post side-effects */
   if (!world.curjob->curcmd->param[1])
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+
+  /* The rewrite output was directly specified in the case command */
   revm_case_transform(matchme, strdup(world.curjob->curcmd->param[1]));
+
+  /* Additional side-effects were specified in the case command */
   if (world.curjob->curcmd->param[2] && 
       revm_case_execmd(world.curjob->curcmd->param[2]) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -428,39 +445,28 @@ int			cmd_match()
   list = (list_t *) world.curjob->iter[world.curjob->curloop].container;
   ind  = world.curjob->iter[world.curjob->curloop].curind;
 
-  if (!list || !ind || strcmp(ind->label, world.curjob->curcmd->param[0]) || 
+  if (!list || !ind || //strcmp(ind->label, world.curjob->curcmd->param[0]) || 
       list->type != ASPECT_TYPE_EXPR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Match/Rewrite only acts on iterated lists of expressions", -1);
-
-  /*
-  if (list && ind && !strcmp(ind->label, world.curjob->curcmd->param[0]))
     {
-      if (list->type != ASPECT_TYPE_EXPR)
-
-#if __DEBUG_REWRITE__
-      fprintf(stderr, "\n [DEBUG] We -ARE- matching elements of a list *** \n");
-#endif
-
-      world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Match/Rewrite only acts on iterated lists of expressions", -1);
     }
 
-#if __DEBUG_REWRITE__
-  fprintf(stderr, "\n [DEBUG] We are -NOT- matching elements of a list *** \n");
-#endif    
-
-  ind = revm_lookup_param(world.curjob->curcmd->param[0], 1);
   world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
-  */
+  
+  /* Create or flush the transformed expressions output list */
+  if (world.curjob->recur[world.curjob->curscope].rwrt.transformed)
+    elist_empty(world.curjob->recur[world.curjob->curscope].rwrt.transformed->name);
+  else
+    {
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, 
+	     world.curjob->recur[world.curjob->curscope].rwrt.transformed, 
+	     sizeof(list_t), -1);
+      elist_init(world.curjob->recur[world.curjob->curscope].rwrt.transformed, 
+		 "transformed", ASPECT_TYPE_EXPR);
+    }
 
-  world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 world.curjob->recur[world.curjob->curscope].rwrt.transformed, sizeof(list_t), -1);
-  elist_init(world.curjob->recur[world.curjob->curscope].rwrt.transformed, 
-	     "transformed", ASPECT_TYPE_EXPR);
   world.curjob->recur[world.curjob->curscope].rwrt.idloop = world.curjob->curloop;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -471,14 +477,9 @@ int			cmd_match()
 int		cmd_matchend()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
-  //elist_destroy(world.curjob->recur[world.curjob->curscope].rwrt.transformed);
-  //bzero(&world.curjob->recur[world.curjob->curscope].rwrt, sizeof(revmrewrite_t));
-
   world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = NULL;
   world.curjob->recur[world.curjob->curscope].rwrt.matched = 0;
   world.curjob->recur[world.curjob->curscope].rwrt.replaced = 0;
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
