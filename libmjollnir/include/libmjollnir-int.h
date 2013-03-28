@@ -7,20 +7,20 @@
  *
  */
 
-#define __DEBUG_MJOLLNIR__	1
-#define __DEBUG_CALLS__		1
-#define __DEBUG_READ__		1
-#define __DEBUG_PTR__		1
+#define __DEBUG_MJOLLNIR__	0
+#define __DEBUG_CALLS__		0
+#define __DEBUG_READ__		0
+#define __DEBUG_PTR__		0
 #define __DEBUG_OPERAND__	0
-#define __DEBUG_BLOCKS__	1
-#define __DEBUG_BLK_LOOKUP__	1
-#define __DEBUG_FLOW__		1
-#define __DEBUG_CNTNR__		1
-#define __DEBUG_CNTNR_LOOKUP__	1
-#define __DEBUG_FUNCS__		1
-#define __DEBUG_FUCNS_LOOKUP__	1
+#define __DEBUG_BLOCKS__	0
+#define __DEBUG_BLK_LOOKUP__	0
+#define __DEBUG_FLOW__		0
+#define __DEBUG_CNTNR__		0
+#define __DEBUG_CNTNR_LOOKUP__	0
+#define __DEBUG_FUNCS__		0
+#define __DEBUG_FUCNS_LOOKUP__	0
 #define __DEBUG_FNG__		0
-#define	__DEBUG_ONDISK__	1
+#define	__DEBUG_ONDISK__	0
 #define	__DEBUG_LINKS__		0
 
 /* Debug descriptor */

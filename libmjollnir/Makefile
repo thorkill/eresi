@@ -1,7 +1,7 @@
 #
 # LibMjollnir Makefile
 #
-# (C) 2001-2013 - Devhell Labs / Asgard Labs (sk, jfv, thorolf)
+# (C) 2001-2006 - Devhell Labs / Asgard Labs (sk, jfv, thorolf)
 #
 
 include ../config.h
