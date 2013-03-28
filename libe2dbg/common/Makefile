@@ -48,7 +48,8 @@ all64			: ${OBJ64}
 			  $(LD) -r ${OBJ64} -o $(OBJNAME64).o
 
 clean		       :
-		       @$(RM) $(OBJ32) $(OBJ64) *~ \#* *\# .\#*
+		       @$(RM) $(OBJ32) $(OBJ64) $(OBJNAME64).o $(OBJNAME32).o	\
+			*~ \#* *\# .\#*
 
 fclean		       : clean
 			@$(RM) *.o

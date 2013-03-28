@@ -455,10 +455,18 @@ int			cmd_match()
   world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
   
   /* Create or flush the transformed expressions output list */
-  if (world.curjob->recur[world.curjob->curscope].rwrt.transformed)
-    elist_empty(world.curjob->recur[world.curjob->curscope].rwrt.transformed->name);
+  //if (world.curjob->recur[world.curjob->curscope].rwrt.transformed)
+
+  list_t *exist = elist_find("transformed");
+  if (exist)
+    {
+      printf("Emptying transformed list at scope %u \n", world.curjob->curscope);
+      elist_empty(exist->name);
+      world.curjob->recur[world.curjob->curscope].rwrt.transformed = exist;
+    }
   else
     {
+      printf("Creating transformed list at scope %u \n", world.curjob->curscope);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	     world.curjob->recur[world.curjob->curscope].rwrt.transformed, 
 	     sizeof(list_t), -1);
@@ -513,12 +521,18 @@ int		cmd_default()
   str = revm_string_get(world.curjob->curcmd->param);
   cur = world.curjob->curcmd;
   if (revm_exec_str(str) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Display execrequest failed", -1);
+    {
+      puts("FAILED EXEC_STR");
+      //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+      //	   "Display execrequest failed", -1);
+    }
   world.curjob->curcmd = world.curjob->recur[world.curjob->curscope].script; 
   if (revm_execmd() < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Default command execution failed", -1);
+    {
+      puts("FAILED EXEC_CMD");
+      //PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+      //	   "Default command execution failed", -1);
+    }
 
   /* Restore previous context */
   world.curjob->curcmd = cur;

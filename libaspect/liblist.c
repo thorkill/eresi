@@ -31,8 +31,8 @@ int elist_init(list_t *h, char *name, u_int type)
   if (exist)
     {
 #if 1 //__LIST_DEBUG__
-      fprintf(stderr, "DEBUG: List %s (%p) already exists in hash with addr %p : NOT CREATING \n", 
-	      name, h, exist);
+      fprintf(stderr, "DEBUG: List %s (%p) already exists in hash (%s) with addr %p : NOT CREATING \n", 
+	      name, h, h->name, exist);
 #endif
       NOPROFILER_ROUT(1);
     }
@@ -90,19 +90,19 @@ list_t		*elist_empty(char *name)
   list_t	*list;
   char		*newname;
   char		type;
+  u_int		len;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   list = elist_find(name);
   if (!list)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
   type    = list->type;
+  len = strlen(name);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, newname, len + 1, NULL);
+  strncpy(newname, name, len);
   hash_del(hash_lists, name);
   elist_destroy(list);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 newname, strlen(name) + 1, NULL);
-  strncpy(newname, name, strlen(name));
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,
-  	 list, sizeof(list_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, list, sizeof(list_t), NULL);
   elist_init(list, newname, type);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
