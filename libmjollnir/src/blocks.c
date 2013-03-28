@@ -1,5 +1,5 @@
 /** 
-* @file libmjollnir/src/blocks.c
+ * @file libmjollnir/src/blocks.c
  * @ingroup libmjollnir
  * @{
  * Authors : sk, jfv, thorkill, strauss

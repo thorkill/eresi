@@ -136,6 +136,15 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
           __FUNCTION__, src, dst, ret);
 #endif
 
+  if (dst < 0)
+    {
+#if __DEBUG_LINKS__
+      fprintf(D_DESC,"[D] %s: dst < 0: "XFMT"\n",
+              __FUNCTION__, ret);
+#endif
+      dst = src + dst;
+    }
+
   /* Check if we are not pointing into BSS */
   dstsect = elfsh_get_parent_section(ctxt->obj, dst, NULL);
   retsect = elfsh_get_parent_section(ctxt->obj, ret, NULL);

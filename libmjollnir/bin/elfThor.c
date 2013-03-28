@@ -4,6 +4,7 @@
  * $Id$
  *
  */
+
 #include <libmjollnir.h>
 
 void		usage() 
