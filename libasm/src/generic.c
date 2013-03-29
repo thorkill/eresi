@@ -212,7 +212,7 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
 
   if (op->ptr && 
        (op->type == ASM_OPTYPE_IMM ||
-          ((op->type == ASM_OPTYPE_MEM) & (op->memtype & ASM_OP_VALUE))))
+          ((op->type == ASM_OPTYPE_MEM) && (op->memtype & ASM_OP_VALUE))))
   {
     switch (op->len)
     {
