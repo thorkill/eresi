@@ -41,7 +41,7 @@ foreach $instr of $hash[instrlists:$curaddr]
 
  rewrite $instr into
   case instr(sem:0x4020)
-  into irinstr(localid:$curid)
+  into irinstr(localid:$curid)::irinstr(localid:$curid+100)
   default print do nothing
  rwtend
  add $curid 2

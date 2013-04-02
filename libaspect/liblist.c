@@ -91,11 +91,25 @@ list_t		*elist_empty(char *name)
   char		*newname;
   char		type;
   u_int		len;
+  char		**keys;
+  int		keynbr;
+  int		idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   list = elist_find(name);
   if (!list)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+  
+  keys = elist_get_keys(list, &keynbr);
+  for (idx = 0; idx < keynbr; idx++)
+    XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
+  if (keys)
+    elist_free_keys(keys);
+  list->head = NULL;
+  list->elmnbr = 0;
+  list->linearity = 0;
+
+  /*
   type    = list->type;
   len = strlen(name);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, newname, len + 1, NULL);
@@ -104,6 +118,8 @@ list_t		*elist_empty(char *name)
   elist_destroy(list);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, list, sizeof(list_t), NULL);
   elist_init(list, newname, type);
+  */
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
 

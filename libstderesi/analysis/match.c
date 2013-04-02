@@ -237,9 +237,13 @@ static int	revm_case_transform(revmexpr_t *matchme, char *destvalue)
 	  ** We reuse the same key for transform list, so that any change in transform list
 	  ** can be recorded back to the element of the original list. We also refresh the
 	  ** induction variable of current loop context.
+	  **
+	  ** XXX: we should probably update context hashes too
 	  */
 	  elist_append(exprlist, strdup(world.curjob->iter[world.curjob->curloop].curkey), candid);
+	  char *name = world.curjob->iter[world.curjob->curloop].curind->label;
 	  world.curjob->iter[world.curjob->curloop].curind = candid;
+	  world.curjob->iter[world.curjob->curloop].curind->label = name;
 	}
     }
 
@@ -445,28 +449,25 @@ int			cmd_match()
   list = (list_t *) world.curjob->iter[world.curjob->curloop].container;
   ind  = world.curjob->iter[world.curjob->curloop].curind;
 
-  if (!list || !ind || //strcmp(ind->label, world.curjob->curcmd->param[0]) || 
+  if (!list || !ind || strcmp(ind->label, world.curjob->curcmd->param[0]) || 
       list->type != ASPECT_TYPE_EXPR)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Match/Rewrite only acts on iterated lists of expressions", -1);
     }
 
+  /* We assume that the rewritten expression is the induction variable */
   world.curjob->recur[world.curjob->curscope].rwrt.matchexpr = ind;
   
   /* Create or flush the transformed expressions output list */
-  //if (world.curjob->recur[world.curjob->curscope].rwrt.transformed)
-
-  list_t *exist = elist_find("transformed");
-  if (exist)
+  list = elist_find("transformed");
+  if (list)
     {
-      printf("Emptying transformed list at scope %u \n", world.curjob->curscope);
-      elist_empty(exist->name);
-      world.curjob->recur[world.curjob->curscope].rwrt.transformed = exist;
+      elist_empty(list->name);
+      world.curjob->recur[world.curjob->curscope].rwrt.transformed = list;
     }
   else
     {
-      printf("Creating transformed list at scope %u \n", world.curjob->curscope);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, 
 	     world.curjob->recur[world.curjob->curscope].rwrt.transformed, 
 	     sizeof(list_t), -1);

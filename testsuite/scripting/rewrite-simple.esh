@@ -38,7 +38,7 @@ set $off 1
 foreach $instr of $hash[instrlists:$curaddr]
 rewrite $instr into
 case instr(sem:0x4020)
-into instr(name:$first, sem:0xFE+$off, icode:$off+254, nb_op:$off+$instr.op1.sem, op1:$instr.op1)
+into instr(name:$first, sem:0xFE+$off, icode:$off+254, nb_op:0)
 rwtend
 forend
 
