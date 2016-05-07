@@ -1,0 +1,17 @@
+*.[ao]
+*.so
+Makefile
+config.h
+
+e2dbg/e2dbg64
+elfsh/elfsh64
+etrace/etrace64
+evarista/evarista64
+kedbg/kedbg64
+libasm/Makefile.inc
+libasm/src/arch/arm/packed_handlers.c
+libasm/src/arch/ia32/packed_handlers.c
+libasm/src/arch/mips/packed_handlers.c
+libasm/src/arch/sparc/packed_handlers.c
+libelfsh/include/libvars.h
+librevm/include/revm-vars.h
