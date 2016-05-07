@@ -134,7 +134,7 @@ int	__libc_start_main(int (*main) (int, char **, char **aux),
 			  void (*init) (void),
 			  void (*fini) (void),
 			  void (*rtld_fini) (void), 
-			  void *__unbounded stack_end)
+			  void *stack_end)
 {
   eresi_Addr		orig;
   int			(*libcstartmain)();
