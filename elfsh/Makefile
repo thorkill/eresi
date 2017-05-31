@@ -53,11 +53,11 @@ LDFLAGS64		+= -L../libstderesi/ -lstderesi64 -L../librevm/ -lrevm64    \
 			-L../libelfsh/ -lelfsh64 -L../libetrace/ -letrace64         \
 			-L/usr/pkg/lib/ -L../libmjollnir/ -lmjollnir64              \
 			-L../libetrace -letrace64 $(LPTHREAD) -L../libasm/ -lasm64  \
-			$(LDUIOPT32) -g3 $(STATOPT) -L../liballocproxy -lallocproxy \
+			$(LDUIOPT64) -g3 $(STATOPT) -L../liballocproxy -lallocproxy \
 			-L../libaspect/ -laspect64  -lcrypto                        \
 			$(LDMJOLLNIR) $(DLOPT)			                    \
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT) 	    \
-			$(LDDUMPOPT32) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT)
+			$(LDDUMPOPT64) $(LDNCURSESLNOPT) $(LDREADLNOPT) $(READLNOPT)
 
 all			: all32 all64
 

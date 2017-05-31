@@ -66,7 +66,7 @@ LDFLAGS64               += -L../libstderesi/ -lstderesi64   			\
 			-L/usr/pkg/lib/ 					\
 			-L../libmjollnir/ -lmjollnir64 -lcrypto $(DLOPT)	\
 			-L../libetrace -letrace64 $(LPTHREAD)			\
-			-L../libasm/ -lasm64 $(LDUIOPT32) -g3 $(STATOPT) 	\
+			-L../libasm/ -lasm64 $(LDUIOPT64) -g3 $(STATOPT) 	\
 			-L../libaspect/ -laspect64				\
 			-L../libgdbwrap/ -lgdbwrap64				\
 			-L/usr/freeware/lib32/ $(DYNOPT) $(BITS) $(EXTRAOPT)         \
