@@ -1,7 +1,7 @@
 /**
  * @file libaspect/liblist.c
  * @ingroup libaspect
- * 
+ *
  * @brief Contain ELFsh internal lists related API.
  *
  * Started on  Fri Jul 13 20:26:18 2007 jfv
@@ -31,7 +31,7 @@ int elist_init(list_t *h, char *name, u_int type)
   if (exist)
     {
 #if 1 //__LIST_DEBUG__
-      fprintf(stderr, "DEBUG: List %s (%p) already exists in hash (%s) with addr %p : NOT CREATING \n", 
+      fprintf(stderr, "DEBUG: List %s (%p) already exists in hash (%s) with addr %p : NOT CREATING \n",
 	      name, h, h->name, exist);
 #endif
       NOPROFILER_ROUT(1);
@@ -48,16 +48,16 @@ int elist_init(list_t *h, char *name, u_int type)
   NOPROFILER_ROUT(0);
 }
 
-/** 
- * @brief Return a list by its name 
+/**
+ * @brief Return a list by its name
  */
 list_t		*elist_find(char *name)
 {
   return ((list_t *) hash_get(hash_lists, name));
 }
 
-/** 
- * @brief Set a list by its name (overwrite if existing ) 
+/**
+ * @brief Set a list by its name (overwrite if existing )
  */
 int		elist_register(list_t *list, char *name)
 {
@@ -82,15 +82,12 @@ int		elist_register(list_t *list, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** 
- * @brief Empty a list 
+/**
+ * @brief Empty a list
  */
 list_t		*elist_empty(char *name)
 {
   list_t	*list;
-  char		*newname;
-  char		type;
-  u_int		len;
   char		**keys;
   int		keynbr;
   int		idx;
@@ -99,7 +96,7 @@ list_t		*elist_empty(char *name)
   list = elist_find(name);
   if (!list)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
-  
+
   keys = elist_get_keys(list, &keynbr);
   for (idx = 0; idx < keynbr; idx++)
     XFREE(__FILE__, __FUNCTION__, __LINE__, keys[idx]);
@@ -108,17 +105,6 @@ list_t		*elist_empty(char *name)
   list->head = NULL;
   list->elmnbr = 0;
   list->linearity = 0;
-
-  /*
-  type    = list->type;
-  len = strlen(name);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, newname, len + 1, NULL);
-  strncpy(newname, name, len);
-  hash_del(hash_lists, name);
-  elist_destroy(list);
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, list, sizeof(list_t), NULL);
-  elist_init(list, newname, type);
-  */
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
@@ -145,7 +131,7 @@ list_t		*elist_reverse(list_t *l)
     }
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, l);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newlist);  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newlist);
 }
 
 
@@ -157,7 +143,7 @@ void		elist_destroy(list_t *h)
   int		keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   //fprintf(stderr, "DEBUG: Destroying list %s at addr %p \n", h->name, h);
 
   /* We should not destroy the elements as they might be in other hashes */
@@ -222,8 +208,8 @@ list_t		*elist_copy(list_t *h, u_char datacopy)
 
 
 
-/** 
- * @brief Add an element at the head of the list 
+/**
+ * @brief Add an element at the head of the list
  */
 int		elist_add(list_t *h, char *key, void *data)
 {
@@ -244,8 +230,8 @@ int		elist_add(list_t *h, char *key, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** 
- * @brief Add an element at the head of the list 
+/**
+ * @brief Add an element at the head of the list
  */
 int		elist_append(list_t *h, char *key, void *data)
 {
@@ -277,7 +263,7 @@ int		elist_append(list_t *h, char *key, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* 
+/*
  * @brief Push an element on the list (used as a stack)
  */
 int		elist_push(list_t *h, void *data)
@@ -294,13 +280,13 @@ int		elist_push(list_t *h, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/* 
+/*
  * @brief Pop an element off the list (used as a stack)
  */
 void		*elist_pop(list_t *h)
 {
   listent_t	*next;
-  
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !h->head)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -315,22 +301,22 @@ void		*elist_pop(list_t *h)
 }
 
 
-/** 
- * @brief Delete an element from a list 
+/**
+ * @brief Delete an element from a list
  */
 int		elist_del(list_t *h, char *key)
 {
   listent_t	*curelem;
   listent_t	*prevelem;
   listent_t	*todel;
-  
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !key)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid NULL parameters", -1);
   curelem = h->head;
   prevelem = NULL;
-  for (curelem = h->head; curelem && strcmp(curelem->key, key); 
+  for (curelem = h->head; curelem && strcmp(curelem->key, key);
        curelem = curelem->next)
     prevelem = curelem;
   if (!curelem)
@@ -352,13 +338,13 @@ int		elist_del(list_t *h, char *key)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** 
- * @brief Get the list element giving the key 
+/**
+ * @brief Get the list element giving the key
  */
 void		*elist_get(list_t *h, char *key)
 {
   listent_t	*cur;
-  
+
   if (!h || !key)
     return (NULL);
   for (cur = h->head; cur; cur = cur->next)
@@ -367,13 +353,13 @@ void		*elist_get(list_t *h, char *key)
   return (NULL);
 }
 
-/** 
- * @brief Get the list data giving the key 
+/**
+ * @brief Get the list data giving the key
  */
 void 		*elist_select(list_t *h, char *key)
 {
   listent_t	*cur;
-  
+
   if (!h || !key)
     return (NULL);
   for (cur = h->head; cur; cur = cur->next)
@@ -402,7 +388,7 @@ void		*elist_get_headptr(list_t *h)
 int		elist_set(list_t *h, char *key, void *data)
 {
   listent_t	*cur;
-  
+
   if (!h || !key)
     return (-1);
   for (cur = h->head; cur; cur = cur->next)
@@ -416,8 +402,8 @@ int		elist_set(list_t *h, char *key, void *data)
   return (-1);
 }
 
-/** 
- * @brief Replace a single element by a list of elements 
+/**
+ * @brief Replace a single element by a list of elements
  */
 int		elist_replace(list_t *h, char *key, list_t *newlist)
 {
@@ -442,7 +428,7 @@ int		elist_replace(list_t *h, char *key, list_t *newlist)
 	  h->head = newlist->head;
 	else
 	  prev->next = newlist->head;
-	lastent->next = cur->next;	
+	lastent->next = cur->next;
 	h->elmnbr += newlist->elmnbr - 1;
 	//XFREE(__FILE__, __FUNCTION__, __LINE__, cur->data);
 	XFREE(__FILE__, __FUNCTION__, __LINE__, cur);
@@ -465,12 +451,12 @@ char**		elist_get_keys(list_t *h, int* n)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!h || !h->elmnbr)
     {
-      if (n) 
+      if (n)
 	*n = 0;
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Invalid NULL parameters", NULL);
     }
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, keys, 
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, keys,
 	 sizeof(char *) * (h->elmnbr + 1), NULL);
   for (idx = 0, curelem = h->head; curelem; curelem = curelem->next, idx++)
     keys[idx] = curelem->key;
@@ -493,7 +479,7 @@ void		elist_free_keys(char **keys)
 listent_t 	*elist_get_ent(list_t *h, char *key)
 {
   listent_t	*cur;
-  
+
   if (!h || !key)
     return (NULL);
   for (cur = h->head; cur; cur = cur->next)
@@ -517,13 +503,13 @@ void		elist_print(list_t *h)
 }
 
 /* Apply a function on all elements of the list */
-int             elist_apply(list_t *h, void *ptr, 
+int             elist_apply(list_t *h, void *ptr,
 			   int (*func)(listent_t *e, void *p))
 {
   int           index;
   int		ret = 0;
   listent_t	*cur;
-  
+
   if (!h || !func)
     return (-1);
   for (cur = h->head, index = 0; index < h->elmnbr; index++, cur = cur->next)
@@ -536,7 +522,7 @@ int		elist_merge(list_t *dst, list_t *src)
 {
   int           index;
   listent_t	*cur;
-  
+
   if (!dst || !src)
     return (-1);
   for (cur = src->head, index = 0; index < src->elmnbr; index++, cur = cur->next)
@@ -548,7 +534,7 @@ int		elist_merge(list_t *dst, list_t *src)
 int		elist_unmerge(list_t *dst, list_t *src)
 {
   listent_t	*cur;
-  
+
   if (!dst || !src)
     return (-1);
   for (cur = src->head; cur; cur = cur->next)

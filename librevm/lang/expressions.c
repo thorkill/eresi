@@ -13,20 +13,20 @@ typedef struct s_exprcontext
 {
   u_short	toplevel;
   u_short	pathsize;
-  char		pathbuf[BUFSIZ + 1];  
+  char		pathbuf[BUFSIZ + 1];
   revmexpr_t	*curexpr;
   revmexpr_t	*prevexpr;
 }		revmexprctx_t;
 
 
 static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
-					aspectype_t	*curtype, 
+					aspectype_t	*curtype,
       					void		*srcdata,
 					char		*datavalue);
 
 
 /** Create a context for a (sub)expression initialization */
-revmexprctx_t		*revm_expr_context_init(revmexpr_t *curexpr, revmexpr_t *prevexpr, 
+revmexprctx_t		*revm_expr_context_init(revmexpr_t *curexpr, revmexpr_t *prevexpr,
 						u_short toplevel, char *pathbuf)
 {
   revmexprctx_t		*exprctx;
@@ -106,7 +106,7 @@ static revmexpr_t *revm_expr_read(char **datavalue)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Invalid field syntax", NULL);
     }
-  
+
   /* Get the nesting level */
   expr->strval = datastr;
   for (closing = 0; *datastr; datastr++)
@@ -127,13 +127,13 @@ static revmexpr_t *revm_expr_read(char **datavalue)
       case ',':
 	if (opening == closing)
 	  {
-	    *datavalue = datastr + 1; 
-	    for (*datastr-- = 0x00; *datastr == ')' && beginning-- > 0; 
+	    *datavalue = datastr + 1;
+	    for (*datastr-- = 0x00; *datastr == ')' && beginning-- > 0;
 		 *datastr-- = 0x00)
  	      *namend++ = 0x00;
 
 #if __DEBUG_EXPRS__
-	    fprintf(stderr, " [D] NEW REVMEXPR = %s :: %s \n", 
+	    fprintf(stderr, " [D] NEW REVMEXPR = %s :: %s \n",
 		    expr->label, expr->strval);
 #endif
 
@@ -147,18 +147,18 @@ static revmexpr_t *revm_expr_read(char **datavalue)
   /* Well-bracketed end of string : OK */
   if (opening == closing)
     {
-      for (*datavalue = datastr--; *datastr == ')' && *namend == '(' && beginning-- > 0; 
+      for (*datavalue = datastr--; *datastr == ')' && *namend == '(' && beginning-- > 0;
 	   *datastr-- = 0x00)
 	*namend++ = 0x00;
-      
+
 #if __DEBUG_EXPRS__
-      fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n", 
+      fprintf(stderr, " [D] NEW REVMEXPR =  %s ::: %s \n",
 	      expr->label, expr->strval);
 #endif
-      
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
     }
-  
+
   /* Default error */
   XFREE(__FILE__, __FUNCTION__, __LINE__, expr);
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -184,22 +184,22 @@ static int		revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype, vo
   newexpr = ctx->curexpr;
   recpath = ctx->pathbuf;
   childtype = newexpr->type;
-  
+
 #if __DEBUG_EXPRS__
-  printf(" [D] expr_init_field: setting TERMINAL value (recpath = %s, newexpr = %p) \n", 
+  printf(" [D] expr_init_field: setting TERMINAL value (recpath = %s, newexpr = %p) \n",
 	 recpath, newexpr);
 #endif
-  
+
   /* Handle RAW terminal field */
-  if (childtype->type == ASPECT_TYPE_RAW)			       
+  if (childtype->type == ASPECT_TYPE_RAW)
     {
       // XXX-FIXME: Call hexa converter curval.datastr and set field
       fprintf(stderr, " [E] Raw object initialization yet unsupported.\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
-  
+
   /* Lookup scalar value and assign it to the field */
-  newexpr->value = revm_object_lookup_real(parenttype, recpath, childtype->fieldname, 0);	
+  newexpr->value = revm_object_lookup_real(parenttype, recpath, childtype->fieldname, 0);
   curdata = revm_compute(newexpr->strval);
   if (!newexpr->value || !curdata)
     {
@@ -208,7 +208,7 @@ static int		revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype, vo
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Unable to lookup src or dst object", -1);
     }
-  
+
   /* Convert source data to recipient type and set it */
   if (newexpr->type->type != curdata->type->type)
     revm_convert_object(curdata, newexpr->type->type);
@@ -219,34 +219,34 @@ static int		revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype, vo
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Failed to set destination object", -1);
     }
-  
+
   /* Destroy the temporary variable we have created for the right-hand-side value */
   if (revm_variable_istemp(curdata))
     revm_expr_destroy_by_name(curdata->label);
-  
+
   /* Handle terminal Array fields */
-  if (childtype->dimnbr && childtype->elemnbr)			
+  if (childtype->dimnbr && childtype->elemnbr)
     {
       //FIXME: Use child->elemnbr[idx] foreach size of dim (Use previous code in loop)
-      fprintf(stderr, 
+      fprintf(stderr,
 	      " [E] Arrays objects initialization unsupported\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
-  
+
   /* Inform the runtime system about this terminal field */
-  childata = (char *) srcdata + childtype->off;			
-  len = snprintf(recpath + ctx->pathsize, BUFSIZ - ctx->pathsize,		
-		 ".%s", childtype->fieldname);			
-  revm_inform_type_addr(childtype->name, strdup(recpath),		
-			(eresi_Addr) childata, newexpr, 0, 0); 
-  bzero(recpath + ctx->pathsize, len);				
+  childata = (char *) srcdata + childtype->off;
+  len = snprintf(recpath + ctx->pathsize, BUFSIZ - ctx->pathsize,
+		 ".%s", childtype->fieldname);
+  revm_inform_type_addr(childtype->name, strdup(recpath),
+			(eresi_Addr) childata, newexpr, 0, 0);
+  bzero(recpath + ctx->pathsize, len);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /* Prepare recursion on ERESI expression initialisation */
 //static int	revm_expr_init_rec(revmexpr_t **newexpr, char *pathbuf, char *recpath, u_int *pathsize, void *srcdata)
 static int	revm_expr_init_rec(revmexprctx_t *ctx, void *srcdata)
-				   
+
 {
   void		*childata;
   u_int		len;
@@ -277,12 +277,12 @@ static int	revm_expr_init_rec(revmexprctx_t *ctx, void *srcdata)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unable to get root field or type name", -1);
 	}
-      
+
 #if __DEBUG_EXPRS__
       fprintf(stderr, " [D] expr_init_rec: FOUND EXISTING INITIAL EXPR = %s :: %s "
 	      "RECPATH = %s (now doing copy) \n", expr->label, expr->strval, recpath);
 #endif
-		
+
       len = snprintf(recpath + ctx->pathsize, BUFSIZ - ctx->pathsize, ".%s", newexpr->label);
       newexpr = revm_expr_copy(expr, recpath, 1);
       ctx->curexpr = newexpr;
@@ -293,35 +293,35 @@ static int	revm_expr_init_rec(revmexprctx_t *ctx, void *srcdata)
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		       "Unable to copy existing initial subexpression", -1);
 	}
-      
+
 #if __DEBUG_EXPRS__
-      fprintf(stderr, " [D] COPIED EXISTING INITIAL REVMEXPR = %s :: %s (new name) \n", 
+      fprintf(stderr, " [D] COPIED EXISTING INITIAL REVMEXPR = %s :: %s (new name) \n",
 	      newexpr->label, newexpr->strval);
 #endif
-      
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   /* No initial variable value, initialize with immediates */
 #if __DEBUG_EXPRS_MORE__
   fprintf(stderr, " [D] RECORD field -- recursing ! \n");
 #endif
-  
+
   childata = (char *) srcdata + childtype->off;
   len = snprintf(recpath + ctx->pathsize, BUFSIZ - ctx->pathsize, ".%s", childtype->fieldname);
   revm_inform_type_addr(childtype->name, strdup(recpath), (eresi_Addr) childata, newexpr, 0, 0);
-  
-  /* Insert child where necessary */ 
+
+  /* Insert child where necessary */
   ctx->pathsize += len;
   backup = ctx->prevexpr;
   ctx->prevexpr = NULL;
-  if (!revm_expr_init(ctx, childtype, childata, newexpr->strval))		      
+  if (!revm_expr_init(ctx, childtype, childata, newexpr->strval))
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
       ctx->pathsize = 0;
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		   "Invalid child tree for variable", -1);
-    }   
+    }
   ctx->prevexpr = backup;
   ctx->pathsize -= len;
   bzero(recpath + ctx->pathsize, len);
@@ -336,57 +336,57 @@ static revmexpr_t	*revm_expr_preinit(revmexprctx_t *ctx, aspectype_t *curtype, c
   aspectype_t		*childtype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   if (!ctx || !curtype || !datavalue || !(*datavalue))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid parameters", NULL);	  
+		 "Invalid parameters", NULL);
 
 #if __DEBUG_EXPRS__
   fprintf(stderr, " [D] Current datavalue = (%s) \n", *datavalue);
 #endif
-  
+
   /* Read next typed expression in string */
   newexpr = revm_expr_read(datavalue);
   if (newexpr == NULL || newexpr->strval == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to read expression value", NULL);	  
+		 "Failed to read expression value", NULL);
   if (!ctx->toplevel && !newexpr->label)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to read expression label", NULL);	  
+		 "Failed to read expression label", NULL);
 
 
   /* If we are at the root expression and that type was explicitly given, perform type checking */
   if (ctx->toplevel && newexpr->label)
     {
-      
+
 #if __DEBUG_EXPRS_MORE__
-      fprintf(stderr, " [D] Top level type with explicit type label = (%s) strval = (%s) \n", 
+      fprintf(stderr, " [D] Top level type with explicit type label = (%s) strval = (%s) \n",
 	      newexpr->label, newexpr->strval);
 #endif
-      
+
       if (strcmp(newexpr->label, curtype->name))
 	{
 	  ctx->pathsize = 0;
 	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Type checking failed during expression initialization", NULL);	  
+		       "Type checking failed during expression initialization", NULL);
 	}
       *datavalue = newexpr->strval;
       XFREE(__FILE__, __FUNCTION__, __LINE__, newexpr);
       ctx->toplevel = 0;
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (revmexpr_t *) -1);
     }
-  
+
   /* Implicit type for this expression -- no type checking */
   else if (ctx->toplevel && !newexpr->label)
     {
       ctx->toplevel = 0;
       *datavalue = newexpr->strval;
-      
+
 #if __DEBUG_EXPRS_MORE__
-      fprintf(stderr, " [D] No explicit top-level type, continuing with datavalue = %s \n", 
+      fprintf(stderr, " [D] No explicit top-level type, continuing with datavalue = %s \n",
 	      *datavalue);
 #endif
-      
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (revmexpr_t *) -1);
     }
 
@@ -400,7 +400,7 @@ static revmexpr_t	*revm_expr_preinit(revmexprctx_t *ctx, aspectype_t *curtype, c
 		   "Invalid child structure for variable", NULL);
     }
   newexpr->type = childtype;
-  
+
   /* Duplicate names cause they are on the stack now */
   newexpr->label = (char *) strdup(newexpr->label);
   newexpr->strval = (char *) strdup(newexpr->strval);
@@ -413,7 +413,7 @@ static revmexpr_t	*revm_expr_preinit(revmexprctx_t *ctx, aspectype_t *curtype, c
 
 /* Initialize an ERESI expression */
 static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
-					aspectype_t	*parenttype, 
+					aspectype_t	*parenttype,
     					void		*srcdata,
 					char		*datavalue)
 {
@@ -423,12 +423,12 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!ctx || !parenttype || !srcdata || !datavalue)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid parameters", NULL);	  
+		 "Invalid parameters", NULL);
 
   backupexpr = newexpr = rootexpr = NULL;
 
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Entering revm_expr_init with toplevel = %u , curpath = %s\n", 
+  fprintf(stderr, " [D] Entering revm_expr_init with toplevel = %u , curpath = %s\n",
 	  ctx->toplevel, ctx->pathbuf);
 #endif
 
@@ -443,7 +443,7 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
 
       backupexpr = ctx->curexpr;
       ctx->curexpr = newexpr;
-      
+
       /* Non-terminal case : we will need to recurse */
       if (newexpr->type->childs && !newexpr->type->dimnbr)
 	ret = revm_expr_init_rec(ctx, srcdata);
@@ -457,7 +457,7 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Unable to initialize expression field", NULL);
       else if (ret == 1) continue;
-      
+
       /* Link next field of current structure */
       newexpr->parent = ctx->curexpr;
       if (ctx->curexpr)
@@ -483,9 +483,9 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
 	    }
 	  else
 	    rootexpr = ctx->prevexpr = newexpr;
-	}		
+	}
     }
-  
+
   /* Return success or error */
   if (!rootexpr)
     {
@@ -502,10 +502,10 @@ static revmexpr_t	*revm_expr_init(revmexprctx_t	*ctx,
 
 
 /* This function is called when the LHS is an unknown variable which has to be created */
-/* When the command has a LHS of the form "set $base.field val" and $base has no current 
-value for $field. If the DSTNAME parameter starts with a variable prefix and contains 
+/* When the command has a LHS of the form "set $base.field val" and $base has no current
+value for $field. If the DSTNAME parameter starts with a variable prefix and contains
 a field delimiter, we extract the variable name and the field path. If such base ariable
-exists and the (remaining) field name is valid and passes type-checking, we create a new field 
+exists and the (remaining) field name is valid and passes type-checking, we create a new field
 value for this instance */
 revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
 {
@@ -520,7 +520,7 @@ revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
   char			valuestr[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   /* Find longest valid prefix */
   if (*dstname != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -550,7 +550,7 @@ revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
     nextfield[-1] = 0x00;
 
   /* Check if field exits in parent type, initialize it if yes */
-  fieldtype = aspect_type_get_child(expr->type, nextfield); 
+  fieldtype = aspect_type_get_child(expr->type, nextfield);
   if (!fieldtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Invalid field extension", NULL);
@@ -576,8 +576,8 @@ revmexpr_t		*revm_expr_extend(char *dstname, char *srcvalue)
 
 /* Compare or Set source and destination */
 /* OP = REVM_OP_SET or REVM_OP_MATCH */
-static int		revm_expr_handle(revmexpr_t	*dest, 
-					 revmexpr_t	*source, 
+static int		revm_expr_handle(revmexpr_t	*dest,
+					 revmexpr_t	*source,
 					 u_char		op)
 {
   int			ret;
@@ -604,7 +604,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
       if (!cursource)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		     "Cannot find expression field", -1);
-      
+
       if (cursource->childs)
 	{
 	  ret = revm_expr_handle(dest->childs, cursource->childs, op);
@@ -615,7 +615,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 
       /* FIXME-XXX: set/match in case of array ! */
       /* FIXME-XXX: set/match in case of raw type ! */
-      
+
       /* Now realize the operation depending if we are a leaf or not */
       switch (op)
 	{
@@ -624,7 +624,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to set expression field", ret);
 	  break;
-	case REVM_OP_MATCH:	  
+	case REVM_OP_MATCH:
 	  if ((ret = revm_object_compare(dest, cursource, &cmpval)) < 0)
 	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			 "Unable to compare expression fields", ret);
@@ -633,7 +633,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 	  break;
 	}
     }
-  
+
   /* Final checks and result */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -643,7 +643,7 @@ static int		revm_expr_handle(revmexpr_t	*dest,
 
 
 /* Get (and optionally print) the tree of an expression */
-static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff, 
+static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 				   u_int typeoff, u_int iter, u_char quiet)
 {
   aspectype_t	*curtype;
@@ -659,25 +659,25 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   for (; expr; expr = (iter ? expr->next : NULL))
     {
-      
+
       /* Get type of the first real top level expression */
       curtype = expr->type;
       typename = curtype->name;
-      
+
       /* Some printing header */
       revm_endline();
-      len = snprintf(buf, sizeof(buf), "%s%*s %*s", 
+      len = snprintf(buf, sizeof(buf), "%s%*s %*s",
 		     (curtype->isptr ? (quiet ? " *" : revm_colorwarn("    *")) : ""),
-		     (iter && !quiet ? 18 - (curtype->isptr * 4) : 0), 
-		     (quiet ? "" : revm_colorfieldstr(typename)), 
-		     (iter && !quiet ? 18 : 0), 
+		     (iter && !quiet ? 18 - (curtype->isptr * 4) : 0),
+		     (quiet ? "" : revm_colorfieldstr(typename)),
+		     (iter && !quiet ? 18 : 0),
 		     (quiet ? expr->label : revm_colortypestr_fmt("%10s", expr->label)));
-      
+
       sz = (taboff < 21 ? 0 : (len - revm_color_size(buf) - 20));
       pad = alloca(taboff + sz + 1);
       memset(pad, ' ', taboff + sz);
       pad[taboff + sz] = 0x00;
-      
+
       /* If the expr is a structure */
       if (expr->childs)
 	{
@@ -711,17 +711,17 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	    typeoff += (expr->type->isptr ? 4 : curtype->size);
 	  continue;
 	}
-      
+
       // FIXME-XXX: Print up to 10 bytes
       if (curtype->type == ASPECT_TYPE_RAW)
 	{
 	  size = alloca(100);
-	  snprintf(size, 100, "%s%s%s", 
-		   revm_colorwarn("["), 
-		   revm_colornumber("%u", curtype->size), 
+	  snprintf(size, 100, "%s%s%s",
+		   revm_colorwarn("["),
+		   revm_colornumber("%u", curtype->size),
 		   revm_colorwarn("] = {...} "));
 	}
-      
+
       // FIXME-XXX: Print up 10 elements of array ...
       else if (curtype->dimnbr && curtype->elemnbr)
 	{
@@ -730,7 +730,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	    sz += 40;
 	  size = alloca(sz + 50);
 	  for (sz = idx = 0; idx < curtype->dimnbr; idx++)
-	    sz += sprintf(size + sz, "%s%s%s", 
+	    sz += sprintf(size + sz, "%s%s%s",
 			  revm_colorwarn("["),
 			  revm_colornumber("%u", curtype->elemnbr[idx]),
 			  revm_colorwarn("]"));
@@ -743,7 +743,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	  size = alloca(50);
 	  snprintf(size, 50, "%s", revm_colorwarn(" = "));
 	}
-      
+
       /* Print everything in order */
       revm_output(buf);
       revm_output(size);
@@ -756,9 +756,9 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	  if (!quiet)
 	    {
 	      snprintf(offset, sizeof(offset), "@ off(%s)", revm_colornumber("%u", typeoff));
-	      revm_output(offset);	      
+	      revm_output(offset);
 	      revm_output(revm_colorwarn(",\n"));
-	      revm_output(pad);      
+	      revm_output(pad);
 	    }
 	  else
 	    revm_output(", ");
@@ -769,7 +769,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 	}
       revm_endline();
     }
-      
+
   /* Return success  */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -777,7 +777,7 @@ static int	revm_expr_printrec(revmexpr_t *expr, u_int taboff,
 
 /* Recursive copy of an expression */
 static int		revm_expr_copyrec(revmexpr_t    *parent,
-					  revmexpr_t	*dest, 
+					  revmexpr_t	*dest,
 					  revmexpr_t	*source,
 					  char		*newname,
 					  u_int		namelen,
@@ -803,7 +803,7 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
       if (source->strval)
 	dest->strval = strdup(source->strval);
       dest->parent = parent;
-      
+
       /* Copy children structure */
       if (source->childs)
 	{
@@ -812,7 +812,7 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
 	  len = snprintf(newname + nameoff, namelen - nameoff, ".%s", source->label);
 	  childata = data + type->off;
 	  revm_inform_type_addr(type->name, strdup(newname), (eresi_Addr) childata, dest, 0, 0);
-	  ret = revm_expr_copyrec(dest, dest->childs, source->childs, newname, 
+	  ret = revm_expr_copyrec(dest, dest->childs, source->childs, newname,
 				  namelen, nameoff + len, childata);
 	  if (ret != 0)
 	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
@@ -854,7 +854,7 @@ static int		revm_expr_copyrec(revmexpr_t    *parent,
 	  dest = dest->next;
 	}
     }
-  
+
   /* Final checks and result */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -880,7 +880,7 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
   type = source->type;
 
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Allocating copied expression data of size %u type %s to name %s (%s)\n", 
+  fprintf(stderr, " [D] Allocating copied expression data of size %u type %s to name %s (%s)\n",
 	  type->size, type->name, dstname, (isfield ? "field" : "struct"));
 #endif
 
@@ -892,8 +892,8 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
     memcpy(copydata, (char *) annot->addr, type->size);
 
   /* Create a temporary variable if necessary (for constants) */
-  if ((!isfield && *dstname != REVM_VAR_PREFIX) || 
-      !strncmp(dstname, "$hash", 5) || 
+  if ((!isfield && *dstname != REVM_VAR_PREFIX) ||
+      !strncmp(dstname, "$hash", 5) ||
       !strncmp(dstname, "$list", 5))
     dstname = revm_tmpvar_create();
   else
@@ -909,8 +909,8 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
   /* If we are copying a subexpression, make sure labels are copied relative */
   if (isfield)
     {
-      for (str = newname; 
-	   str && *str && (str2 = strchr(str, '.')); 
+      for (str = newname;
+	   str && *str && (str2 = strchr(str, '.'));
 	   str = str2 + 1);
       if (!str || !*str)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -935,10 +935,10 @@ revmexpr_t	*revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
     }
 
   /* Some (structure) expressions have an extra top-level type, copy was done before the recursion */
-  else if (source->childs) 
+  else if (source->childs)
     {
       XALLOC(__FILE__, __FUNCTION__, __LINE__, dest->childs, sizeof(revmexpr_t), NULL);
-      ret = revm_expr_copyrec(dest, dest->childs, source->childs, 
+      ret = revm_expr_copyrec(dest, dest->childs, source->childs,
 			      newname, BUFSIZ, curoff, copydata);
     }
 
@@ -963,7 +963,7 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
   revmexpr_t	*dest;
   aspectype_t	*type;
   void		*data;
-  
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!copyme)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -976,8 +976,8 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
     }
 
   /* Create a new temporary variable name if necessary */
-  if (*name != REVM_VAR_PREFIX || 
-      !strncmp(name, "$hash", 5) || 
+  if (*name != REVM_VAR_PREFIX ||
+      !strncmp(name, "$hash", 5) ||
       !strncmp(name, "$list", 5))
     name = revm_tmpvar_create();
   else
@@ -1000,18 +1000,18 @@ revmexpr_t	*revm_expr_create_from_object(revmobj_t *copyme, char *name, u_char f
 		     "Unable to create expression from complex object", NULL);
     }
 
-  hash_add(&world.curjob->recur[world.curjob->curscope].exprs, 
+  hash_add(&world.curjob->recur[world.curjob->curscope].exprs,
 	   (char *) strdup(name), (void *) dest);
 
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] Create_Expr_From_Object %s added with type = %s \n", 
+  fprintf(stderr, " [D] Create_Expr_From_Object %s added with type = %s \n",
 	  name, (type ? type->name : "UNKNOWN TYPE"));
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-  
+
 /* Print an annotated expression */
 int		revm_expr_print(revmexpr_t *expr, u_char quiet)
 {
@@ -1044,11 +1044,11 @@ int		revm_expr_print(revmexpr_t *expr, u_char quiet)
   if (uniq || type->next || (type->childs && type->childs->next))
     {
       if (!quiet)
-	snprintf(buf, BUFSIZ, " %s %s \t %s", 
+	snprintf(buf, BUFSIZ, " %s %s \t %s",
 		 revm_colorfunction(type->name),
 		 revm_colorfunction(name), revm_colorwarn("= {"));
       else
-	snprintf(buf, BUFSIZ, " %s(", 
+	snprintf(buf, BUFSIZ, " %s(",
 		 revm_colorfunction(type->name));
       revm_output(buf);
       revm_endline();
@@ -1065,18 +1065,18 @@ int		revm_expr_print(revmexpr_t *expr, u_char quiet)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-/* Print an annotated expression */  
+/* Print an annotated expression */
 int		revm_expr_print_by_name(char *pathname, u_char quiet)
 {
   revmexpr_t	*expr;
   int		ret;
-  
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!pathname || *pathname != REVM_VAR_PREFIX)
     {
       fprintf(stderr, "FAILED EXPR NAME %s:\n", pathname);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Invalid name for expression", -1);    
+		   "Invalid name for expression", -1);
     }
   expr = revm_expr_get(pathname);
   if (!expr || !expr->type)
@@ -1099,16 +1099,16 @@ revmexpr_t	*revm_expr_get(char *pathname)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!pathname || *pathname != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid name for expression", NULL);    
+		 "Invalid name for expression", NULL);
 
   for (index = world.curjob->curscope; index >= 0; index--)
     {
       curhash = &world.curjob->recur[index].exprs;
-      expr = hash_get(curhash, pathname);      
+      expr = hash_get(curhash, pathname);
       if (expr)
 	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
     }
-  
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid expression name", NULL);
 }
 
@@ -1122,7 +1122,7 @@ int		revm_expr_set_by_name(char *dest, char *source)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!dest || !source || *dest != REVM_VAR_PREFIX || *source != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid name for expression", -1);    
+		 "Invalid name for expression", -1);
   adst = revm_expr_get(dest);
   asrc = revm_expr_get(source);
   if (!adst || !asrc)
@@ -1132,7 +1132,7 @@ int		revm_expr_set_by_name(char *dest, char *source)
   /* Return result */
   ret = revm_expr_set(adst, asrc);
   if (ret)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to set expression by name", ret);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -1146,8 +1146,8 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!adst || !asrc)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid NULL parameter", -1);    
-  
+		 "Invalid NULL parameter", -1);
+
   /* Take care of top-level structure types */
   if (asrc->childs)
     asrc = asrc->childs;
@@ -1169,10 +1169,10 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 
   /* Filter the base error case */
   else if (adst->value && !asrc->value)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot set scalar with complex value", ret);
   else if (!adst->value && asrc->value)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot set structure with scalar value", ret);
 
   /* Set a whole structure or a substructure */
@@ -1181,7 +1181,7 @@ int		revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 
   /* Result */
   if (ret)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to set expression", ret);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -1198,7 +1198,7 @@ int		revm_expr_compare_by_name(char *original, char *candidate, eresi_Addr *val)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!candidate || !original || *candidate != REVM_VAR_PREFIX || *original != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid name for expression", -1);    
+		 "Invalid name for expression", -1);
   candid = revm_expr_get(candidate);
   orig   = revm_expr_get(original);
   if (!candid || !orig)
@@ -1228,13 +1228,13 @@ int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
     {
       if ((ret = revm_object_compare(orig, candid, val)) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Invalid name for expression", -1);    
+		     "Invalid name for expression", -1);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
 
   /* Filter the base error case */
   else if ((orig->value && !candid->value) || (!orig->value && candid->value))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot compare scalar with complex expression", ret);
 
   /* Comparison between whole structures */
@@ -1248,7 +1248,7 @@ int		revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
 
   /* Return result */
   if (ret < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to compare expressions", ret);
   *val = ret;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -1265,7 +1265,7 @@ int		revm_expr_match_by_name(char *original, char *candidate)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!candidate || !original || *candidate != REVM_VAR_PREFIX || *original != REVM_VAR_PREFIX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid name for expression", -1);    
+		 "Invalid name for expression", -1);
   candid = revm_expr_get(candidate);
   orig   = revm_expr_get(original);
   if (!candid || !orig)
@@ -1285,7 +1285,7 @@ int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!candid || !orig)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid NULL parameters", -1);    
+		 "Invalid NULL parameters", -1);
 
   /* Take care of top-level structure types */
   if (!orig->next && orig->childs)
@@ -1298,14 +1298,14 @@ int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
     {
       if ((ret = revm_object_compare(orig, candid, val)) < 0)
 	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Invalid name for expression", -1);    
+		     "Invalid name for expression", -1);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-  
+
   /* Comparison between whole structures */
   /* A comparison is an symmetric matching of the 2 objects */
   else if ((orig->value && !candid->value) || (!orig->value && candid->value))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Cannot match scalar with complex expression", ret);
 
   /* Comparison between substructures */
@@ -1321,7 +1321,7 @@ int		revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
 /* Create a new revm expression */
 revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
 				  char		*dataname,
-				  char		*datavalue) 
+				  char		*datavalue)
 {
   revmexpr_t	*expr;
   revmexpr_t	*source;
@@ -1332,14 +1332,14 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!dataname)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid name for expression", NULL);    
+		 "Invalid name for expression", NULL);
   if (!datatype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid type for expression", NULL);    
+		 "Invalid type for expression", NULL);
 
   /* Create a new temporary if necessary */
-  if (*dataname != REVM_VAR_PREFIX || 
-      !strncmp(dataname, "$hash", 5) || 
+  if (*dataname != REVM_VAR_PREFIX ||
+      !strncmp(dataname, "$hash", 5) ||
       !strncmp(dataname, "$list", 5))
     dataname = revm_tmpvar_create();
   else
@@ -1352,12 +1352,12 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
       expr = revm_expr_copy(source, dataname, 0);
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
     }
-  
+
   /* Else we create and initialize a new expression */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, databuff, datatype->size, NULL);
   realname = dataname;
   revm_inform_type_addr(datatype->name, strdup(realname), (eresi_Addr) databuff, NULL, 0, 0);
-  
+
   exprctx = revm_expr_context_init(NULL, NULL, 1, dataname);
   if (!exprctx)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -1372,11 +1372,11 @@ revmexpr_t	*revm_expr_create(aspectype_t	*datatype,
     }
   else
     expr = revm_expr_init(exprctx, datatype, databuff, datavalue);
-  
+
   revm_expr_context_destroy(exprctx);
   if (!expr)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to create REVMEXPR", NULL);    
+		 "Unable to create REVMEXPR", NULL);
 
   revm_inform_type_addr(datatype->name, strdup(realname), (eresi_Addr) databuff, expr, 0, 0);
 
@@ -1404,7 +1404,7 @@ revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *val
   if (!obj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to create REVMEXPR", NULL);
-  
+
   if (*name != REVM_VAR_PREFIX || !strncmp(name, "$hash", 5) || !strncmp(name, "$list", 5))
     name = revm_tmpvar_create();
   else
@@ -1414,11 +1414,11 @@ revmexpr_t	*revm_simple_expr_create(aspectype_t *datatype, char *name, char *val
   expr->strval = (value ? strdup(value) : NULL);
   expr->value  = obj;
   expr->label  = name;
-  hash_add(&world.curjob->recur[world.curjob->curscope].exprs, 
+  hash_add(&world.curjob->recur[world.curjob->curscope].exprs,
 	   (char *) strdup(name), (void *) expr);
 
 #if __DEBUG_EXPRS__
-  fprintf(stderr, " [D] SimpleExpr %s added with type = %s \n", 
+  fprintf(stderr, " [D] SimpleExpr %s added with type = %s \n",
 	  name, (datatype ? datatype->name : "UNKNOWN TYPE"));
 #endif
 
@@ -1466,7 +1466,7 @@ static int	revm_expr_erase(revmexprctx_t *ctx)
   revmexpr_t	*prevexpr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   /* Remove expression from the most inner scope */
   for (index = world.curjob->curscope; index >= 0; index--)
     {
@@ -1476,17 +1476,17 @@ static int	revm_expr_erase(revmexprctx_t *ctx)
 	  if (hash_del(&world.curjob->recur[index].exprs, ctx->pathbuf))
 	    {
 #if __DEBUG_EXPRS__
-	      fprintf(stderr, "\n [D] FAILED TO UNLINK EXPR %s from recur[%u].exprs\n", 
+	      fprintf(stderr, "\n [D] FAILED TO UNLINK EXPR %s from recur[%u].exprs\n",
 		      ctx->pathbuf, index);
 #endif
 	    }
 	  else
 	    {
 #if __DEBUG_EXPRS__
-	      fprintf(stderr, "\n [D] UNLINKED EXPR %s from recur[%u].exprs\n", 
+	      fprintf(stderr, "\n [D] UNLINKED EXPR %s from recur[%u].exprs\n",
 		      ctx->pathbuf, index);
 #endif
-	    }	  
+	    }
 	  break;
 	}
     }
@@ -1501,35 +1501,35 @@ static int	revm_expr_erase(revmexprctx_t *ctx)
       if (hash_del(thash, ctx->pathbuf))
 	{
 #if __DEBUG_EXPRS__
-	  fprintf(stderr, "\n [D] FAILED TO UNLINK EXPR %s from hash[type_%s] \n", 
+	  fprintf(stderr, "\n [D] FAILED TO UNLINK EXPR %s from hash[type_%s] \n",
 		  ctx->pathbuf, ctx->curexpr->type->name);
 #endif
 	}
       else
 	{
 #if __DEBUG_EXPRS__
-	  fprintf(stderr, "\n [D] UNLINKED EXPR %s from hash[type_%s] \n", 
+	  fprintf(stderr, "\n [D] UNLINKED EXPR %s from hash[type_%s] \n",
 		  ctx->pathbuf, ctx->curexpr->type->name);
 #endif
 	}
-      
+
       prevexpr = revm_expr_get(ctx->pathbuf);
       if (prevexpr)
 	{
 #if __DEBUG_EXPRS__
-	  fprintf(stderr, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n", 
+	  fprintf(stderr, "\n [D] RESTORED EXPR %s (type %s) after UNSHADOWING UNLINK\n",
 		  ctx->pathbuf, ctx->curexpr->type->name);
 #endif
-	  
+
 	  // In case previous (shadowed) variable with same name was not of the same type
-	  if (prevexpr->type->type != ctx->curexpr->type->type)	
+	  if (prevexpr->type->type != ctx->curexpr->type->type)
 	    {
 	      snprintf(newname, sizeof(newname), "type_%s", prevexpr->type->name);
 	      thash = hash_find(newname);
 	      if (!thash)
 		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 			     "Cannot find type hash for shadowed expression type", -1);
-	    }	  
+	    }
 	  hash_set(thash, strdup(ctx->pathbuf), prevexpr->annot);
 	}
     }
@@ -1554,7 +1554,7 @@ static int	revm_expr_unlinkrec(revmexprctx_t *ctx, u_char exprfree, u_char dataf
 		 "Invalid NULL context/curexpr parameter", -1);
   for (next = ctx->curexpr; next; next = supernext)
     {
-      supernext = next->next; 
+      supernext = next->next;
 #if __DEBUG_EXPRS__
       fprintf(stderr, "New loop iter on ->next with pathbuf = %s (will extend) \n", ctx->pathbuf);
 #endif
@@ -1576,8 +1576,8 @@ static int	revm_expr_unlinkrec(revmexprctx_t *ctx, u_char exprfree, u_char dataf
       if (!removeme)
 	{
 #if __DEBUG_EXPRS__
-	  fprintf(stderr, 
-		  " [D] NOT FREED EXPR %s because still in hash table (exprfree = %u, datafree = %u) \n", 
+	  fprintf(stderr,
+		  " [D] NOT FREED EXPR %s because still in hash table (exprfree = %u, datafree = %u) \n",
 		  ctx->pathbuf, exprfree, datafree);
 #endif
 	  ctx->pathsize -= len;
@@ -1588,9 +1588,9 @@ static int	revm_expr_unlinkrec(revmexprctx_t *ctx, u_char exprfree, u_char dataf
       if (next->childs)
 	{
 #if __DEBUG_EXPRS__
-	  fprintf(stderr, " [D] UNLINK RECURSION FOR %s (exprfree = %u, datafree = %u) \n", 
+	  fprintf(stderr, " [D] UNLINK RECURSION FOR %s (exprfree = %u, datafree = %u) \n",
 		  ctx->pathbuf, exprfree, datafree);
-#endif 
+#endif
 	  backupexpr = ctx->curexpr;
 	  ctx->curexpr = next->childs;
 	  if (revm_expr_unlinkrec(ctx, exprfree, datafree) < 0)
@@ -1623,7 +1623,7 @@ static int	revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree, u_char datafree
 {
   int		ret;
   revmexpr_t	*backupexpr;
-  u_char	removeme;
+  //u_char	removeme;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (!ctx || !ctx->curexpr)
@@ -1644,7 +1644,7 @@ static int	revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree, u_char datafree
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Failed to erase top-level expression", -1);
-		
+
   /*
   removeme = (((ctx->curexpr->annot && ctx->curexpr->annot->inhash) || exprfree == 0) ? 0 : 1);
   if (removeme)
@@ -1689,7 +1689,7 @@ int		revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree)
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
 		 "Unable to unlink expression by name", -1);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);  
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
@@ -1777,21 +1777,21 @@ revmexpr_t	*revm_expr_lookup(u_int oid)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   if (oid >= world.mjr_session.cur->next_id)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid id for container", NULL);  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid id for container", NULL);
   cont = world.mjr_session.cur->reg_containers[oid];
   type = aspect_type_get_by_id(cont->type);
   if (!type)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid type for container", NULL);  
-  snprintf(logbuf, sizeof(logbuf), "%c%s_"AFMT, 
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		 "Invalid type for container", NULL);
+  snprintf(logbuf, sizeof(logbuf), "%c%s_"AFMT,
 	   REVM_VAR_PREFIX, type->name, *(eresi_Addr *) cont->data);
   expr = revm_expr_get(logbuf);
   if (!expr)
     {
       fprintf(stderr, "Name Expr %s \n", logbuf);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Invalid name for expression", NULL);  
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+		   "Invalid name for expression", NULL);
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);

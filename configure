@@ -74,8 +74,8 @@ echo > $LIBVARSFILE
 echo > $VARSFILE
 echo > $CONFIGFILE
 
-echo "CFLAGS32 += -Wall " >> $CONFIGFILE
-echo "CFLAGS64 += -Wall " >> $CONFIGFILE
+echo "CFLAGS32 += -Wall -Werror=unused-variable" >> $CONFIGFILE
+echo "CFLAGS64 += -Wall -Werror=unused-variable" >> $CONFIGFILE
 
 while [ $# -ne 0 ]; do
 
