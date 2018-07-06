@@ -25,22 +25,20 @@ CFLAGS64		+= -Wall -fPIC -g3 -Iinclude -I ../libaspect/include/ \
 			-I../libelfsh/include/  -DERESI64 $(EXTRACFLAGS)
 
 LDFLAGS32		+= -L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32
-#			-L../liballocproxy -lallocproxy
 
-LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
-			-L../liballocproxy/ -lallocproxy
+LDFLAGS64		+= -L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64
 
 all			: all32 all64
 
-libedfmt32.so			: $(OBJ32)
-			@$(CC) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so
+libedfmt32.so		: $(OBJ32)
+			@$(CC) -shared $(OBJ32) $(LDFLAGS32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
 all32: libedfmt32.so
 
 libedfmt64.so		: $(OBJ64)
-			@$(CC) $(LDFLAGS64) -shared $(OBJ64) -o $(NAME64).so
+			@$(CC) -shared $(OBJ64) $(LDFLAGS64) -o $(NAME64).so
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o

@@ -10,8 +10,14 @@ LD		= ld
 RM		= rm -f 
 AR		= ar rc
 RANLIB		= ranlib
+
 CFLAGS32	+= -Iinclude -fPIC -g3 -O2 -DERESI32 $(EXTRACFLAGS)
 CFLAGS64	+= -Iinclude -fPIC -g3 -O2 -DERESI64 $(EXTRACFLAGS)
+
+LDFLAGS32	= -L../liballocproxy/ -lallocproxy
+
+LDFLAGS64	= -L../liballocproxy/ -lallocproxy
+
 SRC		= vectors.c libhash.c libbtree.c types.c init.c \
 		config.c profiler.c liblist.c containers.c
 
@@ -24,7 +30,7 @@ NAME64		= libaspect64
 all		: all32 all64
 
 libaspect32.so	: $(OBJ32)
-		@$(CC) -L../liballocproxy/ -lallocproxy $(DLOPT) -shared $(OBJ32) -o $(NAME32).so
+		@$(CC) $(DLOPT) -shared $(OBJ32) $(LDFLAGS32) -o $(NAME32).so
 		@$(AR) $(NAME32).a $(OBJ32)
 		@$(RANLIB) $(NAME32).a
 		$(LD) -r $(OBJ32) -o $(NAME32).o
@@ -32,7 +38,7 @@ libaspect32.so	: $(OBJ32)
 all32:	libaspect32.so
 
 libaspect64.so	: $(OBJ64)
-		@$(LD) -L../liballocproxy/ -lallocproxy $(DLOPT) -shared $(OBJ64) -o $(NAME64).so
+		@$(LD) $(DLOPT) -shared $(OBJ64) $(LDFLAGS64) -o $(NAME64).so
 		@$(AR) $(NAME64).a $(OBJ64)
 		@$(RANLIB) $(NAME64).a
 		$(LD) -r $(OBJ64) -o $(NAME64).o

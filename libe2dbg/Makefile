@@ -18,8 +18,8 @@ KDBGNAME64O		= ke2dbg-rel64.o
 AR			= ar rc
 STRIP			= strip
 
-LDFLAGS32		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
-LDFLAGS64		+= $(DLOPT) $(DYNOPT) $(EXTRAOPT)
+LDFLAGS32		+= $(LPTHREAD) -lcrypto $(DLOPT) $(DYNOPT) $(EXTRAOPT)
+LDFLAGS64		+= $(LPTHREAD) -lcrypto $(DLOPT) $(DYNOPT) $(EXTRAOPT)
 
 EXTRAOBJ32		= ../libasm/libasm32.o ../libmjollnir/libmjollnir32.o     \
 			../libelfsh/libelfsh32.o ../libedfmt/libedfmt32.o         \
