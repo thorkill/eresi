@@ -19,6 +19,15 @@ CFLAGS64		+= -Iinclude -Wall -fPIC -g3 -O2 $(EXTRACFLAGS) \
 			-I../libasm/include/ -I../libaspect/include/        \
                         -I../libelfsh/include/ -DERESI64 $(BUILDOP)	    \
 			-I../libedfmt/include/
+
+LDFLAGS32		= -L../liballocproxy/ -lallocproxy                  \
+			-L../libaspect/ -laspect32 -L../libelfsh/ -lelfsh32 \
+			-L../libedfmt/ -ledfmt32 -L../libasm -lasm32
+
+LDFLAGS64		= -L../liballocproxy/ -lallocproxy                  \
+			-L../libaspect/ -laspect64 -L../libelfsh/ -lelfsh64 \
+			-L../libedfmt/ -ledfmt64 -L../libasm -lasm64
+
 SRC			= errfunc.c save.c search_addr.c delete.c  \
 			check.c check_untracable.c func_add.c func_remove.c \
 			func_exclude.c func_enable.c func_disable.c	    \
@@ -34,17 +43,13 @@ LDFLAGS			=
 all			: all32 all64
 
 all32			: $(OBJ32)
-			@$(CC) -L../liballocproxy/ \
-			-lallocproxy -L../libaspect/ -laspect32 -DERESI32 \
-			-L../libelfsh/ -lelfsh32 -shared $(OBJ32) -o $(NAME32).so
+			@$(CC) -shared $(OBJ32) $(LDFLAGS32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
 
 all64			:  $(OBJ64)
-			@$(CC) -L../liballocproxy/ \
-			-lallocproxy -L../libaspect/ -laspect64 -DERESI64 \
-			-L../libelfsh/ -lelfsh64 -shared $(OBJ64) -o $(NAME64).so 
+			@$(CC) -shared $(OBJ64) $(LDFLAGS64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o

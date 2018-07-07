@@ -141,6 +141,9 @@ NAME_sparc	=	test_sparc
 CFLAGS32 	= $(CFLAGS) -Iinclude -Isrc/include -Wall -g3 -fPIC -I../libaspect/include -DERESI32
 CFLAGS64 	= $(CFLAGS) -Iinclude -Isrc/include -Wall -g3 -fPIC -I../libaspect/include -DERESI64
 
+LDFLAGS32	= -L../libaspect/ -laspect32
+LDFLAGS64	= -L../libaspect/ -laspect64
+
 RM 		= 	rm -f
 ETAGS 		= 	etags
 CC 		?= 	gcc -E
@@ -173,9 +176,9 @@ libasm32.so: $(PACKED_ARCH) $(OBJS32_libasm)
 	$(LD) -r $(OBJS32_libasm) -o ${NAME32_libasm_o}
 #echo "[CC -shared] libasm32.so"
 ifeq ($(IRIX),1)
-	$(LD) -L../libaspect/ -laspect32 ${OBJS32_libasm} -o libasm32.so -shared
+	$(LD) ${OBJS32_libasm} ${LDFLAGS32} -o libasm32.so -shared
 else
-	$(CC) -L../libaspect/ -laspect32 ${OBJS32_libasm} -o libasm32.so -shared
+	$(CC) ${OBJS32_libasm} ${LDFLAGS32} -o libasm32.so -shared
 endif
 
 libasm64.so: $(PACKED_ARCH) $(OBJS64_libasm)
@@ -186,9 +189,9 @@ libasm64.so: $(PACKED_ARCH) $(OBJS64_libasm)
 	$(LD) -r $(OBJS64_libasm) -o ${NAME64_libasm_o}
 #echo "[CC -shared] libasm64.so"
 ifeq ($(IRIX),1)
-	$(LD) -L../libaspect/ -laspect64 ${OBJS64_libasm} -o libasm64.so -shared
+	$(LD) ${OBJS64_libasm} ${LDFLAGS32} -o libasm64.so -shared
 else
-	$(CC) -L../libaspect/ -laspect64 ${OBJS64_libasm} -o libasm64.so -shared
+	$(CC) ${OBJS64_libasm} ${LDFLAGS64} -o libasm64.so -shared
 endif
 
 clean:

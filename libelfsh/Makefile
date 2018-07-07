@@ -47,7 +47,7 @@ all			: all32 all64
 
 
 libelfsh32.so		: $(OBJ32)
-			@$(CC) $(LDFLAGS32) -shared $(OBJ32) -o $(NAME32).so
+			@$(CC) -shared $(OBJ32) $(LDFLAGS32) -o $(NAME32).so
 			@$(AR) $(NAME32).a $(OBJ32)
 			@$(RANLIB) $(NAME32).a
 			@$(LD) -r $(OBJ32) -o $(NAME32).o
@@ -56,7 +56,7 @@ all32: libelfsh32.so
 
 
 libelfsh64.so		:  $(OBJ64)
-			@$(CC) $(LDFLAGS64) -shared $(OBJ64) -o $(NAME64).so 
+			@$(CC) -shared $(OBJ64) $(LDFLAGS64) -o $(NAME64).so 
 			@$(AR) $(NAME64).a $(OBJ64)
 			@$(RANLIB) $(NAME64).a
 			@$(LD) -r $(OBJ64) -o $(NAME64).o
