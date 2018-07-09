@@ -1,10 +1,10 @@
 /**
-* @file librevm/include/revm-io.h
-** @ingroup librevm
-**
-** Started on  Thu Feb 22 07:19:04 2001 jfv
-** $Id$
-*/
+ * @file librevm/include/revm-io.h
+ * @ingroup librevm
+ *
+ * Started on  Thu Feb 22 07:19:04 2001 jfv
+ * $Id$
+ */
 #ifndef __REVM_IO_H_
  #define __REVM_IO_H_
 
@@ -35,7 +35,7 @@
 
 #define REVM_NAME	"revm"
 #define	REVM_VERSION	"0.83"
-#define	REVM_RELEASE	"a3"
+#define	REVM_RELEASE	"a4"
 #define REVM_EDITION	"phoenix"
 
 /* Unused, yet very funny prompt */
@@ -53,7 +53,7 @@
 "\033[05;01;35mcircus"   \
 "\033[00;01;35m-edition" \
 "\033[00;01;30m)"        \
-"\033[00m " 
+"\033[00m "
 
 /* The ERESI team crew prompt */
 #define ELFSH_CREW_PROMPT  \
@@ -68,7 +68,7 @@
  "\033[00;01;30m-"         \
  "\033[00;01;32mdevhell"   \
  "\033[00;01;30m)"         \
- "\033[00m " 
+ "\033[00m "
 
 /* Be original, do your own */
 #define  ERESI_PROMPT ELFSH_CREW_PROMPT
@@ -133,7 +133,7 @@ typedef struct       s_socket
 {
   int                socket;      /*! The socket */
   char               **recvd;     /*! List of received buffer */
-  
+
   /* XXX: NEW/OLD is not explicit enough, rename ... */
 #define NEW   1
 #define OLD   0
@@ -151,7 +151,7 @@ typedef struct       s_socket
 
 /** ERESI INPUT/OUTPUT abstraction */
 typedef struct	s_io
-{  
+{
 #define		REVM_IO_STD     1
 #define		REVM_IO_NET     2
 #define		REVM_IO_DUMP    3
@@ -185,7 +185,7 @@ typedef struct	s_io
 
 
 /**
- * Screen cache for each workspace 
+ * Screen cache for each workspace
  */
 typedef struct        s_screen
 {
@@ -197,8 +197,8 @@ typedef struct        s_screen
 }                     revmscreen_t;
 
 
-/** 
- * @brief REVM job structure, one per client 
+/**
+ * @brief REVM job structure, one per client
  */
 typedef struct		s_workspace
 {
@@ -220,7 +220,7 @@ typedef struct		s_workspace
 
 
 /**
- * @brief Hold all the VM flags, sort of global context 
+ * @brief Hold all the VM flags, sort of global context
  */
 typedef struct        s_state
 {
