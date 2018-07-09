@@ -194,7 +194,7 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
   value = (int *) valptr;
   
   switch(num)
-    {
+  { 
     case 1:
       op = &ins->op[0];
       break;
@@ -208,52 +208,70 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
       op = 0;
       return (-1);
       break;
-    }
+  }
 
-  if (op->ptr && (op->content & ASM_OP_VALUE)) {
-    switch (op->len) {
-    case 0:
-      break;
-    case 1:
-      if ((op->type & ASM_OP_BASE) || (op->type & ASM_OP_INDEX)) {
-	if ((op->type & ASM_OP_SCALE) || (op->type & ASM_OP_INDEX)) {
-	  off = 2;
-	len = 1;
-	} else {
-	  off = 1;
-	  len = 1;
-	} } else {
-	  off = 0;
-	  len = 1;
-	}
-      break;
-    case 2:
-      if ((op->type & ASM_OP_BASE) || (op->type & ASM_OP_INDEX)) {
-	off = 1;
-	len = 1;
-      } else {
-	off = 0;
-	len = 2;
-      }
-      break;
-    case 3:
-      off = 2;
-      len = 1;
-      break;
-    case 4:
-      off = 0;
-      len = 4;
-      break;
-    case 5:
-      off = 1;
-      len = 4;
-      break;
-    case 6:
-      off = 2;
-      len = 4;
-      break;
-    } /* !switch */ } /* !if */
-  else {
+  if (op->ptr && 
+       (op->type == ASM_OPTYPE_IMM ||
+          ((op->type == ASM_OPTYPE_MEM) && (op->memtype & ASM_OP_VALUE))))
+  {
+    switch (op->len)
+    {
+      case 0:
+        break;
+      case 1:
+        if (op->type == ASM_OPTYPE_MEM &&
+             ((op->memtype & ASM_OP_BASE) || (op->memtype & ASM_OP_INDEX)))
+        {
+        	if ((op->memtype & ASM_OP_SCALE) || (op->memtype & ASM_OP_INDEX))
+          {
+        	  off = 2;
+          	len = 1;
+        	}
+          else
+          {
+        	  off = 1;
+        	  len = 1;
+        	}
+        }
+        else
+        {
+      	  off = 0;
+      	  len = 1;
+      	}
+        break;
+      case 2:
+        if (op->type == ASM_OPTYPE_MEM &&
+             ((op->memtype & ASM_OP_BASE) || (op->memtype & ASM_OP_INDEX)))
+        {
+        	off = 1;
+        	len = 1;
+        }
+        else
+        {
+        	off = 0;
+        	len = 2;
+        }
+        break;
+      case 3:
+        off = 2;
+        len = 1;
+        break;
+      case 4:
+        off = 0;
+        len = 4;
+        break;
+      case 5:
+        off = 1;
+        len = 4;
+        break;
+      case 6:
+        off = 2;
+        len = 4;
+        break;
+    } /* !switch */
+  } /* !if */
+  else
+  {
     off = 0;
     len = 0;
   }
@@ -274,9 +292,11 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
  * return Return the mnemonic.
 */
 
-char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
+char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) 
+{
   return (proc->instr_table[ins->instr]);
 }
+
 
 /**
  * @brief Return content field of an operand.
@@ -286,7 +306,6 @@ char	*asm_instr_get_memonic(asm_instr *ins, asm_processor *proc) {
  * @param valptr Currently not used.
  * @return Return operand content field.
  */
-
 int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr) 
 {
   switch(num)
@@ -310,7 +329,7 @@ int	asm_operand_get_content(asm_instr *ins, int num, int opt, void *valptr)
  * @param valptr is a filestream : FILE *
  * @return 1 on success, 0 on error.
  */
-int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) 
+int		asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr) 
 {
   asm_operand	*op;
   FILE		*fp;
@@ -322,17 +341,24 @@ int	asm_operand_debug(asm_instr *ins, int num, int opt, void *valptr)
     case 3: op = &ins->op[2]; break;
     default: return (-1);
     }
-  if (op->type)
+  if (op->content)
     {
       fp = (FILE *) valptr;
 
-      fprintf(fp, "o%i type=[%s] content=[%c%c%c%c]\n",
+      fprintf(fp, "o%i content=[%s] type=[%s]",
 	      num,
-	      asm_operand_type_string(op->type),
-	      op->content & ASM_OP_BASE ? 'B' : ' ',
-	      op->content & ASM_OP_INDEX ? 'I' : ' ',
-	      op->content & ASM_OP_SCALE ? 'S' : ' ',
-	      op->content & ASM_OP_VALUE ? 'V' : ' ');
+	      asm_operand_content_string(op->content),
+        asm_operand_type_string(op->type));
+
+      if (op->type == ASM_OPTYPE_MEM)
+        fprintf(fp, " memtype=[%c%c%c%c]",
+	        op->memtype & ASM_OP_BASE ? 'B' : ' ',
+	        op->memtype & ASM_OP_INDEX ? 'I' : ' ',
+	        op->memtype & ASM_OP_SCALE ? 'S' : ' ',
+	        op->memtype & ASM_OP_VALUE ? 'V' : ' ');
+
+      fprintf(fp, "\n");
+
       /*
       fprintf(fp, "o%i len       = %i\n", num, op->len);
       fprintf(fp, "o%i ptr       = %8p\n", num, op->ptr);

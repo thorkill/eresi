@@ -33,9 +33,9 @@ typedef struct	s_sidbyte
 
 int	asm_int_pow2(int);
 int	fetch_i386(asm_instr *, u_char *, u_int, asm_processor *);
-void    asm_resolve_immediate(asm_processor *proc, eresi_Addr val, char *buffer, u_int len);
-char	*asm_ia32_display_instr_att(asm_instr *ins, eresi_Addr addr);
-char	*asm_sparc_display_instr(asm_instr *, eresi_Addr addr);
+void asm_resolve_immediate(asm_processor *proc, eresi_Addr val, char *buffer, u_int len);
+char *asm_ia32_display_instr_att(asm_instr *ins, eresi_Addr addr);
+char *asm_sparc_display_instr(asm_instr *, eresi_Addr addr);
 int	asm_ia32_switch_mode(asm_processor *proc, int mode);
 int	asm_proc_opsize(asm_processor *proc);
 int	asm_proc_addsize(asm_processor *proc);
@@ -47,18 +47,8 @@ int	asm_proc_is_protected(asm_processor *);
  * Internal functions to extract operands.
  */
 
-int	operand_rmb_rb(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rmv_rv(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rb_rmb(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rv_rmv(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rv_rmb(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rmb_ib(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rmv_iv(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rmv_ib(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rv_rm2(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rv_m(asm_instr *, u_char *, int, asm_processor *);
-int	operand_rmv(asm_operand *, u_char *, u_int, asm_processor *);
-int	operand_rmb(asm_operand *, u_char *, u_int, asm_processor *);
+int	operand_rmv(asm_operand *, u_char *, asm_processor *);
+int	operand_rmb(asm_operand *, u_char *, asm_processor *);
 
 /**
  * Handler for the i386 instructions.

@@ -20,7 +20,7 @@ static u_char		proc_init = 0;
 #define ELFSH_IA32_PUSH_REGBASE(_i)			\
 (_i.instr == ASM_PUSH 					\
  && _i.op[0].regset == ASM_REGSET_R32			\
- && (_i.op[0].content & ~ASM_OP_FIXED) == ASM_OP_BASE)
+ && (_i.op[0].type) == ASM_OP_BASE)
 
 #define ELFSH_IA32_MOV_REGBASE(_i, _reg)		\
 (_i.instr == ASM_MOV 					\
@@ -28,8 +28,8 @@ static u_char		proc_init = 0;
  && _i.op[1].baser == ASM_REG_ESP 			\
  && _i.op[0].regset == ASM_REGSET_R32 			\
  && _i.op[1].regset == ASM_REGSET_R32			\
- && (_i.op[0].content & ~ASM_OP_FIXED) == ASM_OP_BASE	\
- && (_i.op[1].content & ~ASM_OP_FIXED) == ASM_OP_BASE)
+ && (_i.op[0].type) == ASM_OP_BASE	\
+ && (_i.op[1].type) == ASM_OP_BASE)
 
 /**
  * Start of hook code for EXTPLT 

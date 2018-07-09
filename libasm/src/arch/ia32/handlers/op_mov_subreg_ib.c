@@ -31,16 +31,8 @@ int op_mov_subreg_ib(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_MOV;
   new->len += 1;
 
-#if WIP
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_OPMOD, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_OTYPE_OPMOD, new);
-#endif
-#if WIP
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,                                ASM_OTYPE_IMMEDIATEBYTE, new, 0);
-#else
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1,                                ASM_OTYPE_IMMEDIATEBYTE, new);
-#endif
+  new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_OPMOD, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new);
 
   return (new->len);
 }

@@ -1,15 +1,16 @@
 /**
-* @file libasm/src/output.c
- * @ingroup libasm
+ * @brief ASCII Output wrappers.
+ * @file output.c
+ * @ingroup libasm_engine
  * $Id$
  *  
  * Author  : <sk at devhell dot org>
- * Started : Xxx Xxx xx xx:xx:xx 2002
- * Updated : Thu Mar 11 00:40:31 2004
- * @brief ASCII Output wrappers.
+ * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>
+
+
 /**
  * @brief Wrapper to internal resolving handler for immediate values.
  * @param proc Pointer to processor structure
@@ -43,7 +44,6 @@ char	*asm_display_instr_att(asm_instr *instr, eresi_Addr addr)
 
 
 /**
- * merged from mjollnir
  * @brief Debug dump to stderr of an operand
  * @param op Pointer to operand structure.
  * @return Always returns 0.
@@ -53,61 +53,85 @@ int	asm_debug_operand(asm_operand * op)
   fprintf(stderr, "[*] Operand Dump\n[*] len: %d type: %d size: %d content: %d\n",
 	  op->len, op->type, op->size, op->content);
   
-  fprintf(stderr, "[*] Content: %s %s %s %s %s %s %s\n",
-	  (op->content & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
-	  (op->content & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
-	  (op->content & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
-	  (op->content & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
-	  (op->content & ASM_OP_FIXED) ? "ASM_OP_FIXED" : ".",
-	  (op->content & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
-	  (op->content & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
+  switch (op->type)
+  {
+    case ASM_OPTYPE_REG:
+      fprintf(stderr, "[*] Type: ASM_OPTYPE_REG\n");
+      break;
+    case ASM_OPTYPE_IMM:
+      fprintf(stderr, "[*] Type: ASM_OPTYPE_IMM\n");
+      break;
+    case ASM_OPTYPE_MEM:
+      fprintf(stderr, "[*] Type: ASM_OPTYPE_MEM\n");
+      fprintf(stderr, "[*] Memory Type: %s %s %s %s %s %s\n",
+  	    (op->memtype & ASM_OP_VALUE) ? "ASM_OP_VALUE" : ".",
+    	  (op->memtype & ASM_OP_BASE) ? "ASM_OP_BASE" : ".",
+    	  (op->memtype & ASM_OP_INDEX) ? "ASM_OP_INDEX" : ".",
+    	  (op->memtype & ASM_OP_SCALE) ? "ASM_OP_SCALE" : ".",
+    	  (op->memtype & ASM_OP_REFERENCE) ? "ASM_OP_REFERENCE" : ".",
+    	  (op->memtype & ASM_OP_ADDRESS) ? "ASM_OP_ADDRESS" : ".");
+      break;
+    default:
+      fprintf(stderr, "[*] Type: UNKNOWN!\n");
+      break;
+  }
   
   return 0;
 }
 
 /**
- * @brief Return a string describing otype
- * @param type Instruction type
+ * @brief Return a string describing the operand content
+ * @param content Operand content
+ * @return A pointer to a static string
+ */
+
+char	*asm_operand_content_string(int content)
+{
+  switch (content)
+    {
+    case ASM_CONTENT_OPMOD: return ("opmod");
+    case ASM_CONTENT_ADDRESS: return ("address");
+    case ASM_CONTENT_CONTROL: return ("control");
+    case ASM_CONTENT_DEBUG: return ("debug");
+    case ASM_CONTENT_ENCODED: return ("encoded");
+    case ASM_CONTENT_ENCODEDBYTE: return ("encodedbyte");
+    case ASM_CONTENT_FLAGS: return ("flags");
+    case ASM_CONTENT_GENERAL: return ("general");
+    case ASM_CONTENT_GENERALBYTE: return ("generalbyte");
+    case ASM_CONTENT_IMMEDIATE: return ("immediate");
+    case ASM_CONTENT_IMMEDIATEWORD: return ("immediateword");
+    case ASM_CONTENT_IMMEDIATEBYTE: return ("immediatebyte");
+    case ASM_CONTENT_SHORTJUMP: return ("shortjump");
+    case ASM_CONTENT_JUMP: return ("jump");
+    case ASM_CONTENT_MEMORY: return ("memory");
+    case ASM_CONTENT_OFFSET: return ("offset");
+    case ASM_CONTENT_PMMX: return ("pmmx");
+    case ASM_CONTENT_QMMX: return ("qmmx");
+    case ASM_CONTENT_REGISTER: return ("register");
+    case ASM_CONTENT_SEGMENT: return ("segment");
+    case ASM_CONTENT_FPU: return ("fpu");
+    case ASM_CONTENT_FPU_SCALED: return ("fpu_scaled");
+    case ASM_CONTENT_XSRC: return ("xsrc");
+    case ASM_CONTENT_YDEST: return ("ydest");
+    case ASM_CONTENT_VALUE: return ("value");
+    }
+  return ("undocumented content");
+}
+
+/**
+ * @brief Return a string describing the operand type
+ * @param content Operand type
  * @return A pointer to a static string
  */
 
 char	*asm_operand_type_string(int type)
 {
   switch (type)
-    {
-    case ASM_OTYPE_FIXED: return ("fixed");
-    case ASM_OTYPE_OPMOD: return ("opmod");
-    case ASM_OTYPE_ADDRESS: return ("address");
-    case ASM_OTYPE_CONTROL: return ("control");
-    case ASM_OTYPE_DEBUG: return ("debug");
-    case ASM_OTYPE_ENCODED: return ("encoded");
-    case ASM_OTYPE_ENCODEDBYTE: return ("encodedbyte");
-    case ASM_OTYPE_FLAGS: return ("flags");
-    case ASM_OTYPE_GENERAL: return ("general");
-    case ASM_OTYPE_GENERALBYTE: return ("generalbyte");
-    case ASM_OTYPE_IMMEDIATE: return ("immediate");
-    case ASM_OTYPE_IMMEDIATEWORD: return ("immediateword");
-    case ASM_OTYPE_IMMEDIATEBYTE: return ("immediatebyte");
-    case ASM_OTYPE_SHORTJUMP: return ("shortjump");
-    case ASM_OTYPE_JUMP: return ("jump");
-    case ASM_OTYPE_MEMORY: return ("memory");
-    case ASM_OTYPE_OFFSET: return ("offset");
-    case ASM_OTYPE_PMMX: return ("pmmx");
-    case ASM_OTYPE_QMMX: return ("qmmx");
-    case ASM_OTYPE_REGISTER: return ("register");
-    case ASM_OTYPE_SEGMENT: return ("segment");
-    case ASM_OTYPE_TEST: return ("test");
-    case ASM_OTYPE_VSFP: return ("vsfp");
-    case ASM_OTYPE_WSFP: return ("wsfp");
-    case ASM_OTYPE_XSRC: return ("xsrc");
-    case ASM_OTYPE_YDEST: return ("ydest");
-    }
-  return ("undocumented type");
+  {
+    case ASM_OPTYPE_REG: return ("register");
+    case ASM_OPTYPE_IMM: return ("immediate");
+    case ASM_OPTYPE_MEM: return ("memory");
+    case ASM_OPTYPE_NONE: default: return ("none");
+  }
 }
-
-
-
-
-
-
 
