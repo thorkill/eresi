@@ -2,7 +2,7 @@
 * @file libelfsh/include/libelfsh/libelfsh-bsd.h
  * @ingroup libelfsh
  * @brief Various undefined macros on BSD
- * 
+ *
  * Last update Mon Feb 26 05:05:27 2005 jfv
  *
  * $Id$
@@ -24,14 +24,16 @@
 #include <sys/elf_common.h>
 #endif
 
-#if defined(__FreeBSD__) 
- #define __WORDSIZE __ELF_WORD_SIZE
+#if defined(__FreeBSD__)
+#if !defined(__WORDSIZE)
+ #define __WORDSIZE      __ELF_WORD_SIZE
+#endif
 #endif
 
 /**
- * Lists of shared object dependencies 
+ * Lists of shared object dependencies
  */
-typedef struct			Struct_Needed_Entry 
+typedef struct			Struct_Needed_Entry
 {
   struct Struct_Needed_Entry	*next;
   struct Struct_Obj_Entry	*obj;
@@ -41,9 +43,9 @@ typedef struct			Struct_Needed_Entry
 struct Struct_Obj_Entry;
 
 /**
- * BSD Link map 
+ * BSD Link map
  */
-typedef struct		link_map 
+typedef struct		link_map
 {
   caddr_t		l_addr;                 /* Base Address of library */
 #ifdef __mips__
@@ -67,9 +69,9 @@ struct {						\
 
 
 /**
- * Lists of shared objects 
+ * Lists of shared objects
  */
-typedef struct				Struct_Objlist_Entry 
+typedef struct				Struct_Objlist_Entry
 {
   STAILQ_ENTRY(Struct_Objlist_Entry)	link;
   struct Struct_Obj_Entry		*obj;
@@ -181,80 +183,80 @@ typedef struct Struct_Obj_Entry {
 #define RTLD_MAIN       0x800
 
 typedef struct Struct_Obj_Entry {
-        u_int32_t      magic;          /* Magic number (sanity check) */
-        u_int32_t      version;        /* Version number of struct format */
+	u_int32_t      magic;          /* Magic number (sanity check) */
+	u_int32_t      version;        /* Version number of struct format */
 
-        struct Struct_Obj_Entry *next;
-        char           *path;           /* Pathname of underlying file (%) */
-        int             refcount;
-        int             dl_refcount;    /* Number of times loaded by dlopen */
+	struct Struct_Obj_Entry *next;
+	char           *path;           /* Pathname of underlying file (%) */
+	int             refcount;
+	int             dl_refcount;    /* Number of times loaded by dlopen */
 
-        /* These items are computed by map_object() or by digest_phdr(). */
-        caddr_t         mapbase;        /* Base address of mapped region */
-        size_t          mapsize;        /* Size of mapped region in bytes */
-        size_t          textsize;       /* Size of text segment in bytes */
-        u_int32_t        vaddrbase;      /* Base address in shared object file */
-        caddr_t         relocbase;      /* Reloc const = mapbase - *vaddrbase */
-        const u_int32_t        *dynamic;        /* Dynamic section */
-        caddr_t         entry;          /* Entry point */
-        const u_int32_t *__junk001;
-        size_t          pathlen;        /* Pathname length */
+	/* These items are computed by map_object() or by digest_phdr(). */
+	caddr_t         mapbase;        /* Base address of mapped region */
+	size_t          mapsize;        /* Size of mapped region in bytes */
+	size_t          textsize;       /* Size of text segment in bytes */
+	u_int32_t        vaddrbase;      /* Base address in shared object file */
+	caddr_t         relocbase;      /* Reloc const = mapbase - *vaddrbase */
+	const u_int32_t        *dynamic;        /* Dynamic section */
+	caddr_t         entry;          /* Entry point */
+	const u_int32_t *__junk001;
+	size_t          pathlen;        /* Pathname length */
 
-        /* Items from the dynamic section. */
-        u_int32_t       *pltgot;         /* PLTGOT table */
-        const u_int32_t  *rel;            /* Relocation entries */
-        const u_int32_t  *rellim;         /* Limit of Relocation entries */
-        const u_int32_t *rela;           /* Relocation entries */
-        const u_int32_t *relalim;        /* Limit of Relocation entries */
-        const u_int32_t  *pltrel;         /* PLT relocation entries */
-        const u_int32_t  *pltrellim;      /* Limit of PLT relocation entries */
-        const u_int32_t *pltrela;        /* PLT relocation entries */
-        const u_int32_t *pltrelalim;     /* Limit of PLT relocation entries */
-        const u_int32_t  *symtab;         /* Symbol table */
-        const char     *strtab;         /* String table */
-        unsigned long   strsize;        /* Size in bytes of string table */
+	/* Items from the dynamic section. */
+	u_int32_t       *pltgot;         /* PLTGOT table */
+	const u_int32_t  *rel;            /* Relocation entries */
+	const u_int32_t  *rellim;         /* Limit of Relocation entries */
+	const u_int32_t *rela;           /* Relocation entries */
+	const u_int32_t *relalim;        /* Limit of Relocation entries */
+	const u_int32_t  *pltrel;         /* PLT relocation entries */
+	const u_int32_t  *pltrellim;      /* Limit of PLT relocation entries */
+	const u_int32_t *pltrela;        /* PLT relocation entries */
+	const u_int32_t *pltrelalim;     /* Limit of PLT relocation entries */
+	const u_int32_t  *symtab;         /* Symbol table */
+	const char     *strtab;         /* String table */
+	unsigned long   strsize;        /* Size in bytes of string table */
 #ifdef __mips__
-        u_int32_t        local_gotno;    /* Number of local GOT entries */
-        u_int32_t        symtabno;       /* Number of dynamic symbols */
-        u_int32_t        gotsym;         /* First dynamic symbol in GOT */
+	u_int32_t        local_gotno;    /* Number of local GOT entries */
+	u_int32_t        symtabno;       /* Number of dynamic symbols */
+	u_int32_t        gotsym;         /* First dynamic symbol in GOT */
 #endif
-        const u_int32_t *buckets;        /* Hash table buckets array */
-        unsigned long   nbuckets;       /* Number of buckets */
-        const u_int32_t *chains;         /* Hash table chain array */
-        unsigned long   nchains;        /* Number of chains */
+	const u_int32_t *buckets;        /* Hash table buckets array */
+	unsigned long   nbuckets;       /* Number of buckets */
+	const u_int32_t *chains;         /* Hash table chain array */
+	unsigned long   nchains;        /* Number of chains */
 
-        const char    *rpaths;         /* Search path specified in object */
-        Needed_Entry   *needed;         /* Shared objects needed by this (%) */
+	const char    *rpaths;         /* Search path specified in object */
+	Needed_Entry   *needed;         /* Shared objects needed by this (%) */
 
-        void            (*init)(void);  /* Initialization function to call */
-        void            (*fini)(void);  /* Termination function to call */
+	void            (*init)(void);  /* Initialization function to call */
+	void            (*fini)(void);  /* Termination function to call */
 
-        /* Entry points for dlopen() and friends. */
-        void           *(*dlopen)(const char *, int);
-        void           *(*dlsym)(void *, const char *);
-        char           *(*dlerror)(void);
-        int             (*dlclose)(void *);
-        int             (*dladdr)(const void *, Dl_info *);
+	/* Entry points for dlopen() and friends. */
+	void           *(*dlopen)(const char *, int);
+	void           *(*dlsym)(void *, const char *);
+	char           *(*dlerror)(void);
+	int             (*dlclose)(void *);
+	int             (*dladdr)(const void *, Dl_info *);
 
-        u_int32_t       mainprog:1,     /* True if this is the main program */
-                        rtld:1,         /* True if this is the dynamic linker */
-                        textrel:1,      /* True if there are relocations to
-                                         * text seg */
-                        symbolic:1,     /* True if generated with
-                                         * "-Bsymbolic" */
-                        printed:1,      /* True if ldd has printed it */
-                        isdynamic:1,    /* True if this is a pure PIC object */
-                        mainref:1,      /* True if on _rtld_list_main */
-                        globalref:1;    /* True if on _rtld_list_global */
+	u_int32_t       mainprog:1,     /* True if this is the main program */
+			rtld:1,         /* True if this is the dynamic linker */
+			textrel:1,      /* True if there are relocations to
+					 * text seg */
+			symbolic:1,     /* True if generated with
+					 * "-Bsymbolic" */
+			printed:1,      /* True if ldd has printed it */
+			isdynamic:1,    /* True if this is a pure PIC object */
+			mainref:1,      /* True if on _rtld_list_main */
+			globalref:1;    /* True if on _rtld_list_global */
 
-        struct link_map linkmap;        /* for GDB */
+	struct link_map linkmap;        /* for GDB */
 
-        /* These items are computed by map_object() or by digest_phdr(). */
-        const char     *interp; /* Pathname of the interpreter, if any */
-        Objlist         dldags; /* Object belongs to these dlopened DAGs (%) */
-        Objlist         dagmembers;     /* DAG has these members (%) */
-        dev_t           dev;            /* Object's filesystem's device */
-        ino_t           ino;            /* Object's inode number */
+	/* These items are computed by map_object() or by digest_phdr(). */
+	const char     *interp; /* Pathname of the interpreter, if any */
+	Objlist         dldags; /* Object belongs to these dlopened DAGs (%) */
+	Objlist         dagmembers;     /* DAG has these members (%) */
+	dev_t           dev;            /* Object's filesystem's device */
+	ino_t           ino;            /* Object's inode number */
 } Obj_Entry;
 #endif
 
@@ -429,10 +431,10 @@ typedef struct
 
 
 /* Advanced .dynamic entries : Undefined on BSD */
-#ifndef O_SYNC			
+#ifndef O_SYNC
  #define O_SYNC O_FSYNC
 #endif
-#ifndef DT_BIND_NOW	
+#ifndef DT_BIND_NOW
  #define DT_BIND_NOW	24
 #endif
 #ifndef DT_SYMINENT
@@ -491,7 +493,7 @@ typedef struct
 #endif
 #ifndef DT_INIT_ARRAY
  #define DT_INIT_ARRAY	25
-#endif 
+#endif
 #ifndef DT_FINI_ARRAY
  #define DT_FINI_ARRAY	26
 #endif
@@ -600,7 +602,7 @@ typedef struct
  #define DF_1_ENDFILTEE	0x00004000
 #endif
 
- 
+
 #ifndef DT_RUNPATH
  #define DT_RUNPATH	29		/* Library search path */
 #endif

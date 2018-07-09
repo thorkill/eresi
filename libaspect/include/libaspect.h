@@ -1,13 +1,13 @@
 /**
-* @file libaspect/include/libaspect.h
- **
- ** @brief The header file for modular objects in the framework
- **
- ** Started Dec 22 2006 02:57:03 jfv
- **
- **
- ** $Id$
- **
+ * @file libaspect/include/libaspect.h
+ *
+ * @brief The header file for modular objects in the framework
+ *
+ * Started Dec 22 2006 02:57:03 jfv
+ *
+ *
+ * $Id$
+ *
  */
 #if !defined(__ASPECT_H__)
  #define __ASPECT_H__ 1
@@ -58,7 +58,9 @@
 #if defined(__FreeBSD__)
  #include <elf.h>
  #include <sys/elf_common.h>
+#if !defined(__WORDSIZE)
  #define __WORDSIZE      __ELF_WORD_SIZE
+#endif
 #endif
  #if __FreeBSD__ < 5
   #define __BYTE_ORDER   __LITTLE_ENDIAN
