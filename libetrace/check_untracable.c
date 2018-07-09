@@ -1,11 +1,11 @@
 /**
 * @file libetrace/check_untracable.c
 ** @ingroup libetrace
-** 
+**
 ** @brief All functions that help check, remote untracable content.
-** 
+**
 ** Started Jul 2 2005 00:03:44 mxatone
-** 
+**
 **
 ** $Id$
 **
@@ -13,8 +13,8 @@
 #include "libetrace.h"
 
 /* Hash table of untracable functions */
-hash_t		traces_untracable;
-u_char		untracable_ostype;
+hash_t    traces_untracable;
+u_char    untracable_ostype;
 
 
 /**
@@ -22,7 +22,7 @@ u_char		untracable_ostype;
  * @param name
  * @return
  */
-static int		etrace_add_untracable(char *name)
+static int    etrace_add_untracable(char *name)
 {
   NOPROFILER_IN();
 
@@ -37,9 +37,9 @@ static int		etrace_add_untracable(char *name)
  * @param name
  * @return
  */
-int		etrace_untracable(elfshobj_t *file, char *name)
+int   etrace_untracable(elfshobj_t *file, char *name)
 {
-  u_char		ostype;
+  u_char    ostype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -49,7 +49,9 @@ int		etrace_untracable(elfshobj_t *file, char *name)
   if (traces_untracable.ent == NULL || ostype != untracable_ostype)
     {
       if (traces_untracable.ent == NULL)
-	hash_empty(TRACE_UNTRACABLE_NAME);
+        {
+          hash_empty(TRACE_UNTRACABLE_NAME);
+        }
 
       hash_init(&traces_untracable, TRACE_UNTRACABLE_NAME, 11, ASPECT_TYPE_UNKNOW);
 
@@ -73,27 +75,29 @@ int		etrace_untracable(elfshobj_t *file, char *name)
 
       /* ioctl use a printf like prototype */
       etrace_add_untracable("ioctl");
-      
+
       if (ostype == ELFSH_OS_LINUX)
-	{
-	  etrace_add_untracable("__libc_start_main");
-	  etrace_add_untracable("_start");
-	  etrace_add_untracable("_init");
-	  etrace_add_untracable("_fini");
-	}
+        {
+          etrace_add_untracable("__libc_start_main");
+          etrace_add_untracable("_start");
+          etrace_add_untracable("_init");
+          etrace_add_untracable("_fini");
+        }
 
       if (ostype == ELFSH_OS_FREEBSD)
-	{
-	  // x86 failed on this function
-	  // TODO: correct them
-	  etrace_add_untracable("getcwd");
-	}
+        {
+          // x86 failed on this function
+          // TODO: correct them
+          etrace_add_untracable("getcwd");
+        }
 
       untracable_ostype = ostype;
     }
 
   if (hash_get(&traces_untracable, name) != NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }

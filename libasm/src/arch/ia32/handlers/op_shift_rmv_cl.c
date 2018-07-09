@@ -11,7 +11,8 @@
   <instruction func="op_shift_rmv_cl" opcode="0xd3"/>
 */
 
-int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)                    
+int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len,
+                    asm_processor *proc)
 {
   struct s_modrm        *modrm;
 
@@ -21,28 +22,33 @@ int op_shift_rmv_cl(asm_instr *new, u_char *opcode, u_int len, asm_processor *pr
   new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF;
 
-  switch (modrm->r) 
+  switch (modrm->r)
     {
     case 0:
       new->instr = ASM_ROL;
       break;
+
     case 5:
       new->instr = ASM_SHR;
       new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
+
     case 4:
       new->instr = ASM_SHL;
       new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
+
     case 7:
       new->instr = ASM_SAR;
       new->flagswritten |= ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF;
       break;
+
     default:
       new->instr = ASM_BAD;
     }
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
   new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FIXED, new);
   new->op[1].type = ASM_OPTYPE_REG;
   new->op[1].regset = ASM_REGSET_R8;

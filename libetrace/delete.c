@@ -1,11 +1,11 @@
 /**
 * @file libetrace/delete.c
 ** @ingroup libetrace
-** 
+**
 ** @brief trace deletion function
-** 
+**
 ** Started Jul 2 2005 00:03:44 mxatone
-** 
+**
 **
 ** $Id$
 **
@@ -15,12 +15,12 @@
 #include "libetrace.h"
 
 /**
- * Delete a trace 
+ * Delete a trace
  * @param trace trace name
  */
-int			etrace_deletetrace(char *trace)
+int     etrace_deletetrace(char *trace)
 {
-  hash_t		*table;
+  hash_t    *table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -29,8 +29,8 @@ int			etrace_deletetrace(char *trace)
   table = etrace_get(trace);
 
   if (!table)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Can't found this trace", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Can't found this trace", -1);
 
   hash_destroy(table);
   hash_del(&traces_table, trace);

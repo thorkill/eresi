@@ -2,7 +2,7 @@
  * @file libelfsh/obj.c
  * @ingroup libelfsh
  * obj.c for elfsh
- * 
+ *
  * Started on  Wed Feb 12 00:07:06 2003 jfv
  * Last update Sun Mar  4 00:46:13 2007 thorkill
  *
@@ -17,28 +17,28 @@
  * @param name Name to be given to the map.
  * @return The elfshobj_t describing the new map.
  */
-elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size, 
-					  elfsh_Half arch, elfsh_Half type, u_char enc, u_char clas)
+elfshobj_t    *elfsh_create_obj(char *name, eresi_Addr start, u_int size,
+                                elfsh_Half arch, elfsh_Half type, u_char enc, u_char clas)
 {
-  elfshobj_t		*file;
-  u_int			strsize;
-  elfsh_Shdr		maphdr;
-  elfsh_Shdr	        symhdr;
-  elfsh_Shdr		strhdr;
-  elfsh_Shdr		shstrhdr;
-  elfsh_Ehdr		*hdr;
-  elfsh_Shdr		*sht;
-  elfsh_Phdr		*pht;
-  u_int			mapsz;
-  u_int			symsz;
-  u_int			strsz;
-  u_int			shstrsz;
-  u_int			symtabsz;
-  elfshsect_t		*mapped;
-  elfshsect_t		*symtab;
-  elfshsect_t		*strtab;
-  elfshsect_t		*shstrtab;
-  elfsh_Sym		mappedsym;
+  elfshobj_t    *file;
+  u_int     strsize;
+  elfsh_Shdr    maphdr;
+  elfsh_Shdr          symhdr;
+  elfsh_Shdr    strhdr;
+  elfsh_Shdr    shstrhdr;
+  elfsh_Ehdr    *hdr;
+  elfsh_Shdr    *sht;
+  elfsh_Phdr    *pht;
+  u_int     mapsz;
+  u_int     symsz;
+  u_int     strsz;
+  u_int     shstrsz;
+  u_int     symtabsz;
+  elfshsect_t   *mapped;
+  elfshsect_t   *symtab;
+  elfshsect_t   *strtab;
+  elfshsect_t   *shstrtab;
+  elfsh_Sym   mappedsym;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -67,7 +67,8 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   elfsh_set_objtype(hdr, ET_EXEC);
   elfsh_set_shtnbr(hdr, 4);
   elfsh_set_phtnbr(hdr, 1);
-  elfsh_set_shtoff(hdr, sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz + (strsize * 2));
+  elfsh_set_shtoff(hdr, sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz
+                   + (strsize * 2));
   elfsh_set_phtoff(hdr, sizeof(elfsh_Ehdr));
   elfsh_set_arch(hdr, arch);
   elfsh_set_objtype(hdr, type);
@@ -78,21 +79,23 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   file->hdr = hdr;
 
   /* Create sections table */
-  maphdr = elfsh_create_shdr(1, SHT_PROGBITS, SHF_ALLOC | SHF_WRITE | SHF_EXECINSTR, 0, 
-			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr), 
-			     size, 0, 0, sizeof(eresi_Addr), 0);
+  maphdr = elfsh_create_shdr(1, SHT_PROGBITS,
+                             SHF_ALLOC | SHF_WRITE | SHF_EXECINSTR, 0,
+                             sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr),
+                             size, 0, 0, sizeof(eresi_Addr), 0);
 
-  symhdr = elfsh_create_shdr(mapsz + 2, SHT_SYMTAB, SHF_WRITE, 0, 
-			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size, 
-			     symtabsz, 2, 0, 0, sizeof(elfsh_Sym));
+  symhdr = elfsh_create_shdr(mapsz + 2, SHT_SYMTAB, SHF_WRITE, 0,
+                             sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size,
+                             symtabsz, 2, 0, 0, sizeof(elfsh_Sym));
 
-  strhdr = elfsh_create_shdr(mapsz + symsz + 3, SHT_STRTAB, SHF_WRITE, 0, 
-			     sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz, 
-			     strsize, 1, 0, 0, 0);
+  strhdr = elfsh_create_shdr(mapsz + symsz + 3, SHT_STRTAB, SHF_WRITE, 0,
+                             sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz,
+                             strsize, 1, 0, 0, 0);
 
-  shstrhdr = elfsh_create_shdr(mapsz + symsz + strsz + 4, SHT_STRTAB, SHF_WRITE, 0, 
-			       sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz + strsize, 
-			       strsize, 0, 0, 0, 0);
+  shstrhdr = elfsh_create_shdr(mapsz + symsz + strsz + 4, SHT_STRTAB, SHF_WRITE,
+                               0,
+                               sizeof(elfsh_Ehdr) + sizeof(elfsh_Phdr) + size + symtabsz + strsize,
+                               strsize, 0, 0, 0, 0);
 
   memcpy(sht, &maphdr, sizeof(elfsh_Shdr));
   memcpy((char *) sht + sizeof(elfsh_Shdr), &symhdr, sizeof(elfsh_Shdr));
@@ -112,7 +115,7 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   XALLOC(__FILE__, __FUNCTION__, __LINE__, symtab, sizeof(elfshsect_t), NULL);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, strtab, sizeof(elfshsect_t), NULL);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, shstrtab, sizeof(elfshsect_t), NULL);
-  
+
   mapped->name = strdup(ELFSH_SECTION_NAME_MAPPED);
   mapped->parent = file;
   mapped->phdr = pht;
@@ -166,26 +169,27 @@ elfshobj_t		*elfsh_create_obj(char *name, eresi_Addr start, u_int size,
  * @param name File path to open.
  * @return The elfshobj_t describing the loaded file.
  */
-elfshobj_t		*elfsh_load_obj(char *name)
+elfshobj_t    *elfsh_load_obj(char *name)
 {
-  elfshobj_t	*file;
- 
+  elfshobj_t  *file;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__,file, sizeof(elfshobj_t), NULL);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, file, sizeof(elfshobj_t), NULL);
   XOPEN(file->fd, name, O_RDONLY, 0, NULL);
   file->name = strdup(name);
 
   /* Get the file size on disk */
-  if (0 != fstat(file->fd,&file->fstat))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to get fstat(2)", NULL);
+  if (0 != fstat(file->fd, &file->fstat))
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Unable to get fstat(2)", NULL);
 
   file->hdr = elfsh_get_hdr(file);
   file->rights = O_RDONLY;
+
   if (file->hdr == NULL || file->name == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to get ELF header", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Unable to get ELF header", NULL);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
@@ -193,13 +197,13 @@ elfshobj_t		*elfsh_load_obj(char *name)
 
 
 /**
- * Free the ELF descriptor and its fields 
+ * Free the ELF descriptor and its fields
  * @param file The elfsh obj
  */
-void		elfsh_unload_obj(elfshobj_t *file)
+void    elfsh_unload_obj(elfshobj_t *file)
 {
-  elfshsect_t	*sect;
-  elfshsect_t	*next;
+  elfshsect_t *sect;
+  elfshsect_t *next;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -211,35 +215,49 @@ void		elfsh_unload_obj(elfshobj_t *file)
     {
       /* FIXME: Prevent dobule free() */
       if (sect->data == sect->altdata)
-	sect->altdata = NULL;
+        {
+          sect->altdata = NULL;
+        }
 
       if (sect->data == sect->terdata)
-	sect->terdata = NULL;
+        {
+          sect->terdata = NULL;
+        }
 
       if (sect->data == sect->lastdata)
-	sect->lastdata = NULL;
+        {
+          sect->lastdata = NULL;
+        }
 
-      XFREE(__FILE__, __FUNCTION__, __LINE__,sect->data);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, sect->data);
 
       if (sect->altdata)
-	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->altdata);
-      
+        {
+          XFREE(__FILE__, __FUNCTION__, __LINE__, sect->altdata);
+        }
+
       if (sect->terdata)
-	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->terdata);
+        {
+          XFREE(__FILE__, __FUNCTION__, __LINE__, sect->terdata);
+        }
 
       if (sect->lastdata)
-	XFREE(__FILE__, __FUNCTION__, __LINE__,sect->lastdata);
-      
-      XFREE(__FILE__, __FUNCTION__, __LINE__,sect->name);
+        {
+          XFREE(__FILE__, __FUNCTION__, __LINE__, sect->lastdata);
+        }
+
+      XFREE(__FILE__, __FUNCTION__, __LINE__, sect->name);
       next = sect->next;
-      XFREE(__FILE__, __FUNCTION__, __LINE__,sect);
+      XFREE(__FILE__, __FUNCTION__, __LINE__, sect);
     }
 
   if (file->fd)
-    close(file->fd);
+    {
+      close(file->fd);
+    }
 
-  XFREE(__FILE__, __FUNCTION__, __LINE__,file->name);
-  XFREE(__FILE__, __FUNCTION__, __LINE__,file);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, file->name);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, file);
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }

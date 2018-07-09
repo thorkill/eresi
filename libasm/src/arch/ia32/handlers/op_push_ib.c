@@ -9,7 +9,7 @@
   <instruction func="op_push_ib" opcode="0x6a"/>
 */
 
-int op_push_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc) 
+int op_push_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->instr = ASM_PUSH;
   new->len += 1;
@@ -17,7 +17,8 @@ int op_push_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_TOUCHSP | ASM_TYPE_STORE;
   new->spdiff = -4;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,
+                                ASM_CONTENT_IMMEDIATEBYTE, new);
 
   return (new->len);
 }

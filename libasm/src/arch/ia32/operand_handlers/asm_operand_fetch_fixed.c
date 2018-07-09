@@ -22,8 +22,8 @@
  * @return Operand length
  */
 
-int     asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode, 
-				int otype, asm_instr *ins)
+int     asm_operand_fetch_fixed(asm_operand *operand, u_char *opcode,
+                                int otype, asm_instr *ins)
 {
   operand->content = ASM_CONTENT_FIXED;
   return (0);

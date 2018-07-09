@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_bicc(asm_instr * ins, u_char * buf, u_int len,
-	       asm_processor * proc)
+asm_sparc_bicc(asm_instr *ins, u_char *buf, u_int len,
+               asm_processor *proc)
 {
   struct s_decode_branch opcode;
   struct s_asm_proc_sparc *inter;
@@ -22,14 +22,20 @@ asm_sparc_bicc(asm_instr * ins, u_char * buf, u_int len,
   ins->instr = inter->bcc_table[opcode.cond];
 
   if (ins->instr == ASM_SP_BA)
-    ins->type = ASM_TYPE_BRANCH;
+    {
+      ins->type = ASM_TYPE_BRANCH;
+    }
   else if (ins->instr == ASM_SP_BN)
-    ins->type = ASM_TYPE_NOP;
+    {
+      ins->type = ASM_TYPE_NOP;
+    }
   else
-    ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
+    {
+      ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
+    }
 
-  ins->nb_op = 1;  
-  ins->op[0].imm = opcode.imm;  
+  ins->nb_op = 1;
+  ins->op[0].imm = opcode.imm;
   ins->annul = opcode.a;
   ins->prediction = 1;
   asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_DISPLACEMENT, ins);

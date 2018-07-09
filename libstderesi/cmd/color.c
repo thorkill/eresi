@@ -11,10 +11,10 @@
 #include "libstderesi.h"
 
 /* Use setcolor */
-int 		cmd_color()
+int     cmd_color()
 {
-  u_int 	fg, bg, bd, ul, f, z, icolor;
-  color_t 	*ex;
+  u_int   fg, bg, bd, ul, f, z, icolor;
+  color_t   *ex;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -27,21 +27,22 @@ int 		cmd_color()
   char *param2 = pcurcmd->param[2];
   */
 
-  if (world.curjob->curcmd->param[0] == NULL || 
-      world.curjob->curcmd->param[1] == NULL || 
+  if (world.curjob->curcmd->param[0] == NULL ||
+      world.curjob->curcmd->param[1] == NULL ||
       world.curjob->curcmd->param[2] == NULL)
     {
       revm_output(" [!] Need 3 paramters\n\n");
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Need 3 parameters", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Need 3 parameters", -1);
     }
 
   ex = hash_get(&t_color_hash, world.curjob->curcmd->param[0]);
+
   if (ex == NULL)
     {
       revm_output(" [!] Unknown type\n\n");
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Unknown type", -1);  
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Unknown type", -1);
     }
 
   fg = strcmp(world.curjob->curcmd->param[1], "fg");
@@ -52,68 +53,84 @@ int 		cmd_color()
   if (fg && bg && bd && ul)
     {
       revm_output(" [!] Need fg, bg, bold or underline\n\n");
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Need fg, bg, bold or underline", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Need fg, bg, bold or underline", -1);
     }
-     
-  if (!fg || !bg) 
+
+  if (!fg || !bg)
     {
       if (!fg)
-	icolor = (u_int) hash_get(&fg_color_hash, 
-				  world.curjob->curcmd->param[2]);
+        icolor = (u_int) hash_get(&fg_color_hash,
+                                  world.curjob->curcmd->param[2]);
       else
-	icolor = (u_int) hash_get(&bg_color_hash, 
-				  world.curjob->curcmd->param[2]);
+        icolor = (u_int) hash_get(&bg_color_hash,
+                                  world.curjob->curcmd->param[2]);
 
       if (icolor == 0)
-	{
-	  revm_output(" [!] Unknown color (see help for list)\n\n");
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			    "Unknown color", -1);
-	}
+        {
+          revm_output(" [!] Unknown color (see help for list)\n\n");
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "Unknown color", -1);
+        }
 
       if (icolor == COLOR_RESET)
-	icolor = COLOR_NONE;
+        {
+          icolor = COLOR_NONE;
+        }
 
       if (!fg)
-	ex->fground = icolor;
+        {
+          ex->fground = icolor;
+        }
       else
-	ex->bground = icolor;
-    } 
-  else if (!bd || !ul) 
+        {
+          ex->bground = icolor;
+        }
+    }
+  else if (!bd || !ul)
     {
       f = strcmp(world.curjob->curcmd->param[2], "1");
-      z = strcmp(world.curjob->curcmd->param[2], "0"); 
+      z = strcmp(world.curjob->curcmd->param[2], "0");
 
       if (f && z)
-	{
-	  revm_output(" [!] Need 1 or 0 (1 = true, 0 = false)\n\n");
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			    "Need 1 or 0 (1 = true, 0 = false)", -1);
-	}
+        {
+          revm_output(" [!] Need 1 or 0 (1 = true, 0 = false)\n\n");
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "Need 1 or 0 (1 = true, 0 = false)", -1);
+        }
 
       if (!f)
-	icolor = 1;
+        {
+          icolor = 1;
+        }
       else
-	icolor = 0;
+        {
+          icolor = 0;
+        }
 
       if (!bd)
-	ex->bold = icolor;
+        {
+          ex->bold = icolor;
+        }
       else
-	ex->underline = icolor;
+        {
+          ex->underline = icolor;
+        }
     }
 
   if (!world.state.revm_quiet)
-    revm_output(" [*] Color modified succesfully\n\n");
+    {
+      revm_output(" [*] Color modified succesfully\n\n");
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-int 		cmd_nocolor()
+int     cmd_nocolor()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if (nocolor == 0) 
+  if (nocolor == 0)
     {
       revm_output(" [*] Color enabled succesfully\n\n");
       nocolor = 1;
@@ -122,7 +139,7 @@ int 		cmd_nocolor()
     {
       revm_output(" [*] Color disabled succesfully\n\n");
       nocolor = 0;
-    } 
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

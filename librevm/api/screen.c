@@ -13,15 +13,15 @@
 
 
 /**
- * Clear the content of the current screen 
+ * Clear the content of the current screen
  * @param i
  * @param c
  * @return
  */
-int		revm_screen_clear(int i, char c)
+int   revm_screen_clear(int i, char c)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  XFREE(__FILE__, __FUNCTION__, __LINE__,world.curjob->ws.screen.buf);
+  XFREE(__FILE__, __FUNCTION__, __LINE__, world.curjob->ws.screen.buf);
   world.curjob->ws.screen.head = world.curjob->ws.screen.tail = NULL;
   world.curjob->ws.screen.buf = NULL;
   revm_ctrl_set(i, c);
@@ -29,14 +29,14 @@ int		revm_screen_clear(int i, char c)
 }
 
 
-/** 
- * Update the screen depending of the actual job 
+/**
+ * Update the screen depending of the actual job
  *
  * @param isnew
  * @param prompt_display
  * @return
  */
-int		revm_screen_update(u_short isnew, u_short prompt_display)
+int   revm_screen_update(u_short isnew, u_short prompt_display)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -50,11 +50,12 @@ int		revm_screen_update(u_short isnew, u_short prompt_display)
   if (world.curjob->ws.screen.buf != NULL)
     {
       revm_output_nolog(world.curjob->ws.screen.head);
+
       if (world.curjob->ws.screen.head >= world.curjob->ws.screen.tail)
-	{
-	  revm_output_nolog(world.curjob->ws.screen.head);
-	  revm_output_nolog(world.curjob->ws.screen.buf);
-	}
+        {
+          revm_output_nolog(world.curjob->ws.screen.head);
+          revm_output_nolog(world.curjob->ws.screen.buf);
+        }
     }
 
   revm_screen_change(isnew, prompt_display);
@@ -62,61 +63,74 @@ int		revm_screen_update(u_short isnew, u_short prompt_display)
 }
 
 
-/** 
- * Switch screen with switching workspace 
+/**
+ * Switch screen with switching workspace
  *
  */
-int		revm_screen_switch()
+int   revm_screen_switch()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (revm_workspace_next() <= 0)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_screen_update(0, 1));
 }
 
 
 /**
- * Switch to the next workspace 
+ * Switch to the next workspace
  *
  */
-int		revm_workspace_next()
+int   revm_workspace_next()
 {
-  u_int		index, entrie;
-  char	        **keys;
-  int		keynbr;
-  revmjob_t	*curjob;
+  u_int   index, entrie;
+  char          **keys;
+  int   keynbr;
+  revmjob_t *curjob;
 
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   keys = hash_get_keys(&world.jobs, &keynbr);
+
   if (keynbr <= 1)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   /* Search the current index */
   for (index = 0; index < keynbr; index++)
     {
       curjob = hash_get(&world.jobs, keys[index]);
+
       if (revm_own_job(curjob) && curjob == world.curjob)
-	{
-	  entrie = index;
-	  break;
-	}
+        {
+          entrie = index;
+          break;
+        }
     }
 
   /* Search the next entrie */
-  for (entrie = (entrie+1) % keynbr; entrie < keynbr; entrie = (entrie+1) % keynbr)
+  for (entrie = (entrie + 1) % keynbr; entrie < keynbr;
+       entrie = (entrie + 1) % keynbr)
     {
       curjob = hash_get(&world.jobs, keys[entrie]);
+
       if (revm_own_job(curjob))
-	{
-	  /* If we found the current job, we made a loop, so we break */
-	  if (curjob == world.curjob)
-	    break;
-	  revm_switch_job(curjob);
-	  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
-	}
+        {
+          /* If we found the current job, we made a loop, so we break */
+          if (curjob == world.curjob)
+            {
+              break;
+            }
+
+          revm_switch_job(curjob);
+          PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+        }
     }
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unable to find workspace to switch on", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "Unable to find workspace to switch on", -1);
 }

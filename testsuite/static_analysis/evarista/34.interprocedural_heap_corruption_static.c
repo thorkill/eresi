@@ -26,55 +26,74 @@ int func3(char **str)
 }
 
 
-int	mystrncmp(char *one, char *two, unsigned int n)
+int mystrncmp(char *one, char *two, unsigned int n)
 {
-  int	idx;
+  int idx;
 
   for (idx = 0; idx < n; idx++)
     if (one[idx] != two[idx])
-      return (one[idx] - two[idx]);
+      {
+        return (one[idx] - two[idx]);
+      }
+
   return (0);
 }
 
 
-// This example is interresting, it contains many kind of 
+// This example is interresting, it contains many kind of
 // incorrect heap manipulations or corruptions
-int	main()
+int main()
 {
   char *buf;
-  char *buf2;	
-  char *swp;	
-  int	ret;
+  char *buf2;
+  char *swp;
+  int ret;
 
   buf  = (char *) malloc(BUFSIZ);
+
   while (1)
     {
       buf2 = (char *) malloc(BUFSIZ);
       buf[0] = '\0';
 
       if ((ret = read(0, buf, BUFSIZ - 1)) < 0)
-	exit(-1);
+        {
+          exit(-1);
+        }
+
       buf[ret - 1] = '\0';
+
       if ((ret = read(0, buf2, BUFSIZ - 1)) < 0)
-	exit(-1);
+        {
+          exit(-1);
+        }
+
       if (ret == 0)
-	exit(0);
+        {
+          exit(0);
+        }
 
       buf2[ret - 1] = '\0';
 
       if (ret > 5 && buf[5] == 's')
-	{
-	  swp = buf;
-	  buf = buf2;
-	  buf2 = swp;
-	}
+        {
+          swp = buf;
+          buf = buf2;
+          buf2 = swp;
+        }
 
       if (!mystrncmp(buf, "func1", 5))
-	func1(buf);
+        {
+          func1(buf);
+        }
       else if (!mystrncmp(buf, "func2", 5))
-	func2(buf);
+        {
+          func2(buf);
+        }
       else if (!mystrncmp(buf, "func3", 5))
-	func3(&buf);
+        {
+          func3(&buf);
+        }
 
       free(buf2);
     }

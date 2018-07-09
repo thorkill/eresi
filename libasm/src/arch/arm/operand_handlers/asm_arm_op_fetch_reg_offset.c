@@ -22,13 +22,16 @@ int asm_arm_op_fetch_reg_offset(asm_operand *operand, u_char *opcode,
               /* Register offset */
               operand->shift_type = ASM_ARM_SHIFT_NUM;
               break;
+
             case ASM_ARM_SHIFT_ROR:
               operand->shift_type = ASM_ARM_SHIFT_RRX;
               break;
+
             case ASM_ARM_SHIFT_LSR:
             case ASM_ARM_SHIFT_ASR:
               operand->imm = 32;
               break;
+
             default:
               /* TODO: Error! */
               break;
@@ -47,6 +50,7 @@ int asm_arm_op_fetch_reg_offset(asm_operand *operand, u_char *opcode,
           /* R13 = SP */
           MASSIGNTYPE(ins, ASM_TYPE_TOUCHSP);
           break;
+
         case ASM_ARM_REG_PC:
           MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
           break;

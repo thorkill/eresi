@@ -19,8 +19,8 @@
  */
 
 int
-asm_sparc_return(asm_instr * ins, u_char * buf, u_int len,
-		 asm_processor * proc)
+asm_sparc_return(asm_instr *ins, u_char *buf, u_int len,
+                 asm_processor *proc)
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
@@ -33,16 +33,18 @@ asm_sparc_return(asm_instr * ins, u_char * buf, u_int len,
 
   ins->nb_op = 1;
 
-  if (opcode.i) {
-    ins->op[0].baser = opcode.rs1;
-    ins->op[0].imm = opcode.imm;
-    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
-  }
-  else {
-    ins->op[0].baser = opcode.rs1;
-    ins->op[0].indexr = opcode.rs2;
-    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
-  }
+  if (opcode.i)
+    {
+      ins->op[0].baser = opcode.rs1;
+      ins->op[0].imm = opcode.imm;
+      asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
+    }
+  else
+    {
+      ins->op[0].baser = opcode.rs1;
+      ins->op[0].indexr = opcode.rs2;
+      asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
+    }
 
   return 4;
 }

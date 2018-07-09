@@ -12,13 +12,13 @@
 
 
 /* When inside elfsh and not e2dbg, readline should allocate with the real malloc */
-void	*revm_readline_malloc(unsigned int sz)
+void  *revm_readline_malloc(unsigned int sz)
 {
   return (malloc(sz));
 }
 
 /* When inside elfsh and not e2dbg, readline should free with the real malloc */
-void	revm_readline_free(void *ptr)
+void  revm_readline_free(void *ptr)
 {
   free(ptr);
 }

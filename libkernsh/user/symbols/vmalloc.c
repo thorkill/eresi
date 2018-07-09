@@ -1,12 +1,12 @@
-struct vma_struct 
+struct vma_struct
 {
-	unsigned long ( * vmalloc )( unsigned int );
-	int size;
-	unsigned long mem;
+  unsigned long ( * vmalloc )( unsigned int );
+  int size;
+  unsigned long mem;
 };
 
 /* This function is called by syscall() */
-void vmalloc( struct vma_struct * v )
+void vmalloc( struct vma_struct *v )
 {
   /* vma_struct.vmalloc contains the address of vmalloc symbol */
   /* vma_struct.size contains the size to alloc (first arg) */

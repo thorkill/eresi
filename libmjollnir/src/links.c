@@ -20,16 +20,16 @@
  * @param ret return address
  */
 int                     mjr_link_func_call(mjrcontext_t *ctxt,
-                                           eresi_Addr src,
-                                           eresi_Addr dst,
-                                           eresi_Addr ret)
+    eresi_Addr src,
+    eresi_Addr dst,
+    eresi_Addr ret)
 {
   container_t           *fun;
   char                  *tmpstr;
   eresi_Addr            tmpaddr;
   elfshsect_t           *dstsect;
   u_char                scope;
-  u_char		isnew;
+  u_char    isnew;
 
 #if __DEBUG_FLOW__
   mjrfunc_t             *tmpfunc;
@@ -46,8 +46,12 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
 
   /* Check if we are not pointing into BSS */
   dstsect = elfsh_get_parent_section(ctxt->obj, dst, NULL);
+
   if (!dstsect || !dstsect->data)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   scope = (!dstsect || !strcmp(dstsect->name, ELFSH_SECTION_NAME_PLT) ?
            MJR_LINK_SCOPE_GLOBAL : MJR_LINK_SCOPE_LOCAL);
 
@@ -55,6 +59,7 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
      the compiler optimize too hard and that make segfault (bug in gcc ?) */
   tmpaddr = dst;
   fun = mjr_function_get_by_vaddr(ctxt, tmpaddr);
+
   if (!fun)
     {
       tmpstr = _vaddr2str(tmpaddr);
@@ -65,7 +70,9 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
       isnew = 1;
     }
   else
-    isnew = 0;
+    {
+      isnew = 0;
+    }
 
   /* Add links between functions */
   if (ctxt->curfunc)
@@ -106,9 +113,17 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
       fprintf(stderr, " [*] New CURFUNC @ %s \n", tmpfunc->name);
     }
   else if (!isnew)
-    fprintf(stderr, " ******** ALREADY SEEN FUNCTION : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
+    {
+      fprintf(stderr,
+              " ******** ALREADY SEEN FUNCTION : NOT CHANGING CURFUNC @ %s \n",
+              tmpfunc->name);
+    }
   else
-    fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n", tmpfunc->name);
+    {
+      fprintf(stderr, " ******** GLOBAL FUNCTION CALL : NOT CHANGING CURFUNC @ %s \n",
+              tmpfunc->name);
+    }
+
 #else
     }
 #endif
@@ -121,18 +136,18 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
  * @brief Create a link between blocks on a call
  */
 int                     mjr_link_block_call(mjrcontext_t *ctxt,
-                                            eresi_Addr src,
-                                            eresi_Addr dst,
-                                            eresi_Addr ret)
+    eresi_Addr src,
+    eresi_Addr dst,
+    eresi_Addr ret)
 {
-  container_t           *csrc,*cdst,*cret;
+  container_t           *csrc, *cdst, *cret;
   elfshsect_t           *dstsect;
-  elfshsect_t		*retsect;
+  elfshsect_t   *retsect;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: linking " AFMT " CALL " AFMT " RET " AFMT "\n",
+  fprintf(D_DESC, "[D] %s: linking " AFMT " CALL " AFMT " RET " AFMT "\n",
           __FUNCTION__, src, dst, ret);
 #endif
 
@@ -154,8 +169,9 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
   if (dst != MJR_BLOCK_INVALID && dstsect && dstsect->data)
     {
       cdst = mjr_block_split(ctxt, dst, MJR_LINK_FUNC_CALL);
+
       if (!cdst)
-        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                      "Could not split the dst", 0);
 
       mjr_container_add_link(ctxt, csrc, cdst->id,
@@ -168,8 +184,9 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
   if (ret != MJR_BLOCK_INVALID && retsect && retsect->data)
     {
       cret = mjr_block_split(ctxt, ret, MJR_LINK_FUNC_RET);
+
       if (!cret)
-        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                      "Could not split the ret", 0);
 
       mjr_container_add_link(ctxt, csrc, cret->id,
@@ -179,10 +196,14 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
     }
 
 #if __DEBUG_BLOCKS__
-  mjr_block_dump(ctxt,csrc);
+  mjr_block_dump(ctxt, csrc);
+
   if (dst != MJR_BLOCK_INVALID)
-    mjr_block_dump(ctxt,cdst);
-  mjr_block_dump(ctxt,cret);
+    {
+      mjr_block_dump(ctxt, cdst);
+    }
+
+  mjr_block_dump(ctxt, cret);
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
@@ -198,12 +219,12 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
                                     eresi_Addr   ret)
 {
   container_t   *csrc, *cdst, *cret;
-  mjrblock_t	*bsrc;
+  mjrblock_t  *bsrc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: linking JMP "XFMT" TRUE "XFMT" FALSE "XFMT"\n",
+  fprintf(D_DESC, "[D] %s: linking JMP "XFMT" TRUE "XFMT" FALSE "XFMT"\n",
           __FUNCTION__, src, dst, ret);
 #endif
 
@@ -229,19 +250,23 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
 
   /* Now split destination blocks */
   cdst = mjr_block_split(ctxt, dst, MJR_LINK_BLOCK_COND_ALWAYS);
+
   if (!cdst)
-    PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Could not split destination block", 0);
 
   if (ret != MJR_BLOCK_INVALID)
     {
       cret = mjr_block_split(ctxt, ret, MJR_LINK_BLOCK_COND_ALWAYS);
+
       if (!cret)
-        PROFILER_ERR(__FILE__,__FUNCTION__,__LINE__,
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                      "Could not split return block", 0);
     }
   else
-    cret = NULL;
+    {
+      cret = NULL;
+    }
 
   mjr_container_add_link(ctxt, csrc, cdst->id,
                          MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_OUT);
@@ -250,9 +275,9 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
 
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s: cret: "XFMT"\n",
+  fprintf(D_DESC, "[D] %s: cret: "XFMT"\n",
           __FUNCTION__, ret);
-#endif  
+#endif
 
   if (cret)
     {
@@ -316,19 +341,20 @@ static int      mjr_block_relink(mjrcontext_t *ctx,
  * @param link_with link splitted blocks with specified link type
  */
 container_t             *mjr_block_split(mjrcontext_t   *ctxt,
-                                         eresi_Addr     dst,
-                                         u_char         link_with)
+    eresi_Addr     dst,
+    u_char         link_with)
 {
-  container_t           *tmpdst,*dstend;
+  container_t           *tmpdst, *dstend;
   mjrblock_t            *blkdst;
   int                   new_size;
   elfsh_Sym             *sym;
-  int			symoff;
+  int     symoff;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check if we need to create a new bloc for destination addr */
   tmpdst = mjr_block_get_by_vaddr(ctxt, dst, MJR_BLOCK_GET_FUZZY);
+
   if (!tmpdst)
     {
       tmpdst = mjr_create_block_container(ctxt, 0, dst, 0, 0);
@@ -344,7 +370,7 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
   assert(sym != NULL);
 
 #if __DEBUG_LINKS__
-  fprintf(D_DESC,"[D] %s:%d: wanted dst:"XFMT" got:"XFMT"\n",
+  fprintf(D_DESC, "[D] %s:%d: wanted dst:"XFMT" got:"XFMT"\n",
           __FUNCTION__, __LINE__, dst, blkdst->vaddr);
 #endif
 
@@ -354,8 +380,9 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
       new_size = blkdst->size - (dst - blkdst->vaddr);
 
 #if __DEBUG_LINKS__
-      fprintf(D_DESC,"[D] %s:%d: new_size %d for "XFMT"\n", __FUNCTION__, __LINE__, new_size, dst);
-      fprintf(D_DESC,"[D] %s:%d: turncate "XFMT" to %d\n",
+      fprintf(D_DESC, "[D] %s:%d: new_size %d for "XFMT"\n", __FUNCTION__, __LINE__,
+              new_size, dst);
+      fprintf(D_DESC, "[D] %s:%d: turncate "XFMT" to %d\n",
               __FUNCTION__, __LINE__, blkdst->vaddr, blkdst->size);
 #endif
 
@@ -375,7 +402,9 @@ container_t             *mjr_block_split(mjrcontext_t   *ctxt,
                              MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
     }
   else
-    dstend = tmpdst;
+    {
+      dstend = tmpdst;
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dstend));
 }

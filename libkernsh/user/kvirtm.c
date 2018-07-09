@@ -15,9 +15,10 @@
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int		kernsh_kvirtm_read_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
+int   kernsh_kvirtm_read_virtm(pid_t pid, eresi_Addr addr, char *buffer,
+                               int len)
 {
-  int		ret, get, i, j, max_size;
+  int   ret, get, i, j, max_size;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
@@ -38,18 +39,22 @@ int		kernsh_kvirtm_read_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
   if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
-      for (j = 0; j < i; j++)
-	{
-	  ret += fct(pid, addr+(max_size*j), buffer+(max_size*j), max_size);
-	}
 
-      if ((max_size*i) < len)
-	{
-	  ret += fct(pid, addr+(max_size*i), buffer+(max_size*i), (len - (max_size*i)));
-	}
+      for (j = 0; j < i; j++)
+        {
+          ret += fct(pid, addr + (max_size * j), buffer + (max_size * j), max_size);
+        }
+
+      if ((max_size * i) < len)
+        {
+          ret += fct(pid, addr + (max_size * i), buffer + (max_size * i),
+                     (len - (max_size * i)));
+        }
     }
   else
-    ret = fct(pid, addr, buffer, len);
+    {
+      ret = fct(pid, addr, buffer, len);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -62,11 +67,12 @@ int		kernsh_kvirtm_read_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
+int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, eresi_Addr addr,
+                                        char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;
-  char	buff[BUFSIZ];
+  char  buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -74,46 +80,47 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffer
 
   if (len > 1024)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Len is too long > 1024",
-		 -1);
+                 "Len is too long > 1024",
+                 -1);
 
-  nlen = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
-    2;
+  nlen = strlen(PROC_ENTRY_ROOT) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) +
+         2;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 proc_entry_root_tmp, 
-	 nlen, 
-	 -1);
-  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+         proc_entry_root_tmp,
+         nlen,
+         -1);
+
   memset(proc_entry_root_tmp, '\0', nlen);
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
- 
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:%d", 
-	   LIBKERNSH_VIRTM_READ_MEM_PID, 
-	   addr, len, pid);
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:%d",
+           LIBKERNSH_VIRTM_READ_MEM_PID,
+           addr, len, pid);
 
   ret = write(fd, buff, strlen(buff));
+
   if (ret != strlen(buff))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Impossible to set vio",  -1);
+                 "Impossible to set vio",  -1);
 
   XCLOSE(fd, -1);
 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO);
-  
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO);
+
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  ret = read(fd, buffer, len);  
+  ret = read(fd, buffer, len);
   XCLOSE(fd, -1);
-  
+
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
@@ -128,7 +135,8 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffer
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
+int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, eresi_Addr addr,
+    char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
@@ -136,7 +144,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buf
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_virtm_syscall_linux\n");
 #endif
 
@@ -147,8 +155,9 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buf
   arg[2] = (unsigned int)buffer;
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_READ_MEM_PID;
-    
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL),
+                        5, arg);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
@@ -165,7 +174,7 @@ int kernsh_kvirtm_read_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buf
  */
 int kernsh_kvirtm_write_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
 {
-  int		ret, get, i, j, max_size;;
+  int   ret, get, i, j, max_size;;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
@@ -186,18 +195,22 @@ int kernsh_kvirtm_write_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
   if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
+
       for (j = 0; j < i; j++)
-	{
-	  ret += fct(pid, addr+(max_size*j), buffer+(max_size*j), max_size);
-	}
-      
-      if ((max_size*i) < len)
-	{
-	  ret += fct(pid, addr+(max_size*i), buffer+(max_size*i), (len - (max_size*i)));
-	}
+        {
+          ret += fct(pid, addr + (max_size * j), buffer + (max_size * j), max_size);
+        }
+
+      if ((max_size * i) < len)
+        {
+          ret += fct(pid, addr + (max_size * i), buffer + (max_size * i),
+                     (len - (max_size * i)));
+        }
     }
   else
-    ret = fct(pid, addr, buffer, len);
+    {
+      ret = fct(pid, addr, buffer, len);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -210,11 +223,12 @@ int kernsh_kvirtm_write_virtm(pid_t pid, eresi_Addr addr, char *buffer, int len)
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
+int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, eresi_Addr addr,
+    char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;
-  char	buff[BUFSIZ];
+  char  buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -222,40 +236,42 @@ int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffe
 
   if (len > 1024)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Len is too long > 1024",
-		 -1);
+                 "Len is too long > 1024",
+                 -1);
 
-  nlen = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
-    2;
+  nlen = strlen(PROC_ENTRY_ROOT) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) +
+         2;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 proc_entry_root_tmp, 
-	 nlen, 
-	 -1);
-  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+         proc_entry_root_tmp,
+         nlen,
+         -1);
+
   memset(proc_entry_root_tmp, '\0', nlen);
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
- 
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:%d", 
-	   LIBKERNSH_VIRTM_WRITE_MEM_PID, 
-	   addr, len, pid);
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:%d",
+           LIBKERNSH_VIRTM_WRITE_MEM_PID,
+           addr, len, pid);
 
   ret = write(fd, buff, strlen(buff));
+
   if (ret != strlen(buff))
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Impossible to set vio", -1);
+
   XCLOSE(fd, -1);
 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO);
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO);
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
   ret = write(fd, buffer, len);
@@ -274,7 +290,8 @@ int kernsh_kvirtm_write_virtm_proc_linux(pid_t pid, eresi_Addr addr, char *buffe
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *buffer, int len)
+int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, eresi_Addr addr,
+    char *buffer, int len)
 {
   int ret;
   unsigned int arg[5];
@@ -282,7 +299,7 @@ int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *bu
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_write_virtm_syscall_linux\n");
 #endif
 
@@ -293,11 +310,14 @@ int kernsh_kvirtm_write_virtm_syscall_linux(pid_t pid, eresi_Addr addr, char *bu
   arg[2] = (unsigned int)buffer;
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_WRITE_MEM_PID;
-    
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL),
+                        5, arg);
 
   if (rlen != len)
-    ret = -1;
+    {
+      ret = -1;
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -310,7 +330,7 @@ int kernsh_kvirtm_openmem()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("OPEN KVIRTM OPEN MEM\n");
 #endif
 
@@ -326,7 +346,7 @@ int kernsh_kvirtm_closemem()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("OPEN KVIRTM CLOSE MEM\n");
 #endif
 
@@ -340,25 +360,28 @@ int kernsh_kvirtm_closemem()
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-void		*kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, int len)
+void    *kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer,
+                                int len)
 {
-  int		ret, get, i, j, max_size;
+  int   ret, get, i, j, max_size;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!libkernshworld.open)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Memory not opened !", NULL);
+
   if (elfsh_is_static_mode())
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Cannot read userland virtual memory in static mode", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Cannot read userland virtual memory in static mode", NULL);
 
   ret = 0;
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_mem\n");
 #endif
 
@@ -372,18 +395,22 @@ void		*kernsh_kvirtm_readmema(elfshobj_t *kern, eresi_Addr addr, char *buffer, i
   if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
-      for (j = 0; j < i; j++)
-	{
-	  ret += fct(addr+(max_size*j), buffer+(max_size*j), max_size);
-	}
 
-      if ((max_size*i) < len)
-	{
-	  ret += fct(addr+(max_size*i), buffer+(max_size*i), (len - (max_size*i)));
-	}
+      for (j = 0; j < i; j++)
+        {
+          ret += fct(addr + (max_size * j), buffer + (max_size * j), max_size);
+        }
+
+      if ((max_size * i) < len)
+        {
+          ret += fct(addr + (max_size * i), buffer + (max_size * i),
+                     (len - (max_size * i)));
+        }
     }
   else
-    ret = fct(addr, buffer, len);
+    {
+      ret = fct(addr, buffer, len);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buffer);
 }
@@ -403,7 +430,7 @@ int kernsh_kvirtm_readmem_syscall_linux(eresi_Addr addr, char *buffer, int len)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_mem_syscall_linux\n");
 #endif
 
@@ -414,8 +441,9 @@ int kernsh_kvirtm_readmem_syscall_linux(eresi_Addr addr, char *buffer, int len)
   arg[2] = (unsigned int)buffer;
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_READ_MEM;
-    
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL),
+                        5, arg);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
@@ -427,15 +455,15 @@ int kernsh_kvirtm_readmem_syscall_linux(eresi_Addr addr, char *buffer, int len)
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int	kernsh_kvirtm_readmem_proc_linux(eresi_Addr addr, char *buffer, int len)
+int kernsh_kvirtm_readmem_proc_linux(eresi_Addr addr, char *buffer, int len)
 {
-  int	fd, ret, nlen;
-  char	*proc_entry_root_tmp;
-  char	buff[BUFSIZ];
+  int fd, ret, nlen;
+  char  *proc_entry_root_tmp;
+  char  buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_mem_proc\n");
 #endif
 
@@ -443,50 +471,52 @@ int	kernsh_kvirtm_readmem_proc_linux(eresi_Addr addr, char *buffer, int len)
 
   if (len > 1024)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Len is too long > 1024",
-		 -1);
+                 "Len is too long > 1024",
+                 -1);
 
-  nlen = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
-    2;
+  nlen = strlen(PROC_ENTRY_ROOT) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) +
+         2;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 proc_entry_root_tmp, 
-	 nlen, 
-	 -1);
-  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+         proc_entry_root_tmp,
+         nlen,
+         -1);
+
   memset(proc_entry_root_tmp, '\0', nlen);
- 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
- 
+
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:", 
-	   LIBKERNSH_VIRTM_READ_MEM, 
-	   (addr - libkernshworld.kernel_start),
-	   len);
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:",
+           LIBKERNSH_VIRTM_READ_MEM,
+           (addr - libkernshworld.kernel_start),
+           len);
 
   ret = write(fd, buff, strlen(buff));
+
   if (ret != strlen(buff))
     {
       XCLOSE(fd, -1);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio", -1);
+                   "Impossible to set vio", -1);
     }
+
   XCLOSE(fd, -1);
 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO);
-    
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO);
+
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  ret = read(fd, buffer, len);  
+  ret = read(fd, buffer, len);
   XCLOSE(fd, -1);
-  
+
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
@@ -501,22 +531,24 @@ int	kernsh_kvirtm_readmem_proc_linux(eresi_Addr addr, char *buffer, int len)
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int		kernsh_kvirtm_writemem(elfshobj_t *kern, eresi_Addr addr, char *buffer, int len)
+int   kernsh_kvirtm_writemem(elfshobj_t *kern, eresi_Addr addr, char *buffer,
+                             int len)
 {
-  int		ret, get, i, j, max_size;
+  int   ret, get, i, j, max_size;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!libkernshworld.open)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Memory not opened !", -1);
 
   ret = 0;
   max_size = LIBKERNSH_PROC_ENTRY_SIZE;
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_mem\n");
 #endif
 
@@ -531,18 +563,22 @@ int		kernsh_kvirtm_writemem(elfshobj_t *kern, eresi_Addr addr, char *buffer, int
   if (len > max_size && get == LIBKERNSH_KERNEL_MODE)
     {
       i = len / max_size;
-      for (j = 0; j < i; j++)
-	{
-	  ret += fct(addr+(max_size*j), buffer+(max_size*j), max_size);
-	}
 
-      if ((max_size*i) < len)
-	{
-	  ret += fct(addr+(max_size*i), buffer+(max_size*i), (len - (max_size*i)));
-	}
+      for (j = 0; j < i; j++)
+        {
+          ret += fct(addr + (max_size * j), buffer + (max_size * j), max_size);
+        }
+
+      if ((max_size * i) < len)
+        {
+          ret += fct(addr + (max_size * i), buffer + (max_size * i),
+                     (len - (max_size * i)));
+        }
     }
   else
-    ret = fct(addr, buffer, len);
+    {
+      ret = fct(addr, buffer, len);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -562,7 +598,7 @@ int kernsh_kvirtm_writemem_syscall_linux(eresi_Addr addr, char *buffer, int len)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_mem_syscall_linux\n");
 #endif
 
@@ -573,8 +609,9 @@ int kernsh_kvirtm_writemem_syscall_linux(eresi_Addr addr, char *buffer, int len)
   arg[2] = (unsigned int)buffer;
   arg[3] = (unsigned int)len;
   arg[4] = (unsigned int)LIBKERNSH_VIRTM_WRITE_MEM;
-    
-  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL), 5, arg);
+
+  rlen = kernsh_syscall((int)config_get_data(LIBKERNSH_CONFIG_VIRTM_NIL_SYSCALL),
+                        5, arg);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rlen);
 }
@@ -590,11 +627,11 @@ int kernsh_kvirtm_writemem_proc_linux(eresi_Addr addr, char *buffer, int len)
 {
   int fd, ret, nlen;
   char *proc_entry_root_tmp;
-  char	buff[BUFSIZ];
+  char  buff[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_read_mem_proc\n");
 #endif
 
@@ -602,46 +639,48 @@ int kernsh_kvirtm_writemem_proc_linux(eresi_Addr addr, char *buffer, int len)
 
   if (len > 1024)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Len is too long > 1024",
-		 -1);
+                 "Len is too long > 1024",
+                 -1);
 
-  nlen = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
-    2;
+  nlen = strlen(PROC_ENTRY_ROOT) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) +
+         2;
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 proc_entry_root_tmp, 
-	 nlen, 
-	 -1);
-  
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+         proc_entry_root_tmp,
+         nlen,
+         -1);
+
   memset(proc_entry_root_tmp, '\0', nlen);
- 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
- 
+
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:", 
-	   LIBKERNSH_VIRTM_WRITE_MEM, 
-	   (addr - libkernshworld.kernel_start),
-	   len);
+  snprintf(buff, sizeof(buff), "%d:"XFMT":%d:",
+           LIBKERNSH_VIRTM_WRITE_MEM,
+           (addr - libkernshworld.kernel_start),
+           len);
 
   ret = write(fd, buff, strlen(buff));
+
   if (ret != strlen(buff))
     {
       XCLOSE(fd, -1);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio",
-		   -1);
+                   "Impossible to set vio",
+                   -1);
     }
+
   XCLOSE(fd, -1);
 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO);
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO);
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
   ret = write(fd, buffer, len);
@@ -662,7 +701,7 @@ int kernsh_kvirtm_writemem_proc_linux(eresi_Addr addr, char *buffer, int len)
  */
 int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
 {
-  int		ret, get;
+  int   ret, get;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
@@ -671,7 +710,7 @@ int kernsh_kvirtm_task_pid(pid_t pid, list_t *h)
 
   ret = 0;
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_task_pid\n");
 #endif
 
@@ -701,87 +740,89 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
   int fd, ret, nlen, blen;
   kvirtm_virtual_task_struct_t *kvtst;
   char *key, *proc_entry_root_tmp, *buffer, *p;
-  char	buff[BUFSIZ];
+  char  buff[BUFSIZ];
   unsigned long *pkvtst;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = 0;
 
-  XALLOC(__FILE__, 
-	 __FUNCTION__, 
-	 __LINE__, 
-	 kvtst,
-	 sizeof(kvirtm_virtual_task_struct_t), 
-	 -1);
+  XALLOC(__FILE__,
+         __FUNCTION__,
+         __LINE__,
+         kvtst,
+         sizeof(kvirtm_virtual_task_struct_t),
+         -1);
 
-  XALLOC(__FILE__, 
-	 __FUNCTION__, 
-	 __LINE__, 
-	 key,
-	 BUFSIZ, 
-	 -1);
+  XALLOC(__FILE__,
+         __FUNCTION__,
+         __LINE__,
+         key,
+         BUFSIZ,
+         -1);
 
-  memset(kvtst, '\0', sizeof(kvirtm_virtual_task_struct_t)); 
+  memset(kvtst, '\0', sizeof(kvirtm_virtual_task_struct_t));
   memset(key, '\0', BUFSIZ);
-  snprintf(key,	BUFSIZ, "%d", pid);
-  
-  memset(buff, '\0', sizeof(buff));
-  
-  nlen = strlen(PROC_ENTRY_ROOT) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM) + 
-    strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) + 
-    2;
-  
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 proc_entry_root_tmp, 
-	 nlen, 
-	 -1);
-  
-  memset(proc_entry_root_tmp, '\0', nlen);
- 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+  snprintf(key, BUFSIZ, "%d", pid);
 
-   
-  blen = sizeof(kvirtm_virtual_task_struct_t) * 2 + 
-    (sizeof(kvirtm_virtual_task_struct_t) / sizeof(unsigned long)) * 3;
+  memset(buff, '\0', sizeof(buff));
+
+  nlen = strlen(PROC_ENTRY_ROOT) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM) +
+         strlen(PROC_ENTRY_KERNSH_VIRTM_MAX) +
+         2;
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+         proc_entry_root_tmp,
+         nlen,
+         -1);
+
+  memset(proc_entry_root_tmp, '\0', nlen);
+
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
+
+
+  blen = sizeof(kvirtm_virtual_task_struct_t) * 2 +
+         (sizeof(kvirtm_virtual_task_struct_t) / sizeof(unsigned long)) * 3;
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  snprintf(buff, sizeof(buff), "%d:0x0:%d:%d:", 
-	   LIBKERNSH_VIRTM_TASK_PID, 
-	   blen,
-	   pid);
+  snprintf(buff, sizeof(buff), "%d:0x0:%d:%d:",
+           LIBKERNSH_VIRTM_TASK_PID,
+           blen,
+           pid);
 
   ret = write(fd, buff, strlen(buff));
+
   if (ret != strlen(buff))
     {
       XCLOSE(fd, -1);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Impossible to set vio",
-		   -1);
+                   "Impossible to set vio",
+                   -1);
     }
+
   XCLOSE(fd, -1);
-  
 
-  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s", 
-	   PROC_ENTRY_ROOT, 
-	   PROC_ENTRY_KERNSH_VIRTM,
-	   PROC_ENTRY_KERNSH_VIRTM_VIO);
 
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	 buffer, 
-	 blen + 1, 
-	 -1);
+  snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
+           PROC_ENTRY_ROOT,
+           PROC_ENTRY_KERNSH_VIRTM,
+           PROC_ENTRY_KERNSH_VIRTM_VIO);
+
+  XALLOC(__FILE__, __FUNCTION__, __LINE__,
+         buffer,
+         blen + 1,
+         -1);
 
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
-  ret = read(fd, buffer, blen);  
+  ret = read(fd, buffer, blen);
   XCLOSE(fd, -1);
 
-  for (p = (char *)strtok(buffer, ":"), pkvtst = (unsigned long *)kvtst; 
-       p;  
+  for (p = (char *)strtok(buffer, ":"), pkvtst = (unsigned long *)kvtst;
+       p;
        p = (char *)strtok(NULL, ":"), pkvtst++)
     {
       *pkvtst = strtoul(p, NULL, 16);
@@ -802,7 +843,7 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
  */
 int kernsh_kvirtm_task_pid_syscall_linux(pid_t pid, list_t *h)
 {
-  int		ret;
+  int   ret;
   //  kvirtm_virtual_task_struct_t *kvtst;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);

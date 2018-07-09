@@ -10,7 +10,7 @@
  */
 
 int     i386_rdmsr(asm_instr *new, u_char *opcode, u_int len,
-		   asm_processor *proc)
+                   asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->len += 1;

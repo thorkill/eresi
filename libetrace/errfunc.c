@@ -14,18 +14,18 @@
  * When an error occur in etrace. This function is used to show buggy function name.
  * @return function name
  */
-char			*etrace_geterrfunc()
+char      *etrace_geterrfunc()
 {
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__); 
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, last_parsed_function);
 }
 
 
 /* Start tracing after everything has been injected */
-char		*etrace_start_tracing(elfshobj_t *file)
+char    *etrace_start_tracing(elfshobj_t *file)
 {
-  char		*buggyfunc;
+  char    *buggyfunc;
 
   profiler_error_reset();
 
@@ -36,5 +36,6 @@ char		*etrace_start_tracing(elfshobj_t *file)
       profiler_error();
       return (buggyfunc);
     }
+
   return (NULL);
 }

@@ -28,42 +28,48 @@ void    revm_set_prompt(void (*func) (char *name, u_int size))
 /**
  *
  */
-void	revm_create_default_prompt(char *name, u_int size)
+void  revm_create_default_prompt(char *name, u_int size)
 {
   snprintf(name, size - 1,
-	   "%s%s%s%s%s%s%s%s%s%s%s ",
-	   revm_colorget("%s", "pspecial", "("),
-	   (world.state.revm_mode == REVM_STATE_EMBEDDED ?
-	    revm_colorget("%s", "psname" , E2DBG_ARGV0)    :
-	    revm_colorget("%s", "psname" , ELFSH_SNAME)),
-	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pversion", ERESI_VERSION),
-	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "prelease", ERESI_RELEASE),
-	   revm_colorget("%s", "pspecial", "-"),
-	   revm_colorget("%s", "pedition", ELFSH_EDITION),
-	   revm_colorget("%s", "pspecial", "@"),
-	   revm_colorget("%s", "psname", world.curjob->name),
-	   revm_colorget("%s", "pspecial", ")"));
+           "%s%s%s%s%s%s%s%s%s%s%s ",
+           revm_colorget("%s", "pspecial", "("),
+           (world.state.revm_mode == REVM_STATE_EMBEDDED ?
+            revm_colorget("%s", "psname", E2DBG_ARGV0)    :
+            revm_colorget("%s", "psname", ELFSH_SNAME)),
+           revm_colorget("%s", "pspecial", "-"),
+           revm_colorget("%s", "pversion", ERESI_VERSION),
+           revm_colorget("%s", "pspecial", "-"),
+           revm_colorget("%s", "prelease", ERESI_RELEASE),
+           revm_colorget("%s", "pspecial", "-"),
+           revm_colorget("%s", "pedition", ELFSH_EDITION),
+           revm_colorget("%s", "pspecial", "@"),
+           revm_colorget("%s", "psname", world.curjob->name),
+           revm_colorget("%s", "pspecial", ")"));
   revm_endline();
 }
 
 /**
- * return the right prompt 
+ * return the right prompt
  */
-char	*revm_get_prompt()
+char  *revm_get_prompt()
 {
   if (world.state.revm_mode == REVM_STATE_INTERACT ||
       world.state.revm_mode == REVM_STATE_EMBEDDED)
     {
       /* Setup prompt only once */
       if (prompt_token_setup == NULL)
-	revm_set_prompt(revm_create_default_prompt);
+        {
+          revm_set_prompt(revm_create_default_prompt);
+        }
 
       if (prompt_token_setup)
-	prompt_token_setup(prompt_token, sizeof(prompt_token));
+        {
+          prompt_token_setup(prompt_token, sizeof(prompt_token));
+        }
       else
-	snprintf(prompt_token, sizeof(prompt_token) - 1, "prompt-error");
+        {
+          snprintf(prompt_token, sizeof(prompt_token) - 1, "prompt-error");
+        }
 
       /* Prompt on readline need some modifications */
       revm_prompt_update(prompt_token, sizeof(prompt_token));
@@ -71,113 +77,129 @@ char	*revm_get_prompt()
     }
 
   if (world.state.revm_mode == REVM_STATE_SCRIPT)
-    return "";
+    {
+      return "";
+    }
 
   return "UNKNOWN MODE> ";
 }
 
 /**
- * return the project name accordingly to mode 
+ * return the project name accordingly to mode
  */
-char		*revm_modename_get()
+char    *revm_modename_get()
 {
   char          *mode;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.state.revm_mode == REVM_STATE_EMBEDDED)
-    mode = E2DBG_NAME;
+    {
+      mode = E2DBG_NAME;
+    }
   else
-    mode = ELFSH_NAME;
+    {
+      mode = ELFSH_NAME;
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (mode));
 }
 
 
-/** 
- * Our system implementation 
+/**
+ * Our system implementation
  */
-int		revm_system(char *cmd)
+int   revm_system(char *cmd)
 {
-  char		buf[BUFSIZ];
-  int		ret;
-  char		**av;
-  int		nbr;
-  int		argc;
+  char    buf[BUFSIZ];
+  int   ret;
+  char    **av;
+  int   nbr;
+  int   argc;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->io.type == REVM_IO_NET)
-    snprintf(buf, BUFSIZ, "%s <&%u >&0 2>&0 ", cmd, world.curjob->io.output_fd);
+    {
+      snprintf(buf, BUFSIZ, "%s <&%u >&0 2>&0 ", cmd, world.curjob->io.output_fd);
+    }
   else
-    snprintf(buf, BUFSIZ, "%s ", cmd);
+    {
+      snprintf(buf, BUFSIZ, "%s ", cmd);
+    }
 
   /* If the user shell is unspecified we use system */
   nbr = revm_findblanks(cmd);
   av = revm_doargv(nbr, (u_int *)&argc, cmd);
   av++;
+
   if (!fork())
-    ret = execvp(av[0], av);
+    {
+      ret = execvp(av[0], av);
+    }
   else
-    wait(NULL);
+    {
+      wait(NULL);
+    }
 
   /* Report result */
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Shell not found", 0);
+                 "Shell not found", 0);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
 
-/** 
- * Decide what to do for exiting depending on the current input 
+/**
+ * Decide what to do for exiting depending on the current input
  */
-void	revm_exit(int err)
+void  revm_exit(int err)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   _exit(err);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/** 
- * Bad parameter handler 
+/**
+ * Bad parameter handler
  */
-void	revm_badparam(char *str)
+void  revm_badparam(char *str)
 {
-  char	buf[BUFSIZ];
+  char  buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(buf, BUFSIZ,
-	   "\n [!] Invalid parameters for command %s .::. "
-	   "type 'help' for command list \n\n", str);
+           "\n [!] Invalid parameters for command %s .::. "
+           "type 'help' for command list \n\n", str);
   revm_output(buf);
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/** 
- * Unknow command handler 
+/**
+ * Unknow command handler
  */
-void	revm_unknown(char *str)
+void  revm_unknown(char *str)
 {
-  char	buf[BUFSIZ];
+  char  buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(buf, BUFSIZ, "\n [!] Unknown command %s .::. "
-	   "type 'help' for command list \n\n", str);
+           "type 'help' for command list \n\n", str);
   revm_output(buf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/** 
- * Generic error message handler 
+/**
+ * Generic error message handler
  */
 
-void	revm_error(char *label, char *param)
+void  revm_error(char *label, char *param)
 {
-  char	buf[BUFSIZ];
+  char  buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   snprintf(buf, BUFSIZ, " [!] %s [%s] \n\n", label, param);
@@ -186,16 +208,16 @@ void	revm_error(char *label, char *param)
 }
 
 
-/** 
- * Open the script file 
+/**
+ * Open the script file
  */
-int		revm_openscript(char **av)
+int   revm_openscript(char **av)
 {
-  int		fd;
-  int		idx;
-  char		actual[16];
-  revmobj_t	*new;
-  revmexpr_t	*expr;
+  int   fd;
+  int   idx;
+  char    actual[16];
+  revmobj_t *new;
+  revmexpr_t  *expr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -216,67 +238,73 @@ int		revm_openscript(char **av)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/** 
- * Say if we are in script mode 
+/**
+ * Say if we are in script mode
  */
-int		revm_testscript(int ac, char **av)
+int   revm_testscript(int ac, char **av)
 {
-  int		fd;
-  char		buff[30];
+  int   fd;
+  char    buff[30];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (ac < 2 || (av[1] && av[1][0] == ELFSH_MINUS))
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   XOPEN(fd, av[1], O_RDONLY, 0, 0);
   XREAD(fd, buff, 30, 0);
   buff[29] = 0x00;
+
   if (strncmp(buff, "#!", 2))
     {
       XCLOSE(fd, 0);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Invalid script interpreter", 0);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Invalid script interpreter", 0);
     }
+
   if (!strstr(buff, av[0]) && !strstr(buff, "elfsh"))
     {
       XCLOSE(fd, 0);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			"Not an ELFsh script", 0);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Not an ELFsh script", 0);
     }
+
   XCLOSE(fd, 0);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-/** 
- * Print the banner 
+/**
+ * Print the banner
  */
-void		revm_banner_print()
+void    revm_banner_print()
 {
-  char		logbuf[BUFSIZ];
+  char    logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   snprintf(logbuf, BUFSIZ - 1,
-	   "\n\n\t The %s %s (%s) .::. \n\n %s",
-	   revm_modename_get(),
-	   ERESI_VERSION,
+           "\n\n\t The %s %s (%s) .::. \n\n %s",
+           revm_modename_get(),
+           ERESI_VERSION,
 #if defined(ERESI32)
-	   "32 bits built",
+           "32 bits built",
 #elif defined(ERESI64)
-	   "64 bits built",
+           "64 bits built",
 #else
-	   "Unknown built",
+           "Unknown built",
 #endif
-	   "\t .::. This software is under the General Public License V.2 \n"
-	   "\t .::. Please visit http://www.gnu.org \n\n");
+           "\t .::. This software is under the General Public License V.2 \n"
+           "\t .::. Please visit http://www.gnu.org \n\n");
   revm_output(logbuf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-/** 
- * Print the Unknown buffer 
+/**
+ * Print the Unknown buffer
 */
-char		*revm_build_unknown(char *buf, const char *str, u_long type)
+char    *revm_build_unknown(char *buf, const char *str, u_long type)
 {
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -287,16 +315,16 @@ char		*revm_build_unknown(char *buf, const char *str, u_long type)
 }
 
 
-/** 
- * Retreive a file object giving its unique ID 
+/**
+ * Retreive a file object giving its unique ID
  */
-elfshobj_t	*revm_getfile(u_int id)
+elfshobj_t  *revm_getfile(u_int id)
 {
-  elfshobj_t	*cur;
-  elfshobj_t	*subcur;
-  char		**keys;
-  int		idx;
-  int		keynbr;
+  elfshobj_t  *cur;
+  elfshobj_t  *subcur;
+  char    **keys;
+  int   idx;
+  int   keynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -304,118 +332,147 @@ elfshobj_t	*revm_getfile(u_int id)
   if (hash_size(&world.curjob->loaded))
     {
       keys = hash_get_keys(&world.curjob->loaded, &keynbr);
-      for (idx = 0; idx < keynbr; idx++)
-	{
-	  cur = hash_get(&world.curjob->loaded, keys[idx]);
-	  if (cur->id == id)
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 
-	  if ((subcur = revm_is_depid(cur, id)) != NULL)
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
-	}
+      for (idx = 0; idx < keynbr; idx++)
+        {
+          cur = hash_get(&world.curjob->loaded, keys[idx]);
+
+          if (cur->id == id)
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+            }
+
+          if ((subcur = revm_is_depid(cur, id)) != NULL)
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
+            }
+        }
     }
 
   /* Check in shared objects */
   if (hash_size(&world.shared_hash))
     {
       keys = hash_get_keys(&world.shared_hash, &keynbr);
-      for (idx = 0; idx < keynbr; idx++)
-	{
-	  cur = hash_get(&world.shared_hash, keys[idx]);
-	  if (cur->id == id)
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
 
-	  if ((subcur = revm_is_depid(cur, id)) != NULL)
-	    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
-	}
+      for (idx = 0; idx < keynbr; idx++)
+        {
+          cur = hash_get(&world.shared_hash, keys[idx]);
+
+          if (cur->id == id)
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+            }
+
+          if ((subcur = revm_is_depid(cur, id)) != NULL)
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (subcur));
+            }
+        }
     }
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    "Unable to find file", (NULL));
+               "Unable to find file", (NULL));
 }
 
-/** 
- * Retreive a module object giving its unique ID 
+/**
+ * Retreive a module object giving its unique ID
  */
-revmmod_t	*revm_getmod(u_int index)
+revmmod_t *revm_getmod(u_int index)
 {
-  revmmod_t	*cur;
+  revmmod_t *cur;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   for (cur = world.modlist; cur; cur = cur->next)
     if (cur->id == index)
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+      {
+        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (cur));
+      }
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    "Unable to find module", (NULL));
+               "Unable to find module", (NULL));
 }
 
-/** 
- * Print error depending on the state of the machine 
+/**
+ * Print error depending on the state of the machine
  */
-int		revm_doerror(void (*fct)(char *str), char *str)
+int   revm_doerror(void (*fct)(char *str), char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.state.revm_mode != ELFSH_VMSTATE_CMDLINE || world.state.revm_net)
-    fct(str);
+    {
+      fct(str);
+    }
   else
     {
       cmd_help();
       exit(-1);
     }
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		    "Bypassed error printing", (-1));
+               "Bypassed error printing", (-1));
 }
 
 
-/** 
- * Change the shell variable 
+/**
+ * Change the shell variable
  */
-int		revm_setshell(char *str)
+int   revm_setshell(char *str)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (revm_setvar_str(ERESI_EXTSHELLVAR, str) < 0)
-   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Cannot modify shell var", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Cannot modify shell var", -1);
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
-/** 
- * The internal basename function 
+/**
+ * The internal basename function
  */
-char		*revm_basename(char *str)
+char    *revm_basename(char *str)
 {
-  char		*cur;
-  char		*ret;
+  char    *cur;
+  char    *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   ret = NULL;
   cur = str;
+
   while ((cur = strchr(cur, '/')))
     if (!*(cur + 1))
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No basename", (NULL));
+      {
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "No basename", (NULL));
+      }
     else
-      ret = ++cur;
+      {
+        ret = ++cur;
+      }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
 
 
-/** 
- * Useful to differentiate 0 and a string 
+/**
+ * Useful to differentiate 0 and a string
  */
-int	revm_isnbr(char *string)
+int revm_isnbr(char *string)
 {
   size_t len = strlen(string);
   size_t ii;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  for (ii=0; ii < len; ii++)
+  for (ii = 0; ii < len; ii++)
     if (!isdigit((int) string[ii]))
-      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      {
+        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+      }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }

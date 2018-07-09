@@ -17,9 +17,9 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
   struct task_struct *task;
   struct mm_struct *mm;
   struct page *page_at_addr;
-  pgd_t * pgd;
-  pmd_t * pmd;
-  pte_t * pte;
+  pgd_t *pgd;
+  pmd_t *pmd;
+  pte_t *pte;
   pud_t *pud;
 
   page_at_addr = NULL;
@@ -35,7 +35,7 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
       printk(KERN_ALERT "[-] task_struct is null !!\n");
       return NULL;
     }
-  
+
   if (addr <= 0)
     {
       printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
@@ -43,8 +43,9 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
     }
 
   mm = task->mm;
-    
+
   task_lock(task);
+
   if (mm == NULL)
     {
       printk(KERN_ALERT "[-] mm_struct is null !!\n");
@@ -61,17 +62,20 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
 #endif
 
   pgd = pgd_offset(mm, addr);
+
   if (pgd_none(*pgd))
     {
       printk(KERN_ALERT "[-] PGD_NONE\n");
       goto kernsh_get_page_from_task_error;
     }
+
   if (pgd_bad(*pgd))
     {
       printk(KERN_ALERT "[-] PGD_BAD\n");
       pgd_clear(pgd);
       goto kernsh_get_page_from_task_error;
     }
+
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PGD EXIT\n");
 
@@ -79,17 +83,20 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
 #endif
 
   pud = pud_offset(pgd, addr);
+
   if (pud_none(*pud))
     {
       printk(KERN_ALERT "[-] PUD_NONE\n");
       goto kernsh_get_page_from_task_error;
     }
+
   if (pud_bad(*pud))
     {
       printk(KERN_ALERT "[-] PUD_BAD\n");
       pud_clear(pud);
       goto kernsh_get_page_from_task_error;
     }
+
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PUD EXIT\n");
 
@@ -97,16 +104,19 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
 #endif
 
   pmd = pmd_offset(pud, addr);
+
   if (pmd_none(*pmd))
     {
       printk(KERN_ALERT "[-] PMD_NONE\n");
       goto kernsh_get_page_from_task_error;
     }
+
   if (pmd_bad(*pmd))
     {
       pmd_clear(pmd);
       goto kernsh_get_page_from_task_error;
     }
+
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PMD EXIT\n");
 
@@ -114,19 +124,21 @@ struct page *kernsh_get_page_from_pid(int pid, unsigned long addr)
 #endif
 
   pte = pte_offset_kernel(pmd, addr);
-  if (!pte_present(*pte)) 
+
+  if (!pte_present(*pte))
     {
       printk(KERN_ALERT "[-] PTE_PRESENT\n");
       goto kernsh_get_page_from_task_error;
     }
+
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] PTE EXIT\n");
 #endif
 
   page_at_addr = (struct page *)pte_page(*pte);
 
- kernsh_get_page_from_task_error :
-  task_lock(task);  
+kernsh_get_page_from_task_error :
+  task_lock(task);
   spin_unlock(&mm->page_table_lock);
   atomic_dec(&mm->mm_users);
   task_unlock(task);

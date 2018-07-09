@@ -6,7 +6,7 @@
 #include <libasm-int.h>
 
 int i386_mov_rm_cr(asm_instr *new, u_char *opcode, u_int len,
-		   asm_processor *proc)
+                   asm_processor *proc)
 {
   struct s_modrm        *modrm;
 
@@ -14,8 +14,10 @@ int i386_mov_rm_cr(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_REGISTER, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_CONTROL, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_REGISTER,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_CONTROL,
+                                new);
 #else
   new->instr = ASM_MOV;
   new->op[0].content = ASM_CONTENT_REGISTER;

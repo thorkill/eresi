@@ -17,7 +17,8 @@
  * @return Length of instruction.
  */
 
-int op_test_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_test_rmv_rv(asm_instr *new, u_char *opcode, u_int len,
+                   asm_processor *proc)
 {
   new->len += 1;
   new->instr = ASM_TEST;
@@ -26,8 +27,10 @@ int op_test_rmv_rv(asm_instr *new, u_char *opcode, u_int len, asm_processor *pro
   new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF | ASM_FLAG_PF |
                       ASM_FLAG_SF | ASM_FLAG_ZF;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
 
   return (new->len);
 }

@@ -10,15 +10,17 @@
  */
 
 int     i386_pxor_pq_qq(asm_instr *new, u_char *opcode, u_int len,
-			asm_processor *proc)
+                        asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->len += 1;
   new->instr = ASM_PXOR;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
   new->op[0].regset = ASM_REGSET_MM;
   new->op[1].regset = ASM_REGSET_MM;
 #else

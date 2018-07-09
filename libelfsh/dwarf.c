@@ -2,17 +2,17 @@
 * @file libelfsh/dwarf.c
  * @ingroup libelfsh
 ** dwarf.c for libelfsh
-** 
+**
 ** Started on  Fri Mao  17 23:11:47 2007 mxatone
-** 
+**
 **
 **
 */
 #include "libelfsh.h"
 
-int			elfsh_get_dwarf(elfshobj_t *file)
+int     elfsh_get_dwarf(elfshobj_t *file)
 {
-  void			*data;
+  void      *data;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -40,7 +40,7 @@ int			elfsh_get_dwarf(elfshobj_t *file)
   data = elfsh_get_dwarf_str(file, NULL);
   //if (data == NULL)
   //fprintf(stderr, "Failed to load section data for STR\n");
-  data = elfsh_get_dwarf_loc(file, NULL);  
+  data = elfsh_get_dwarf_loc(file, NULL);
   //if (data == NULL)
   //fprintf(stderr, "Failed to load section data for LOC\n");
 
@@ -53,31 +53,32 @@ int			elfsh_get_dwarf(elfshobj_t *file)
  * @param num object number pointer
  * @return data pointer
  */
-void			*elfsh_get_dwarf_info(elfshobj_t *file, int *num)
+void      *elfsh_get_dwarf_info(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_INFO] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_INFO, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_INFO, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf info table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf info table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf info table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf info table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_INFO] = sect;
     }
@@ -86,7 +87,9 @@ void			*elfsh_get_dwarf_info(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_INFO]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_INFO]);
 
@@ -99,31 +102,32 @@ void			*elfsh_get_dwarf_info(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void			*elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num)
+void      *elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_ABBREV] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_ABBREV, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_ABBREV, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf abbrev table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf abbrev table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf abbrev table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf abbrev table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_ABBREV] = sect;
     }
@@ -132,7 +136,9 @@ void			*elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_ABBREV]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_ABBREV]);
 
@@ -145,31 +151,32 @@ void			*elfsh_get_dwarf_abbrev(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_aranges(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_aranges(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_ARANGES] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_ARANGES, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_ARANGES, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf aranges table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf aranges table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf aranges table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf aranges table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_ARANGES] = sect;
     }
@@ -178,7 +185,9 @@ void		*elfsh_get_dwarf_aranges(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_ARANGES]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_ARANGES]);
 
@@ -191,31 +200,32 @@ void		*elfsh_get_dwarf_aranges(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_frame(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_frame(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_FRAME] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_FRAME, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_FRAME, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf frame table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf frame table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf frame table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf frame table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_FRAME] = sect;
     }
@@ -224,7 +234,9 @@ void		*elfsh_get_dwarf_frame(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_FRAME]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_FRAME]);
 
@@ -237,31 +249,32 @@ void		*elfsh_get_dwarf_frame(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_line(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_line(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_LINE] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_LINE, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_LINE, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf line table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf line table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf line table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf line table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_LINE] = sect;
     }
@@ -270,7 +283,9 @@ void		*elfsh_get_dwarf_line(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_LINE]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_LINE]);
 
@@ -283,31 +298,32 @@ void		*elfsh_get_dwarf_line(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_macinfo(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_macinfo(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_MACINFO] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_MACINFO, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_MACINFO, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf abbrev table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf abbrev table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf abbrev table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf abbrev table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_MACINFO] = sect;
     }
@@ -316,7 +332,9 @@ void		*elfsh_get_dwarf_macinfo(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_MACINFO]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_MACINFO]);
 
@@ -329,31 +347,32 @@ void		*elfsh_get_dwarf_macinfo(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_pubnames(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_pubnames(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_PUBNAMES] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_PUBNAMES, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_PUBNAMES, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf pubnames table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf pubnames table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf pubnames table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf pubnames table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_PUBNAMES] = sect;
     }
@@ -362,7 +381,9 @@ void		*elfsh_get_dwarf_pubnames(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_PUBNAMES]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_PUBNAMES]);
 
@@ -375,31 +396,32 @@ void		*elfsh_get_dwarf_pubnames(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_str(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_str(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_STR] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_STR, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_STR, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf str table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf str table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf str table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf str table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_STR] = sect;
     }
@@ -408,7 +430,9 @@ void		*elfsh_get_dwarf_str(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_STR]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_STR]);
 
@@ -421,31 +445,32 @@ void		*elfsh_get_dwarf_str(elfshobj_t *file, int *num)
  * @param num object number pointer
  * @return data pointer
  */
-void		*elfsh_get_dwarf_loc(elfshobj_t *file, int *num)
+void    *elfsh_get_dwarf_loc(elfshobj_t *file, int *num)
 {
-  elfshsect_t		*sect;
-  int			strindex, nbr;
-  void			*ret;
+  elfshsect_t   *sect;
+  int     strindex, nbr;
+  void      *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->secthash[ELFSH_SECTION_DW2_LOC] == NULL)
     {
-      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_LOC, 0, 
-				       &strindex, &nbr);
+      sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_DW2_LOC, 0,
+                                       &strindex, &nbr);
 
       if (sect == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to find Dwarf loc table", NULL);;
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to find Dwarf loc table", NULL);;
 
       if (sect->data == NULL)
-	{
-	  sect->data = elfsh_load_section(file, sect->shdr);
-	  if (sect->data == NULL)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			      "Unable to find data for Dwarf loc table", 
-			      NULL); 
-	}
+        {
+          sect->data = elfsh_load_section(file, sect->shdr);
+
+          if (sect->data == NULL)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Unable to find data for Dwarf loc table",
+                         NULL);
+        }
 
       file->secthash[ELFSH_SECTION_DW2_LOC] = sect;
     }
@@ -454,7 +479,9 @@ void		*elfsh_get_dwarf_loc(elfshobj_t *file, int *num)
   nbr = file->secthash[ELFSH_SECTION_DW2_LOC]->shdr->sh_size;
 
   if (num)
-    *num = nbr;
+    {
+      *num = nbr;
+    }
 
   ret = elfsh_readmem(file->secthash[ELFSH_SECTION_DW2_LOC]);
 

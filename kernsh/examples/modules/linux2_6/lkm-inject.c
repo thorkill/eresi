@@ -6,7 +6,7 @@ extern int init_module(void);
 
 int inject(void)
 {
-        printk(KERN_ALERT "INJECT !!!\n");
-        init_module();
-        return 0;
+  printk(KERN_ALERT "INJECT !!!\n");
+  init_module();
+  return 0;
 }

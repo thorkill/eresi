@@ -15,8 +15,8 @@ int kernsh_openmem_default()
   printf("OPENMEM DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "openmem default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "openmem default !", -1);
 }
 
 int kernsh_closemem_default()
@@ -27,8 +27,8 @@ int kernsh_closemem_default()
   printf("CLOSEMEM DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "closemem default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "closemem default !", -1);
 }
 
 int kernsh_sct_default()
@@ -39,8 +39,8 @@ int kernsh_sct_default()
   printf("SCT DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "sct default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "sct default !", -1);
 }
 
 int kernsh_callsc_default()
@@ -51,8 +51,8 @@ int kernsh_callsc_default()
   printf("CALL SC DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "call sc default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "call sc default !", -1);
 }
 
 int kernsh_idt_default()
@@ -63,8 +63,8 @@ int kernsh_idt_default()
   printf("IDT DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "idt default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "idt default !", -1);
 }
 
 int kernsh_gdt_default()
@@ -75,8 +75,8 @@ int kernsh_gdt_default()
   printf("GDT DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "gdt default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "gdt default !", -1);
 }
 
 int kernsh_info_default()
@@ -87,8 +87,8 @@ int kernsh_info_default()
   printf("INFO DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "info default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "info default !", -1);
 }
 
 int kernsh_decompkernel_default()
@@ -99,8 +99,8 @@ int kernsh_decompkernel_default()
   printf("DECOMPKERNEL DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "decompkernel default !", -1);  
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "decompkernel default !", -1);
 }
 
 int kernsh_loadkernel_default()
@@ -111,8 +111,8 @@ int kernsh_loadkernel_default()
   printf("LOADKERNEL DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	     "loadkernel default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "loadkernel default !", -1);
 }
 
 int kernsh_autotypes_default()
@@ -123,8 +123,8 @@ int kernsh_autotypes_default()
   printf("AUTOTYPES DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "autotypes default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "autotypes default !", -1);
 }
 
 int kernsh_symbs_default()
@@ -135,8 +135,8 @@ int kernsh_symbs_default()
   printf("SYMBS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "symbs default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "symbs default !", -1);
 }
 
 int kernsh_alloc_contiguous_default()
@@ -147,8 +147,8 @@ int kernsh_alloc_contiguous_default()
   printf("ALLOC CONTIGUOUS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "alloc contiguous default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "alloc contiguous default !", -1);
 }
 
 int kernsh_alloc_noncontiguous_default()
@@ -159,8 +159,8 @@ int kernsh_alloc_noncontiguous_default()
   printf("ALLOC NON CONTIGUOUS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "alloc non contiguous default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "alloc non contiguous default !", -1);
 }
 
 int kernsh_free_contiguous_default()
@@ -171,8 +171,8 @@ int kernsh_free_contiguous_default()
   printf("FREE CONTIGUOUS DEFAULT!!!\n");
 #endif
 
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "free contiguous default !", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "free contiguous default !", -1);
 }
 
 int kernsh_free_noncontiguous_default()
@@ -182,9 +182,9 @@ int kernsh_free_noncontiguous_default()
 #if __DEBUG_KERNEL__
   printf("FREE NON CONTIGUOUS DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "free non contiguous default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "free non contiguous default !", -1);
 }
 
 int kernsh_relink_module_default()
@@ -194,9 +194,9 @@ int kernsh_relink_module_default()
 #if __DEBUG_KERNEL__
   printf("RELINK MODULE DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "relink module default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "relink module default !", -1);
 }
 
 int kernsh_infect_module_default()
@@ -206,9 +206,9 @@ int kernsh_infect_module_default()
 #if __DEBUG_KERNEL__
   printf("INFECT MODULE DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "infect module default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "infect module default !", -1);
 }
 
 int kernsh_kload_module_default()
@@ -218,9 +218,9 @@ int kernsh_kload_module_default()
 #if __DEBUG_KERNEL__
   printf("KLOAD MODULE DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kload module default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kload module default !", -1);
 }
 
 int kernsh_kunload_module_default()
@@ -230,9 +230,9 @@ int kernsh_kunload_module_default()
 #if __DEBUG_KERNEL__
   printf("KUNLOAD MODULE DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kunload module default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kunload module default !", -1);
 }
 
 int kernsh_kvirtm_read_virtm_default()
@@ -242,9 +242,9 @@ int kernsh_kvirtm_read_virtm_default()
 #if __DEBUG_KERNEL__
   printf("KVIRTM READ VIRTM DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kvirtm read virtm default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kvirtm read virtm default !", -1);
 }
 
 int kernsh_kvirtm_read_mem_default()
@@ -254,9 +254,9 @@ int kernsh_kvirtm_read_mem_default()
 #if __DEBUG_KERNEL__
   printf("KVIRTM READ MEM DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kvirtm read mem default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kvirtm read mem default !", -1);
 }
 
 int kernsh_kvirtm_write_virtm_default()
@@ -266,9 +266,9 @@ int kernsh_kvirtm_write_virtm_default()
 #if __DEBUG_KERNEL__
   printf("KVIRTM WRITE VIRTM DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kvirtm write virtm default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kvirtm write virtm default !", -1);
 }
 
 int kernsh_kvirtm_write_mem_default()
@@ -278,9 +278,9 @@ int kernsh_kvirtm_write_mem_default()
 #if __DEBUG_KERNEL__
   printf("KVIRTM WRITE MEM DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kvirtm write mem default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kvirtm write mem default !", -1);
 }
 
 int kernsh_kvirtm_task_pid_default()
@@ -290,9 +290,9 @@ int kernsh_kvirtm_task_pid_default()
 #if __DEBUG_KERNEL__
   printf("KVIRTM TASK PID DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kvirtm task pid default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kvirtm task pid default !", -1);
 }
 
 int kernsh_kdump_get_vma_default()
@@ -302,9 +302,9 @@ int kernsh_kdump_get_vma_default()
 #if __DEBUG_KERNEL__
   printf("KDUMP GET VMA DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kdump get vma default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kdump get vma default !", -1);
 }
 
 int kernsh_kdump_vma_default()
@@ -314,7 +314,7 @@ int kernsh_kdump_vma_default()
 #if __DEBUG_KERNEL__
   printf("KDUMP VMA DEFAULT!!!\n");
 #endif
-  
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "kdump vma default !", -1);
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "kdump vma default !", -1);
 }

@@ -19,7 +19,7 @@
  */
 
 int     asm_operand_fetch_immediate(asm_operand *operand, u_char *opcode,
-				    int otype, asm_instr *ins)
+                                    int otype, asm_instr *ins)
 {
   operand->content = ASM_CONTENT_IMMEDIATE;
   operand->type = ASM_OPTYPE_IMM;

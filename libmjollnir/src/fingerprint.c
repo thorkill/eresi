@@ -1,7 +1,7 @@
 /**
 * @file libmjollnir/src/fingerprint.c
  * @ingroup libmjollnir
- * 
+ *
  * @brief Functions for fingerprinting inside libmjollnir
  *
  * Started : Mon Jan 02 01:18:14 2007 jfv
@@ -12,36 +12,40 @@
 
 
 /**
- * @brief Say if a block is the start of a function or not 
+ * @brief Say if a block is the start of a function or not
  */
-int		 mjr_block_funcstart(container_t *cntnr) 
+int    mjr_block_funcstart(container_t *cntnr)
 {
-  listent_t	 *cur;
-  mjrlink_t	 *curlink;
-  mjrblock_t	 *blk;
+  listent_t  *cur;
+  mjrlink_t  *curlink;
+  mjrblock_t   *blk;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!cntnr || cntnr->type != ASPECT_TYPE_BLOC)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   blk = cntnr->data;
-  
+
 #if __DEBUG_BLOCK__
-  fprintf(D_DESC,"[D] mjr_block_funcstart: blk:"XFMT"\n", blk->vaddr);
+  fprintf(D_DESC, "[D] mjr_block_funcstart: blk:"XFMT"\n", blk->vaddr);
 #endif
-  
-  for (cur = cntnr->inlinks->head; cur; cur = cur->next) 
+
+  for (cur = cntnr->inlinks->head; cur; cur = cur->next)
     {
       curlink = (mjrlink_t *) cur->data;
-      
+
 #if __DEBUG_BLOCK__
-      fprintf(D_DESC,"[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
-	      curlink->vaddr, curlink->type);
+      fprintf(D_DESC, "[D] mjr_block_funcstart: clr:"XFMT"/%d\n",
+              curlink->vaddr, curlink->type);
 #endif
-      
+
       if (curlink->type == MJR_LINK_FUNC_RET)
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+        {
+          PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
+        }
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -59,31 +63,39 @@ int		 mjr_block_funcstart(container_t *cntnr)
  * @param maxd max depth to match
  * @param fprint : any intrabloc fingerprinting function that you like
  */
-int		mjr_fingerprint(mjrcontext_t 	*c,
-				container_t	*start,
-				int		type,
-				int		weight,
-				int		curd, // cur depth
-				int		mind, // min depth to match
-				int		maxd, // max depth to match
-				int		(*fprint)(container_t *))
+int   mjr_fingerprint(mjrcontext_t  *c,
+                      container_t *start,
+                      int   type,
+                      int   weight,
+                      int   curd, // cur depth
+                      int   mind, // min depth to match
+                      int   maxd, // max depth to match
+                      int   (*fprint)(container_t *))
 {
   container_t *tmp;
-  list_t	*listlink;
-  listent_t	*cur;
-  mjrlink_t	*curlink;
+  list_t  *listlink;
+  listent_t *cur;
+  mjrlink_t *curlink;
 
   if (type == CONTAINER_LINK_OUT)
-    listlink = start->outlinks;
+    {
+      listlink = start->outlinks;
+    }
   else if (type == CONTAINER_LINK_IN)
-    listlink = start->inlinks;
+    {
+      listlink = start->inlinks;
+    }
   else
-    return 0;
-  
+    {
+      return 0;
+    }
+
   /* We are not yet in the depth range of fingerprint, just recurse */
   if (curd < mind)
-    curd++;
-  
+    {
+      curd++;
+    }
+
   /* We are in the range. Fingerprint and recurse */
   else if (curd >= mind && maxd >= curd)
     {
@@ -93,15 +105,17 @@ int		mjr_fingerprint(mjrcontext_t 	*c,
 
   /* We passed the max distance. Stop recursing */
   else
-    return (weight);
+    {
+      return (weight);
+    }
 
   /* Now recursing ! */
-  for (cur = listlink->head; cur; cur = cur->next) 
+  for (cur = listlink->head; cur; cur = cur->next)
     {
       curlink = (mjrlink_t *) cur->data;
       tmp = mjr_lookup_container(c, curlink->id);
       weight += mjr_fingerprint(c, tmp, type, weight, curd, mind, maxd, fprint);
     }
-  
+
   return weight;
 }

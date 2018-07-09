@@ -15,7 +15,7 @@
  * Setup the command hash table
  * @ingroup evarista
  */
-void	setup_local_cmdhash()
+void  setup_local_cmdhash()
 {
 
   /* Interactive mode / Scripting mode commands */

@@ -27,8 +27,8 @@ unsigned char *kernsh_hash_md5(unsigned long addr, int size)
     }
   else
     {
-      start = elfsh_get_foffset_from_vaddr(libkernshworld.root, 
-					   addr);
+      start = elfsh_get_foffset_from_vaddr(libkernshworld.root,
+                                           addr);
       elfsh_readmemf(libkernshworld.root, start, buff, size);
     }
 
@@ -47,25 +47,26 @@ unsigned char *kernsh_hash(unsigned long addr, int size, int *new_size)
   unsigned char *buffer;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   buffer = NULL;
   hash = (int)config_get_data(LIBKERNSH_CONFIG_HASH);
 
   if (size < 0)
     {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Size is negative", NULL);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Size is negative", NULL);
     }
-  
+
   /* We must find ret */
   if (size == 0)
     {
       size = kernsh_find_end(addr);
+
       if (!size)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Can't find the size", NULL);
-	}
+        {
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "Can't find the size", NULL);
+        }
     }
 
   *new_size = size;
@@ -75,6 +76,7 @@ unsigned char *kernsh_hash(unsigned long addr, int size, int *new_size)
     case LIBKERNSH_HASH_MD5 :
       buffer = kernsh_hash_md5(addr, size);
       break;
+
     case LIBKERNSH_HASH_SHA1 :
       break;
 

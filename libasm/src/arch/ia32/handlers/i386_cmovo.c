@@ -16,8 +16,10 @@ int i386_cmovo(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->instr = ASM_CMOVO;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
 #else
   new->op[0].content = ASM_CONTENT_GENERAL;
   new->op[1].content = ASM_CONTENT_ENCODED;

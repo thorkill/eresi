@@ -3,7 +3,7 @@
 ** @ingroup libelfsh
 **
 ** vectors_call.c for libelfsh (The ELF shell library)
-** 
+**
 ** API for calling handlers of vectors in libelfsh
 **
 ** $Id$$
@@ -15,7 +15,7 @@
 
 
 /**
- * Call the relocation hook 
+ * Call the relocation hook
  * @param file
  * @param s
  * @param r
@@ -24,20 +24,20 @@
  * @param m
  * @return
  */
-int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r, 
-			    eresi_Addr *l, eresi_Addr a, elfshsect_t *m)
+int     elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
+                  eresi_Addr *l, eresi_Addr a, elfshsect_t *m)
 {
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
-  int		ret;
-  vector_t	*rel;
-  u_int		dim[3];
-  int		(*fct)(elfshsect_t *n,
-		       elfsh_Rel  *n2,
-		       eresi_Addr *n3,
-		       eresi_Addr  n4,
-		       elfshsect_t *n5);
+  int   ret;
+  vector_t  *rel;
+  u_int   dim[3];
+  int   (*fct)(elfshsect_t *n,
+               elfsh_Rel  * n2,
+               eresi_Addr * n3,
+               eresi_Addr  n4,
+               elfshsect_t *n5);
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   rel = aspect_vector_get(ELFSH_HOOK_REL);
@@ -46,41 +46,45 @@ int		  elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
   archtype = elfsh_get_archtype(file);
   elftype  = elfsh_get_elftype(file);
   ostype   = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "RELOCATION handler unexistant for this ARCH/OS", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "RELOCATION handler unexistant for this ARCH/OS", -1);
+
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(rel, dim);
   ret = fct(s, r, l, a, m);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Relocation handler failed", (-1));
+                 "Relocation handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /**
- * Call the relocation hook 
+ * Call the relocation hook
  * @param file
  * @param name
  * @param old
  * @param new
  * @return
  */
-int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old, 
-			    eresi_Addr new)
+int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
+                            eresi_Addr new)
 {
-  vector_t	*cflow;
+  vector_t  *cflow;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *n, char *n2, elfsh_Sym *n3, eresi_Addr n4);
-  u_int		dim[3];
+  int   (*fct)(elfshobj_t *n, char *n2, elfsh_Sym * n3, eresi_Addr n4);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   cflow = aspect_vector_get(ELFSH_HOOK_CFLOW);
@@ -89,26 +93,29 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   archtype = elfsh_get_archtype(file);
   elftype = elfsh_get_elftype(file);
   ostype   = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "CFLOW handler unexistant for this ARCH/OS", -1);
+                 "CFLOW handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(cflow, dim);
   ret = fct(file, name, old, new);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Control flow redirection handler failed", (-1));
+                 "Control flow redirection handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /**
- * Call the PLT hook 
+ * Call the PLT hook
  * @param file
  * @param s
  * @param new
@@ -116,13 +123,13 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
  */
 int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 {
-  vector_t	*plt;
+  vector_t  *plt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *f, elfsh_Sym *s, eresi_Addr a);
-  u_int		dim[3];
+  int   (*fct)(elfshobj_t *f, elfsh_Sym * s, eresi_Addr a);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   plt = aspect_vector_get(ELFSH_HOOK_PLT);
@@ -131,27 +138,30 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
   archtype = elfsh_get_archtype(file);
   elftype = elfsh_get_elftype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "PLT handler unexistant for this ARCH/OS", -1);
+                 "PLT handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(plt, dim);
   ret    = fct(file, s, new);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "PLT redirection handler failed", (-1));
+                 "PLT redirection handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 
 /**
- * Call the ENCODEPLT hook 
+ * Call the ENCODEPLT hook
  *
  * @param file
  * @param plt
@@ -159,16 +169,16 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
  * @param off
  * @return
  */
-int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt, 
-				eresi_Addr diff, u_int off)
+int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
+                                eresi_Addr diff, u_int off)
 {
-  vector_t	*encodeplt;
+  vector_t  *encodeplt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *f, elfshsect_t *s, eresi_Addr a, u_int off);
-  u_int		dim[3];
+  int   (*fct)(elfshobj_t *f, elfshsect_t *s, eresi_Addr a, u_int off);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   encodeplt = aspect_vector_get(ELFSH_HOOK_ENCODEPLT);
@@ -177,11 +187,12 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   archtype = elfsh_get_archtype(file);
   elftype = elfsh_get_elftype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "ENCODEPLT handler unexistant for this ARCH/OS", -1);
+                 "ENCODEPLT handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
   dim[1] = elftype;
@@ -189,34 +200,36 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   fct    = aspect_vectors_select(encodeplt, dim);
 
   ret  = fct(file, plt, diff, off);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "PLT encoding handler failed", (-1));
+                 "PLT encoding handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 
-/** 
- * Call the ENCODEPLT1 hook 
+/**
+ * Call the ENCODEPLT1 hook
  *
  * @param file
  * @param plt
- * @param extplt 
+ * @param extplt
  * @param diff
  * @return
  */
-int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt, 
-				 elfshsect_t *extplt, eresi_Addr diff)
+int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
+                                 elfshsect_t *extplt, eresi_Addr diff)
 {
-  vector_t	*encodeplt1;
+  vector_t  *encodeplt1;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *f, elfshsect_t *s, elfshsect_t *s2,
-		       eresi_Addr a);
-  u_int		dim[3];
+  int   (*fct)(elfshobj_t *f, elfshsect_t *s, elfshsect_t *s2,
+               eresi_Addr a);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   encodeplt1 = aspect_vector_get(ELFSH_HOOK_ENCODEPLT1);
@@ -225,27 +238,30 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   archtype = elfsh_get_archtype(file);
   elftype = elfsh_get_elftype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "ENCODEPLT1 handler unexistant for this ARCH/OS", -1);
+                 "ENCODEPLT1 handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(encodeplt1, dim);
   ret  = fct(file, plt, extplt, diff);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "PLT1 encoding handler failed", (-1));
+                 "PLT1 encoding handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 
 /**
- * Call the ALTPLT hook 
+ * Call the ALTPLT hook
  *
  * @param file
  * @param s
@@ -254,41 +270,44 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
  */
 int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 {
-  vector_t	*altplt;
+  vector_t  *altplt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshobj_t *file, elfsh_Sym *s, eresi_Addr a);
-  u_int		dim[3];
+  int   (*fct)(elfshobj_t *file, elfsh_Sym * s, eresi_Addr a);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   altplt = aspect_vector_get(ELFSH_HOOK_ALTPLT);
- 
+
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
   elftype = elfsh_get_elftype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "ALTPLT handler unexistant for this ARCH/OS", -1);
+                 "ALTPLT handler unexistant for this ARCH/OS", -1);
 
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(altplt, dim);
   ret  = fct(file, s, new);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "ALTPLT redirection handler failed", (-1));
+                 "ALTPLT redirection handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 /**
- * Call the EXTPLT hook 
+ * Call the EXTPLT hook
  *
  * @param extplt
  * @param altgot
@@ -296,17 +315,17 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
  * @param relplt
  * @return
  */
-int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot, 
-			     elfshsect_t *dynsym, elfshsect_t *relplt)
+int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
+                             elfshsect_t *dynsym, elfshsect_t *relplt)
 {
-  vector_t	*vextplt;
+  vector_t  *vextplt;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
   int           ret;
-  int		(*fct)(elfshsect_t *extplt, elfshsect_t *altgot,
-		       elfshsect_t *dynsym, elfshsect_t *relplt);
-  u_int		dim[3];
+  int   (*fct)(elfshsect_t *extplt, elfshsect_t *altgot,
+               elfshsect_t *dynsym, elfshsect_t *relplt);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   vextplt = aspect_vector_get(ELFSH_HOOK_EXTPLT);
@@ -315,39 +334,43 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   archtype = elfsh_get_archtype(extplt->parent);
   elftype = elfsh_get_elftype(extplt->parent);
   ostype = elfsh_get_ostype(extplt->parent);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "EXTPLT handler unexistant for this ARCH/OS", -1);
+                 "EXTPLT handler unexistant for this ARCH/OS", -1);
+
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
   fct    = aspect_vectors_select(vextplt, dim);
   ret  = fct(extplt, altgot, dynsym, relplt);
+
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "EXTPLT redirection handler failed", (-1));
+                 "EXTPLT redirection handler failed", (-1));
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
 
 /**
- * Call the arg count hook 
+ * Call the arg count hook
  *
  * @param file
  * @param off
  * @param vaddr
  * @return
  */
-int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
+int     *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
 {
-  vector_t	*argch;
+  vector_t  *argch;
   u_char        archtype;
   u_char        elftype;
   u_char        ostype;
-  int		*(*fct)(elfshobj_t *file, u_int off, eresi_Addr vaddr);
-  u_int		dim[3];
+  int   *(*fct)(elfshobj_t *file, u_int off, eresi_Addr vaddr);
+  u_int   dim[3];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   argch = aspect_vector_get(ELFSH_HOOK_ARGC);
@@ -356,12 +379,13 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
   archtype = elfsh_get_archtype(file);
   elftype = elfsh_get_elftype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       elftype  == ELFSH_FILE_ERROR ||
       ostype   == ELFSH_OS_ERROR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "ARGC handler unexistant for this ARCH/OS", NULL);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "ARGC handler unexistant for this ARCH/OS", NULL);
+
   dim[0] = archtype;
   dim[1] = elftype;
   dim[2] = ostype;
@@ -376,38 +400,42 @@ int		  *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
  * @param sect Section to be analysed
  * @return size on success, -1 on error
  */
-void		*elfsh_readmem(elfshsect_t *sect)
+void    *elfsh_readmem(elfshsect_t *sect)
 {
-  void		*ret;
+  void    *ret;
   u_int         dim[2];
   vector_t      *mem;
   void          *(*fct)();
   u_char        archtype;
   u_char        iotype;
   u_char        ostype;
-  elfshobj_t	*file;
+  elfshobj_t  *file;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!sect || !sect->parent)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid NULL parameter", NULL);
+
   file = sect->parent;
-  
+
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
   iotype = elfsh_get_iotype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       ostype   == ELFSH_OS_ERROR   ||
       iotype   == ELFSH_IOTYPE_ERROR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "READMEM handler inexistant for this ARCH/OS", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "READMEM handler inexistant for this ARCH/OS", NULL);
+
   mem = aspect_vector_get(ELFSH_HOOK_READMEM);
   dim[0] = ostype;
   dim[1] = iotype;
   fct = aspect_vectors_select(mem, dim);
-/*   printf("dim[0]: %d, dim[1]: %d, fct: %p curobj->name: %s\n", dim[0], dim[1], fct, file->name); */
-/*   fflush(stdout); */
+  /*   printf("dim[0]: %d, dim[1]: %d, fct: %p curobj->name: %s\n", dim[0], dim[1], fct, file->name); */
+  /*   fflush(stdout); */
   ret = fct(sect);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
@@ -419,9 +447,10 @@ void		*elfsh_readmem(elfshsect_t *sect)
  * @param addr Virtual Address in file to read data.
  * @return A pointer on the read data
  */
-void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
+void    *elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf,
+                        u_int size)
 {
-  void		*ret;
+  void    *ret;
   u_int         dim[2];
   vector_t      *mem;
   void          *(*fct)();
@@ -429,17 +458,20 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   u_char        ostype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!file)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid NULL parameter", NULL);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid NULL parameter", NULL);
+
   /* Fingerprint binary */
   iotype = elfsh_get_iotype(file);
   ostype = elfsh_get_ostype(file);
+
   if (ostype == ELFSH_OS_ERROR ||
       iotype == ELFSH_IOTYPE_ERROR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "READMEM handler inexistant for this ARCH/OS", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "READMEM handler inexistant for this ARCH/OS", NULL);
+
   mem = aspect_vector_get(ELFSH_HOOK_READMEMA);
   dim[0] = ostype;
   dim[1] = iotype;
@@ -456,9 +488,9 @@ void		*elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
  * @param size Count bytes to write
  * @return Written size on success, -1 on error.
  */
-int		elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
+int   elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
 {
-  int		ret;
+  int   ret;
   u_int         dim[2];
   vector_t      *mem;
   int          (*fct)();
@@ -467,19 +499,22 @@ int		elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   u_char        ostype;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!file || !addr || !buf || size <= 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid input parameters", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid input parameters", -1);
 
   /* Fingerprint binary */
   archtype = elfsh_get_archtype(file);
   iotype = elfsh_get_iotype(file);
   ostype = elfsh_get_ostype(file);
+
   if (archtype == ELFSH_ARCH_ERROR ||
       ostype   == ELFSH_OS_ERROR   ||
       iotype   == ELFSH_IOTYPE_ERROR)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "READMEM handler inexistant for this ARCH/OS", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "READMEM handler inexistant for this ARCH/OS", NULL);
+
   mem = aspect_vector_get(ELFSH_HOOK_WRITEMEM);
   dim[0] = ostype;
   dim[1] = iotype;
@@ -497,9 +532,9 @@ int		elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
  * @param len Count bytes to write
  * @return len on success, -1 on error
  */
-int		elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len)
+int   elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len)
 {
-  int		ret;
+  int   ret;
   u_int         dim[2];
   vector_t      *mem;
   int          (*fct)();
@@ -522,9 +557,9 @@ int		elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len)
  * @param len Count bytes to read
  * @return len on success, -1 on error
  */
-int		elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
+int   elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 {
-  int		ret;
+  int   ret;
   u_int         dim[2];
   vector_t      *mem;
   int          (*fct)();
@@ -541,34 +576,35 @@ int		elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
 
 
 /**
- * @brief Map a new area in memory 
+ * @brief Map a new area in memory
  * @param memsz How much memory to allocate
  * @param prot Which rights (in ELF format) to put on the allocated memory
  * @return The address where the data has been allocated
  */
-eresi_Addr	 elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot)
+eresi_Addr   elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot)
 {
-  eresi_Addr	addr;
+  eresi_Addr  addr;
   u_int         dim[2];
   vector_t      *mem;
   int          (*fct)();
-  
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (elfsh_is_static_mode())
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Wont map memory in static mode", ELFSH_INVALID_ADDR);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Wont map memory in static mode", ELFSH_INVALID_ADDR);
 
   mem = aspect_vector_get(ELFSH_HOOK_ALLOC);
   dim[0] = elfsh_get_hosttype(file);
   fct = aspect_vectors_select(mem, dim);
   addr = fct(file, memsz, prot);
 
-#if	__DEBUG_RUNTIME__
-  printf("[DEBUG_RUNTIME] Section Mapped at addr "XFMT" (%u) with prot %c%c%c\n", 
-	 addr, memsz,
-	 ((prot & PF_R) ? 'R' : '-'),
-	 ((prot & PF_W) ? 'W' : '-'),
-	 ((prot & PF_X) ? 'X' : '-'));
+#if __DEBUG_RUNTIME__
+  printf("[DEBUG_RUNTIME] Section Mapped at addr "XFMT" (%u) with prot %c%c%c\n",
+         addr, memsz,
+         ((prot & PF_R) ? 'R' : '-'),
+         ((prot & PF_W) ? 'W' : '-'),
+         ((prot & PF_X) ? 'X' : '-'));
 #endif
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
@@ -584,18 +620,19 @@ eresi_Addr	 elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot)
  * @param prot Protection to put for memory.
  * @return Success (0) or Error (-1).
  */
-int		 elfsh_mprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz, int prot)
+int    elfsh_mprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz, int prot)
 {
   u_int         dim[2];
   vector_t      *mprot;
   int          (*fct)();
-  int		ret;
+  int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (elfsh_is_static_mode())
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Wont mprotect in static mode", -1);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Wont mprotect in static mode", -1);
+
   mprot = aspect_vector_get(ELFSH_HOOK_MPROTECT);
   dim[0] = elfsh_get_hosttype(file);
   fct = aspect_vectors_select(mprot, dim);
@@ -613,18 +650,19 @@ int		 elfsh_mprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz, int prot)
  * @param prot Protection to put for memory.
  * @return Success (0) or Error (-1).
  */
-int		 elfsh_munprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz)
+int    elfsh_munprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz)
 {
   u_int         dim[2];
   vector_t      *mprot;
   int          (*fct)();
-  int		ret;
+  int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (elfsh_is_static_mode())
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Wont munprotect in static mode", -1);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Wont munprotect in static mode", -1);
+
   mprot = aspect_vector_get(ELFSH_HOOK_MUNPROTECT);
   dim[0] = elfsh_get_hosttype(file);
   fct = aspect_vectors_select(mprot, dim);

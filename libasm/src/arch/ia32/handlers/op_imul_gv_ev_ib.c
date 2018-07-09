@@ -10,9 +10,9 @@
 */
 
 int     op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len,
-			 asm_processor *proc)
+                         asm_processor *proc)
 {
-  int	olen;
+  int olen;
   new->len += 1;
   new->ptr_instr = opcode;
   new->instr = ASM_IMUL;
@@ -20,9 +20,12 @@ int     op_imul_gv_ev_ib(asm_instr *new, u_char *opcode, u_int len,
   new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_OF | ASM_FLAG_CF;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
-  new->len += (olen = asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new));
-  new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen, ASM_CONTENT_IMMEDIATEBYTE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
+  new->len += (olen = asm_operand_fetch(&new->op[1], opcode + 1,
+                                        ASM_CONTENT_ENCODED, new));
+  new->len += asm_operand_fetch(&new->op[2], opcode + 1 + olen,
+                                ASM_CONTENT_IMMEDIATEBYTE, new);
 
   return (new->len);
 }

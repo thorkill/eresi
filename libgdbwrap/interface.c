@@ -22,25 +22,31 @@ int             gdbwrap_simpleconnect(char *host, int port)
   extern        int           h_errno;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   hostaddr = gethostbyname(host);
   protocol = getprotobyname("tcp");
 
   if (!hostaddr || h_errno == HOST_NOT_FOUND)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid gethostbyname", -1);
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid gethostbyname", -1);
+    }
 
   if (!port)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid port", -1);
-  
-   if (!protocol)
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid port", -1);
+    }
+
+  if (!protocol)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid getprotobyname()",
-		 -1);
-  
+                 -1);
+
   sd = socket(PF_INET, SOCK_STREAM, protocol->p_proto);
-  
+
   if (sd == -1)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid socket", -1);
-  
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "invalid socket", -1);
+    }
+
   memset(&socketaddr, 0, sizeof(socketaddr));
   socketaddr.sin_family = AF_INET;
   socketaddr.sin_port = htons(port);
@@ -50,7 +56,7 @@ int             gdbwrap_simpleconnect(char *host, int port)
 
   if (rval == -1)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Problem when connecting",
-		 -1);
+                 -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sd);
 }

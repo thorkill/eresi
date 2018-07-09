@@ -12,34 +12,38 @@
 
 #if defined(USE_READLN)
 
-rlcomp_t		comp;			/* Completion strings */
-rl_command_func_t	*rl_ctrll = NULL;
-char			readln_exited = 0;
+rlcomp_t    comp;     /* Completion strings */
+rl_command_func_t *rl_ctrll = NULL;
+char      readln_exited = 0;
 
-int		readln_init(int mode, char *history)
+int   readln_init(int mode, char *history)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (mode >= 0)
-    read_history(history);
+    {
+      read_history(history);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
- * @brief Clean readline 
+ * @brief Clean readline
  */
-int		readln_quit(int mode, char *history)
+int   readln_quit(int mode, char *history)
 {
-  int 		exited = readln_exited;
+  int     exited = readln_exited;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (readln_exited == 0)
     {
       if (mode >= 0)
-	readln_history_dump(mode, history);
-      
+        {
+          readln_history_dump(mode, history);
+        }
+
       rl_callback_handler_remove();
       readln_exited = 1;
     }
@@ -49,31 +53,35 @@ int		readln_quit(int mode, char *history)
 
 
 /**
- * @brief Set rl_ctrl 
+ * @brief Set rl_ctrl
  */
-void		readln_ctrl_set(int i, char c)
+void    readln_ctrl_set(int i, char c)
 {
   if (rl_ctrll)
-    rl_ctrll(i, c);
+    {
+      rl_ctrll(i, c);
+    }
 }
 
-/** 
- * @brief Completion fonction for the command list 
+/**
+ * @brief Completion fonction for the command list
  */
-char		*readln_match(const char *text, int state)
+char    *readln_match(const char *text, int state)
 {
-  static int	i, len, tab;
-  char		*name, *name2;
+  static int  i, len, tab;
+  char    *name, *name2;
   const char    *baq;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   baq = text;
+
   for (name = strchr(baq, '.'); name; name = strchr(baq, '.'))
     {
       baq = name;
       baq++;
     }
+
   text = baq;
 
   //printf("\n trying to match %s\n", text);
@@ -85,22 +93,25 @@ char		*readln_match(const char *text, int state)
       len = strlen(text);
     }
   else
-    i++;
+    {
+      i++;
+    }
 
   /* Return the next name which partially matches any hash tables keys */
   for (; tab < LIBUI_COMPMAX; i = 0, tab++)
     if (comp.cmds[tab] != NULL)
       for (; comp.cmds[tab][i] != NULL; i++)
-	{
-	  name = comp.cmds[tab][i];
-	  if (!strncmp(name, text, len))
-	    {
-	      XALLOC(__FILE__, __FUNCTION__, __LINE__,
-		     name2, strlen(name) + 1, NULL);
-	      strcpy(name2, name);
-	      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name2);
-	    }
-	}
+        {
+          name = comp.cmds[tab][i];
+
+          if (!strncmp(name, text, len))
+            {
+              XALLOC(__FILE__, __FUNCTION__, __LINE__,
+                     name2, strlen(name) + 1, NULL);
+              strcpy(name2, name);
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name2);
+            }
+        }
 
   /* If no names matched, then return NULL. */
   i = tab = len = 0;
@@ -109,49 +120,52 @@ char		*readln_match(const char *text, int state)
 
 
 
-/** 
- * @brief Add commands to completion 
+/**
+ * @brief Add commands to completion
  */
-void		readln_completion_commands(hash_t *cmd_hash)
+void    readln_completion_commands(hash_t *cmd_hash)
 {
   comp.cmds[0] = hash_get_keys(cmd_hash, NULL);
 }
 
 
-/** 
- * @brief Install the completion strings 
+/**
+ * @brief Install the completion strings
  */
-void		readln_completion_install(char mode, char side)
+void    readln_completion_install(char mode, char side)
 {
-  char		*str;
+  char    *str;
 
   //fprintf(stderr, "Installing completion now \n");
-  
-  comp.cmds[0]  = hash_get_keys(&cmd_hash    , NULL);
+
+  comp.cmds[0]  = hash_get_keys(&cmd_hash, NULL);
   //comp.cmds[1]  = hash_get_keys(&exprs_hash  , NULL);
   comp.cmds[1] = NULL; // FIXME: completion on all hierarchy of expressions scope
-  comp.cmds[2]  = hash_get_keys(&const_hash  , NULL);
-  comp.cmds[3]  = hash_get_keys(&mod_hash    , NULL);
-  comp.cmds[4]  = hash_get_keys(&L1_hash     , NULL);
-  comp.cmds[5]  = hash_get_keys(&elf_L2_hash , NULL);
-  comp.cmds[6]  = hash_get_keys(&sht_L2_hash , NULL);
-  comp.cmds[7]  = hash_get_keys(&pht_L2_hash , NULL);
-  comp.cmds[8]  = hash_get_keys(&sym_L2_hash , NULL);
-  comp.cmds[9]  = hash_get_keys(&rel_L2_hash , NULL);
+  comp.cmds[2]  = hash_get_keys(&const_hash, NULL);
+  comp.cmds[3]  = hash_get_keys(&mod_hash, NULL);
+  comp.cmds[4]  = hash_get_keys(&L1_hash, NULL);
+  comp.cmds[5]  = hash_get_keys(&elf_L2_hash, NULL);
+  comp.cmds[6]  = hash_get_keys(&sht_L2_hash, NULL);
+  comp.cmds[7]  = hash_get_keys(&pht_L2_hash, NULL);
+  comp.cmds[8]  = hash_get_keys(&sym_L2_hash, NULL);
+  comp.cmds[9]  = hash_get_keys(&rel_L2_hash, NULL);
   comp.cmds[10] = hash_get_keys(&dynsym_L2_hash, NULL);
-  comp.cmds[11] = hash_get_keys(&dyn_L2_hash , NULL);
-  comp.cmds[12] = hash_get_keys(&sct_L2_hash , NULL);
+  comp.cmds[11] = hash_get_keys(&dyn_L2_hash, NULL);
+  comp.cmds[12] = hash_get_keys(&sct_L2_hash, NULL);
   comp.cmds[13] = hash_get_keys(&fg_color_hash, NULL);
   comp.cmds[14] = hash_get_keys(&t_color_hash, NULL);
   comp.cmds[15] = NULL;
-  
+
   using_history();
   rl_attempted_completion_function = readln_completion;
 
   str = "";
-  if (mode != REVM_STATE_EMBEDDED && mode != REVM_STATE_CMDLINE 
+
+  if (mode != REVM_STATE_EMBEDDED && mode != REVM_STATE_CMDLINE
       && mode != REVM_STATE_SCRIPT && mode != REVM_STATE_TRACER)
-    str = revm_get_prompt();
+    {
+      str = revm_get_prompt();
+    }
 
   rl_callback_handler_install(str, readln_ln_handler);
 
@@ -173,14 +187,14 @@ void		readln_completion_install(char mode, char side)
 
 
 
-/** 
- * @brief Perform completion 
+/**
+ * @brief Perform completion
  */
-char	**readln_completion(const char* text, int start, int end) 
+char  **readln_completion(const char *text, int start, int end)
 {
-  char	**matches = (char**) NULL;
-  char	*baq, *baq2;
-  char	buf[50];
+  char  **matches = (char **) NULL;
+  char  *baq, *baq2;
+  char  buf[50];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -191,7 +205,9 @@ char	**readln_completion(const char* text, int start, int end)
    */
 
   if (strlen(text) == 0)
-   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    }
 
 #if defined(__OpenBSD__)
   matches = completion_matches(text, readln_match);
@@ -200,10 +216,13 @@ char	**readln_completion(const char* text, int start, int end)
 #endif
 
   if (!matches)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    }
 
   baq2 = NULL;
   baq = strchr(text, '.');
+
   while (baq)
     {
       baq2 = baq + 1;
@@ -217,20 +236,26 @@ char	**readln_completion(const char* text, int start, int end)
       //seems not to be free
       //XFREE(__FILE__, __FUNCTION__, __LINE__,matches[0]);
       matches[0] = strdup(buf);
- 
+
     }
 
   switch (rl_completion_append_character)
     {
     case ' ':
       if (baq2 && *baq2)
-      rl_completion_append_character = '[';
+        {
+          rl_completion_append_character = '[';
+        }
+
       break;
+
     case '[':
       rl_completion_append_character = ']';
       break;
+
     case ']':
       rl_completion_append_character = ' ';
+
     default:
       break;
     }
@@ -242,9 +267,9 @@ char	**readln_completion(const char* text, int start, int end)
 /**
  * This function was used to update columns on a readline colored prompt
  *  another solution has been found that work well (see readln_prompt_update).
- *  We keep this function because it can be useful later. 
+ *  We keep this function because it can be useful later.
  */
-int 	readln_column_update() 
+int   readln_column_update()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -256,22 +281,24 @@ int 	readln_column_update()
 
 
 
-/** 
- * @brief A prompt need some update to fit correctly on readline (with color) 
+/**
+ * @brief A prompt need some update to fit correctly on readline (with color)
  */
-int		readln_prompt_update(char *ptr, int size)
+int   readln_prompt_update(char *ptr, int size)
 {
-  int		i, tmpi;
-  char		tmp[size];
+  int   i, tmpi;
+  char    tmp[size];
 #if defined(RL_PROMPT_START_IGNORE)
-  int		open = 0;
+  int   open = 0;
 #endif
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* If no color on the prompt */
   if (strchr(ptr, C_STARTCOLOR) == NULL)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   tmp[0] = '\0';
 
@@ -280,50 +307,65 @@ int		readln_prompt_update(char *ptr, int size)
     {
       /* A color will always start with C_STARTCOLOR */
       if (ptr[i] == C_STARTCOLOR)
-	{
+        {
 #if defined(RL_PROMPT_START_IGNORE)
-	  /* This work only with readline >= 4.x, damn you if you don't have it !!
-	     We will use RL_PROMPT_START_IGNORE & RL_PROMPT_END_IGNORE that indicate 
-	     to readline that chars (here color) must be ignored in count procedure */
-	  tmp[tmpi++] = RL_PROMPT_START_IGNORE;
-	  open++;
+          /* This work only with readline >= 4.x, damn you if you don't have it !!
+             We will use RL_PROMPT_START_IGNORE & RL_PROMPT_END_IGNORE that indicate
+             to readline that chars (here color) must be ignored in count procedure */
+          tmp[tmpi++] = RL_PROMPT_START_IGNORE;
+          open++;
 
-	  while(ptr[i] != 'm' && i < size && tmpi < size)
-	      tmp[tmpi++] = ptr[i++];
+          while (ptr[i] != 'm' && i < size && tmpi < size)
+            {
+              tmp[tmpi++] = ptr[i++];
+            }
 
-	  if (i < size && ptr[i])
-	    {
-	      tmp[tmpi++] = ptr[i++];
-	      tmp[tmpi++] = RL_PROMPT_END_IGNORE;
-	      open--;
-	    }
+          if (i < size && ptr[i])
+            {
+              tmp[tmpi++] = ptr[i++];
+              tmp[tmpi++] = RL_PROMPT_END_IGNORE;
+              open--;
+            }
+
 #else
-	  /* If you don't have the right version, I strip ! */
-	  while(ptr[i] != 'm' && i < size)
-	    i++;
-	  
-	  if (i < size)
-	    i++;
+
+          /* If you don't have the right version, I strip ! */
+          while (ptr[i] != 'm' && i < size)
+            {
+              i++;
+            }
+
+          if (i < size)
+            {
+              i++;
+            }
+
 #endif
 
-	  if (i >= size || ptr[i] == '\0')
-	    break;
+          if (i >= size || ptr[i] == '\0')
+            {
+              break;
+            }
 
-	  /* Support followed tags */
-	  if (ptr[i] == C_STARTCOLOR)
-	    {
-	      i--;
-	      continue;
-	    }
-	}
+          /* Support followed tags */
+          if (ptr[i] == C_STARTCOLOR)
+            {
+              i--;
+              continue;
+            }
+        }
 
       tmp[tmpi++] = ptr[i];
     }
 
 #if defined(RL_PROMPT_START_IGNORE)
+
   /* We didn't close an ignore sign */
   if (open > 0)
-    tmp[(tmpi < size ? tmpi : size - 1)] = RL_PROMPT_END_IGNORE;
+    {
+      tmp[(tmpi < size ? tmpi : size - 1)] = RL_PROMPT_END_IGNORE;
+    }
+
 #endif
 
   /* Add the last char */
@@ -338,13 +380,13 @@ int		readln_prompt_update(char *ptr, int size)
 
 
 
-/** 
- * @brief readline line handler 
+/**
+ * @brief readline line handler
  */
 void    readln_ln_handler(char *c)
 {
-  
-  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);  
+
+  PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   world.curjob->ws.io.buf = c;
 
   /* save (remove) prompt if a complete line was typed
@@ -352,12 +394,16 @@ void    readln_ln_handler(char *c)
   if (c != NULL)
     {
       if (!c[0])
-	revm_log("\n");
+        {
+          revm_log("\n");
+        }
     }
 
   /* special to enable exit on CTRL-D */
   else
-    world.curjob->ws.io.buf = (char *) REVM_INPUT_EXIT;
+    {
+      world.curjob->ws.io.buf = (char *) REVM_INPUT_EXIT;
+    }
 
   rl_save_prompt();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -365,70 +411,71 @@ void    readln_ln_handler(char *c)
 
 
 
-/** 
- * Restore readline prompt that will be display on next 
- * rl_forced_update_display() or rl_callback_read_char() 
+/**
+ * Restore readline prompt that will be display on next
+ * rl_forced_update_display() or rl_callback_read_char()
  */
-int		readln_prompt_restore()
+int   readln_prompt_restore()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  world.curjob->ws.io.buf = NULL;  
+  world.curjob->ws.io.buf = NULL;
   rl_callback_read_char();
-  
+
   if (world.curjob->ws.io.buf != NULL)
     {
       rl_restore_prompt();
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
     }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
-/** 
- * Perform some checks on the input given by readline 
+/**
+ * Perform some checks on the input given by readline
  */
-char		*readln_input_check()
+char    *readln_input_check()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* input in progress */
   if (world.curjob->ws.io.buf == NULL)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		  ((char *) REVM_INPUT_VOID));
-  
+                  ((char *) REVM_INPUT_VOID));
+
   /* CTRL-D case */
   if (world.curjob->ws.io.buf == (char *) REVM_INPUT_EXIT)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		  (NULL));
-  
+                  (NULL));
+
   /* empty string */
   if (strlen(world.curjob->ws.io.buf) == 0)
     {
       /* XXX memory leak, this dup will never be freed */
       if (world.curjob->ws.oldline)
-	PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		      (strdup(world.curjob->ws.oldline)));
-      
+        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+                      (strdup(world.curjob->ws.oldline)));
+
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		    ((char *) REVM_INPUT_VOID));
+                    ((char *) REVM_INPUT_VOID));
     }
-  
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		(strdup(world.curjob->ws.io.buf)));
+                (strdup(world.curjob->ws.io.buf)));
 }
 
 
-/** 
- * Log the input of readline 
+/**
+ * Log the input of readline
  */
-void		readln_input_log(char *str)
+void    readln_input_log(char *str)
 {
 #if 0
-  HISTORY_STATE	*state;
-  HIST_ENTRY	*entry;
-  int		i;
+  HISTORY_STATE *state;
+  HIST_ENTRY  *entry;
+  int   i;
 #endif
 
   //if (world.curjob->io.buf[0] != '\0')
@@ -438,8 +485,10 @@ void		readln_input_log(char *str)
       revm_log("\n\n");
     }
   else
-    revm_log("\n");
-  
+    {
+      revm_log("\n");
+    }
+
 #if 0
   printf ("[READLN] history : [%s]\n", buf);
   state = history_get_history_state();
@@ -461,29 +510,36 @@ void		readln_input_log(char *str)
   printf("   size : %d\n", state->size);
   printf("===================\n");
   printf("-- entries --\n");
+
   for (i = 0; i <= state->length + 1; i++)
     {
       entry = history_get(i);
+
       if (entry)
-	printf("-- entry %d [%s] (%x) \n", i, entry->line, entry->line);
+        {
+          printf("-- entry %d [%s] (%x) \n", i, entry->line, entry->line);
+        }
       else
-	printf("-- entry %d NULL \n", i);
+        {
+          printf("-- entry %d NULL \n", i);
+        }
     }
+
   printf("-------------\n\n");
 #endif
-  
+
 }
 
 
 
 
-/** 
- * @brief Install the shortcut for clearing the screen 
+/**
+ * @brief Install the shortcut for clearing the screen
  */
-void		readln_install_clearscreen()
+void    readln_install_clearscreen()
 {
-  Keymap	map;
-  char		keyseq[2];
+  Keymap  map;
+  char    keyseq[2];
 
   map       = rl_get_keymap();
   keyseq[0] = CTRL('l');
@@ -493,10 +549,10 @@ void		readln_install_clearscreen()
 }
 
 
-/** 
- * @brief Change the screen content 
+/**
+ * @brief Change the screen content
  */
-void		readln_screen_change(u_short isnew, char prompt_display)
+void    readln_screen_change(u_short isnew, char prompt_display)
 {
   /* Setup on new screen */
   if (isnew)
@@ -510,7 +566,10 @@ void		readln_screen_change(u_short isnew, char prompt_display)
   else
     {
       if (!prompt_display)
-	rl_on_new_line_with_prompt();
+        {
+          rl_on_new_line_with_prompt();
+        }
+
       rl_refresh_line(0, 0);
     }
 
@@ -520,7 +579,10 @@ void		readln_screen_change(u_short isnew, char prompt_display)
   if (!isnew)
     {
       if (world.curjob->ws.io.savebuf)
-	strcpy(rl_line_buffer, world.curjob->ws.io.savebuf);
+        {
+          strcpy(rl_line_buffer, world.curjob->ws.io.savebuf);
+        }
+
       rl_point = world.curjob->ws.io.rl_point;
       rl_end = world.curjob->ws.io.rl_end;
     }
@@ -529,10 +591,10 @@ void		readln_screen_change(u_short isnew, char prompt_display)
 }
 
 
-/** 
- * @brief Write readline history on quit 
+/**
+ * @brief Write readline history on quit
  */
-void		readln_history_dump(char mode, char *history)
+void    readln_history_dump(char mode, char *history)
 {
   char buff[BUFSIZ];
 
@@ -547,22 +609,26 @@ void		readln_history_dump(char mode, char *history)
   rl_callback_handler_remove();
 }
 
-/** 
- * @brief Prepare readline terminal 
+/**
+ * @brief Prepare readline terminal
  */
-void		readln_terminal_prepare(char mode)
+void    readln_terminal_prepare(char mode)
 {
   if (mode == REVM_STATE_EMBEDDED || mode == REVM_STATE_INTERACTIVE)
-    rl_prep_terminal(1);
+    {
+      rl_prep_terminal(1);
+    }
 }
 
-/** 
- * @brief Prepare readline terminal 
+/**
+ * @brief Prepare readline terminal
  */
-void		readln_terminal_unprepare(char mode)
+void    readln_terminal_unprepare(char mode)
 {
   if (mode == REVM_STATE_EMBEDDED || mode == REVM_STATE_INTERACTIVE)
-    rl_deprep_terminal();
+    {
+      rl_deprep_terminal();
+    }
 }
 
 #endif

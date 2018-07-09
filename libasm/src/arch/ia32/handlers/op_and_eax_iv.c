@@ -8,7 +8,8 @@
   <instruction func="op_and_eax_iv" opcode="0x25"/>
 */
 
-int op_and_eax_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_and_eax_iv(asm_instr *new, u_char *opcode, u_int len,
+                  asm_processor *proc)
 {
   new->instr = ASM_AND;
   new->len += 1;
@@ -22,7 +23,9 @@ int op_and_eax_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->op[0].ptr = opcode;
   new->op[0].len = 0;
   new->op[0].baser = ASM_REG_EAX;
-  new->op[0].regset = asm_proc_is_protected(proc) ? ASM_REGSET_R32 : ASM_REGSET_R16;
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE, new);
+  new->op[0].regset = asm_proc_is_protected(proc) ? ASM_REGSET_R32 :
+                      ASM_REGSET_R16;
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE,
+                                new);
   return (new->len);
 }

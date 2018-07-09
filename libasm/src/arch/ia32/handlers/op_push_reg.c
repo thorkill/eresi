@@ -16,7 +16,7 @@
   <instruction func="op_push_reg" opcode="0x57"/>
 */
 
-int op_push_reg(asm_instr *new, u_char *opcode, u_int len, 
+int op_push_reg(asm_instr *new, u_char *opcode, u_int len,
                 asm_processor *proc)
 {
   struct s_modrm        *modrm;
@@ -31,7 +31,9 @@ int op_push_reg(asm_instr *new, u_char *opcode, u_int len,
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_OPMOD, new);
 
   if (new->op[0].baser == ASM_REG_EBP)
-    new->type |= ASM_TYPE_PROLOG;
+    {
+      new->type |= ASM_TYPE_PROLOG;
+    }
 
   return (new->len);
 }

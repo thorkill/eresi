@@ -24,16 +24,20 @@ int asm_arm_op_fetch_register(asm_operand *operand, u_char *opcode,
           /* R13 = SP */
           MASSIGNTYPE(ins, ASM_TYPE_TOUCHSP);
           break;
+
         case ASM_ARM_REG_PC:
           MASSIGNTYPE(ins, ASM_TYPE_BRANCH);
           break;
+
         case ASM_ARM_REG_CPSR:
           if (operand->imm & 0x08)
             {
               MASSIGNTYPE(ins, ASM_TYPE_WRITEFLAG);
               /* If any flag is added to e_arm_flags, please update this assignment */
-              ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V | ASM_ARM_FLAG_Q;
+              ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C |
+                                  ASM_ARM_FLAG_V | ASM_ARM_FLAG_Q;
             }
+
           break;
         }
     }

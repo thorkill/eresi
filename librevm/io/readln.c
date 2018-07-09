@@ -12,9 +12,9 @@
 #include "revm.h"
 
 /**
- * Reset lines counters and ignore output state 
+ * Reset lines counters and ignore output state
  */
-void		revm_ctrl_set(int i, char c)
+void    revm_ctrl_set(int i, char c)
 {
 #if defined(USE_READLN)
   readln_ctrl_set(i, c);
@@ -22,11 +22,15 @@ void		revm_ctrl_set(int i, char c)
 #endif
 }
 
-void		revm_buffer_reset(u_short isnew)
+void    revm_buffer_reset(u_short isnew)
 {
 #if defined(USE_READLN)
+
   if (isnew)
-    world.curjob->ws.io.buf = NULL;
+    {
+      world.curjob->ws.io.buf = NULL;
+    }
+
 #endif
 }
 
@@ -126,26 +130,30 @@ void            revm_terminal_unprepare(char mode)
 #endif
 }
 
-void		revm_job_preswitch()
+void    revm_job_preswitch()
 {
 #if defined(USE_READLN)
+
   if (world.curjob->ws.io.savebuf)
-    XFREE(__FILE__, __FUNCTION__, __LINE__,world.curjob->ws.io.savebuf);
-  world.curjob->ws.io.savebuf = strdup(rl_line_buffer); 
+    {
+      XFREE(__FILE__, __FUNCTION__, __LINE__, world.curjob->ws.io.savebuf);
+    }
+
+  world.curjob->ws.io.savebuf = strdup(rl_line_buffer);
   world.curjob->ws.io.buf = NULL;
   world.curjob->ws.io.rl_point = rl_point;
   world.curjob->ws.io.rl_end = rl_end;
 #endif
 }
 
-void		revm_job_postswitch()
+void    revm_job_postswitch()
 {
 #if defined(USE_READLN)
   rl_set_prompt(revm_get_prompt());
 #endif
 }
 
-void		revm_screen_getsize(int *lines, int *cols)
+void    revm_screen_getsize(int *lines, int *cols)
 {
 #if defined(USE_READLN)
   rl_get_screen_size(lines, cols);
@@ -153,7 +161,7 @@ void		revm_screen_getsize(int *lines, int *cols)
 }
 
 
-void		revm_buffer_free(char *buf)
+void    revm_buffer_free(char *buf)
 {
 #if !defined(USE_READLN)
   NOPROFILER_IN();
@@ -167,42 +175,48 @@ void		revm_buffer_free(char *buf)
  * @brief  Strip readline escape characters from buffer
  * @ingroup io
  */
-void		revm_strip_char(char *str, char c)
+void    revm_strip_char(char *str, char c)
 {
 #if defined(USE_READLN) && defined(RL_PROMPT_START_IGNORE)
-  u_int		len, pos;
-  char		*search;
+  u_int   len, pos;
+  char    *search;
 
   NOPROFILER_IN();
   len = strlen(str);
+
   for (search = str; (search = strchr(search, c)) != NULL;)
     {
       pos = search - str;
       /* Realign others */
-      memmove(search, search+1, len - (pos + 1));
+      memmove(search, search + 1, len - (pos + 1));
       len--;
     }
+
   NOPROFILER_OUT();
 #endif
 }
 
 
-void		revm_prompt_postselect_restore(fd_set *sel_sockets)
-{  
+void    revm_prompt_postselect_restore(fd_set *sel_sockets)
+{
 #if defined (USE_READLN)
+
   if (world.state.revm_side == REVM_SIDE_CLIENT && FD_ISSET(0, sel_sockets))
-    readln_prompt_restore();
+    {
+      readln_prompt_restore();
+    }
+
 #endif
 }
 
-void		revm_callback_handler_remove()
+void    revm_callback_handler_remove()
 {
 #if defined(USE_READLN)
   rl_callback_handler_remove();
 #endif
 }
 
-void		revm_callback_handler_install(char *prompt, void (*fct)(char *str))
+void    revm_callback_handler_install(char *prompt, void (*fct)(char *str))
 {
 #if defined(USE_READLN)
   rl_callback_handler_install(prompt, fct);
@@ -210,7 +224,7 @@ void		revm_callback_handler_install(char *prompt, void (*fct)(char *str))
 }
 
 
-void		revm_prompt_log()
+void    revm_prompt_log()
 {
 #if defined (USE_READLN)
   revm_log(revm_get_prompt());
@@ -218,16 +232,21 @@ void		revm_prompt_log()
 }
 
 
-void		revm_conditional_rlquit()
+void    revm_conditional_rlquit()
 {
 #if defined(USE_READLN)
+
   if (!(world.state.revm_mode == REVM_STATE_EMBEDDED
-	&& world.state.revm_side == REVM_SIDE_SERVER))
-    readln_quit(world.state.revm_mode, (char *)config_get_data(ERESI_CONFIG_HISTORY));
+        && world.state.revm_side == REVM_SIDE_SERVER))
+    {
+      readln_quit(world.state.revm_mode,
+                  (char *)config_get_data(ERESI_CONFIG_HISTORY));
+    }
+
 #endif
 }
 
-void		revm_input_prelog(char *buf)
+void    revm_input_prelog(char *buf)
 {
 #if defined(USE_READLN)
   revm_input_log(buf);
@@ -237,14 +256,14 @@ void		revm_input_prelog(char *buf)
 #endif
 }
 
-void		revm_rlfifo_write()
+void    revm_rlfifo_write()
 {
 #if defined(USE_READLN)
   write(world.fifo_c2s, "\n", 1);
 #endif
 }
 
-int		revm_is_enabled()
+int   revm_is_enabled()
 {
 #if defined(USE_READLN)
   return (1);
@@ -254,30 +273,38 @@ int		revm_is_enabled()
 }
 
 
-int		revm_is_stdinput()
+int   revm_is_stdinput()
 {
 #if defined(USE_READLN)
+
   if (world.curjob->ws.io.type == REVM_IO_STD)
     {
-      if (world.curjob->ws.io.buf != NULL) 
-	{
-	  /* On the client side, we consider that the prompt is already
-	     returned by the server */
-	  if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
-	      world.state.revm_side == REVM_SIDE_CLIENT)
-	    {
-	      rl_on_new_line_with_prompt();
-	      rl_clear_message();
-	      //rl_redisplay();
-	    }
-	  else
-	    rl_forced_update_display();
-	  revm_log(revm_get_prompt());
-	}
+      if (world.curjob->ws.io.buf != NULL)
+        {
+          /* On the client side, we consider that the prompt is already
+             returned by the server */
+          if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
+              world.state.revm_side == REVM_SIDE_CLIENT)
+            {
+              rl_on_new_line_with_prompt();
+              rl_clear_message();
+              //rl_redisplay();
+            }
+          else
+            {
+              rl_forced_update_display();
+            }
+
+          revm_log(revm_get_prompt());
+        }
+
       return (0);
     }
-  else 
-    return (1);
+  else
+    {
+      return (1);
+    }
+
 #else
   return (1);
 #endif

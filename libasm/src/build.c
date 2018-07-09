@@ -10,7 +10,7 @@
  *
  * Libasm developpement is not regular. Some time is spent on documenting it.
  * Some time to fix bugs. Some time to implement.
- * 
+ *
  * Currently, there are two architectures supported :
  * -
  *
@@ -25,7 +25,7 @@
  * @return build date.
  */
 
-char	*asm_get_build(void)
+char  *asm_get_build(void)
 {
   return (__DATE__);
 }
@@ -34,18 +34,18 @@ char	*asm_get_build(void)
  *
  */
 
-char	*g_asm_features [] =
-  {
-    
-    
-    0
-  };
+char  *g_asm_features [] =
+{
+
+
+  0
+};
 
 /**
  *
  */
 
-char	**asm_get_features()
+char  **asm_get_features()
 {
   return g_asm_features;
 }

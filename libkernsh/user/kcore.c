@@ -14,26 +14,26 @@ int kernsh_openmem_kcore_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("OPEN KCORE 2.6\n");
 #endif
 
-  XOPEN(libkernshworld.fd, 
-	LIBKERNSH_STRING_DEVICE_KCORE, 
-	libkernshworld.fdmode, 
-	0, 
-	-1);
+  XOPEN(libkernshworld.fd,
+        LIBKERNSH_STRING_DEVICE_KCORE,
+        libkernshworld.fdmode,
+        0,
+        -1);
 
   if (libkernshworld.mmap)
     {
 #if defined(__linux__)
-      XMMAP(libkernshworld.ptr, 
-	    0, libkernshworld.mmap_size, 
-	    libkernshworld.protmode,
-	    libkernshworld.flagsmode, 
-	    libkernshworld.fd, 
-	    0, 
-	    -1);
+      XMMAP(libkernshworld.ptr,
+            0, libkernshworld.mmap_size,
+            libkernshworld.protmode,
+            libkernshworld.flagsmode,
+            libkernshworld.fd,
+            0,
+            -1);
 #endif
     }
 
@@ -50,7 +50,7 @@ int kernsh_openmem_kcore_linux_2_6()
 int kernsh_closemem_kcore_linux_2_6()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
 #if __DEBUG_KERNSH__
   printf("CLOSE KCORE 2.6\n");
 #endif
@@ -76,26 +76,28 @@ int kernsh_closemem_kcore_linux_2_6()
  * @param size Count bytes to read
  * @return size on success, -1 on error
  */
-void		*kernsh_readmema_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr addr, 
-						 void *buf, int size)
+void    *kernsh_readmema_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr addr,
+    void *buf, int size)
 {
-  eresi_Addr	realaddr;
+  eresi_Addr  realaddr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!libkernshworld.open)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Memory not opened !", NULL);
+
   if (elfsh_is_static_mode())
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Cannot read kcore in static mode", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Cannot read kcore in static mode", NULL);
 
   realaddr = addr - libkernshworld.kernel_start + 0x1000;
 
   if (libkernshworld.mmap)
     {
       if (memcpy(buf, libkernshworld.ptr + realaddr, size) == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Memcpy failed !", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Memcpy failed !", NULL);
     }
   else
     {
@@ -115,26 +117,29 @@ void		*kernsh_readmema_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr addr,
  * @param size Count bytes to write
  * @return size on success, -1 on error
  */
-int		kernsh_writemem_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr offset, void *buf, 
-						int size)
+int   kernsh_writemem_kcore_linux_2_6(elfshobj_t *unused, eresi_Addr offset,
+                                      void *buf,
+                                      int size)
 {
-  eresi_Addr	roffset;
+  eresi_Addr  roffset;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!libkernshworld.open)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Memory not opened !", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Memory not opened !", -1);
 
   roffset = offset - libkernshworld.kernel_start + 0x1000;
 
   if (libkernshworld.mmap)
     {
-      if (memcpy(libkernshworld.ptr+roffset, buf, size) == NULL)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		     "Memcpy failed !", -1);
-	}
-#if defined(__linux__)       
+      if (memcpy(libkernshworld.ptr + roffset, buf, size) == NULL)
+        {
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "Memcpy failed !", -1);
+        }
+
+#if defined(__linux__)
       XMSYNC(libkernshworld.ptr, libkernshworld.mmap_size, MS_SYNC, -1);
 #endif
     }

@@ -16,7 +16,7 @@
  */
 int kernsh_dump_kvirtm_elf(pid_t pid, char *filename)
 {
-  int		ret, get;
+  int   ret, get;
   u_int         dim[3];
   vector_t      *krv;
   int          (*fct)();
@@ -25,7 +25,7 @@ int kernsh_dump_kvirtm_elf(pid_t pid, char *filename)
 
   ret = 0;
 
-#if __DEBUG_KERNSH__  
+#if __DEBUG_KERNSH__
   printf("kernsh_kvirtm_dump_elf\n");
 #endif
 
@@ -54,7 +54,7 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
   int ret, get;
   char *key;
   u_int         dim[3];
-  list_t	*l;
+  list_t  *l;
   vector_t      *kgv;
   int          (*fct)();
 
@@ -63,14 +63,15 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
   XALLOC(__FILE__, __FUNCTION__, __LINE__, key, BUFSIZ, NULL);
   memset(key, '\0', BUFSIZ);
 
-  snprintf(key, BUFSIZ, "%s_%d", (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX), pid);
+  snprintf(key, BUFSIZ, "%s_%d",
+           (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX), pid);
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, l, sizeof(list_t), NULL);
 
   if (elist_init(l, key, ASPECT_TYPE_HASH) == 1)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Failed to initialize list", NULL);
+                   "Failed to initialize list", NULL);
     }
 
   get = (int)config_get_data(LIBKERNSH_CONFIG_VMA);
@@ -87,7 +88,7 @@ list_t *kernsh_kdump_get_vma(pid_t pid)
   if (ret < 0)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Failed to get vma", NULL);
+                   "Failed to get vma", NULL);
     }
 
   l = elist_reverse(l);
@@ -120,48 +121,49 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
   memset(buff, '\0', sizeof(buff));
   snprintf(buff, sizeof(buff), "/proc/%d/maps", pid);
 
-  XOPEN(fd, buff, O_RDONLY, 0,-1);
-  
+  XOPEN(fd, buff, O_RDONLY, 0, -1);
+
   ret = read(fd, line, sizeof(line));
-  
+
   if (ret <= 0)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Failed to read /proc", -1);
+                   "Failed to read /proc", -1);
     }
 
-  for (tok = strtok_r(line, "\n", &brk), j = 0; 
-       tok; 
+  for (tok = strtok_r(line, "\n", &brk), j = 0;
+       tok;
        tok = strtok_r(NULL, "\n", &brk), j++)
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, vst, sizeof(libkernshvma_struct_t), -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, vst, sizeof(libkernshvma_struct_t),
+             -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, h, sizeof(hash_t), -1);
       XALLOC(__FILE__, __FUNCTION__, __LINE__, key, BUFSIZ, -1);
 
       for (subtok = strtok_r(tok, " ", &subbrk), i = 0;
-	   subtok; 
-	   subtok = strtok_r(NULL, " ", &subbrk), i++)
-	{
-	  switch (i)
-	    {
-	    case 0 :
-	      subsubtok = strtok_r(subtok, "-", &subsubbrk);
-	      vst->vm_start = strtoul(subsubtok, NULL, 16);
-	      subsubtok = strtok_r(NULL, "-", &subsubbrk);
-	      vst->vm_end = strtoul(subsubtok, NULL, 16);
-	      break;
-	    }
-	}
+           subtok;
+           subtok = strtok_r(NULL, " ", &subbrk), i++)
+        {
+          switch (i)
+            {
+            case 0 :
+              subsubtok = strtok_r(subtok, "-", &subsubbrk);
+              vst->vm_start = strtoul(subsubtok, NULL, 16);
+              subsubtok = strtok_r(NULL, "-", &subsubbrk);
+              vst->vm_end = strtoul(subsubtok, NULL, 16);
+              break;
+            }
+        }
 
       memset(key, '\0', BUFSIZ);
-      snprintf(key, BUFSIZ, "%s_%d_%d", 
-	       (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX), pid, j);
+      snprintf(key, BUFSIZ, "%s_%d_%d",
+               (char *)config_get_data(LIBKERNSH_CONFIG_VMA_PREFIX), pid, j);
 
       if (hash_init(h, key, 2, ASPECT_TYPE_LONG) == 1)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		       "Failed to initialize hash", -1);
-	}
+        {
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "Failed to initialize hash", -1);
+        }
 
       hash_add(h, LIBKERNSH_STRING_VM_START, (void *)vst->vm_start);
       hash_add(h, LIBKERNSH_STRING_VM_END,   (void *)vst->vm_end);
@@ -172,7 +174,7 @@ int kernsh_kdump_get_vma_userland_linux(pid_t pid, list_t *l)
     }
 
   XCLOSE(fd, -1);
-  
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -225,7 +227,7 @@ int kernsh_kdump_vma(pid_t pid)
   if (l == NULL)
     {
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Failed to get vma", -1);
+                   "Failed to get vma", -1);
     }
 
   get = (int)config_get_data(LIBKERNSH_CONFIG_VMA);
@@ -237,21 +239,21 @@ int kernsh_kdump_vma(pid_t pid)
   fct = aspect_vectors_select(kv, dim);
 
   memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), "%s%s_%d", 
-	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
-	   pid);
+  snprintf(buff, sizeof(buff), "%s%s_%d",
+           (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+           (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
+           pid);
 
   mkdir(buff, 0777);
 
   memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), "%s%s_%d/metadata_%d", 
-	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
-	   pid,
-	   get);
+  snprintf(buff, sizeof(buff), "%s%s_%d/metadata_%d",
+           (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+           (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
+           pid,
+           get);
 
-  XOPEN(fd, buff, O_RDWR|O_CREAT, 0777, -1);
+  XOPEN(fd, buff, O_RDWR | O_CREAT, 0777, -1);
 
   for (index = 0, actual = l->head;
        index < l->elmnbr;
@@ -259,26 +261,29 @@ int kernsh_kdump_vma(pid_t pid)
     {
       h = (hash_t *) actual->data;
       printf("%s[%d]", l->name, index);
+
       if (h)
-	{
-	  memset(meta, '\0', sizeof(meta));
+        {
+          memset(meta, '\0', sizeof(meta));
 
-	  tret = fct(pid, h);
-	  ret += tret;
+          tret = fct(pid, h);
+          ret += tret;
 
-	  meta_start = (int)hash_get(h, LIBKERNSH_STRING_VM_START);
-	  meta_end = (int)hash_get(h, LIBKERNSH_STRING_VM_END);
-	  meta_size = meta_end - meta_start;
+          meta_start = (int)hash_get(h, LIBKERNSH_STRING_VM_START);
+          meta_end = (int)hash_get(h, LIBKERNSH_STRING_VM_END);
+          meta_size = meta_end - meta_start;
 
-	  snprintf(meta, sizeof(meta), "%s[%d] 0x%lx ... 0x%lx strlen(0x%lx) ==> [0x%lx]\n", 
-		   l->name, 
-		   index,
-		   meta_start,
-		   meta_end,
-		   meta_size,
-		   (unsigned long)tret);
-	  XWRITE(fd, meta, strlen(meta), -1);  
-	}
+          snprintf(meta, sizeof(meta),
+                   "%s[%d] 0x%lx ... 0x%lx strlen(0x%lx) ==> [0x%lx]\n",
+                   l->name,
+                   index,
+                   meta_start,
+                   meta_end,
+                   meta_size,
+                   (unsigned long)tret);
+          XWRITE(fd, meta, strlen(meta), -1);
+        }
+
       printf("\n");
     }
 
@@ -312,11 +317,13 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
   ret = 0;
 
 #if defined(__linux__)
+
   if (ptrace(PTRACE_ATTACH, pid, 0, 0) < 0)
     {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Failed to attach pid", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Failed to attach pid", -1);
     }
+
   waitpid(pid, NULL, WUNTRACED);
 #endif
 
@@ -327,16 +334,21 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
 
   printf("VM_* 0x%lx -> 0x%lx ==> strlen(0x%lx)\n", vm_start, vm_end, size);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, new_vma, size + 1, -1);
-  
+
   memset(new_vma, '\0', size);
 
 #if defined(__linux__)
-  for (i=0; i < size; i++)
+
+  for (i = 0; i < size; i++)
     {
-      new_vma[i]=(char)ptrace(PTRACE_PEEKTEXT, pid, vm_start+i, 0);
+      new_vma[i] = (char)ptrace(PTRACE_PEEKTEXT, pid, vm_start + i, 0);
+
       if (errno == 0)
-	ret++;
+        {
+          ret++;
+        }
     }
+
 #endif
 
 #if defined(__linux__)
@@ -344,20 +356,20 @@ int kernsh_kdump_vma_userland_linux(pid_t pid, hash_t *h)
 #endif
 
   memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), "%s%s_%d/dump_userland_0x%lx", 
-	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
-	   pid, 
-	   vm_start);
+  snprintf(buff, sizeof(buff), "%s%s_%d/dump_userland_0x%lx",
+           (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+           (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
+           pid,
+           vm_start);
 
   printf("DUMP USERLAND 0x%lx into %s\n", vm_start, buff);
 
-  XOPEN(fd, buff, O_RDWR|O_CREAT, 0777, -1);
+  XOPEN(fd, buff, O_RDWR | O_CREAT, 0777, -1);
   XWRITE(fd, new_vma, size, -1);
   XCLOSE(fd, -1);
-  
+
   XFREE(__FILE__, __FUNCTION__, __LINE__, new_vma);
-    
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
@@ -387,32 +399,33 @@ int kernsh_kdump_vma_kernelland_linux(pid_t pid, hash_t *h)
 
   printf("VM_* 0x%lx -> 0x%lx ==> strlen(0x%lx)\n", vm_start, vm_end, size);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, new_vma, size + 1, -1);
-  
+
   memset(new_vma, '\0', size);
 
   ret = kernsh_kvirtm_read_virtm(pid, vm_start, new_vma, (int)size);
+
   if (ret <= 0)
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__, new_vma);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Failed to dump vma", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Failed to dump vma", -1);
     }
-  
+
   memset(buff, '\0', sizeof(buff));
-  snprintf(buff, sizeof(buff), "%s%s_%d/dump_kernelland_0x%lx", 
-	   (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
-	   (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
-	   pid, 
-	   vm_start);
+  snprintf(buff, sizeof(buff), "%s%s_%d/dump_kernelland_0x%lx",
+           (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
+           (char *) config_get_data(LIBKERNSH_CONFIG_DUMP_VMA_PREFIX),
+           pid,
+           vm_start);
 
   printf("DUMP KERNELLAND 0x%lx into %s\n", vm_start, buff);
 
-  XOPEN(fd, buff, O_RDWR|O_CREAT, 0777, -1);
+  XOPEN(fd, buff, O_RDWR | O_CREAT, 0777, -1);
   XWRITE(fd, new_vma, size, -1);
   XCLOSE(fd, -1);
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, new_vma);
-  
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 

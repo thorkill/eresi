@@ -3,7 +3,7 @@
  * @ingroup ia32
  * @brief Initialization of ia32 processor mnemonic table.
  * $Id$
- * 
+ *
  */
 #include <libasm.h>
 
@@ -12,16 +12,16 @@
  * @param proc Pointer to processor structure.
  * @return Returns 1
  */
-int init_instr_table(asm_processor *proc) 
+int init_instr_table(asm_processor *proc)
 {
-  
+
   /**
    *  XXX: should be replaced by a static array ?
    */
 
   proc->instr_table = malloc(sizeof(char *) * (ASM_BAD + 1));
   memset(proc->instr_table, 0, sizeof(char *) * (ASM_BAD + 1));
-  
+
   proc->instr_table[ASM_ADC] = "adc";
   proc->instr_table[ASM_ADD] = "add";
   proc->instr_table[ASM_AND] = "and";
@@ -30,7 +30,7 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_AAA] = "aaa";
   proc->instr_table[ASM_AAS] = "aas";
   proc->instr_table[ASM_ARPL] = "arpl";
-  
+
   proc->instr_table[ASM_BOUND] = "bound";
   proc->instr_table[ASM_BSWAP] = "bswap";
   proc->instr_table[ASM_BTRL] = "btrl";
@@ -52,12 +52,12 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_DAS] = "das";
   proc->instr_table[ASM_DIV] = "div";
   proc->instr_table[ASM_DEC] = "dec";
-  
+
   proc->instr_table[ASM_EMMS] = "emms";
   proc->instr_table[ASM_ENTER] = "enter";
-  
+
   proc->instr_table[ASM_FWAIT] = "fwait";
-  
+
   proc->instr_table[ASM_HLT] = "hlt";
 
   proc->instr_table[ASM_INTO] = "into";
@@ -105,7 +105,7 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_LES] = "les";
   proc->instr_table[ASM_LDS] = "lds";
   proc->instr_table[ASM_LBRANCH] = "ljmp";
-  
+
   proc->instr_table[ASM_MOVSB] = "movsb";
   proc->instr_table[ASM_MOVSW] = "movsw";
   proc->instr_table[ASM_MOVSD] = "movsl";
@@ -130,7 +130,7 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_OUT] = "out";
   proc->instr_table[ASM_OUTSB] = "outsb";
   proc->instr_table[ASM_OUTSW] = "outsw";
-  
+
   proc->instr_table[ASM_PUSH] = "push";
   proc->instr_table[ASM_POP] = "pop";
   proc->instr_table[ASM_PUSHF] = "pushf";
@@ -189,11 +189,11 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_XCRYPTCBC] = "xcrypt-cbc";
   proc->instr_table[ASM_XCRYPTCFB] = "xcrypt-cfb";
   proc->instr_table[ASM_XCRYPTOFB] = "xcrypt-ofb";
-  
+
   proc->instr_table[ASM_WBINVD] = "wbinvd";
-  
+
   /* i386 */
-  
+
   proc->instr_table[ASM_SET_U_LESS] = "setb";
   proc->instr_table[ASM_CMPXCHG] = "cmpxchg";
   proc->instr_table[ASM_RDTSC] = "rdtsc";
@@ -212,7 +212,7 @@ int init_instr_table(asm_processor *proc)
   proc->instr_table[ASM_SET_OVERFLOW] = "seto";
   proc->instr_table[ASM_SET_NOT_OVERFLOW] = "setno";
   proc->instr_table[ASM_SET_EQUAL] = "sete";
-  proc->instr_table[ASM_SET_NOT_EQUAL] = "setne";  
+  proc->instr_table[ASM_SET_NOT_EQUAL] = "setne";
   proc->instr_table[ASM_BT] = "bt";
   proc->instr_table[ASM_BTS] = "bts";
   proc->instr_table[ASM_SHLD] = "shld";

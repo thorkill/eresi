@@ -13,31 +13,32 @@
 /**
  * Reflect command disassemble the block cache of the parameter and create a list of instr exprs
  */
-int		cmd_reflect()
+int   cmd_reflect()
 {
-  container_t	*container;
-  container_t	*instrcontainer;
-  mjrblock_t	*curblock;
-  asm_instr	cur;
-  elfsh_Half	machine;
-  char		logbuf[BUFSIZ];
-  char		logbuf2[BUFSIZ];
-  eresi_Addr	addr;
-  eresi_Addr	daddr;
-  u_int		off;
-  int		ret;
-  aspectype_t	*curtype;
-  void		*blocdata;
-  int		fileoff;
-  list_t	*instrlist;
-  revmexpr_t	*expr;
-  u_int		insnbr;
-  u_int		reqnbr;
-  u_int		readsize;
-  revmexpr_t	*immed;
+  container_t *container;
+  container_t *instrcontainer;
+  mjrblock_t  *curblock;
+  asm_instr cur;
+  elfsh_Half  machine;
+  char    logbuf[BUFSIZ];
+  char    logbuf2[BUFSIZ];
+  eresi_Addr  addr;
+  eresi_Addr  daddr;
+  u_int   off;
+  int   ret;
+  aspectype_t *curtype;
+  void    *blocdata;
+  int   fileoff;
+  list_t  *instrlist;
+  revmexpr_t  *expr;
+  u_int   insnbr;
+  u_int   reqnbr;
+  u_int   readsize;
+  revmexpr_t  *immed;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   curtype  = aspect_type_get_by_name("instr");
+
   if (!curtype)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Failed reflection : unknown type : instr", -1);
@@ -46,7 +47,7 @@ int		cmd_reflect()
   if (world.curjob->curcmd->argc != 1 && world.curjob->curcmd->argc != 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Command expect one or two parameters \n", -1);
-  
+
   /* Init proc */
   if (!world.curjob->proc)
     {
@@ -55,18 +56,22 @@ int		cmd_reflect()
         case EM_386:
           world.curjob->proc = &world.proc_ia32;
           break;
+
         case EM_SPARC:
         case EM_SPARC32PLUS:
         case EM_SPARCV9:
           world.curjob->proc = &world.proc_sparc;
           break;
-	case EM_ARM:
+
+        case EM_ARM:
           world.curjob->proc = &world.proc_arm;
-	  break;
-	case EM_MIPS:
-	case EM_MIPS_RS3_LE:
+          break;
+
+        case EM_MIPS:
+        case EM_MIPS_RS3_LE:
           world.curjob->proc = &world.proc_mips;
-	  break;
+          break;
+
         default:
           snprintf(logbuf, sizeof (logbuf),
                    "Architecture %s not supported. No disassembly available\n",
@@ -78,13 +83,18 @@ int		cmd_reflect()
 
   /* Now lookup the block by its addr or symbol */
   immed = revm_lookup_param(world.curjob->curcmd->param[0], 1);
+
   if (!immed)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Failed to lookup parameter address expr", -1);
+
   if (revm_convert_object(immed, ASPECT_TYPE_CADDR) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid address parameter", 0);
-  addr = (immed->value->immed ? immed->value->immed_val.ent : 
-	  immed->value->get_obj(immed->value->parent));
+    {
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid address parameter", 0);
+    }
+
+  addr = (immed->value->immed ? immed->value->immed_val.ent :
+          immed->value->get_obj(immed->value->parent));
 
   /* Analyse the binary if not already done */
   /*
@@ -104,13 +114,19 @@ int		cmd_reflect()
   if (world.curjob->curcmd->argc == 2)
     {
       immed = revm_lookup_param(world.curjob->curcmd->param[1], 1);
+
       if (revm_convert_object(immed, ASPECT_TYPE_INT) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid size parameter", 0);
-      reqnbr = (immed->value->immed ? (u_int) immed->value->immed_val.ent : 
-		(u_int) immed->value->get_obj(immed->value->parent));
+        {
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid size parameter", 0);
+        }
+
+      reqnbr = (immed->value->immed ? (u_int) immed->value->immed_val.ent :
+                (u_int) immed->value->get_obj(immed->value->parent));
+
       if (reqnbr <= 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Invalid instruction number to reflect", -1);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid instruction number to reflect", -1);
+
       readsize = 16 * reqnbr;
       blocdata = alloca(readsize);
     }
@@ -118,10 +134,13 @@ int		cmd_reflect()
   /* Only one param (an addr/symbol) --> Lookup data from a basic block on the CFG */
   else
     {
-      container = mjr_block_get_by_vaddr(world.mjr_session.cur, addr, MJR_BLOCK_GET_STRICT);
+      container = mjr_block_get_by_vaddr(world.mjr_session.cur, addr,
+                                         MJR_BLOCK_GET_STRICT);
+
       if (!container)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Failed to find bloc at this virtual address", -1);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Failed to find bloc at this virtual address", -1);
+
       curblock = (mjrblock_t *) container->data;
       readsize = curblock->size;
       blocdata = alloca(readsize);
@@ -130,9 +149,11 @@ int		cmd_reflect()
 
   /* Read data -- could be imported from a remote process, so needs to copy buffer */
   fileoff = elfsh_get_foffset_from_vaddr(world.curjob->curfile, addr);
-  if (elfsh_readmemf(world.curjob->curfile, fileoff, blocdata, readsize) != readsize)
+
+  if (elfsh_readmemf(world.curjob->curfile, fileoff, blocdata,
+                     readsize) != readsize)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Failed to read data to reflect", -1);
+                 "Failed to read data to reflect", -1);
 
   /* Create the new list of instructions in expression form */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, instrlist, sizeof(list_t), -1);
@@ -140,16 +161,19 @@ int		cmd_reflect()
   elist_init(instrlist, strdup(logbuf2), ASPECT_TYPE_EXPR);
 
   /* Reflection all instructions of the basic bloc in the list */
-  for (insnbr = off = 0; off < readsize; off += ret, insnbr++)      
+  for (insnbr = off = 0; off < readsize; off += ret, insnbr++)
     {
 
       /* If reached the number of requested instruction, stop now even without reaching buffer end */
-      if (reqnbr && insnbr == reqnbr)			
-	break;
+      if (reqnbr && insnbr == reqnbr)
+        {
+          break;
+        }
 
       /* Fetch the current instruction */
       ret = asm_read_instr(&cur, (u_char *) blocdata + off,
                            readsize - off + 10, world.curjob->proc);
+
       if (ret < 0)
         {
           elist_destroy(instrlist);

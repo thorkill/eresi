@@ -1,7 +1,7 @@
 /**
 * @file libmjollnir/src/ondisk.c
  * @ingroup libmjollnir
- * 
+ *
  * @brief Implement routines to store and load analysis data on disk
  *
  * Started : Thu Jul 28 02:39:14 2003 jfv
@@ -18,11 +18,11 @@
  * @param buf buffer which contains the data
  * @return an offset where the data has been saved
  */
-static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
+static int  mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
 {
-  u_int		nbr;
-  listent_t	*cur;
-  mjrlink_t	*curlink;
+  u_int   nbr;
+  listent_t *cur;
+  mjrlink_t *curlink;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -33,15 +33,17 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
       cur = c->inlinks->head;
       nbr = c->nbrinlinks;
       break;
+
     case CONTAINER_LINK_OUT:
       cur = c->outlinks->head;
       nbr = c->nbroutlinks;
       break;
+
     default:
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Unknown link type", -1);  
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Unknown link type", -1);
     }
-  
+
   /* Allocate the good size for ondisk buffer */
   if (!buf->data || !buf->allocated)
     {
@@ -51,8 +53,8 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
   else if (buf->allocated)
     {
       buf->allocated += nbr * sizeof(unsigned int) * 2;
-      XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	       buf->data, buf->data, buf->allocated, -1);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+               buf->data, buf->data, buf->allocated, -1);
     }
 
   /* Iterate over all links */
@@ -61,20 +63,21 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
       curlink = (mjrlink_t *) cur->data;
 
 #if __DEBUG_ONDISK__
-      fprintf(D_DESC,"[D] %s.%d: stored dep id:%d dir:%d cid:%d type:%d\n",
-	      __FUNCTION__, __LINE__, c->id, type, curlink->id, curlink->type);
+      fprintf(D_DESC, "[D] %s.%d: stored dep id:%d dir:%d cid:%d type:%d\n",
+              __FUNCTION__, __LINE__, c->id, type, curlink->id, curlink->type);
 #endif
 
-      memcpy(buf->data + buf->maxlen, (char *) &curlink->id , sizeof(unsigned int));
+      memcpy(buf->data + buf->maxlen, (char *) &curlink->id, sizeof(unsigned int));
       buf->maxlen += sizeof(unsigned int);
       memcpy(buf->data + buf->maxlen, (char *) &curlink->type, sizeof(unsigned char));
       buf->maxlen++;
-      memcpy(buf->data + buf->maxlen, (char *) &curlink->scope, sizeof(unsigned char));
+      memcpy(buf->data + buf->maxlen, (char *) &curlink->scope,
+             sizeof(unsigned char));
       buf->maxlen++;
-      
+
       cur = cur->next;
     }
-  
+
   buf->counter++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf->maxlen);
 }
@@ -85,18 +88,18 @@ static int	mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
 /**
  * @brief Link containers in the control flow graph
  */
-static int	mjr_flow_load_links(mjrcontext_t	*ctxt, 
-				    container_t		*container, 
-				    u_int		linktype,
-				    char		*sectdata,
-				    u_int		*curoff)
+static int  mjr_flow_load_links(mjrcontext_t  *ctxt,
+                                container_t   *container,
+                                u_int   linktype,
+                                char    *sectdata,
+                                u_int   *curoff)
 {
-  u_int		off;
-  u_int		tmpid;
-  u_char	tmptype;
-  u_char	tmpscope;
-  u_int		tmpnbr;
-  u_int		findex;
+  u_int   off;
+  u_int   tmpid;
+  u_char  tmptype;
+  u_char  tmpscope;
+  u_int   tmpnbr;
+  u_int   findex;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -108,34 +111,39 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
       tmpnbr = container->nbrinlinks;
       container_linklists_create(container, CONTAINER_LINK_IN, ctxt->obj->id);
       break;
+
     case CONTAINER_LINK_OUT:
       off   = (u_int) container->outlinks;
       tmpnbr = container->nbroutlinks;
       container_linklists_create(container, CONTAINER_LINK_OUT, ctxt->obj->id);
       break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Invalid link type", -1);
+                   "Invalid link type", -1);
     }
 
   /* Recreate each link */
   for (findex = 0; findex < tmpnbr; findex++)
-    {	 
+    {
       tmpid     = *(unsigned int *) ((char *) sectdata + off + *curoff);
       *curoff  += sizeof (unsigned int);
       tmptype   = *(unsigned char *) sectdata + off + *curoff;
       *curoff  += sizeof (unsigned char);
       tmpscope  = *(unsigned char *) sectdata + off + *curoff;
       *curoff  += sizeof (unsigned char);
-      
+
 #if __DEBUG_ONDISK__
-      fprintf(D_DESC," [__DEBUG_ONDISK__] Restored link: (%d/%d) sid:%u did:%u type:%u scope:%u\n", 
-	      findex, tmpnbr, container->id, tmpid, tmptype, tmpscope);
+      fprintf(D_DESC,
+              " [__DEBUG_ONDISK__] Restored link: (%d/%d) sid:%u did:%u type:%u scope:%u\n",
+              findex, tmpnbr, container->id, tmpid, tmptype, tmpscope);
 #endif
-      
+
       /* This function increments linklist->elmnbr */
       if (tmpid)
-	mjr_container_add_link(ctxt, container, tmpid, tmptype, tmpscope, linktype);
+        {
+          mjr_container_add_link(ctxt, container, tmpid, tmptype, tmpscope, linktype);
+        }
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -147,15 +155,15 @@ static int	mjr_flow_load_links(mjrcontext_t	*ctxt,
 
 
 /**
- * @brief Create the data dump to be saved in file 
+ * @brief Create the data dump to be saved in file
  */
-static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
+static int    mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 {
-  void			*curunit;
-  container_t		*container;
-  u_int			unitsize;
-  eresi_Addr		addr;
-  u_int			size;
+  void      *curunit;
+  container_t   *container;
+  u_int     unitsize;
+  eresi_Addr    addr;
+  u_int     size;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -165,12 +173,14 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
     case ASPECT_TYPE_BLOC:
       unitsize = sizeof(mjrblock_t);
       break;
+
     case ASPECT_TYPE_FUNC:
       unitsize = sizeof(mjrfunc_t);
       break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Invalid input type id", 0);
+                   "Invalid input type id", 0);
     }
 
   /* At this points, no new unit allocation should be done */
@@ -178,14 +188,14 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 
   /* This is why addr and size fields should always be in first in mjrblock/mjrfunc */
   addr    = *(eresi_Addr *) curunit;
-  size    = *(u_int      *) ((char *) curunit + sizeof(eresi_Addr));
-  
+  size    = *(u_int *) ((char *) curunit + sizeof(eresi_Addr));
+
 #if __DEBUG_ONDISK__
-  fprintf(D_DESC," [*] Saving data unit %s\n", buf);
+  fprintf(D_DESC, " [*] Saving data unit %s\n", buf);
 #endif
 
   /* Else insert the block in the global buffer for the .control section */
-  if (!buf->data) 
+  if (!buf->data)
     {
       buf->allocated = getpagesize();
       XALLOC(__FILE__, __FUNCTION__, __LINE__, buf->data, buf->allocated, -1);
@@ -194,10 +204,10 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
   else if (buf->allocated  < (buf->maxlen + unitsize + sizeof(container_t)))
     {
       buf->allocated += getpagesize();
-      XREALLOC(__FILE__, __FUNCTION__, __LINE__, 
-	       buf->data, buf->data, buf->allocated, -1);
+      XREALLOC(__FILE__, __FUNCTION__, __LINE__,
+               buf->data, buf->data, buf->allocated, -1);
     }
-  
+
   /* Unit copy in the buffer */
   container = (container_t *) ((char *) buf->data + buf->maxlen);
   curunit   = (char *) buf->data + buf->maxlen + sizeof(container_t);
@@ -220,26 +230,26 @@ static int		mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
 
 
 /**
- * @brief Create the control flow graph using the information stored in .elfsh.control 
+ * @brief Create the control flow graph using the information stored in .elfsh.control
  *
  * @return Returns the number of saved data units (0 probably means something is wrong)
  */
-int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
+int     mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
 {
   int                   index, cnt, done;
   elfshsect_t           *sect, *flowsect;
-  char			name[20];
-  char			**keys;
-  container_t		*container;
-  container_t		*tmpcntnr;
-  u_int			flowdone;
-  u_int			unitsize;
-  u_int			unitnbr;
-  hash_t		*table;
-  void			*curunit;
-  void			*tmpunit;
-  char			*debugsect1;
-  char			*debugsect2;
+  char      name[20];
+  char      **keys;
+  container_t   *container;
+  container_t   *tmpcntnr;
+  u_int     flowdone;
+  u_int     unitsize;
+  u_int     unitnbr;
+  hash_t    *table;
+  void      *curunit;
+  void      *tmpunit;
+  char      *debugsect1;
+  char      *debugsect2;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -252,43 +262,53 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
       debugsect1 = ELFSH_SECTION_NAME_EDFMT_BLOCKS;
       debugsect2 = ELFSH_SECTION_NAME_EDFMT_BCONTROL;
       break;
+
     case ASPECT_TYPE_FUNC:
       unitsize   = sizeof(mjrfunc_t);
       table      = &ctxt->funchash;
       debugsect1 = ELFSH_SECTION_NAME_EDFMT_FUNCTIONS;
       debugsect2 = ELFSH_SECTION_NAME_EDFMT_FCONTROL;
       break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Invalid input type id", 0);
+                   "Invalid input type id", 0);
     }
 
   /* If mjr_flow_load() was already called, just return now */
   cnt = hash_size(table);
+
   if (cnt != 0)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
+    }
 
   /* Preliminary checks */
   sect = elfsh_get_section_by_name(ctxt->obj, debugsect1, 0, 0, 0);
+
   if (!sect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "No control flow section : use analyse command", 0);
+                 "No control flow section : use analyse command", 0);
+
   if (sect->shdr->sh_size % (unitsize + sizeof(container_t)))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		      "Corrupted edfmt section : modulo-test failed", 0);
+                 "Corrupted edfmt section : modulo-test failed", 0);
+
   flowsect = elfsh_get_section_by_name(ctxt->obj, debugsect2, 0, 0, 0);
+
   if (!flowsect)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "No control flow analysis section found (use analyse command)", 0);
-    
+                 "No control flow analysis section found (use analyse command)", 0);
+
   /* First pass : Iterate on the control flow section to find blocks */
   /* We do not create new data units but use the data from the section */
   unitnbr = sect->shdr->sh_size / (sizeof(container_t) + unitsize);
+
   for (done = index = 0; index < unitnbr; index++)
     {
-      
+
       /* Ondisk format ondisk is the exact same format that we manipulate
-	 in this lib. So its very practical to reload/store the info ondisk */
+      in this lib. So its very practical to reload/store the info ondisk */
       container  = (container_t *) ((char *) sect->data + done);
       done      += sizeof(container_t);
       curunit    = (char *) sect->data + done;
@@ -303,9 +323,10 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
 
       /* Because of this line, we need to make sure the addr is always in first in all structs */
       snprintf(name, sizeof(name), AFMT, *(eresi_Addr *) tmpunit);
-      
+
 #if __DEBUG_ONDISK__
-      fprintf(D_DESC,"[__DEBUG_ONDISK__] %s: add new unit name: %s \n", __FUNCTION__, name);
+      fprintf(D_DESC, "[__DEBUG_ONDISK__] %s: add new unit name: %s \n", __FUNCTION__,
+              name);
 #endif
 
       mjr_register_container_id(ctxt, tmpcntnr);
@@ -314,12 +335,15 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
 
   /* Relink containers in this second run */
   keys = hash_get_keys(table, &done);
+
   for (index = 0; index < done; index++)
     {
       container = hash_get(table, keys[index]);
       flowdone  = 0;
-      mjr_flow_load_links(ctxt, container, CONTAINER_LINK_IN , flowsect->data, &flowdone);
-      mjr_flow_load_links(ctxt, container, CONTAINER_LINK_OUT, flowsect->data, &flowdone);
+      mjr_flow_load_links(ctxt, container, CONTAINER_LINK_IN, flowsect->data,
+                          &flowdone);
+      mjr_flow_load_links(ctxt, container, CONTAINER_LINK_OUT, flowsect->data,
+                          &flowdone);
     }
 
   /* Prevent double analysis */
@@ -335,22 +359,22 @@ int			mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
  * This loops on all block/func, and call mjr_unit_save() on each element
  *
  */
-int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid) 
+int     mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
 {
-  elfsh_Shdr		shdr;
-  elfshsect_t		*sect;
-  mjrbuf_t		buf, cfbuf;
-  container_t		*container;
-  int			err;
-  char			**keys;
-  int			keynbr;
-  int			index;
-  int			flow_off_in, flow_off_out;
-  list_t		*tmpin, *tmpout;
-  hash_t		*table;
-  char			*debugsect1;
-  char			*debugsect2;
-  void			*curunit;
+  elfsh_Shdr    shdr;
+  elfshsect_t   *sect;
+  mjrbuf_t    buf, cfbuf;
+  container_t   *container;
+  int     err;
+  char      **keys;
+  int     keynbr;
+  int     index;
+  int     flow_off_in, flow_off_out;
+  list_t    *tmpin, *tmpout;
+  hash_t    *table;
+  char      *debugsect1;
+  char      *debugsect2;
+  void      *curunit;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -362,24 +386,33 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
       debugsect1 = ELFSH_SECTION_NAME_EDFMT_BLOCKS;
       debugsect2 = ELFSH_SECTION_NAME_EDFMT_BCONTROL;
       break;
+
     case ASPECT_TYPE_FUNC:
       table      = &ctxt->funchash;
       debugsect1 = ELFSH_SECTION_NAME_EDFMT_FUNCTIONS;
       debugsect2 = ELFSH_SECTION_NAME_EDFMT_FCONTROL;
       break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		   "Invalid input type id", 0);
-    }  
+                   "Invalid input type id", 0);
+    }
 
   /* Remove previous control sections if any */
   sect = elfsh_get_section_by_name(ctxt->obj, debugsect1, 0, 0, 0);
+
   if (sect)
-    elfsh_remove_section(ctxt->obj, debugsect1);
+    {
+      elfsh_remove_section(ctxt->obj, debugsect1);
+    }
+
   sect = elfsh_get_section_by_name(ctxt->obj, debugsect2, 0, 0, 0);
+
   if (sect)
-    elfsh_remove_section(ctxt->obj, debugsect2);
-	
+    {
+      elfsh_remove_section(ctxt->obj, debugsect2);
+    }
+
   /* Initialize data buffer */
   buf.allocated = 0;
   buf.maxlen    = 0;
@@ -398,23 +431,28 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
 
   /* Iteratively save all data units */
   keys = hash_get_keys(table, &keynbr);
+
   for (index = 0; index < keynbr; index++)
     {
       tmpin    = tmpout = NULL;
       container = hash_get(table, keys[index]);
 
 #if __DEBUG_ONDISK__
+
       switch (typeid)
-	{
-	case ASPECT_TYPE_BLOC:
-	  mjr_block_dump(ctxt, container);
-	  break;
-	case ASPECT_TYPE_FUNC:
-	  mjr_function_dump(ctxt, (char *) __FUNCTION__, container);
-	  break;
-	default:
-	  break;
-	}
+        {
+        case ASPECT_TYPE_BLOC:
+          mjr_block_dump(ctxt, container);
+          break;
+
+        case ASPECT_TYPE_FUNC:
+          mjr_function_dump(ctxt, (char *) __FUNCTION__, container);
+          break;
+
+        default:
+          break;
+        }
+
 #endif
 
       /* We update the number of links stored ondisk */
@@ -440,55 +478,61 @@ int			mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
       /* Store block flow and get new offsets */
       flow_off_in  = mjr_flow_store_links(container, CONTAINER_LINK_IN, &cfbuf);
       flow_off_out = mjr_flow_store_links(container, CONTAINER_LINK_OUT, &cfbuf);
+
       if (flow_off_in < 0 || flow_off_out < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Unable to save flow analysis information", 0);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to save flow analysis information", 0);
+
       curunit = container->data;
 
       /* This is just a help code, it does not do really
-	 anything and it kept for intelligence purpose */
+      anything and it kept for intelligence purpose */
       if (typeid == ASPECT_TYPE_BLOC && mjr_block_funcstart(container))
-	{
-	  container = mjr_function_get_by_vaddr(ctxt, *(eresi_Addr *) curunit);
+        {
+          container = mjr_function_get_by_vaddr(ctxt, *(eresi_Addr *) curunit);
 
-	  /* Can happens rarely - should not be fatal */
-	  if (container == NULL || container->data == NULL)
-	    {
+          /* Can happens rarely - should not be fatal */
+          if (container == NULL || container->data == NULL)
+            {
 #if __DEBUG_ONDISK__
-	      fprintf(stderr, " [*] Failed to find parent function at 0x%08lx \n", 
-		      (unsigned long) *(eresi_Addr *) curunit);
+              fprintf(stderr, " [*] Failed to find parent function at 0x%08lx \n",
+                      (unsigned long) * (eresi_Addr *) curunit);
 #endif
-	      continue;
-	    }
+              continue;
+            }
 
 #if __DEBUG_ONDISK__
-	  fprintf(stderr, " [*] Found block start for function 0x%08lx \n", 
-		  (unsigned long) *(eresi_Addr *) curunit);
+          fprintf(stderr, " [*] Found block start for function 0x%08lx \n",
+                  (unsigned long) * (eresi_Addr *) curunit);
 #endif
 
-	}
+        }
     }
 
   /* Create control section */
   sect = elfsh_create_section(debugsect1);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, buf.maxlen, 0, 0, 0, 0);
 
-  fprintf(stderr, " [*] Saving %s section of %u bytes \n", debugsect1, buf.maxlen);
+  fprintf(stderr, " [*] Saving %s section of %u bytes \n", debugsect1,
+          buf.maxlen);
 
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, buf.data);
+
   if (err < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Unable to save edfmt section1", -1);
-  
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Unable to save edfmt section1", -1);
+
   sect = elfsh_create_section(debugsect2);
   shdr = elfsh_create_shdr(0, SHT_PROGBITS, 0, 0, 0, cfbuf.maxlen, 0, 0, 0, 0);
 
-  fprintf(stderr, " [*] Saving %s section of %u bytes\n", debugsect2, cfbuf.maxlen);
+  fprintf(stderr, " [*] Saving %s section of %u bytes\n", debugsect2,
+          cfbuf.maxlen);
 
   err = elfsh_insert_unmapped_section(ctxt->obj, sect, shdr, cfbuf.data);
+
   if (err < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Unable to save edfmt section2", -1);
+                 "Unable to save edfmt section2", -1);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.counter);
 }

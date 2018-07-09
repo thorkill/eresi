@@ -2,9 +2,9 @@
 * @file libelfsh/stab.c
  * @ingroup libelfsh
  * stabs.c for libelfsh
- * 
+ *
  * Started on  Mon Feb 26 04:14:06 2001 jfv
- * 
+ *
  *
  * $Id$
  *
@@ -12,28 +12,29 @@
 #include "libelfsh.h"
 
 /**
- * @brief Return the debugging symbol name giving its index in 
+ * @brief Return the debugging symbol name giving its index in
  * the stab string table.
  * @param file
  * @param s
  * @return
  */
-char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
+char  *elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
 {
-  char	*str;
+  char  *str;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid NULL file parameter",  NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid NULL file parameter",  NULL);
 
   if (NULL == file->secthash[ELFSH_SECTION_STABSTR] &&
       NULL == elfsh_get_stab(file, NULL))
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Cannot retreive stabs section",  NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Cannot retreive stabs section",  NULL);
 
-  str = (char *) elfsh_readmem(file->secthash[ELFSH_SECTION_STABSTR]) + s->strindex;
+  str = (char *) elfsh_readmem(file->secthash[ELFSH_SECTION_STABSTR]) +
+        s->strindex;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
 }
 
@@ -43,45 +44,47 @@ char	*elfsh_get_stab_name(elfshobj_t *file, elfshstabent_t *s)
  * @param num
  * @return
  */
-void		*elfsh_get_stab(elfshobj_t *file, int *num)
+void    *elfsh_get_stab(elfshobj_t *file, int *num)
 {
-  elfshsect_t	*sect;
-  int		strindex;
-  int		index;
-  int		nbr;
-  void		*ret;
+  elfshsect_t *sect;
+  int   strindex;
+  int   index;
+  int   nbr;
+  void    *ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   /* Fill the stab table */
   if (file->secthash[ELFSH_SECTION_STAB] == NULL)
     {
 
       sect = elfsh_get_section_by_name(file, ELFSH_SECTION_NAME_STAB,
-					&index, &strindex, &nbr);
+                                       &index, &strindex, &nbr);
+
       if (NULL == sect)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to get STABS by name", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to get STABS by name", NULL);
 
       file->secthash[ELFSH_SECTION_STAB] = sect;
       sect->data = elfsh_load_section(file, sect->shdr);
 
       if (sect->data == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to load STABS", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to load STABS", NULL);
 
       /* Fill the stab string table */
       sect = elfsh_get_section_by_index(file, strindex, NULL, NULL);
 
       if (sect == NULL)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to get STABS string table", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to get STABS string table", NULL);
 
       file->secthash[ELFSH_SECTION_STABSTR] = sect;
       sect->data = elfsh_load_section(file, sect->shdr);
 
       if (sect->data == NULL)
-        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-			  "Unable to load STABS string table", NULL);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Unable to load STABS string table", NULL);
     }
 
   if (num != NULL)
@@ -97,22 +100,22 @@ void		*elfsh_get_stab(elfshobj_t *file, int *num)
 
 
 /**
- * @brief Return the symbol type name giving its index in the symtype array 
+ * @brief Return the symbol type name giving its index in the symtype array
  * @param s
  * @return
  */
-u_int	elfsh_get_stab_type(elfshstabent_t *s)
+u_int elfsh_get_stab_type(elfshstabent_t *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->type));
 }
 
 /**
- * Not used yet 
+ * Not used yet
  * @param s
  * @return
  */
-eresi_Addr	elfsh_get_stab_offset(elfshstabent_t *s)
+eresi_Addr  elfsh_get_stab_offset(elfshstabent_t *s)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (((eresi_Addr) (s->value))));

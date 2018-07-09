@@ -12,7 +12,7 @@
 #include "libe2dbg.h"
 
 /* The debugger world */
-e2dbgworld_t	e2dbgworld;
+e2dbgworld_t  e2dbgworld;
 
 /**
  * Realize the output.
@@ -20,7 +20,7 @@ e2dbgworld_t	e2dbgworld;
  * @param str
  * @return
  */
-int		e2dbg_output(char *str)
+int   e2dbg_output(char *str)
 {
   //revm_output(str);
   fprintf(stderr, str);
@@ -28,9 +28,9 @@ int		e2dbg_output(char *str)
 }
 
 
-/** 
+/**
  * Get the parent object of a breakpoint.
- * Thats needed for the mprotect stuff inside the breakpoint handler 
+ * Thats needed for the mprotect stuff inside the breakpoint handler
  * @param addr
  * @return
  */
@@ -46,19 +46,24 @@ elfshobj_t      *e2dbg_get_parent_object(eresi_Addr addr)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   keys = hash_get_keys(&world.curjob->loaded, &keynbr);
+
   for (index = 0; index < keynbr; index++)
     {
       curfile = hash_get(&world.curjob->loaded, keys[index]);
       cursect = elfsh_get_parent_section(curfile, addr, NULL);
+
       if (cursect)
         {
           cur = elfsh_get_parent_segment(curfile, cursect);
+
           if (cur)
-            PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, curfile);
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, curfile);
+            }
         }
     }
-  
+
   /* Parent object not found */
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "Unable to get parent object addr", (NULL));
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "Unable to get parent object addr", (NULL));
 }

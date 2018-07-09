@@ -15,7 +15,9 @@ int     op_addsize(asm_instr *new, u_char *opcode, u_int len,
   asm_i386_processor    *i386p;
 
   if (!new->ptr_prefix)
-    new->ptr_prefix = opcode;
+    {
+      new->ptr_prefix = opcode;
+    }
 
   i386p = (asm_i386_processor *) proc;
   new->prefix |= ASM_PREFIX_ADDSIZE;

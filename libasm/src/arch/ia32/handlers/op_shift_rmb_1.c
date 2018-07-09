@@ -12,7 +12,7 @@
   <instruction func="op_shift_rmb_1" opcode="0xd0"/>
  */
 
-int op_shift_rmb_1(asm_instr *new, u_char *opcode, u_int len, 
+int op_shift_rmb_1(asm_instr *new, u_char *opcode, u_int len,
                    asm_processor *proc)
 {
   new->ptr_instr = opcode;
@@ -20,8 +20,9 @@ int op_shift_rmb_1(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_SHR;
   new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_PF | ASM_FLAG_ZF | ASM_FLAG_SF |
-                        ASM_FLAG_CF | ASM_FLAG_OF;
+                      ASM_FLAG_CF | ASM_FLAG_OF;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE,
+                                new);
   return (new->len);
 }

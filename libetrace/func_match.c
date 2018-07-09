@@ -19,26 +19,26 @@
  * @param get_symname Function ptr to get symbol name.
  * @return Success (0) or Error (-1).
  */
-static int		trace_match_symtab(elfshsect_t	*sect, 
-					   int		num, 
-					   regex_t	*preg,
-					   char		***func_list, 
-					   u_int	*count,
-					   char		*(*get_symname)(elfshobj_t *f, 
-									elfsh_Sym *s))
+static int    trace_match_symtab(elfshsect_t  *sect,
+                                 int    num,
+                                 regex_t  *preg,
+                                 char   ***func_list,
+                                 u_int  *count,
+                                 char   *(*get_symname)(elfshobj_t *f,
+                                     elfsh_Sym *s))
 {
-  u_int			index;
-  elfsh_Sym		*table;
-  char			*name;
-  char			**f_list;
-  u_int			cnum;
+  u_int     index;
+  elfsh_Sym   *table;
+  char      *name;
+  char      **f_list;
+  u_int     cnum;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Check argument before anything */
   if (!sect || !preg || !func_list || !count || !get_symname)
-     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid parameters", -1);
 
   f_list = *func_list;
   cnum = *count;
@@ -49,39 +49,43 @@ static int		trace_match_symtab(elfshsect_t	*sect,
     {
       /* Only functions */
       if (elfsh_get_symbol_type(table + index) != STT_FUNC
-	  || table[index].st_value == 0)
-	continue;
+          || table[index].st_value == 0)
+        {
+          continue;
+        }
 
       name = get_symname(sect->parent, table + index);
 
       /* Check if this name is valid */
       if (name == NULL || *name == 0)
-	continue;
+        {
+          continue;
+        }
 
       /* We match a function */
       if (regexec(preg, name, 0, 0, 0) == 0)
-	{
-	  /* Do we need to realloc ? */
-	  if (((cnum+1) % TRACE_MATCH_ALLOCSTEP) == 0)
-	    {
-	      XREALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, f_list, 
-		       sizeof(char*) * (cnum + 1 + TRACE_MATCH_ALLOCSTEP), -1);
+        {
+          /* Do we need to realloc ? */
+          if (((cnum + 1) % TRACE_MATCH_ALLOCSTEP) == 0)
+            {
+              XREALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, f_list,
+                       sizeof(char *) * (cnum + 1 + TRACE_MATCH_ALLOCSTEP), -1);
 
-	      /* Blank new elements */
-	      memset(&f_list[cnum], 0x00, TRACE_MATCH_ALLOCSTEP*sizeof(char*));
+              /* Blank new elements */
+              memset(&f_list[cnum], 0x00, TRACE_MATCH_ALLOCSTEP * sizeof(char *));
 
-	      /* Update the pointer, data can move during a reallocation */
-	      *func_list = f_list;
-	    }
+              /* Update the pointer, data can move during a reallocation */
+              *func_list = f_list;
+            }
 
-	  /* Add the function in the table */
-	  f_list[cnum] = name;
+          /* Add the function in the table */
+          f_list[cnum] = name;
 
-	  *count = ++cnum;
-	}
+          *count = ++cnum;
+        }
     }
-  
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
@@ -89,70 +93,73 @@ static int		trace_match_symtab(elfshsect_t	*sect,
  * @param func_list function list pointer
  * @param count position on the list
  */
-int			trace_match_addrtable(elfshobj_t *curfile, char ***func_list, u_int *count)
+int     trace_match_addrtable(elfshobj_t *curfile, char ***func_list,
+                              u_int *count)
 {
-  eresi_Addr		*alist = NULL;
-  u_int			index;
-  char			**f_list;
-  u_int			cnum;
-  char			tmpstr[256];
-  elfsh_Sym		*sym;
-  char			*toadd;
-  
+  eresi_Addr    *alist = NULL;
+  u_int     index;
+  char      **f_list;
+  u_int     cnum;
+  char      tmpstr[256];
+  elfsh_Sym   *sym;
+  char      *toadd;
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!func_list || !count)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid parameters", -1);
 
   f_list = *func_list;
   cnum = *count;
-  
+
   /* Retrieve all called address in this binary */
   if (elfsh_addr_get_func_list(curfile, &alist) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Can't get call function list", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Can't get call function list", -1);
 
   for (index = 0; alist[index]; index++)
     {
-      sym = elfsh_get_symbol_by_value(curfile, alist[index], 
-				      0, ELFSH_EXACTSYM);
-      
+      sym = elfsh_get_symbol_by_value(curfile, alist[index],
+                                      0, ELFSH_EXACTSYM);
+
       /* Find a symbol for this address */
       if (sym)
-	{
-	  toadd = elfsh_get_symbol_name(curfile, sym);
-	}
+        {
+          toadd = elfsh_get_symbol_name(curfile, sym);
+        }
       else
-	{
-	  snprintf(tmpstr, 255, TRACE_PRE_FUNC "" AFMT, 
-		   alist[index]);
-	  toadd = tmpstr;
-	}
+        {
+          snprintf(tmpstr, 255, TRACE_PRE_FUNC "" AFMT,
+                   alist[index]);
+          toadd = tmpstr;
+        }
 
       /* Do we need to realloc ? */
-      if (((cnum+1) % TRACE_MATCH_ALLOCSTEP) == 0)
-	{
-	  XREALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, f_list, 
-		   sizeof(char*) * (cnum + 1 + TRACE_MATCH_ALLOCSTEP), -1);
+      if (((cnum + 1) % TRACE_MATCH_ALLOCSTEP) == 0)
+        {
+          XREALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, f_list,
+                   sizeof(char *) * (cnum + 1 + TRACE_MATCH_ALLOCSTEP), -1);
 
-	  /* Blank new elements */
-	  memset(&f_list[cnum], 0x00, TRACE_MATCH_ALLOCSTEP*sizeof(char*));
-	  
-	  /* Update the pointer, data can move during a reallocation */
-	  *func_list = f_list;
-	}
+          /* Blank new elements */
+          memset(&f_list[cnum], 0x00, TRACE_MATCH_ALLOCSTEP * sizeof(char *));
+
+          /* Update the pointer, data can move during a reallocation */
+          *func_list = f_list;
+        }
 
       /* If its temp string, strdup it */
       if (toadd == tmpstr)
-	toadd = strdup(tmpstr);
+        {
+          toadd = strdup(tmpstr);
+        }
 
       f_list[cnum] = toadd;
 
       *count = ++cnum;
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**
@@ -160,33 +167,34 @@ int			trace_match_addrtable(elfshobj_t *curfile, char ***func_list, u_int *count
  * @param funcreg Function regex (or not ?)
  * @param func_list the final function list
  */
-int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_list)
+int     trace_match_funcname(elfshobj_t *curfile, char *funcname,
+                             char ***func_list)
 {
-  regex_t		preg;
-  char			**f_list;
-  u_int			count = 0;
-  elfshsect_t		*sect;
-  int			num;
-  elfsh_Sym		*symtab;
-  elfsh_Sym		*sym;
-  char			funcreg[256];
-  char			addrname[256];
-  size_t		len;
-  eresi_Addr		addr;
+  regex_t   preg;
+  char      **f_list;
+  u_int     count = 0;
+  elfshsect_t   *sect;
+  int     num;
+  elfsh_Sym   *symtab;
+  elfsh_Sym   *sym;
+  char      funcreg[256];
+  char      addrname[256];
+  size_t    len;
+  eresi_Addr    addr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!funcname || !func_list)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid parameters", -1);
 
   len = strlen(funcname);
 
   /* We don't want to strip some part of the submited function
    but if you find a function/regex of this size (for this purpose) ... */
   if (len > 255)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Function name is too long", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Function name is too long", -1);
 
   /* An address ? */
   if (IS_VADDR(funcname))
@@ -195,34 +203,34 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
       sscanf(funcname + 2, AFMT, &addr);
 
       /* Prealloc the list */
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, sizeof(char*)*2, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, sizeof(char *) * 2, -1);
 
       sym = elfsh_get_symbol_by_value(curfile, addr, 0, ELFSH_EXACTSYM);
-      
+
       /* We have a symbol for this address */
       if (sym)
-	{
-	  f_list[0] = elfsh_get_symbol_name(curfile, sym);
-	  f_list[1] = NULL;
-	}
+        {
+          f_list[0] = elfsh_get_symbol_name(curfile, sym);
+          f_list[1] = NULL;
+        }
       else
-	{
-	  sym = elfsh_get_dynsymbol_by_value(curfile, addr, 0, ELFSH_EXACTSYM);
+        {
+          sym = elfsh_get_dynsymbol_by_value(curfile, addr, 0, ELFSH_EXACTSYM);
 
-	  /* We have a dynamic symbol for this address */
-	  if (sym)
-	    {
-	      f_list[0] = elfsh_get_dynsymbol_name(curfile, sym);
-	      f_list[1] = NULL;
-	    }
-	  else
-	    {
-	      TRACE_GET_FUNC_NAME(addrname, 255, funcname);
-	      
-	      f_list[0] = strdup(addrname);
-	      f_list[1] = NULL;
-	    }
-	}
+          /* We have a dynamic symbol for this address */
+          if (sym)
+            {
+              f_list[0] = elfsh_get_dynsymbol_name(curfile, sym);
+              f_list[1] = NULL;
+            }
+          else
+            {
+              TRACE_GET_FUNC_NAME(addrname, 255, funcname);
+
+              f_list[0] = strdup(addrname);
+              f_list[1] = NULL;
+            }
+        }
 
       goto end;
     }
@@ -232,15 +240,15 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
      add those symbols, it will match __libc_start_main which is very
      special function and that can create problems and make the tracer
      useless */
-  snprintf(funcreg, 255, "%s%s%s", 
-	   funcname[0] != '^' ? "^" : "",
-	   funcname,
-	   funcname[len-1] != '$' ? "$" : "");
+  snprintf(funcreg, 255, "%s%s%s",
+           funcname[0] != '^' ? "^" : "",
+           funcname,
+           funcname[len - 1] != '$' ? "$" : "");
 
   /* Do we have a regex ? */
   if (regcomp(&preg, funcreg, 0) != 0)
     {
-      XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, sizeof(char*)*2, -1);
+      XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, sizeof(char *) * 2, -1);
       f_list[0] = funcname;
       f_list[1] = NULL;
 
@@ -248,8 +256,8 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
     }
 
   /* Preallocation */
-  XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list, 
-	 sizeof(char*) * TRACE_MATCH_ALLOCSTEP, -1);
+  XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list,
+         sizeof(char *) * TRACE_MATCH_ALLOCSTEP, -1);
 
 
   /* Total match case */
@@ -263,30 +271,31 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
    * Match on symbol table
    */
   symtab = elfsh_get_symtab(curfile, &num);
-  
+
   if (symtab != NULL)
-    { 
-      sect = elfsh_get_section_by_type(curfile, 
-				       SHT_SYMTAB, 0, NULL, NULL, 0);
-      
+    {
+      sect = elfsh_get_section_by_type(curfile,
+                                       SHT_SYMTAB, 0, NULL, NULL, 0);
+
       /* Match function regex in the symbol table */
       trace_match_symtab(sect, num, &preg, &f_list, &count, elfsh_get_symbol_name);
     }
-      
+
   /**
    * Match on dynamic symbol table
    */
   symtab = elfsh_get_dynsymtab(curfile, &num);
 
   if (symtab != NULL)
-    { 
+    {
 
-      sect = elfsh_get_section_by_name(curfile, 
-				      ELFSH_SECTION_NAME_ALTDYNSYM, 
-				      NULL, NULL, &num);
+      sect = elfsh_get_section_by_name(curfile,
+                                       ELFSH_SECTION_NAME_ALTDYNSYM,
+                                       NULL, NULL, &num);
+
       if (!sect)
-	sect = elfsh_get_section_by_type(curfile, SHT_DYNSYM, 0, 
-					NULL, NULL, &num);
+        sect = elfsh_get_section_by_type(curfile, SHT_DYNSYM, 0,
+                                         NULL, NULL, &num);
 
       num /= sizeof(elfsh_Sym);
 
@@ -298,11 +307,11 @@ int			trace_match_funcname(elfshobj_t *curfile, char *funcname, char ***func_lis
   if (count == 0)
     {
       XFREE(__FILE__, __FUNCTION__, __LINE__, f_list);
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "Can't match a single function", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Can't match a single function", -1);
     }
 
- end:
+end:
 
   /* Set final pointer */
   *func_list = f_list;

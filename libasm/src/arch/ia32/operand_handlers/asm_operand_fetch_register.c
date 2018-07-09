@@ -17,7 +17,7 @@
  */
 
 int     asm_operand_fetch_register(asm_operand *operand, u_char *opcode,
-				   int otype, asm_instr *ins)
+                                   int otype, asm_instr *ins)
 {
   struct s_modrm        *modrm;
 
@@ -25,7 +25,7 @@ int     asm_operand_fetch_register(asm_operand *operand, u_char *opcode,
   operand->content = ASM_CONTENT_REGISTER;
   operand->type = ASM_OPTYPE_REG;
   operand->regset = asm_proc_opsize(ins->proc) ?
-    ASM_REGSET_R16 : ASM_REGSET_R32;
+                    ASM_REGSET_R16 : ASM_REGSET_R32;
   operand->baser = modrm->m;
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   operand->ptr = opcode;

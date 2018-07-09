@@ -34,15 +34,21 @@ static Bool     kedbg_isrealmodewmon(void)
         printf("If you are in VMWare: Impossible to detect the mode. Upgrade your"
                "VMWare version and use the proc <protected> to switch manually to"
                "protected mode.\n");
+
       passed = TRUE;
       PROFILER_ERRQ("Impossible to determine CPU mode", FALSE);
     }
+
   if (gdbwrap_cmdnotsup(loc))
-    PROFILER_ROUTQ(FALSE);
+    {
+      PROFILER_ROUTQ(FALSE);
+    }
 
   /* We add +1 to discard the first char.*/
   for (i = 0; ret[i] != '\0'; i++)
-    reply[i] = (char)gdbwrap_atoh(ret + BYTE_IN_CHAR * i + 1, 2);
+    {
+      reply[i] = (char)gdbwrap_atoh(ret + BYTE_IN_CHAR * i + 1, 2);
+    }
 
 
   /* Last bit is 0. */
@@ -71,7 +77,7 @@ static Bool     kedbg_isrealmodewmon(void)
 static Bool     kedbg_isrealmodeinject(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
-  char          code[]="\x0f\x20\xc0";
+  char          code[] = "\x0f\x20\xc0";
   gdbwrap_gdbreg32 regs;
 
   PROFILER_INQ();
@@ -88,10 +94,15 @@ static Bool     kedbg_isrealmodeinject(void)
   kedbg_writereg(offsetof(gdbwrap_gdbreg32, eip) / sizeof(ureg32), MEMINJECT);
   gdbwrap_stepi(loc);
   gdbwrap_readgenreg(loc);
+
   if (loc->reg32.eax & 0x1)
-    kedbgworld.pmode = TRUE;
+    {
+      kedbgworld.pmode = TRUE;
+    }
   else
-    kedbgworld.pmode = FALSE;
+    {
+      kedbgworld.pmode = FALSE;
+    }
 
   memcpy(&loc->reg32, &regs, sizeof(regs));
   gdbwrap_shipallreg(loc);
@@ -122,37 +133,53 @@ Bool           kedbg_isrealmode(void)
     {
       switch (choice)
         {
-          case 0:
-            ret = kedbg_isrealmodewmon();
-            if (gdbwrap_cmdnotsup(loc))
-              {
-                if (first_time == TRUE)
-                  choice++;
-                else
-                  goto exit;
-              }
-            break;
+        case 0:
+          ret = kedbg_isrealmodewmon();
 
-          case 1:
-            ret = kedbg_isrealmodeinject();
-            if (gdbwrap_cmdnotsup(loc))
-              {
-                if (first_time == TRUE)
+          if (gdbwrap_cmdnotsup(loc))
+            {
+              if (first_time == TRUE)
+                {
                   choice++;
-                else
+                }
+              else
+                {
                   goto exit;
-              }
-            break;
+                }
+            }
 
-          default:
-            fprintf(stderr, "Impossible to determine the mode.\n");
-            break;
+          break;
+
+        case 1:
+          ret = kedbg_isrealmodeinject();
+
+          if (gdbwrap_cmdnotsup(loc))
+            {
+              if (first_time == TRUE)
+                {
+                  choice++;
+                }
+              else
+                {
+                  goto exit;
+                }
+            }
+
+          break;
+
+        default:
+          fprintf(stderr, "Impossible to determine the mode.\n");
+          break;
         }
-    } while (gdbwrap_cmdnotsup(loc));
+    }
+  while (gdbwrap_cmdnotsup(loc));
 
- exit:
+exit:
+
   if (kedbgworld.pmode == TRUE)
-    asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
+    {
+      asm_ia32_switch_mode(&world.proc_ia32, INTEL_PROT);
+    }
 
   first_time = FALSE;
 
@@ -185,16 +212,20 @@ void            kedbg_setstep(void)
 /**
  * @ingroup kedbg
  */
-void		*kedbg_bt_ia32(void *frame)
+void    *kedbg_bt_ia32(void *frame)
 {
   la32          ptr = 0;
 
   PROFILER_INQ();
 
   if (kedbg_isrealmode())
-    kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, WORD_IN_BYTE);
+    {
+      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t)frame, &ptr, WORD_IN_BYTE);
+    }
   else
-    kedbg_readmema(NULL,(eresi_Addr)(uintptr_t)frame, &ptr, DWORD_IN_BYTE);
+    {
+      kedbg_readmema(NULL, (eresi_Addr)(uintptr_t)frame, &ptr, DWORD_IN_BYTE);
+    }
 
   PROFILER_ROUTQ((void *)ptr);
 }
@@ -202,7 +233,7 @@ void		*kedbg_bt_ia32(void *frame)
 /**
  * @ingroup kedbg
  */
-eresi_Addr	*kedbg_getfp(void)
+eresi_Addr  *kedbg_getfp(void)
 {
   gdbwrap_t     *loc = gdbwrap_current_get();
 
@@ -220,10 +251,15 @@ void            *kedbg_getret_ia32(void *frame)
   la32          ptr = 0;
 
   PROFILER_INQ();
+
   if (kedbg_isrealmode())
-    kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, WORD_IN_BYTE);
+    {
+      kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, WORD_IN_BYTE);
+    }
   else
-    kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
+    {
+      kedbg_readmema(NULL, (la32)((la32 *)frame + 1), &ptr, DWORD_IN_BYTE);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (void *)ptr);
 }
@@ -266,41 +302,55 @@ int             kedbg_setbp(elfshobj_t *f, elfshbp_t *bp)
   static Bool   first_time = TRUE;
 
   PROFILER_INQ();
+
   do
     {
       switch (choice)
         {
-          case 0:
-            kedbg_simplesetbp(f, bp);
-            kedbgworld.offset = 0;
-            if (gdbwrap_cmdnotsup(loc))
-              {
-                if (first_time == TRUE)
-                  choice++;
-                else
-                  goto exit;
-              }
-            break;
+        case 0:
+          kedbg_simplesetbp(f, bp);
+          kedbgworld.offset = 0;
 
-          case 1:
-            kedbg_setbpwint3(f, bp);
-            kedbgworld.offset = 1;
-            if (gdbwrap_cmdnotsup(loc))
-              {
-                if (first_time == TRUE)
+          if (gdbwrap_cmdnotsup(loc))
+            {
+              if (first_time == TRUE)
+                {
                   choice++;
-                else
+                }
+              else
+                {
                   goto exit;
-              }
-            break;
+                }
+            }
 
-          default:
-            /* Should not occur */
-            PROFILER_ERRQ("Bp not supported", -1);
+          break;
+
+        case 1:
+          kedbg_setbpwint3(f, bp);
+          kedbgworld.offset = 1;
+
+          if (gdbwrap_cmdnotsup(loc))
+            {
+              if (first_time == TRUE)
+                {
+                  choice++;
+                }
+              else
+                {
+                  goto exit;
+                }
+            }
+
+          break;
+
+        default:
+          /* Should not occur */
+          PROFILER_ERRQ("Bp not supported", -1);
         }
-    } while (gdbwrap_cmdnotsup(loc));
+    }
+  while (gdbwrap_cmdnotsup(loc));
 
- exit:
+exit:
   first_time = FALSE;
 
   PROFILER_ROUTQ(0);
@@ -340,11 +390,17 @@ int             kedbg_delbp(elfshbp_t *bp)
   PROFILER_INQ();
 
   if (!kedbgworld.offset)
-    kedbg_simpledelbp(bp);
+    {
+      kedbg_simpledelbp(bp);
+    }
   else if (kedbgworld.offset == 1)
-    kedbg_delbpwint3(bp);
+    {
+      kedbg_delbpwint3(bp);
+    }
   else
-    ASSERT(FALSE);
+    {
+      ASSERT(FALSE);
+    }
 
   PROFILER_ROUTQ(0);
 }
@@ -413,14 +469,19 @@ void            *kedbg_readmema(elfshobj_t *file, eresi_Addr addr,
   if (size)
     {
       if (buf == NULL)
-        PROFILER_ERRQ("buf is NULL !", buf);
+        {
+          PROFILER_ERRQ("buf is NULL !", buf);
+        }
+
       ASSERT(buf != NULL);
       ret = gdbwrap_readmem(loc, addr, size);
 
       /* gdbserver sends a string, we need to convert it. Note that 2
          characters = 1 real Byte.*/
       for (i = 0; i < size; i++)
-        charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
+        {
+          charbuf[i] = (u_char) gdbwrap_atoh(ret + 2 * i, 2);
+        }
     }
 
   PROFILER_ROUTQ(charbuf);
@@ -434,9 +495,12 @@ void            *kedbg_readmem(elfshsect_t *sect)
   void *ptr;
 
   PROFILER_INQ();
-  if(!elfsh_get_section_writableflag(sect->shdr) ||
-     !elfsh_get_section_allocflag(sect->shdr))
-    ptr = sect->data;
+
+  if (!elfsh_get_section_writableflag(sect->shdr) ||
+      !elfsh_get_section_allocflag(sect->shdr))
+    {
+      ptr = sect->data;
+    }
   else
     {
       ptr = malloc(sect->shdr->sh_size);
@@ -487,6 +551,7 @@ void            kedbg_set_regvars_ia32(void)
 
   PROFILER_INQ();
   reg =  gdbwrap_readgenreg(loc);
+
   if (reg != NULL)
     {
 
@@ -500,6 +565,7 @@ void            kedbg_set_regvars_ia32(void)
       E2DBG_SETREG(E2DBG_FP_VAR,  reg->ebp);
       E2DBG_SETREG(E2DBG_PC_VAR,  reg->eip);
     }
+
   PROFILER_OUTQ();
 }
 
@@ -538,6 +604,7 @@ void            kedbg_shipallreg(void)
   if (activated)
     {
       gdbwrap_shipallreg(loc);
+
       if (gdbwrap_erroroccured(loc))
         {
           fprintf(stderr, "Desactivating the set registers"
@@ -571,17 +638,29 @@ eresi_Addr      kedbg_realmode_memalloc(u_int size, u_int prot)
 
   NOT_USED(prot);
   PROFILER_INQ();
+
   do
     {
       kedbg_readmema(NULL, addr, ret, size);
+
       for (i = 0; i < size; i++)
-        result += ret[i];
+        {
+          result += ret[i];
+        }
+
       if (result)
-        addr += size;
-    } while (result && addr < 0xffff0);
+        {
+          addr += size;
+        }
+    }
+  while (result && addr < 0xffff0);
 
   if (!result)
-    PROFILER_ROUTQ(addr);
+    {
+      PROFILER_ROUTQ(addr);
+    }
   else
-    PROFILER_ROUTQ(ELFSH_INVALID_ADDR);
+    {
+      PROFILER_ROUTQ(ELFSH_INVALID_ADDR);
+    }
 }

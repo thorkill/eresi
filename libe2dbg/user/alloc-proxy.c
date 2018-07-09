@@ -5,9 +5,9 @@
 /**
 * @file libe2dbg/user/alloc-proxy.c
  * Allocator wrapper for the Embedded ELF Debugger
- * 
+ *
  * Select the allocator depending on the thread ID of the caller
- * 
+ *
  * Started Fri Oct  7 21:05:26 CEST 2005 crew
  *
  * $Id$
@@ -17,17 +17,17 @@
 
 
 /**
- * Wrapper for malloc 
+ * Wrapper for malloc
  * @param t
  * @return
  */
-void		*malloc(size_t t)
+void    *malloc(size_t t)
 {
-  void		*(*mallocptr)();
-  void		*chunk;
+  void    *(*mallocptr)();
+  void    *chunk;
 #if __DEBUG_EMALLOC__
-  char		buf[256];
-  u_int		len;
+  char    buf[256];
+  u_int   len;
 #endif
 
 #if __DEBUG_EMALLOC__
@@ -35,7 +35,9 @@ void		*malloc(size_t t)
 #endif
 
   if (!e2dbgworld.syms.mallocsym)
-    e2dbg_dlsym_init();
+    {
+      e2dbg_dlsym_init();
+    }
 
   if (e2dbg_presence_get() == 0)
     {
@@ -45,26 +47,30 @@ void		*malloc(size_t t)
       write(2, "\033[00m", 5);
 #endif
       mallocptr = (void *) e2dbgworld.syms.mallocsym;
+
       if (!e2dbgworld.syms.mallocsym)
-	{
-	  write(2, " [!] Unable to use original malloc \n", 36);
-	  return (NULL);
-	}
+        {
+          write(2, " [!] Unable to use original malloc \n", 36);
+          return (NULL);
+        }
+
       chunk = mallocptr(t);
     }
   else
     {
       chunk = aproxy_malloc(t);
 #if __DEBUG_EMALLOC__
-      len = snprintf(buf, sizeof(buf), 
-		     "E2DBG malloc used [ret = %08X, len = %u] \n", 
-		     (eresi_Addr) chunk, t);
+      len = snprintf(buf, sizeof(buf),
+                     "E2DBG malloc used [ret = %08X, len = %u] \n",
+                     (eresi_Addr) chunk, t);
       write(2, buf, len);
 #endif
     }
-  
+
   if (!chunk)
-    write(2, " [!] Malloc failed \n", 20);
+    {
+      write(2, " [!] Malloc failed \n", 20);
+    }
 
 #if __DEBUG_EMALLOC__
   write(2, "Finished HOOKED malloc\n", 23);
@@ -77,21 +83,23 @@ void		*malloc(size_t t)
 
 
 /**
- * Wrapper for valloc 
+ * Wrapper for valloc
  * @param t
  * @return
  */
-void		*valloc(size_t t)
+void    *valloc(size_t t)
 {
-  void		*(*vallocptr)();
-  void		*chunk;
+  void    *(*vallocptr)();
+  void    *chunk;
 
 #if __DEBUG_EMALLOC__
   write(2, "Calling HOOKED valloc\n", 22);
 #endif
 
   if (!e2dbgworld.syms.vallocsym)
-    e2dbg_dlsym_init();
+    {
+      e2dbg_dlsym_init();
+    }
 
   if (e2dbg_presence_get() == 0)
     {
@@ -101,11 +109,13 @@ void		*valloc(size_t t)
       write(2, "\033[00m", 5);
 #endif
       vallocptr = (void *) e2dbgworld.syms.vallocsym;
+
       if (!e2dbgworld.syms.vallocsym)
-	{
-	  write(2, " [!] Unable to use original valloc \n", 36);
-	  return (NULL);
-	}
+        {
+          write(2, " [!] Unable to use original valloc \n", 36);
+          return (NULL);
+        }
+
       chunk = vallocptr(t);
     }
   else
@@ -115,9 +125,11 @@ void		*valloc(size_t t)
 #endif
       chunk = (void *) aproxy_valloc(t);
     }
-  
+
   if (!chunk)
-    write(2, " [!] Valloc failed \n", 20);
+    {
+      write(2, " [!] Valloc failed \n", 20);
+    }
 
 #if __DEBUG_EMALLOC__
   write(2, "Finished HOOKED valloc\n", 23);
@@ -131,20 +143,20 @@ void		*valloc(size_t t)
 
 
 /**
- * Wrapper for calloc 
+ * Wrapper for calloc
  * @param t
  * @param nbr
  * @return
  */
-void		*calloc(size_t t, size_t nbr)
+void    *calloc(size_t t, size_t nbr)
 {
-  void		*(*callocptr)();
-  void		*chunk;
+  void    *(*callocptr)();
+  void    *chunk;
 
-  //static int	cnt = 0;
+  //static int  cnt = 0;
 
 #if __DEBUG_EMALLOC__
-  u_int		len;
+  u_int   len;
 
   write(2, "Calling HOOKED calloc \n", 23);
 #endif
@@ -160,7 +172,9 @@ void		*calloc(size_t t, size_t nbr)
   //e2dbg_self();
 
   if (!e2dbgworld.syms.callocsym)
-    e2dbg_dlsym_init();
+    {
+      e2dbg_dlsym_init();
+    }
 
   if (e2dbg_presence_get() == 0)
     {
@@ -172,38 +186,41 @@ void		*calloc(size_t t, size_t nbr)
 
       /*
       if (cnt < 2)
-	{
-	  callocptr = (void *) (*(long *) e2dbgworld.mallochooksym);
-	  cnt++;
-	}
+      {
+      callocptr = (void *) (*(long *) e2dbgworld.mallochooksym);
+      cnt++;
+      }
       else
       */
       callocptr = (void *) e2dbgworld.syms.mallocsym;
 
       if (!callocptr)
-	{
-	  write(2, " [!] Unable to use original calloc \n", 36);
-	  return (NULL);
-	}
+        {
+          write(2, " [!] Unable to use original calloc \n", 36);
+          return (NULL);
+        }
 
       //write(2, "Calling libc calloc \n", 20);
 
 #if __DEBUG_EMALLOC__
       {
-	char buff[256];
-	len = snprintf(buff, sizeof(buff), 
-		       "Calling LIBC calloc at addr %08X\n", 
-		       (eresi_Addr) callocptr);
-	write(2, buff, len);
-      } 
+        char buff[256];
+        len = snprintf(buff, sizeof(buff),
+                       "Calling LIBC calloc at addr %08X\n",
+                       (eresi_Addr) callocptr);
+        write(2, buff, len);
+      }
 #endif
 
       chunk = callocptr(t * nbr);
 #if __DEBUG_EMALLOC__
       write(2, "Libc m/calloc returned\n", 23);
 #endif
+
       if (chunk)
-	memset(chunk, 0x00, t * nbr);
+        {
+          memset(chunk, 0x00, t * nbr);
+        }
     }
   else
     {
@@ -214,27 +231,32 @@ void		*calloc(size_t t, size_t nbr)
 #endif
       //chunk = aproxy_calloc(t, nbr);
       chunk = aproxy_malloc(t * nbr);
+
       if (chunk)
-	memset(chunk, 0x00, t * nbr);
+        {
+          memset(chunk, 0x00, t * nbr);
+        }
     }
 
 #if __DEBUG_EMALLOC__
+
   if (!chunk)
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), 
-		     " ! Calloc failed (%u * %u sz) \n", 
-		     t, nbr);
+      len = snprintf(buff, sizeof(buff),
+                     " ! Calloc failed (%u * %u sz) \n",
+                     t, nbr);
       write(2, buff, len);
     }
   else
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), 
-		     " Calloc (%u * %u sz) returned %08X\n", 
-		     t, nbr, (eresi_Addr) chunk);
+      len = snprintf(buff, sizeof(buff),
+                     " Calloc (%u * %u sz) returned %08X\n",
+                     t, nbr, (eresi_Addr) chunk);
       write(2, buff, len);
     }
+
   write(2, "Finished HOOKED calloc \n", 24);
 #endif
 
@@ -244,25 +266,27 @@ void		*calloc(size_t t, size_t nbr)
 
 
 /**
- * Wrapper for memalign 
+ * Wrapper for memalign
  * @param t
  * @param nbr
  */
-void		*memalign(size_t t, u_int nbr)
+void    *memalign(size_t t, u_int nbr)
 {
-  void		*(*memalignptr)();
-  void		*chunk;
+  void    *(*memalignptr)();
+  void    *chunk;
 
-  //static int	cnt = 0;
+  //static int  cnt = 0;
 
 #if __DEBUG_EMALLOC__
-  u_int		len;
+  u_int   len;
 
   write(2, "Calling HOOKED memalign \n", 23);
 #endif
 
   if (!e2dbgworld.syms.memalignsym)
-    e2dbg_dlsym_init();
+    {
+      e2dbg_dlsym_init();
+    }
 
   if (e2dbg_presence_get() == 0)
     {
@@ -274,20 +298,21 @@ void		*memalign(size_t t, u_int nbr)
 
       /*
       if (!cnt)
-	{
-	  memalignptr = (void *) (*(long *) e2dbgworld.memalignhooksym);
-	  cnt++;
-	}
+      {
+      memalignptr = (void *) (*(long *) e2dbgworld.memalignhooksym);
+      cnt++;
+      }
       else
       */
-      
+
       memalignptr = (void *) e2dbgworld.syms.memalignsym;
-      
+
       if (!memalignptr)
-	{
-	  write(2, " [!] Unable to use original memalign \n", 36);
-	  return (NULL);
-	}
+        {
+          write(2, " [!] Unable to use original memalign \n", 36);
+          return (NULL);
+        }
+
       chunk = (void *) memalignptr(t, nbr);
     }
   else
@@ -301,14 +326,16 @@ void		*memalign(size_t t, u_int nbr)
     }
 
 #if __DEBUG_EMALLOC__
+
   if (!chunk)
     {
       char buff[256];
-      len = snprintf(buff, sizeof(buff), 
-		     " ! Memalign failed (%u * %u sz) \n", 
-		     t, nbr);
+      len = snprintf(buff, sizeof(buff),
+                     " ! Memalign failed (%u * %u sz) \n",
+                     t, nbr);
       write(2, buff, len);
     }
+
   write(2, "Finished HOOKED memalign \n", 24);
 #endif
 
@@ -318,15 +345,15 @@ void		*memalign(size_t t, u_int nbr)
 
 
 /**
- * Wrapper for realloc 
+ * Wrapper for realloc
  * @param a
  * @param t
  * @return
  */
-void	*realloc(void *a, size_t t)
+void  *realloc(void *a, size_t t)
 {
-  void	*b;
-  void	*(*reallocptr)();
+  void  *b;
+  void  *(*reallocptr)();
 
   //e2dbg_self();
 
@@ -335,7 +362,9 @@ void	*realloc(void *a, size_t t)
 #endif
 
   if (!e2dbgworld.syms.reallocsym)
-    e2dbg_dlsym_init();
+    {
+      e2dbg_dlsym_init();
+    }
 
   if (e2dbg_presence_get() == 0)
     {
@@ -345,11 +374,13 @@ void	*realloc(void *a, size_t t)
       write(2, "\033[00m", 5);
 #endif
       reallocptr = (void *) e2dbgworld.syms.reallocsym;
+
       if (!e2dbgworld.syms.reallocsym)
-	{
-	  write(2, " [!] Unable to use original realloc \n", 37);
-	  return (NULL);
-	}
+        {
+          write(2, " [!] Unable to use original realloc \n", 37);
+          return (NULL);
+        }
+
       b = reallocptr(a, t);
     }
   else
@@ -359,10 +390,12 @@ void	*realloc(void *a, size_t t)
 #endif
       b = aproxy_realloc(a, t);
     }
-  
+
   if (!b)
-    write(2, " [!] Realloc failed \n", 20);
-  
+    {
+      write(2, " [!] Realloc failed \n", 20);
+    }
+
 #if __DEBUG_EMALLOC__
   write(2, "Finished HOOKED realloc\n", 24);
 #endif
@@ -371,13 +404,13 @@ void	*realloc(void *a, size_t t)
 }
 
 /**
- * Wrapper for free 
+ * Wrapper for free
  * @param a Pointer to memory to free.
  * @return
  */
-void	free(void *a)
+void  free(void *a)
 {
-  void	(*freeptr)();
+  void  (*freeptr)();
 
   //e2dbg_self();
 
@@ -386,7 +419,9 @@ void	free(void *a)
 #endif
 
   if (!e2dbgworld.syms.freesym)
-    e2dbg_dlsym_init();
+    {
+      e2dbg_dlsym_init();
+    }
 
   if (e2dbg_presence_get() == 0)
     {
@@ -396,11 +431,13 @@ void	free(void *a)
       write(2, "\033[00m", 5);
 #endif
       freeptr = (void *) e2dbgworld.syms.freesym;
+
       if (!e2dbgworld.syms.freesym)
-	{
-	  write(2, " [!] Unable to use original free \n", 34);
-	  return;
-	}
+        {
+          write(2, " [!] Unable to use original free \n", 34);
+          return;
+        }
+
       freeptr(a);
     }
   else
@@ -421,47 +458,56 @@ void	free(void *a)
  * @param a
  * @return
  */
-void	wait4exit(void *a)
+void  wait4exit(void *a)
 {
-  int	idx;
+  int idx;
 
   //fprintf(stderr, "\n [*] Debuggee wait4exit called \n");
   for (idx = 0; !e2dbgworld.exited && idx < 2; idx++)
-    sleep(1);
+    {
+      sleep(1);
+    }
+
   exit(0);
 }
 
 
 /**
- * Wrapper for _exit 
+ * Wrapper for _exit
  * @param err Return value.
  */
-void		_exit(int err)
+void    _exit(int err)
 {
   /* If another thread did an exit, just signal it and return */
   if (e2dbg_presence_get() == 0)
     {
-      printf(" [*] Thread ID %u exited \n", 
-	     (unsigned int) e2dbg_self());
+      printf(" [*] Thread ID %u exited \n",
+             (unsigned int) e2dbg_self());
+
       while (1)
-	sleep(1);
+        {
+          sleep(1);
+        }
     }
 
   while (1)
     if (e2dbgworld.exited)
       {
-	if (!e2dbgworld.debuggee_exited)
-	  write(2, " [*] Legit program terminating\n\n", 32);
-	e2dbgworld.debuggee_exited = 1;
-	syscall(1, 0);
-	raise(SIGKILL);
+        if (!e2dbgworld.debuggee_exited)
+          {
+            write(2, " [*] Legit program terminating\n\n", 32);
+          }
+
+        e2dbgworld.debuggee_exited = 1;
+        syscall(1, 0);
+        raise(SIGKILL);
       }
     else
       {
-	e2dbgworld.exited = 1;
-	write(2, " [*] Debugger exited\n", 21);
-	syscall(1, 0);
-	raise(SIGKILL); 
+        e2dbgworld.exited = 1;
+        write(2, " [*] Debugger exited\n", 21);
+        syscall(1, 0);
+        raise(SIGKILL);
       }
 }
 
@@ -470,7 +516,7 @@ void		_exit(int err)
  * Wrapper for exit_group
  * @param err Return value.
  */
-int	exit_group(int exitcode)
+int exit_group(int exitcode)
 {
   write(2, " [*] Now exiting all threads\n\n", 30);
   _exit(exitcode);
@@ -478,14 +524,14 @@ int	exit_group(int exitcode)
 
 
 /**
- * Wrapper for heap initialisation 
+ * Wrapper for heap initialisation
  * @param first_time
  * @return
  */
 /*
-void	__libc_malloc_pthread_startup (int first_time)
+void  __libc_malloc_pthread_startup (int first_time)
 {
-  void	(*pthstartupptr)();
+  void  (*pthstartupptr)();
 
   if (!e2dbgworld.syms.pthstartupsym)
     e2dbg_dlsym_init();
@@ -503,10 +549,10 @@ void	__libc_malloc_pthread_startup (int first_time)
 
 /* Not sure it is useful / bugless, just a try */
 /*
-void*	  _int_malloc(size_t p)             { return (malloc(p));      }
-void*	  _int_valloc(size_t p)             { return (valloc(p));      }
-void*	  _int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }
-void*	  _int_realloc(char *p, size_t n)   { return (realloc(p, n));  }
-void*	  _int_memalign(size_t p, size_t n) { return (memalign(p, n)); }
-void	  _int_free(void *p)                { free(p);                 }  
+void*   _int_malloc(size_t p)             { return (malloc(p));      }
+void*   _int_valloc(size_t p)             { return (valloc(p));      }
+void*   _int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }
+void*   _int_realloc(char *p, size_t n)   { return (realloc(p, n));  }
+void*   _int_memalign(size_t p, size_t n) { return (memalign(p, n)); }
+void    _int_free(void *p)                { free(p);                 }
 */

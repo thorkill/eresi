@@ -18,7 +18,7 @@
  */
 
 int     asm_operand_fetch_segment(asm_operand *operand, u_char *opcode,
-				  int otype, asm_instr *ins)
+                                  int otype, asm_instr *ins)
 {
   struct s_modrm        *modrm;
 

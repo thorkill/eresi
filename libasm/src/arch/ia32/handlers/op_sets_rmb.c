@@ -16,11 +16,12 @@
  * @return Length of instruction.
 */
 
-int op_sets_rmb(asm_instr *new, u_char *opcode, u_int len, 
-		asm_processor *proc) 
+int op_sets_rmb(asm_instr *new, u_char *opcode, u_int len,
+                asm_processor *proc)
 {
   new->len += 1;
   new->instr = ASM_SET_SIGNED;
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODEDBYTE,
+                                new);
   return (new->len);
 }

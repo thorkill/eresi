@@ -16,7 +16,7 @@
   <instruction func="op_pop_reg" opcode="0x5f"/>
 */
 
-int op_pop_reg(asm_instr *new, u_char *opcode, u_int len, 
+int op_pop_reg(asm_instr *new, u_char *opcode, u_int len,
                asm_processor *proc)
 {
   new->ptr_instr = opcode;
@@ -26,8 +26,11 @@ int op_pop_reg(asm_instr *new, u_char *opcode, u_int len,
   new->spdiff = 4;
 
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_OPMOD, new);
+
   if (new->op[0].baser == ASM_REG_EBP)
-    new->type |= ASM_TYPE_EPILOG;
+    {
+      new->type |= ASM_TYPE_EPILOG;
+    }
 
   return (new->len);
 }

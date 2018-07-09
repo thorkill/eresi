@@ -3,7 +3,7 @@
  * @brief Handler for instruction sub rv,rmv opcode 0x2b
  *
  * @ingroup IA32_instrs
- * 
+ *
  * $Id$
  *
  */
@@ -19,7 +19,7 @@
  * @return Length of instruction.
  */
 
-int op_sub_rv_rmv(asm_instr *instr, u_char *opcode, u_int len, 
+int op_sub_rv_rmv(asm_instr *instr, u_char *opcode, u_int len,
                   asm_processor *proc)
 {
   instr->len += 1;
@@ -29,8 +29,10 @@ int op_sub_rv_rmv(asm_instr *instr, u_char *opcode, u_int len,
   instr->flagswritten = ASM_FLAG_AF | ASM_FLAG_CF | ASM_FLAG_PF |
                         ASM_FLAG_OF | ASM_FLAG_SF | ASM_FLAG_ZF;
 
-  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_GENERAL, instr);
-  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_ENCODED, instr);
+  instr->len += asm_operand_fetch(&instr->op[0], opcode + 1, ASM_CONTENT_GENERAL,
+                                  instr);
+  instr->len += asm_operand_fetch(&instr->op[1], opcode + 1, ASM_CONTENT_ENCODED,
+                                  instr);
 
   return (instr->len);
 }

@@ -4,7 +4,7 @@
 */
 /**
 * @file libasm/src/arch/sparc/register.c
- * @brief 
+ * @brief
  *
  */
 
@@ -18,35 +18,38 @@ int asm_register_sparc_operands();
  * Initialize sparc vector.
  * @return Always 1.
  */
-int	asm_register_sparc()
+int asm_register_sparc()
 {
-  u_int	*dims;
+  u_int *dims;
   char **dimstr;
-  int	to_ret;
-  
+  int to_ret;
+
   dims = malloc(3 * sizeof (u_int));
+
   if (!dims)
     {
       to_ret = 0;
       goto out;
     }
+
   dimstr = malloc(3 * sizeof (char *));
+
   if (!dimstr)
     {
       to_ret = 0;
       goto out;
     }
-    
+
   dims[0] = 4;
   dims[1] = 64;
   dims[2] = 32;
-    
+
   dimstr[0] = "OPCODES";
   dimstr[1] = "SECONDARY OPCODES"; /* Should be 0 when unused */
   dimstr[2] = "FPOP2 OPCODE (OPF_LOW)"; /* Should be 0 when unused */
 
   aspect_register_vector(LIBASM_VECTOR_OPCODE_SPARC, asm_fetch_default,
-			 dims, dimstr, 3, ASPECT_TYPE_CADDR);
+                         dims, dimstr, 3, ASPECT_TYPE_CADDR);
 
   /* Initializing SPARC operand handler vector */
   dims = malloc(1 * sizeof (u_int));
@@ -56,25 +59,27 @@ int	asm_register_sparc()
       to_ret = 0;
       goto out;
     }
+
   dimstr = malloc(1 * sizeof (char *));
+
   if (!dimstr)
     {
       to_ret = 0;
       goto out;
     }
-  
+
   dims[0] = ASM_SP_OTYPE_NUM;
 
   dimstr[0] = "OPERAND";
-  
+
   aspect_register_vector(LIBASM_VECTOR_OPERAND_SPARC,  asm_operand_fetch_default,
-			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+                         dims, dimstr, 1, ASPECT_TYPE_CADDR);
 
   asm_register_sparc_instructions();
   asm_register_sparc_operands();
-  
-  out:
-    return (1);
+
+out:
+  return (1);
 }
 
 /**
@@ -83,14 +88,14 @@ int	asm_register_sparc()
  * @param opcode2 Second opcode
  * @param fpop
  * @param fcn Default handler of the instruction vector.
- * @return 
+ * @return
  */
 int asm_register_sparc_opcode(int opcode, int opcode2, int fpop,
-                                   			      unsigned long fcn)
+                              unsigned long fcn)
 {
-  vector_t	*vec;
-  u_int		dim[3];
-  
+  vector_t  *vec;
+  u_int   dim[3];
+
   LIBASM_PROFILE_FIN();
   vec = aspect_vector_get(LIBASM_VECTOR_OPCODE_SPARC);
   dim[0] = opcode;
@@ -178,8 +183,10 @@ int asm_register_sparc_instructions()
   asm_register_sparc_opcode( 0x02, 0x06, 0x00, (unsigned long) asm_sparc_orn);
   asm_register_sparc_opcode( 0x02, 0x16, 0x00, (unsigned long) asm_sparc_orncc);
   asm_register_sparc_opcode( 0x02, 0x2e, 0x00, (unsigned long) asm_sparc_popc);
-  asm_register_sparc_opcode( 0x03, 0x2d, 0x00, (unsigned long) asm_sparc_prefetch);
-  asm_register_sparc_opcode( 0x03, 0x3d, 0x00, (unsigned long) asm_sparc_prefetcha);
+  asm_register_sparc_opcode( 0x03, 0x2d, 0x00,
+                             (unsigned long) asm_sparc_prefetch);
+  asm_register_sparc_opcode( 0x03, 0x3d, 0x00,
+                             (unsigned long) asm_sparc_prefetcha);
   asm_register_sparc_opcode( 0x02, 0x28, 0x00, (unsigned long) asm_sparc_rd);
   asm_register_sparc_opcode( 0x02, 0x2a, 0x00, (unsigned long) asm_sparc_rdpr);
   asm_register_sparc_opcode( 0x02, 0x3d, 0x00, (unsigned long) asm_sparc_restore);
@@ -219,10 +226,12 @@ int asm_register_sparc_instructions()
   asm_register_sparc_opcode( 0x03, 0x0f, 0x00, (unsigned long) asm_sparc_swap);
   asm_register_sparc_opcode( 0x03, 0x1f, 0x00, (unsigned long) asm_sparc_swapa);
   asm_register_sparc_opcode( 0x02, 0x20, 0x00, (unsigned long) asm_sparc_taddcc);
-  asm_register_sparc_opcode( 0x02, 0x22, 0x00, (unsigned long) asm_sparc_taddcctv);
+  asm_register_sparc_opcode( 0x02, 0x22, 0x00,
+                             (unsigned long) asm_sparc_taddcctv);
   asm_register_sparc_opcode( 0x02, 0x3a, 0x00, (unsigned long) asm_sparc_tcc);
   asm_register_sparc_opcode( 0x02, 0x21, 0x00, (unsigned long) asm_sparc_tsubcc);
-  asm_register_sparc_opcode( 0x02, 0x23, 0x00, (unsigned long) asm_sparc_tsubcctv);
+  asm_register_sparc_opcode( 0x02, 0x23, 0x00,
+                             (unsigned long) asm_sparc_tsubcctv);
   asm_register_sparc_opcode( 0x02, 0x0e, 0x00, (unsigned long) asm_sparc_udiv);
   asm_register_sparc_opcode( 0x02, 0x1e, 0x00, (unsigned long) asm_sparc_udivcc);
   asm_register_sparc_opcode( 0x02, 0x0d, 0x00, (unsigned long) asm_sparc_udivx);
@@ -233,7 +242,7 @@ int asm_register_sparc_instructions()
   asm_register_sparc_opcode( 0x02, 0x07, 0x00, (unsigned long) asm_sparc_xnor);
   asm_register_sparc_opcode( 0x02, 0x17, 0x00, (unsigned long) asm_sparc_xnorcc);
   asm_register_sparc_opcode( 0x02, 0x03, 0x00, (unsigned long) asm_sparc_xor);
-  asm_register_sparc_opcode( 0x02, 0x13, 0x00, (unsigned long) asm_sparc_xorcc);  	
+  asm_register_sparc_opcode( 0x02, 0x13, 0x00, (unsigned long) asm_sparc_xorcc);
   return (1);
 }
 
@@ -258,16 +267,27 @@ int asm_register_sparc_operand(int operand_type, unsigned long fcn)
 
 int asm_register_sparc_operands()
 {
-  asm_register_sparc_operand(ASM_SP_OTYPE_REGISTER, (unsigned long) asm_sparc_op_fetch_register);
-  asm_register_sparc_operand(ASM_SP_OTYPE_IMMEDIATE, (unsigned long) asm_sparc_op_fetch_immediate);
-  asm_register_sparc_operand(ASM_SP_OTYPE_DISPLACEMENT, (unsigned long) asm_sparc_op_fetch_displacement);
-  asm_register_sparc_operand(ASM_SP_OTYPE_DISP30, (unsigned long) asm_sparc_op_fetch_disp30);
-  asm_register_sparc_operand(ASM_SP_OTYPE_SETHI, (unsigned long) asm_sparc_op_fetch_sethi);
-  asm_register_sparc_operand(ASM_SP_OTYPE_FREGISTER, (unsigned long) asm_sparc_op_fetch_fregister);
-  asm_register_sparc_operand(ASM_SP_OTYPE_SREGISTER, (unsigned long) asm_sparc_op_fetch_sregister);
-  asm_register_sparc_operand(ASM_SP_OTYPE_PREGISTER, (unsigned long) asm_sparc_op_fetch_pregister);
-  asm_register_sparc_operand(ASM_SP_OTYPE_CC, (unsigned long) asm_sparc_op_fetch_cc);
-  asm_register_sparc_operand(ASM_SP_OTYPE_IMM_ADDRESS, (unsigned long) asm_sparc_op_fetch_imm_address);
-  asm_register_sparc_operand(ASM_SP_OTYPE_REG_ADDRESS, (unsigned long) asm_sparc_op_fetch_reg_address);
+  asm_register_sparc_operand(ASM_SP_OTYPE_REGISTER,
+                             (unsigned long) asm_sparc_op_fetch_register);
+  asm_register_sparc_operand(ASM_SP_OTYPE_IMMEDIATE,
+                             (unsigned long) asm_sparc_op_fetch_immediate);
+  asm_register_sparc_operand(ASM_SP_OTYPE_DISPLACEMENT,
+                             (unsigned long) asm_sparc_op_fetch_displacement);
+  asm_register_sparc_operand(ASM_SP_OTYPE_DISP30,
+                             (unsigned long) asm_sparc_op_fetch_disp30);
+  asm_register_sparc_operand(ASM_SP_OTYPE_SETHI,
+                             (unsigned long) asm_sparc_op_fetch_sethi);
+  asm_register_sparc_operand(ASM_SP_OTYPE_FREGISTER,
+                             (unsigned long) asm_sparc_op_fetch_fregister);
+  asm_register_sparc_operand(ASM_SP_OTYPE_SREGISTER,
+                             (unsigned long) asm_sparc_op_fetch_sregister);
+  asm_register_sparc_operand(ASM_SP_OTYPE_PREGISTER,
+                             (unsigned long) asm_sparc_op_fetch_pregister);
+  asm_register_sparc_operand(ASM_SP_OTYPE_CC,
+                             (unsigned long) asm_sparc_op_fetch_cc);
+  asm_register_sparc_operand(ASM_SP_OTYPE_IMM_ADDRESS,
+                             (unsigned long) asm_sparc_op_fetch_imm_address);
+  asm_register_sparc_operand(ASM_SP_OTYPE_REG_ADDRESS,
+                             (unsigned long) asm_sparc_op_fetch_reg_address);
   return (1);
 }

@@ -19,8 +19,8 @@
  * @return Operand length
  */
 
-int     asm_operand_fetch_pmmx(asm_operand *operand, u_char *opcode, 
-			       int otype, asm_instr *ins)
+int     asm_operand_fetch_pmmx(asm_operand *operand, u_char *opcode,
+                               int otype, asm_instr *ins)
 {
   int len;
   operand->content = ASM_CONTENT_PMMX;

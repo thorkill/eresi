@@ -8,16 +8,17 @@
 #include <stdio.h>
 #include <pthread.h>
 
-void	*print_message_function_lib( void *ptr )
+void  *print_message_function_lib( void *ptr )
 {
   char *message;
-  int	idx;
+  int idx;
 
   for (idx = 0; 1; idx++)
     {
       message = (char *) malloc(42);
-      fprintf(stderr, "%s: (thread id = %u LIBTHREAD) new chunk addr %08X stack var addr %08X\n", 
-	     ptr, pthread_self(), message, &message);
+      fprintf(stderr,
+              "%s: (thread id = %u LIBTHREAD) new chunk addr %08X stack var addr %08X\n",
+              ptr, pthread_self(), message, &message);
       sleep(1);
     }
 }
@@ -28,7 +29,7 @@ void print_lib()
   while (1)
     {
       fprintf(stderr, "coucou print_lib (thread id = %u) no malloc here \n",
-	      pthread_self());
+              pthread_self());
       sleep(1);
     }
 }

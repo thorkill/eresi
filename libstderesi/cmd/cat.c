@@ -11,17 +11,18 @@
 
 
 /* Simple internal cat builtin */
-int		cmd_cat()
+int   cmd_cat()
 {
-  char		*tocat;
+  char    *tocat;
   char          buf[BUFSIZ];
-  int		fd;
-  int		len = 0;
-  int		tmplen = 0;
+  int   fd;
+  int   len = 0;
+  int   tmplen = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   tocat = revm_lookup_string(world.curjob->curcmd->param[0]);
+
   if ((fd = open(tocat, O_RDONLY, 0)) < 0)
     {
       revm_output("Can't open file\n");
@@ -31,20 +32,26 @@ int		cmd_cat()
   while (1)
     {
       tmplen = read(fd, buf + len, 1);
+
       if (tmplen < 0)
-	{
-	  XCLOSE(fd,0);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Read failed", (-1));
-	}
+        {
+          XCLOSE(fd, 0);
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Read failed", (-1));
+        }
+
       if (tmplen == 0)
-	break;
+        {
+          break;
+        }
+
       len += tmplen;
+
       if (len > BUFSIZ - 1)
-	{
-	  XCLOSE(fd, 0);
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			    "File too long", (-1));
-	}
+        {
+          XCLOSE(fd, 0);
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "File too long", (-1));
+        }
     }
 
   buf[len] = '\0';

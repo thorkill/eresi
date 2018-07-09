@@ -1,6 +1,6 @@
 /*
 ** main.c
-** 
+**
 ** Started on  Sun Mar 17 06:38:49 2002 jfv
 ** Last update Sat Mar 23 11:00:10 2002 jfv
 **
@@ -10,10 +10,10 @@
 #include <stdio.h>
 #include <string.h>
 
-int	main()
+int main()
 {
-  char	*str;
-  int	index;
+  char  *str;
+  int index;
 
   for (index = 0; index < 10; index++)
     {

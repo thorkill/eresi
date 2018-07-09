@@ -8,32 +8,34 @@
 #include <libasm.h>
 
 int asm_mips_beq(asm_instr *ins, u_char *buf, u_int len,
-                  asm_processor *proc)
+                 asm_processor *proc)
 {
-   struct s_mips_decode_imm temp;
-   u_int converted = 0;
+  struct s_mips_decode_imm temp;
+  u_int converted = 0;
 
-   memcpy((char *)&converted,buf,sizeof(converted));
+  memcpy((char *)&converted, buf, sizeof(converted));
 
-   switch ((converted >> 16) & 0x3FF) {
+  switch ((converted >> 16) & 0x3FF)
+    {
 
-      case ASM_MIPS_OTYPE_NONE:
-         asm_mips_b(ins,buf,len,proc);
-         break;
-      default:
-         ins->instr = ASM_MIPS_BEQ;
-         ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
-         mips_convert_format_i(&temp, buf);
-         ins->op[0].baser = temp.rs;
-	 asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
-         ins->op[1].baser = temp.rt;
-         asm_mips_operand_fetch(&ins->op[1], buf, ASM_MIPS_OTYPE_REGISTER, ins);
-         ins->op[2].imm = temp.im;
-         asm_mips_operand_fetch(&ins->op[2], buf, ASM_MIPS_OTYPE_BRANCH, ins);
-         break;
-   }
+    case ASM_MIPS_OTYPE_NONE:
+      asm_mips_b(ins, buf, len, proc);
+      break;
 
-   /* Exceptions: None */
+    default:
+      ins->instr = ASM_MIPS_BEQ;
+      ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
+      mips_convert_format_i(&temp, buf);
+      ins->op[0].baser = temp.rs;
+      asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+      ins->op[1].baser = temp.rt;
+      asm_mips_operand_fetch(&ins->op[1], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+      ins->op[2].imm = temp.im;
+      asm_mips_operand_fetch(&ins->op[2], buf, ASM_MIPS_OTYPE_BRANCH, ins);
+      break;
+    }
 
-   return 4;
+  /* Exceptions: None */
+
+  return 4;
 }

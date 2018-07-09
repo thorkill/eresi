@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_bpr(asm_instr * ins, u_char * buf, u_int len,
-	      asm_processor * proc)
+asm_sparc_bpr(asm_instr *ins, u_char *buf, u_int len,
+              asm_processor *proc)
 {
   struct s_decode_rbranch opcoder;
   struct s_asm_proc_sparc *inter;

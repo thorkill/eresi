@@ -8,57 +8,69 @@
 #include "libstderesi.h"
 
 
-/** 
- * The ELFsh modules Help command 
+/**
+ * The ELFsh modules Help command
  */
-int		cmd_modhelp()
+int   cmd_modhelp()
 {
-  revmmod_t	*mod;
-  u_int		id;
-  char		buf[BUFSIZ];
+  revmmod_t *mod;
+  u_int   id;
+  char    buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  
+
   mod = 0;
   id = atoi(world.curjob->curcmd->param[0]);
+
   if (!id)
     {
       if (access(world.curjob->curcmd->param[0], R_OK) != 0)
-	{
-	  snprintf(buf, sizeof(buf), "%s%s", ERESI_MODPATH, world.curjob->curcmd->param[0]);
-	  if (access(buf, R_OK) != 0)
-	    {
-	      snprintf(buf, sizeof(buf), "%s%s.so",
-		       ERESI_MODPATH, world.curjob->curcmd->param[0]);
-	      if (access(buf, R_OK) != 0)
-		PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-				  "Cannot find module", -1);
-	    }
-	  mod = hash_get(&mod_hash, buf);
-	}
+        {
+          snprintf(buf, sizeof(buf), "%s%s", ERESI_MODPATH,
+                   world.curjob->curcmd->param[0]);
+
+          if (access(buf, R_OK) != 0)
+            {
+              snprintf(buf, sizeof(buf), "%s%s.so",
+                       ERESI_MODPATH, world.curjob->curcmd->param[0]);
+
+              if (access(buf, R_OK) != 0)
+                PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                             "Cannot find module", -1);
+            }
+
+          mod = hash_get(&mod_hash, buf);
+        }
     }
   else
-    mod = revm_getmod(id);
-  
+    {
+      mod = revm_getmod(id);
+    }
+
   if (mod == NULL || mod->help == NULL)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Module unavailable", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Module unavailable", -1);
+
   mod->help();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
-/** 
- * The Help command 
+/**
+ * The Help command
  */
-int		cmd_help()
+int   cmd_help()
 {
-  int		ret;
+  int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = revm_help(world.curjob->curcmd->param[0]);
+
   if (!ret)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-	       "Unable to help on such command", -1);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "Unable to help on such command", -1);
 }

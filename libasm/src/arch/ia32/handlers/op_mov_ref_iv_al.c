@@ -14,7 +14,7 @@
  */
 
 int op_mov_ref_iv_al(asm_instr *new, u_char *opcode, u_int len,
-		     asm_processor *proc)
+                     asm_processor *proc)
 {
   new->instr = ASM_MOV;
   new->type = ASM_TYPE_ASSIGN;

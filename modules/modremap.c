@@ -1,6 +1,6 @@
 /*
 ** modremap.c for elfsh
-** 
+**
 ** Coded by spacewalker, grace day of 14th March 2003
 **
 ** THIS CODE IS EXPERIMENTAL !
@@ -17,51 +17,55 @@
 #include "libstderesi.h"
 
 
-#define		CMD_REMAP	"remap"
+#define   CMD_REMAP "remap"
 
 
-int		remap_cmd()
+int   remap_cmd()
 {
-  elfshobj_t	*file;
-  elfshsect_t	*cur;
-  u_int		new_base;
-  u_int		real_base = 0xffffffff;
-  int		diff;
-  int		i;
-  int		cnt;
-  u_int		count_raw = 0;
-  u_int		count_pht = 0;
-  u_int		count_sht = 0;
-  u_int		count_ent = 0;
+  elfshobj_t  *file;
+  elfshsect_t *cur;
+  u_int   new_base;
+  u_int   real_base = 0xffffffff;
+  int   diff;
+  int   i;
+  int   cnt;
+  u_int   count_raw = 0;
+  u_int   count_pht = 0;
+  u_int   count_sht = 0;
+  u_int   count_ent = 0;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Sanity checks */
   i = sscanf(world.curjob->curcmd->param[0], "0x%X", &new_base);
-  if (new_base == 0 || i != 1) 
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Invalid new base address", -1);
+
+  if (new_base == 0 || i != 1)
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid new base address", -1);
+
   file = world.curjob->curfile;
 
   if (elfsh_read_obj(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unable to read object file", -1);
+                 "Unable to read object file", -1);
 
   if (elfsh_get_symtab(file, NULL) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Unable to read symbol table", -1);
+                 "Unable to read symbol table", -1);
 
   /* Calculate delta */
   real_base = elfsh_get_object_baseaddr(file);
+
   if (real_base == 0xffffffff)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		      "Base address not found", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Base address not found", -1);
 
   if (new_base & 0xfff)
     {
       revm_output(" [*] Base address adapted to be congruent pagesize \n");
       new_base &= 0xfffff000;
     }
+
   diff = new_base - real_base;
   printf(" [*] Delta is %08X \n", diff);
 
@@ -73,14 +77,16 @@ int		remap_cmd()
     }
 
   /* For all sections of the current object */
-  for (cur = file->sectlist; cur != NULL; cur = cur->next) 
+  for (cur = file->sectlist; cur != NULL; cur = cur->next)
     {
       cnt = elfsh_relocate_section(cur, diff);
+
       if (cnt < 0)
-	{
-	  printf(" [*] MODREMAP : Section %s wont be relocated\n", cur->name);
-	  continue;
-	}
+        {
+          printf(" [*] MODREMAP : Section %s wont be relocated\n", cur->name);
+          continue;
+        }
+
       count_raw += cnt;
     }
 
@@ -97,7 +103,7 @@ int		remap_cmd()
          "\t ENT relocation : %u \n"
          "\t RAW relocation : %u \n",
          count_pht + count_sht + count_ent + count_raw,
-         count_pht , count_sht , count_ent , count_raw);
+         count_pht, count_sht, count_ent, count_raw);
   printf(" [*] Remapping at base %08X -OK-\n\n", new_base);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -106,8 +112,8 @@ int		remap_cmd()
 void elfsh_init()
 {
   revm_output(" [*] ELFsh modremap init -OK- \n");
-  revm_command_add(CMD_REMAP, remap_cmd, revm_getoption, 1, 
-	    "Try to remap a non-relocatable file");
+  revm_command_add(CMD_REMAP, remap_cmd, revm_getoption, 1,
+                   "Try to remap a non-relocatable file");
 }
 
 void elfsh_fini()

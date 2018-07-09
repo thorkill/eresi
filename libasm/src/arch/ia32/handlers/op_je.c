@@ -17,7 +17,8 @@ int  op_je(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
   new->ptr_instr = opcode;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SHORTJUMP, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SHORTJUMP,
+                                new);
 
   return (new->len);
 }

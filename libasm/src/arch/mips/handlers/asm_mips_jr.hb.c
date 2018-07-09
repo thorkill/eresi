@@ -8,11 +8,11 @@
 #include <libasm.h>
 
 int asm_mips_jr_hb(asm_instr *ins, u_char *buf, u_int len,
-                  asm_processor *proc)
+                   asm_processor *proc)
 {
 //   ins->instr = ASM_MIPS_JR;
 //   asm_mips_operand_r(&ins->op[0], buf, ASM_MIPS_OTYPE_IMMEDIATE, ins);
-   asm_mips_jr(ins, buf, len, proc);
+  asm_mips_jr(ins, buf, len, proc);
 
-   return 4;
+  return 4;
 }

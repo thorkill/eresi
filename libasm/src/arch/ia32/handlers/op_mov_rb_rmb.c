@@ -14,15 +14,17 @@
 */
 
 int op_mov_rb_rmb(asm_instr *new, u_char *opcode, u_int len,
-		  asm_processor *proc)
+                  asm_processor *proc)
 {
   new->len += 1;
   new->type = ASM_TYPE_ASSIGN;
   new->instr = ASM_MOV;
   new->ptr_instr = opcode;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERALBYTE, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODEDBYTE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERALBYTE,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODEDBYTE,
+                                new);
 
   return (new->len);
 }

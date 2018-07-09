@@ -12,162 +12,200 @@
 
 
 /**
- * @brief Read a new line, avoiding comments and void lines 
+ * @brief Read a new line, avoiding comments and void lines
  */
-char		*revm_getln()
+char    *revm_getln()
 {
-  char		*buf;
-  char		*sav;
-  
+  char    *buf;
+  char    *sav;
+
   NOPROFILER_IN();
+
   do
     {
       buf = world.curjob->ws.io.input();
+
       if (buf == ((char *) REVM_INPUT_VOID))
-	NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+        {
+          NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+        }
+
       if (buf == NULL)
-	NOPROFILER_ROUT(NULL);
+        {
+          NOPROFILER_ROUT(NULL);
+        }
+
       if (!*buf)
-	{
-	  XFREE(__FILE__, __FUNCTION__, __LINE__,buf);
-	  NOPROFILER_ROUT(NULL);
-	}
-      
+        {
+          XFREE(__FILE__, __FUNCTION__, __LINE__, buf);
+          NOPROFILER_ROUT(NULL);
+        }
+
       sav = buf;
+
       while (IS_BLANK(*sav))
-	sav++;
+        {
+          sav++;
+        }
 
       if (!*sav || *sav == REVM_COMMENT_START)
-	{
-	  revm_log(sav);
-	  revm_log("\n");
-	  revm_buffer_free(buf); 
-	  if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
-	      world.state.revm_mode == REVM_STATE_EMBEDDED)
-	    NOPROFILER_ROUT((char*) REVM_INPUT_VOID);
+        {
+          revm_log(sav);
+          revm_log("\n");
+          revm_buffer_free(buf);
+
+          if (world.state.revm_mode == REVM_STATE_INTERACTIVE ||
+              world.state.revm_mode == REVM_STATE_EMBEDDED)
+            {
+              NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+            }
 
           buf = NULL;
+
           if (*sav)
-	    continue;
-	}
+            {
+              continue;
+            }
+        }
 
       if (world.state.revm_mode != REVM_STATE_SCRIPT)
-	{
-	  revm_output_nolog("\n");
+        {
+          revm_output_nolog("\n");
 
           /* avoid looping with readline */
           if (revm_is_enabled() && buf == NULL)
-	    NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
-	  if (revm_is_enabled())
-	    break;
-	}
+            {
+              NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+            }
+
+          if (revm_is_enabled())
+            {
+              break;
+            }
+        }
     }
   while (buf == NULL);
-  
+
   NOPROFILER_ROUT(buf);
 }
 
 
-/** 
- * @brief Read input from the current IO file descriptor 
+/**
+ * @brief Read input from the current IO file descriptor
  */
-char		*revm_read_input()
+char    *revm_read_input()
 {
-  char		tmpbuf[BUFSIZ + 1];
-  int		len;
-  u_char	wantmore;
+  char    tmpbuf[BUFSIZ + 1];
+  int   len;
+  u_char  wantmore;
 
   NOPROFILER_IN();
-  
+
   /* In case we are scripting, even readline will use a read */
   for (wantmore = len = 0; len < BUFSIZ; len++)
     switch (read(world.curjob->ws.io.input_fd, tmpbuf + len, 1))
       {
       case 1:
-	if (tmpbuf[len] == '\n')
-	  {
-	    if (len == 0)
-	      {
-		//fprintf(stderr, "Read length 0 ... \n");
-		NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
-	      }
-	    if (wantmore)
-	      {
-		len--;
-		wantmore = 0;
-		continue;
-	      }
-	    if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
-		world.state.revm_side == REVM_SIDE_CLIENT)
-	      tmpbuf[len + 1] = 0x00;
-	    else
-	      tmpbuf[len] = 0x00;
-	    goto end;
-	  }
-	else if ((len > 2 && tmpbuf[len - 1] == ':' && tmpbuf[len] == ':') || tmpbuf[len] == ',')
-	  wantmore = 1;
-	else
-	  wantmore = 0;
-	continue;
+        if (tmpbuf[len] == '\n')
+          {
+            if (len == 0)
+              {
+                //fprintf(stderr, "Read length 0 ... \n");
+                NOPROFILER_ROUT((char *) REVM_INPUT_VOID);
+              }
+
+            if (wantmore)
+              {
+                len--;
+                wantmore = 0;
+                continue;
+              }
+
+            if (world.state.revm_mode == REVM_STATE_EMBEDDED &&
+                world.state.revm_side == REVM_SIDE_CLIENT)
+              {
+                tmpbuf[len + 1] = 0x00;
+              }
+            else
+              {
+                tmpbuf[len] = 0x00;
+              }
+
+            goto end;
+          }
+        else if ((len > 2 && tmpbuf[len - 1] == ':' && tmpbuf[len] == ':')
+                 || tmpbuf[len] == ',')
+          {
+            wantmore = 1;
+          }
+        else
+          {
+            wantmore = 0;
+          }
+
+        continue;
+
       default:
-	*tmpbuf = 0x00;
-	goto end;
+        *tmpbuf = 0x00;
+        goto end;
       }
 
- end:
+end:
   //fprintf(stderr, "[pid = %u] Read on fd = *%s*\n", getpid(), tmpbuf);
   NOPROFILER_ROUT((*tmpbuf ? strdup(tmpbuf) : NULL));
 }
 
 
-/** 
+/**
  * IO Input handler for the debugger
  */
-char		*revm_fifoinput()
+char    *revm_fifoinput()
 {
-  int		fd;
-  char		*ret;
+  int   fd;
+  char    *ret;
 
   fd = world.curjob->ws.io.input_fd;
-  
+
   /* Just debugging */
   switch (world.state.revm_side)
     {
     case REVM_SIDE_CLIENT:
-      //fprintf(stderr, "Goto read fifo (client legit) ... \n");      
+      //fprintf(stderr, "Goto read fifo (client legit) ... \n");
       world.curjob->ws.io.input_fd = world.fifo_s2c;
       break;
+
     case REVM_SIDE_SERVER:
       //fprintf(stderr, "Goto read fifo (server legit) ... \n");
       world.curjob->ws.io.input_fd = world.fifo_c2s;
       break;
     }
-  
+
   ret = revm_read_input();
   world.curjob->ws.io.input_fd = fd;
   world.curjob->ws.io.input = world.curjob->ws.io.old_input;
-  
-  /* Just debugging */ 
+
+  /* Just debugging */
   switch (world.state.revm_side)
     {
-   case REVM_SIDE_CLIENT:
-     //fprintf(stderr, "BACK from reading fifo (client legit) ... (%s)\n");      
-     break;
+    case REVM_SIDE_CLIENT:
+      //fprintf(stderr, "BACK from reading fifo (client legit) ... (%s)\n");
+      break;
+
     case REVM_SIDE_SERVER:
       //fprintf(stderr, "BACK from reading fifo (server legit) ... \n");
       break;
     }
-  
+
   return (ret);
 }
 
 
-/** 
- * INPUT IO handler for stdin 
+/**
+ * INPUT IO handler for stdin
  */
-char		*revm_stdinput()
+char    *revm_stdinput()
 {
-  char		*str;
+  char    *str;
 
   NOPROFILER_IN();
   str = NULL;
@@ -184,10 +222,10 @@ char		*revm_stdinput()
 }
 
 
-/** 
+/**
  * Change the Input IO file descriptor
  */
-void	revm_setinput(revmworkspace_t *ws, int fd)
+void  revm_setinput(revmworkspace_t *ws, int fd)
 {
   ws->io.input_fd = fd;
 }

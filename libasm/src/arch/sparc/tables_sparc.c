@@ -4,10 +4,10 @@
 */
 /*
 ** tables_sparc.c for  in /hate/home/hate/code/libasm_current
-** 
+**
 ** Made by #!HATE#@!
 ** Login   <hate@epita.fr>
-** 
+**
 ** Started on  Tue Jun 14 05:23:16 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:39:25 2005 #!HATE#@!
 **
@@ -17,7 +17,8 @@
 
 #include <libasm.h>
 
-int	sparc_op2_table[64] = {
+int sparc_op2_table[64] =
+{
   ASM_SP_ADD,
   ASM_SP_AND,
   ASM_SP_OR,
@@ -92,7 +93,8 @@ int	sparc_op2_table[64] = {
   ASM_SP_
 };
 
-int sparc_op3_table[64] = {
+int sparc_op3_table[64] =
+{
   ASM_SP_LDUW,
   ASM_SP_LDUB,
   ASM_SP_LDUH,
@@ -129,7 +131,7 @@ int sparc_op3_table[64] = {
   ASM_SP_STXA,
   ASM_SP_SWAPA,
 
-  
+
 
   ASM_SP_LDF,
   ASM_SP_LDFSR, /* LDFSR, LDXFSR */
@@ -168,7 +170,8 @@ int sparc_op3_table[64] = {
   ASM_SP_
 };
 
-int	sparc_bcc_list[16] = {
+int sparc_bcc_list[16] =
+{
   ASM_SP_BN,
   ASM_SP_BE,
   ASM_SP_BLE,
@@ -184,10 +187,11 @@ int	sparc_bcc_list[16] = {
   ASM_SP_BGU,
   ASM_SP_BCC,
   ASM_SP_BPOS,
-  ASM_SP_BVC  
+  ASM_SP_BVC
 };
 
-int	sparc_tcc_list[16] = {
+int sparc_tcc_list[16] =
+{
   ASM_SP_TN,
   ASM_SP_TE,
   ASM_SP_TLE,
@@ -203,10 +207,11 @@ int	sparc_tcc_list[16] = {
   ASM_SP_TGU,
   ASM_SP_TCC,
   ASM_SP_TPOS,
-  ASM_SP_TVC  
+  ASM_SP_TVC
 };
 
-int	sparc_brcc_list[8] = {
+int sparc_brcc_list[8] =
+{
   ASM_SP_,
   ASM_SP_BRZ,
   ASM_SP_BRLEZ,
@@ -214,10 +219,11 @@ int	sparc_brcc_list[8] = {
   ASM_SP_,
   ASM_SP_BRNZ,
   ASM_SP_BRGZ,
-  ASM_SP_BRGEZ  
+  ASM_SP_BRGEZ
 };
 
-int sparc_fbcc_list[16] = {
+int sparc_fbcc_list[16] =
+{
   ASM_SP_FBN,
   ASM_SP_FBNE,
   ASM_SP_FBLG,
@@ -236,7 +242,8 @@ int sparc_fbcc_list[16] = {
   ASM_SP_FBO
 };
 
-int sparc_shift_list[6] = {
+int sparc_shift_list[6] =
+{
   ASM_SP_SLL,
   ASM_SP_SLLX,
   ASM_SP_SRL,
@@ -245,7 +252,8 @@ int sparc_shift_list[6] = {
   ASM_SP_SRAX,
 };
 
-int	sparc_movcc_list[16] = {
+int sparc_movcc_list[16] =
+{
   ASM_SP_MOVN,
   ASM_SP_MOVE,
   ASM_SP_MOVLE,
@@ -261,10 +269,11 @@ int	sparc_movcc_list[16] = {
   ASM_SP_MOVGU,
   ASM_SP_MOVCC,
   ASM_SP_MOVPOS,
-  ASM_SP_MOVVC  
+  ASM_SP_MOVVC
 };
 
-int sparc_movfcc_list[16] = {
+int sparc_movfcc_list[16] =
+{
   ASM_SP_MOVN,
   ASM_SP_MOVNE,
   ASM_SP_MOVLG,
@@ -283,7 +292,8 @@ int sparc_movfcc_list[16] = {
   ASM_SP_MOVO
 };
 
-int	sparc_movr_list[8] = {
+int sparc_movr_list[8] =
+{
   ASM_SP_,
   ASM_SP_MOVRZ,
   ASM_SP_MOVRLEZ,
@@ -291,10 +301,11 @@ int	sparc_movr_list[8] = {
   ASM_SP_,
   ASM_SP_MOVRNZ,
   ASM_SP_MOVRGZ,
-  ASM_SP_MOVRGEZ  
+  ASM_SP_MOVRGEZ
 };
 
-int sparc_fpop1_list[256] = {
+int sparc_fpop1_list[256] =
+{
   ASM_SP_, /* 0x00 */
   ASM_SP_FMOVS,
   ASM_SP_FMOVD,
@@ -553,7 +564,8 @@ int sparc_fpop1_list[256] = {
   ASM_SP_
 };
 
-int sparc_fmovcc_list[48] = {
+int sparc_fmovcc_list[48] =
+{
   ASM_SP_FMOVSN,
   ASM_SP_FMOVSE,
   ASM_SP_FMOVSLE,
@@ -604,7 +616,8 @@ int sparc_fmovcc_list[48] = {
   ASM_SP_FMOVQVC
 };
 
-int sparc_fmovfcc_list[48] = {
+int sparc_fmovfcc_list[48] =
+{
   ASM_SP_FMOVSN,
   ASM_SP_FMOVSNE,
   ASM_SP_FMOVSLG,
@@ -655,7 +668,8 @@ int sparc_fmovfcc_list[48] = {
   ASM_SP_FMOVQO
 };
 
-int sparc_fmovr_list[24] = {
+int sparc_fmovr_list[24] =
+{
   ASM_SP_,
   ASM_SP_FMOVRSZ,
   ASM_SP_FMOVRSLEZ,
@@ -682,7 +696,8 @@ int sparc_fmovr_list[24] = {
   ASM_SP_FMOVRQGEZ
 };
 
-int sparc_fcmp_list[8] = {
+int sparc_fcmp_list[8] =
+{
   ASM_SP_,
   ASM_SP_FCMPS,
   ASM_SP_FCMPD,
@@ -693,7 +708,8 @@ int sparc_fcmp_list[8] = {
   ASM_SP_FCMPEQ
 };
 
-char *sparc_instr_list[ASM_SP_BAD + 1] = {
+char *sparc_instr_list[ASM_SP_BAD + 1] =
+{
   "(unimpl)",
   "add", /* ADD */
   "addcc", /* ADDcc */
@@ -888,11 +904,11 @@ char *sparc_instr_list[ASM_SP_BAD + 1] = {
   "fxtod",
   "fxtoq",
   "illtrap", /* ILLTRAP */
-  "impdep1", /* IMPDEP1 and IMPDEP2 are not real names, these are 
-  			  * implementation-specific instruction. Maybe we should let
-  			  * the user specify a name for these instructions?
-  			  */ 
-  "impdep2", 
+  "impdep1", /* IMPDEP1 and IMPDEP2 are not real names, these are
+          * implementation-specific instruction. Maybe we should let
+          * the user specify a name for these instructions?
+          */
+  "impdep2",
   "jmpl", /* JMPL, RET, RETL */
   "ldd", /* LDD */
   "ldda", /* LDDA */
@@ -1036,7 +1052,7 @@ char *sparc_instr_list[ASM_SP_BAD + 1] = {
   "umul", /* UMUL */
   "umulcc", /* UMULcc */
   "wr", /* WRASI, WRASR, WRCCR, WRFPRS, WRY */
-  "wrpr", /* WRPR */  
+  "wrpr", /* WRPR */
   "xnor", /* XNOR */
   "xnorcc", /* XNORcc */
   "xor", /* XOR */

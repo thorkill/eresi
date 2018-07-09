@@ -18,7 +18,8 @@ int op_out_ref_ib_al(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->type = ASM_TYPE_IO | ASM_TYPE_STORE;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_IMMEDIATEBYTE, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1,
+                                ASM_CONTENT_IMMEDIATEBYTE, new);
 
   new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_FIXED, new);
   new->op[1].type = ASM_OPTYPE_REG;

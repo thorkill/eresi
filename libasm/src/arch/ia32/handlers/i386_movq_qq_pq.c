@@ -10,14 +10,15 @@
  */
 
 int     i386_movq_qq_pq(asm_instr *new, u_char *opcode, u_int len,
-			asm_processor *proc)
+                        asm_processor *proc)
 {
   new->ptr_instr = opcode;
   new->len += 1;
   new->instr = ASM_MOVQ;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
   new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_PMMX, new);
 #else
   new->op[0].content = ASM_CONTENT_QMMX;

@@ -19,12 +19,12 @@ int kernsh_idt(list_t *lidt)
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
-  if(lidt == NULL)
+  if (lidt == NULL)
     {
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		   "List is NULL !", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "List is NULL !", -1);
     }
-  
+
   idt = aspect_vector_get(LIBKERNSH_VECTOR_NAME_IDT);
   dim[0] = libkernshworld.arch;
   dim[1] = libkernshworld.os;
@@ -56,57 +56,58 @@ int kernsh_idt_linux(list_t *lidt)
   /* Interrupts is not set in static kernel ! */
   if (elfsh_is_static_mode())
     {
-     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Unable to get idt in static mode !", -1);
+      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                   "Unable to get idt in static mode !", -1);
     }
-  else 
+  else
     {
       if (!libkernshworld.open)
-	{
-	  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		       "Memory not open !", -1);
-	}
+        {
+          PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                       "Memory not open !", -1);
+        }
 
       for (i = (libkernshworld.idt_limit + 1) / (sizeof(unsigned long) * 2) - 1;
-	   i >= 0;
-	   i--)
-	{
-	  elfsh_readmema(libkernshworld.root, libkernshworld.idt_base+sizeof(unsigned long)*2*i,
-			 &idt,
-			 sizeof(idt));
+           i >= 0;
+           i--)
+        {
+          elfsh_readmema(libkernshworld.root,
+                         libkernshworld.idt_base + sizeof(unsigned long) * 2 * i,
+                         &idt,
+                         sizeof(idt));
 
-	  XALLOC(__FILE__, 
-		 __FUNCTION__, 
-		 __LINE__, 
-		 dint,
-		 sizeof(libkernshint_t), 
-		 -1);
+          XALLOC(__FILE__,
+                 __FUNCTION__,
+                 __LINE__,
+                 dint,
+                 sizeof(libkernshint_t),
+                 -1);
 
-	  XALLOC(__FILE__, 
-		 __FUNCTION__, 
-		 __LINE__, 
-		 key,
-		 BUFSIZ, 
-		 -1);
+          XALLOC(__FILE__,
+                 __FUNCTION__,
+                 __LINE__,
+                 key,
+                 BUFSIZ,
+                 -1);
 
-	  memset(dint, '\0', sizeof(libkernshint_t)); 
-	  memset(key, '\0', BUFSIZ);
-	  snprintf(key,
-		   BUFSIZ,
-		   "%d",
-		   i);
+          memset(dint, '\0', sizeof(libkernshint_t));
+          memset(key, '\0', BUFSIZ);
+          snprintf(key,
+                   BUFSIZ,
+                   "%d",
+                   i);
 
-	  dint->addr = (unsigned long)(idt.off2 << 16) + idt.off1;
-	  kernsh_resolve_systemmap(dint->addr, 
-				   dint->name, 
-				   sizeof(dint->name));
+          dint->addr = (unsigned long)(idt.off2 << 16) + idt.off1;
+          kernsh_resolve_systemmap(dint->addr,
+                                   dint->name,
+                                   sizeof(dint->name));
 
-	  /* Add the interrupt in the list */
-	  elist_add(lidt, key, (void *) dint);
-	}
+          /* Add the interrupt in the list */
+          elist_add(lidt, key, (void *) dint);
+        }
     }
 
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0); 
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 /**

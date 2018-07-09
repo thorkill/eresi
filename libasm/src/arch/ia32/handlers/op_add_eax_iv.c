@@ -10,7 +10,8 @@
   Instruction :         ADD
 */
 
-int op_add_eax_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
+int op_add_eax_iv(asm_instr *new, u_char *opcode, u_int len,
+                  asm_processor *proc)
 {
   new->instr = ASM_ADD;
   new->ptr_instr = opcode;
@@ -23,6 +24,7 @@ int op_add_eax_iv(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc
   new->op[0].len = 0;
   new->op[0].baser = ASM_REG_EAX;
   new->op[0].regset = asm_proc_opsize(proc) ? ASM_REGSET_R16 : ASM_REGSET_R32;
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE,
+                                new);
   return (new->len);
 }

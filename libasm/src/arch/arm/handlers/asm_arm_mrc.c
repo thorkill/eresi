@@ -4,8 +4,8 @@
 */
 #include "libasm.h"
 
-int     asm_arm_mrc(asm_instr * ins, u_char * buf, u_int len,
-                   asm_processor * proc)
+int     asm_arm_mrc(asm_instr *ins, u_char *buf, u_int len,
+                    asm_processor *proc)
 {
   struct s_arm_decode_coproc_mov opcode;
   struct s_asm_proc_arm *inter;
@@ -24,8 +24,11 @@ int     asm_arm_mrc(asm_instr * ins, u_char * buf, u_int len,
   MASSIGNTYPE(ins, ASM_TYPE_ASSIGN);
 
   ins->nb_op = 5;
+
   if (opcode.op2 != 0)
-    ins->nb_op = 6;
+    {
+      ins->nb_op = 6;
+    }
 
   /* Decode operands */
   ins->op[0].imm = opcode.cpnum;
@@ -54,7 +57,8 @@ int     asm_arm_mrc(asm_instr * ins, u_char * buf, u_int len,
   /* Remove the BRANCH flag assigned in the operand handler */
   MUNASSIGNTYPE(ins, ASM_TYPE_BRANCH);
   MASSIGNTYPE(ins, ASM_TYPE_WRITEFLAG);
-  ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C | ASM_ARM_FLAG_V;
+  ins->flagswritten = ASM_ARM_FLAG_N | ASM_ARM_FLAG_Z | ASM_ARM_FLAG_C |
+                      ASM_ARM_FLAG_V;
 
   LIBASM_PROFILE_FOUT(4);
 }

@@ -10,14 +10,14 @@
 
 
 /** Clean scripting context */
-void		revm_clean()
+void    revm_clean()
 {
   world.curjob->recur[world.curjob->curscope].script = NULL;
   world.curjob->recur[world.curjob->curscope].lstcmd = NULL;
 }
 
 /* Some REVM context cleanup when coming back from script to interactive mode */
-void		revm_cleanup()
+void    revm_cleanup()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   revm_clean();
@@ -27,19 +27,25 @@ void		revm_cleanup()
 
 
 /* Mostly for some post-execution code inside etrace */
-void		revm_postexec(int retval)
+void    revm_postexec(int retval)
 {
-  int		ret;
+  int   ret;
 
   if (!world.state.revm_quiet && world.state.revm_mode == REVM_STATE_SCRIPT)
     {
       if (retval < 0)
-	revm_output("\n [E] Script execution failed \n\n");
+        {
+          revm_output("\n [E] Script execution failed \n\n");
+        }
       else
-	revm_output("\n [*] Script execution ended succesfully \n\n");
+        {
+          revm_output("\n [*] Script execution ended succesfully \n\n");
+        }
     }
 
   /* Implicit unload or save if we are not in interactive mode or in tracer mode */
   if (world.state.revm_mode == REVM_STATE_CMDLINE && world.curjob->curfile)
-    ret = revm_workfiles_unload();
+    {
+      ret = revm_workfiles_unload();
+    }
 }

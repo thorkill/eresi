@@ -4,8 +4,8 @@
 */
 #include "libasm.h"
 
-int     asm_arm_swp(asm_instr * ins, u_char * buf, u_int len,
-                   asm_processor * proc)
+int     asm_arm_swp(asm_instr *ins, u_char *buf, u_int len,
+                    asm_processor *proc)
 {
   struct s_arm_decode_ldst opcode;
   struct s_asm_proc_arm *inter;
@@ -13,7 +13,7 @@ int     asm_arm_swp(asm_instr * ins, u_char * buf, u_int len,
   LIBASM_PROFILE_FIN();
 
   inter = proc->internals;
-  arm_convert_swap(&opcode,buf);
+  arm_convert_swap(&opcode, buf);
 
   arm_decode_condition(ins, opcode.cond);
 
@@ -33,7 +33,7 @@ int     asm_arm_swp(asm_instr * ins, u_char * buf, u_int len,
   ins->op[1].baser = opcode.rm;
   asm_arm_op_fetch(&ins->op[1], buf, ASM_ARM_OTYPE_REGISTER, ins);
 
-  /* Use register offset type to print with [] surrounding 
+  /* Use register offset type to print with [] surrounding
    * the register name.
    */
   ins->op[2].baser = opcode.rn;

@@ -27,18 +27,22 @@ int op_mov_rmv_iv(asm_instr *new, u_char *opcode, u_int len,
   new->ptr_instr = opcode;
   new->instr = ASM_MOV;
 
-  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new));
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen, ASM_CONTENT_IMMEDIATE, new);
+  new->len += (olen = asm_operand_fetch(&new->op[0], opcode + 1,
+                                        ASM_CONTENT_ENCODED, new));
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1 + olen,
+                                ASM_CONTENT_IMMEDIATE, new);
 
   if (asm_instruction_is_prefixed(new, ASM_PREFIX_OPSIZE))
-  {
-    if (asm_operand_is_reference(&new->op[0]))
     {
-      new->instr = ASM_MOVW;
+      if (asm_operand_is_reference(&new->op[0]))
+        {
+          new->instr = ASM_MOVW;
+        }
     }
-  }
   else
-    new->instr = ASM_MOV;
+    {
+      new->instr = ASM_MOV;
+    }
 
- return (new->len);
+  return (new->len);
 }

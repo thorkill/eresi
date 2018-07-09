@@ -10,6 +10,6 @@
 int asm_mips_rotr(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   ins->instr = ASM_MIPS_ROTR;
-   return 4;
+  ins->instr = ASM_MIPS_ROTR;
+  return 4;
 }

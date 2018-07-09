@@ -10,14 +10,16 @@
 */
 
 int i386_shld_rmv_rv_cl(asm_instr *new, u_char *opcode, u_int len,
-			asm_processor *proc)
+                        asm_processor *proc)
 {
   new->instr = ASM_SHRD;
   new->len += 1;
 
 #if LIBASM_USE_OPERAND_VECTOR
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
   new->len += asm_operand_fetch(&new->op[2], opcode + 1, ASM_CONTENT_FIXED, new);
   new->op[2].type = ASM_OPTYPE_REG;
   new->op[2].regset = ASM_REGSET_R8;

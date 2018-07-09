@@ -5,7 +5,7 @@
 #include "libasm.h"
 
 int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
-                                int otype, asm_instr *ins)
+                              int otype, asm_instr *ins)
 {
   LIBASM_PROFILE_FIN();
 
@@ -19,6 +19,7 @@ int asm_arm_op_fetch_reg_list(asm_operand *operand, u_char *opcode,
           /* R13 = SP */
           MASSIGNTYPE(ins, ASM_TYPE_TOUCHSP);
         }
+
       if (operand->imm & (1 << 15))
         {
           /* PC */

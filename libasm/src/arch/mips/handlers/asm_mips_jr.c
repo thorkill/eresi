@@ -8,21 +8,25 @@
 #include <libasm.h>
 
 int asm_mips_jr(asm_instr *ins, u_char *buf, u_int len,
-                  asm_processor *proc)
+                asm_processor *proc)
 {
-   struct s_mips_decode_reg temp;
+  struct s_mips_decode_reg temp;
 
-   ins->instr = ASM_MIPS_JR;
-   mips_convert_format_r(&temp, buf);
-   ins->op[0].baser = temp.rs;
-   asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
+  ins->instr = ASM_MIPS_JR;
+  mips_convert_format_r(&temp, buf);
+  ins->op[0].baser = temp.rs;
+  asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_REGISTER, ins);
 
-   if (temp.rs == ASM_MIPS_REG_RA)
+  if (temp.rs == ASM_MIPS_REG_RA)
+    {
       ins->type = ASM_TYPE_RETPROC;
-   else
+    }
+  else
+    {
       ins->type = ASM_TYPE_BRANCH;
+    }
 
-   /* Exceptions: None */
+  /* Exceptions: None */
 
-   return 4;
+  return 4;
 }

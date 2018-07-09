@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_fmovsr(asm_instr * ins, u_char * buf, u_int len,
-		 asm_processor * proc)
+asm_sparc_fmovsr(asm_instr *ins, u_char *buf, u_int len,
+                 asm_processor *proc)
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
@@ -21,7 +21,7 @@ asm_sparc_fmovsr(asm_instr * ins, u_char * buf, u_int len,
   ins->type = ASM_TYPE_ASSIGN | ASM_TYPE_COMPARISON;
 
   ins->instr = inter->fmovr_table[(((opcode.opf & 0x1f) - 6) * 8)
-				  + opcode.rcond];
+                                                        + opcode.rcond];
 
   ins->nb_op = 3;
   ins->op[0].baser = opcode.rd;

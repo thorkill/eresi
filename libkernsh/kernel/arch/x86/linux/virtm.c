@@ -39,13 +39,16 @@ int kernsh_dump_elf_pid(int pid, const char *filename)
   mm_segment_t fs;
 
   if (filename == NULL || strlen(filename) == 0)
-    return -1;
+    {
+      return -1;
+    }
 
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "DUMP pid %d @ %s\n", pid, filename);
 #endif
 
   task = find_task_by_pid(pid);
+
   if (task == NULL)
     {
       printk(KERN_ALERT "Couldn't find pid %d\n", pid);
@@ -53,9 +56,12 @@ int kernsh_dump_elf_pid(int pid, const char *filename)
     }
 
   if (task->mm == NULL)
-    return -1;
-  
+    {
+      return -1;
+    }
+
   file = filp_open(filename, O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO );
+
   if (file == NULL)
     {
       printk(KERN_ALERT "Couldn't create %s\n", filename);
@@ -63,49 +69,53 @@ int kernsh_dump_elf_pid(int pid, const char *filename)
     }
 
   get_file(file);
-  
+
   fs = get_fs();
   set_fs(KERNEL_DS);
-  
+
   mm = task->mm;
 
   if (mm)
     {
-      for(vma = mm->mmap; vma; vma = vma->vm_next)
-	{
+      for (vma = mm->mmap; vma; vma = vma->vm_next)
+        {
 #if __DEBUG_LIBKERNSH_KERNEL__
-	  printk(KERN_ALERT "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n", 
-		 vma->vm_start, 
-		 vma->vm_end,
-		 vma->vm_flags,
-		 (unsigned long)vma->vm_file);
+          printk(KERN_ALERT
+                 "VM_START @ 0x%lx VM_END @ 0x%lx VM_FLAGS 0x%lx VM_FILE 0x%lx\n",
+                 vma->vm_start,
+                 vma->vm_end,
+                 vma->vm_flags,
+                 (unsigned long)vma->vm_file);
 #endif
 
-	  if((vma->vm_flags & VM_EXECUTABLE) && 
-	     (vma->vm_flags & VM_EXEC) &&
-	     (vma->vm_file))
-	    {
-	      vma->vm_file->f_pos = 0;
-	      ssize = vma->vm_file->f_op->read(vma->vm_file, &c, sizeof(c), 
-					       &vma->vm_file->f_pos);
-	      if(ssize > 0)
-		{
-		  while(ssize != 0) 
-		    {
-		      i = file->f_op->write(file, &c, sizeof(c), &file->f_pos );
-		      if (i != ssize) 
-			{
-			  set_fs(fs);
-			  atomic_dec(&file->f_count);
-			  filp_close(file, 0);
-			  return -1;
-			}
-		      ssize = vma->vm_file->f_op->read(vma->vm_file, &c, sizeof(c), 
-						       &vma->vm_file->f_pos );
-		    }
-		}  
-	    }
-	}
+          if ((vma->vm_flags & VM_EXECUTABLE) &&
+              (vma->vm_flags & VM_EXEC) &&
+              (vma->vm_file))
+            {
+              vma->vm_file->f_pos = 0;
+              ssize = vma->vm_file->f_op->read(vma->vm_file, &c, sizeof(c),
+                                               &vma->vm_file->f_pos);
+
+              if (ssize > 0)
+                {
+                  while (ssize != 0)
+                    {
+                      i = file->f_op->write(file, &c, sizeof(c), &file->f_pos );
+
+                      if (i != ssize)
+                        {
+                          set_fs(fs);
+                          atomic_dec(&file->f_count);
+                          filp_close(file, 0);
+                          return -1;
+                        }
+
+                      ssize = vma->vm_file->f_op->read(vma->vm_file, &c, sizeof(c),
+                                                       &vma->vm_file->f_pos );
+                    }
+                }
+            }
+        }
 
     }
 
@@ -125,7 +135,8 @@ int kernsh_dump_elf_pid(int pid, const char *filename)
  * @param mode The mode to write into the buffer
  * @return 0 on success, -1 on error
  */
-asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int len, int mode)
+asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer,
+                                 int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -134,31 +145,32 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_read_virtm ENTER !!\n");
 
-  printk(KERN_ALERT "Kernsh Read Virtm PID %d @ 0x%lx strlen(%d) in 0x%lx\n", 
-	 pid, 
-	 addr, 
-	 len, 
-	 (unsigned long)buffer);
+  printk(KERN_ALERT "Kernsh Read Virtm PID %d @ 0x%lx strlen(%d) in 0x%lx\n",
+         pid,
+         addr,
+         len,
+         (unsigned long)buffer);
 #endif
- 
+
   if (addr <= 0)
     {
       printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
       return -1;
     }
-  
+
   task = find_task_by_pid(pid);
-   
+
   if (task == NULL)
     {
       printk(KERN_ALERT "[-] Couldn't find pid %d\n", pid);
       return -1;
     }
-  
+
   mypage = kernsh_get_page_from_pid(pid, addr);
+
   if (mypage == NULL)
     {
-      printk(KERN_ALERT "[-] PAGE NULL\n");	
+      printk(KERN_ALERT "[-] PAGE NULL\n");
       return -EFAULT;
     }
 
@@ -167,19 +179,21 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
 #endif
 
   kaddr = kmap_atomic(mypage, smp_processor_id());
-  
-  switch(mode)
+
+  switch (mode)
     {
     case LIBKERNSH_KERNEL_MODE :
       memcpy(buffer, kaddr + (addr & ~PAGE_MASK), len);
       break;
+
     case LIBKERNSH_USER_MODE :
-      if(copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
-	{
-	  printk(KERN_ALERT "[-] copy_to_user error\n");
-	  kunmap_atomic(kaddr, smp_processor_id());
-	  return -EFAULT;
-	}
+      if (copy_to_user(buffer, kaddr + (addr & ~PAGE_MASK), len))
+        {
+          printk(KERN_ALERT "[-] copy_to_user error\n");
+          kunmap_atomic(kaddr, smp_processor_id());
+          return -EFAULT;
+        }
+
       break;
     }
 
@@ -202,7 +216,8 @@ asmlinkage int kernsh_read_virtm(int pid, unsigned long addr, char *buffer, int 
  * @param mode The mode to write into the buffer
  * @return len on success, -1 on error
  */
-asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffer, int len, int mode)
+asmlinkage int kernsh_write_virtm(int pid, unsigned long addr,
+                                  const char *buffer, int len, int mode)
 {
   struct task_struct *task;
   struct page *mypage;
@@ -211,37 +226,38 @@ asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffe
 #if __DEBUG_LIBKERNSH_KERNEL__
   printk(KERN_ALERT "[+] kernsh_write_virtm ENTER !!\n");
 
-  printk(KERN_ALERT "Kernsh Write Virtm PID %d @ 0x%lx strlen(%d) to 0x%lx\n", 
-	 pid, 
-	 addr, 
-	 len, 
-	 (unsigned long)buffer);
+  printk(KERN_ALERT "Kernsh Write Virtm PID %d @ 0x%lx strlen(%d) to 0x%lx\n",
+         pid,
+         addr,
+         len,
+         (unsigned long)buffer);
 #endif
- 
+
   if (addr <= 0)
     {
       printk(KERN_ALERT "[-] Addr isn't valid => 0x%lx!\n", addr);
       return -1;
     }
-  
+
   task = find_task_by_pid(pid);
-   
+
   if (task == NULL)
     {
       printk(KERN_ALERT "[-] Couldn't find pid %d\n", pid);
       return -1;
     }
-  
+
   mypage = kernsh_get_page_from_pid(pid, addr);
+
   if (mypage == NULL)
     {
-      printk(KERN_ALERT "[-] PAGE NULL\n");	
+      printk(KERN_ALERT "[-] PAGE NULL\n");
       return -EFAULT;
     }
 
   if (PageReserved(mypage))
     {
-      printk(KERN_ALERT "[-] PAGE RESERVED\n");	
+      printk(KERN_ALERT "[-] PAGE RESERVED\n");
       return -EFAULT;
     }
 
@@ -250,19 +266,21 @@ asmlinkage int kernsh_write_virtm(int pid, unsigned long addr, const char *buffe
 #endif
 
   kaddr = kmap_atomic(mypage, smp_processor_id());
-  
-  switch(mode)
+
+  switch (mode)
     {
     case LIBKERNSH_KERNEL_MODE :
       memcpy(kaddr + (addr & ~PAGE_MASK), buffer, len);
       break;
+
     case LIBKERNSH_USER_MODE :
-      if(copy_from_user(kaddr + (addr & ~PAGE_MASK), buffer, len))
-	{
-	  printk(KERN_ALERT "[-] copy_from_user error\n");
-	  kunmap_atomic(kaddr, smp_processor_id());
-	  return -EFAULT;
-	}
+      if (copy_from_user(kaddr + (addr & ~PAGE_MASK), buffer, len))
+        {
+          printk(KERN_ALERT "[-] copy_from_user error\n");
+          kunmap_atomic(kaddr, smp_processor_id());
+          return -EFAULT;
+        }
+
       break;
     }
 

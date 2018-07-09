@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_fbpfcc(asm_instr * ins, u_char * buf, u_int len,
-		 asm_processor * proc)
+asm_sparc_fbpfcc(asm_instr *ins, u_char *buf, u_int len,
+                 asm_processor *proc)
 {
   struct s_decode_pbranch opcodep;
   struct s_asm_proc_sparc *inter;
@@ -22,11 +22,17 @@ asm_sparc_fbpfcc(asm_instr * ins, u_char * buf, u_int len,
   ins->instr = inter->fbcc_table[opcodep.cond];
 
   if (ins->instr == ASM_SP_FBA)
-    ins->type = ASM_TYPE_BRANCH;
+    {
+      ins->type = ASM_TYPE_BRANCH;
+    }
   else if (ins->instr == ASM_SP_FBN)
-    ins->type = ASM_TYPE_NOP;
+    {
+      ins->type = ASM_TYPE_NOP;
+    }
   else
-    ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
+    {
+      ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL;
+    }
 
   /* Removed during flags cleanup. */
   /* ins->type = ASM_TYPE_BRANCH | ASM_TYPE_CONDCONTROL; */
@@ -37,6 +43,6 @@ asm_sparc_fbpfcc(asm_instr * ins, u_char * buf, u_int len,
   ins->prediction = opcodep.p;
   asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_DISPLACEMENT, ins);
   asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_CC, ins);
-  
+
   return 4;
 }

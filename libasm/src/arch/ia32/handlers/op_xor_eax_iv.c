@@ -19,7 +19,7 @@
  */
 
 
-int op_xor_eax_iv(asm_instr *new, u_char *opcode, u_int len, 
+int op_xor_eax_iv(asm_instr *new, u_char *opcode, u_int len,
                   asm_processor *proc)
 {
   new->instr = ASM_XOR;
@@ -27,15 +27,18 @@ int op_xor_eax_iv(asm_instr *new, u_char *opcode, u_int len,
   new->len += 1;
   new->type = ASM_TYPE_ARITH | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_CF | ASM_FLAG_OF | ASM_FLAG_PF |
-                        ASM_FLAG_ZF | ASM_FLAG_SF;
+                      ASM_FLAG_ZF | ASM_FLAG_SF;
 
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
   new->op[0].ptr = opcode;
   new->op[0].len = 0;
   new->op[0].baser = ASM_REG_EAX;
-  new->op[0].regset = asm_proc_is_protected(proc) ? ASM_REGSET_R32 : ASM_REGSET_R16;\
+  new->op[0].regset = asm_proc_is_protected(proc) ? ASM_REGSET_R32 :
+                      ASM_REGSET_R16;
+  \
 
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE, new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_IMMEDIATE,
+                                new);
 
   return (new->len);
 }

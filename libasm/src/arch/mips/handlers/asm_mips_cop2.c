@@ -10,10 +10,10 @@
 int asm_mips_cop2(asm_instr *ins, u_char *buf, u_int len,
                   asm_processor *proc)
 {
-   ins->instr = ASM_MIPS_COP2;
-   ins->type = ASM_TYPE_ARCH;
+  ins->instr = ASM_MIPS_COP2;
+  ins->type = ASM_TYPE_ARCH;
 
-   /* Exceptions: Coprocessor Unusable, Reserved instruction */
+  /* Exceptions: Coprocessor Unusable, Reserved instruction */
 
-   return 4;
+  return 4;
 }

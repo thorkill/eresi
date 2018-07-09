@@ -12,73 +12,84 @@
 
 
 
-/** 
- * Inform a given type 
+/**
+ * Inform a given type
  */
-int		cmd_inform()
+int   cmd_inform()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   switch (world.curjob->curcmd->argc)
     {
-      /* inform type */
+    /* inform type */
     case 1:
       if (revm_informed_print(world.curjob->curcmd->param[0]) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Invalid requested type", -1);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid requested type", -1);
+
       break;
 
-      /* inform type name */
+    /* inform type name */
     case 2:
       if (revm_inform_toplevel(world.curjob->curcmd->param[0],
-			       world.curjob->curcmd->param[1],
-			       NULL, NULL, 1, 1) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Invalid variable information", -1);
+                               world.curjob->curcmd->param[1],
+                               NULL, NULL, 1, 1) < 0)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid variable information", -1);
+
       break;
-      
-      /* inform type name address */
+
+    /* inform type name address */
     case 3:
-      if (revm_inform_toplevel(world.curjob->curcmd->param[0], 
-			       world.curjob->curcmd->param[1], 
-			       world.curjob->curcmd->param[2], NULL, 1, 1) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Invalid variable information", -1);
+      if (revm_inform_toplevel(world.curjob->curcmd->param[0],
+                               world.curjob->curcmd->param[1],
+                               world.curjob->curcmd->param[2], NULL, 1, 1) < 0)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid variable information", -1);
+
       break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			"Invalid inform syntax", -1);
+                   "Invalid inform syntax", -1);
     }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 
 
-/** 
- * Uninform a given type 
+/**
+ * Uninform a given type
  */
-int		cmd_uninform()
+int   cmd_uninform()
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   switch (world.curjob->curcmd->argc)
     {
-      /* uninform type */
+    /* uninform type */
     case 1:
       if (revm_uninform_type(world.curjob->curcmd->param[0], NULL, 1) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Invalid type information", -1);
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid type information", -1);
+
       break;
 
-      /* uninform type name */
+    /* uninform type name */
     case 2:
       if (revm_uninform_type(world.curjob->curcmd->param[0],
-			   world.curjob->curcmd->param[1], 1) < 0)
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			  "Invalid variable information", -1);
+                             world.curjob->curcmd->param[1], 1) < 0)
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid variable information", -1);
+
       break;
+
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			"Invalid uninform syntax", -1);
+                   "Invalid uninform syntax", -1);
     }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

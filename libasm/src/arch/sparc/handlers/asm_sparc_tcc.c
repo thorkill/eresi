@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_tcc(asm_instr * ins, u_char * buf, u_int len,
-	      asm_processor * proc)
+asm_sparc_tcc(asm_instr *ins, u_char *buf, u_int len,
+              asm_processor *proc)
 {
   struct s_decode_format3 opcode;
   struct s_decode_format4 opcode4;
@@ -25,16 +25,19 @@ asm_sparc_tcc(asm_instr * ins, u_char * buf, u_int len,
 
   ins->instr = inter->tcc_table[opcode4.cond];
   ins->nb_op = 2;
-  if (opcode4.i) {
-    ins->op[0].baser = opcode4.rs1;
-    ins->op[0].imm = opcode4.sw_trap;
-    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
-  }
-  else {
-    ins->op[0].baser = opcode4.rs1;
-    ins->op[0].indexr = opcode4.rs2;
-    asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
-  }
+
+  if (opcode4.i)
+    {
+      ins->op[0].baser = opcode4.rs1;
+      ins->op[0].imm = opcode4.sw_trap;
+      asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_IMM_ADDRESS, ins);
+    }
+  else
+    {
+      ins->op[0].baser = opcode4.rs1;
+      ins->op[0].indexr = opcode4.rs2;
+      asm_sparc_op_fetch(&ins->op[0], buf, ASM_SP_OTYPE_REG_ADDRESS, ins);
+    }
 
   ins->op[1].baser = (opcode4.cc & 0x3) + 4;
   asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_CC, ins);

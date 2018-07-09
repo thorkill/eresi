@@ -13,10 +13,15 @@ int op_movsd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {
   new->len += 1;
   new->ptr_instr = opcode;
+
   if (asm_proc_opsize(proc))
-    new->instr = ASM_MOVSW;
+    {
+      new->instr = ASM_MOVSW;
+    }
   else
-    new->instr = ASM_MOVSD;
+    {
+      new->instr = ASM_MOVSD;
+    }
 
   new->type = ASM_TYPE_LOAD | ASM_TYPE_STORE | ASM_TYPE_ASSIGN;
 

@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_fcmpq(asm_instr * ins, u_char * buf, u_int len,
-		asm_processor * proc)
+asm_sparc_fcmpq(asm_instr *ins, u_char *buf, u_int len,
+                asm_processor *proc)
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
@@ -19,7 +19,7 @@ asm_sparc_fcmpq(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-  
+
   ins->type = ASM_TYPE_COMPARISON | ASM_TYPE_WRITEFLAG;
   ins->flagswritten = ASM_SP_FLAG_FCC0 << opcode.cc;
 
@@ -31,6 +31,6 @@ asm_sparc_fcmpq(asm_instr * ins, u_char * buf, u_int len,
   asm_sparc_op_fetch(&ins->op[1], buf, ASM_SP_OTYPE_FREGISTER, ins);
   ins->op[2].baser = opcode.cc;
   asm_sparc_op_fetch(&ins->op[2], buf, ASM_SP_OTYPE_CC, ins);
-  
+
   return 4;
 }

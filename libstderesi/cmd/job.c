@@ -11,8 +11,8 @@
 
 int      revm_create_new_workspace(char *ws_name)
 {
-  revmjob_t	*job;
-  char		logbuf[BUFSIZ];
+  revmjob_t *job;
+  char    logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -41,14 +41,13 @@ int      revm_create_new_workspace(char *ws_name)
           PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
         }
     }
-  else
-    if (job->ws.active)
-      {
-        snprintf(logbuf, BUFSIZ - 1, "\n [+] Already in workspace : %s\n\n",
-                 ws_name);
-        revm_output(logbuf);
-        PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
-      }
+  else if (job->ws.active)
+    {
+      snprintf(logbuf, BUFSIZ - 1, "\n [+] Already in workspace : %s\n\n",
+               ws_name);
+      revm_output(logbuf);
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect workspace name", -1);
 }
@@ -57,19 +56,19 @@ int      revm_create_new_workspace(char *ws_name)
 /**
  * Need doxygen comment
  */
-int		cmd_workspace()
+int   cmd_workspace()
 {
-  revmjob_t	*job;
-  u_int		idx;
-  u_int		index;
-  char		logbuf[BUFSIZ];
-  char		*nl;
-  char		*time;
-  elfshobj_t	*obj;
-  char		**keys;
-  int		keynbr;
-  char		**loadedkeys;
-  int		loadedkeynbr;
+  revmjob_t *job;
+  u_int   idx;
+  u_int   index;
+  char    logbuf[BUFSIZ];
+  char    *nl;
+  char    *time;
+  elfshobj_t  *obj;
+  char    **keys;
+  int   keynbr;
+  char    **loadedkeys;
+  int   loadedkeynbr;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -77,19 +76,25 @@ int		cmd_workspace()
 
   switch (world.curjob->curcmd->argc)
     {
-      /* $ workspace */
+    /* $ workspace */
     case 0:
       revm_output(" .::. Workspaces .::. \n");
       keys = hash_get_keys(&world.jobs, &keynbr);
+
       for (index = 0; index < keynbr; index++)
         {
           job = (revmjob_t *) hash_get(&world.jobs, keys[index]);
+
           if (revm_own_job(job))
             {
               time = ctime(&job->ws.createtime);
               nl = strchr(time, '\n');
+
               if (nl)
-                *nl = 0x00;
+                {
+                  *nl = 0x00;
+                }
+
               snprintf(logbuf, BUFSIZ - 1, " [%s] %s %c \n", keys[index],
                        time, (job->ws.active ? '*' : ' '));
               revm_output(logbuf);
@@ -97,6 +102,7 @@ int		cmd_workspace()
               if (hash_size(&job->loaded))
                 {
                   loadedkeys = hash_get_keys(&job->loaded, &loadedkeynbr);
+
                   for (idx = 0; idx < loadedkeynbr; idx++)
                     {
                       obj = hash_get(&job->loaded, loadedkeys[idx]);
@@ -113,15 +119,16 @@ int		cmd_workspace()
                 }
             }
         }
+
       revm_output("\n");
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 
-      /* $ workspace name */
+    /* $ workspace name */
     case 1:
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-		   revm_create_new_workspace(revm_get_cur_job_parameter(0)));
+                    revm_create_new_workspace(revm_get_cur_job_parameter(0)));
 
-      /* Unknown command format */
+    /* Unknown command format */
     default:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Wrong arg number", -1);
     }
@@ -130,14 +137,18 @@ int		cmd_workspace()
 /**
  * Switch to the next workspace
  */
-int		cmd_next_workspace()
+int   cmd_next_workspace()
 {
-  int		ret;
+  int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   ret = revm_workspace_next();
+
   if (!ret)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to switch workspace", -1);
 }

@@ -18,37 +18,43 @@
  * @param arch Architecture: ASM_PROC_IA32
  */
 
-int	asm_init_arch(asm_processor *proc, int arch)
+int asm_init_arch(asm_processor *proc, int arch)
 {
-  switch(arch)
+  switch (arch)
     {
 #if LIBASM_ENABLE_IA32
-      //#warning Enabling IA32 support
+
+    //#warning Enabling IA32 support
     case ASM_PROC_IA32:
       return asm_init_ia32(proc);
       break;
 #endif
 #if LIBASM_ENABLE_SPARC
-      //#warning Enabling SPARC support
+
+    //#warning Enabling SPARC support
     case ASM_PROC_SPARC:
       return asm_init_sparc(proc);
       break;
 #endif
 #if LIBASM_ENABLE_MIPS
-      //#warning Enabling MIPS support
+
+    //#warning Enabling MIPS support
     case ASM_PROC_MIPS:
       return asm_init_mips(proc);
       break;
 #endif
 #if LIBASM_ENABLE_ARM
-      //#warning Enabling ARM support
+
+    //#warning Enabling ARM support
     case ASM_PROC_ARM:
       return asm_init_arm(proc);
       break;
 #endif
+
     default:
       return (0);
     }
+
   return (0);
 }
 
@@ -58,44 +64,52 @@ int	asm_init_arch(asm_processor *proc, int arch)
  * @param machine Currently not used.
  * @return 1 on success, 0 on error
  */
-int	asm_arch_register(asm_processor *proc, int machine)
-{  
-  int	to_ret;
-  
+int asm_arch_register(asm_processor *proc, int machine)
+{
+  int to_ret;
+
   LIBASM_PROFILE_FIN();
-  
+
   to_ret = 0;
 #if LIBASM_ENABLE_IA32
-  if (proc->type == ASM_PROC_IA32) 
+
+  if (proc->type == ASM_PROC_IA32)
     {
       asm_register_ia32(proc);
       to_ret = 1;
-    }  
+    }
+
 #endif
-#if LIBASM_ENABLE_SPARC 
-  if (proc->type == ASM_PROC_SPARC) 
+#if LIBASM_ENABLE_SPARC
+
+  if (proc->type == ASM_PROC_SPARC)
     {
       asm_register_sparc();
       to_ret = 1;
     }
+
 #endif
 #if LIBASM_ENABLE_MIPS
+
   if (proc->type == ASM_PROC_MIPS)
     {
       asm_register_mips();
       to_ret = 1;
     }
+
 #endif
 #if LIBASM_ENABLE_ARM
+
   if (proc->type == ASM_PROC_ARM)
     {
       asm_register_arm();
       to_ret = 1;
     }
+
 #endif
   //
   // Add your architecture handler here.
-  // 
+  //
   LIBASM_PROFILE_FOUT(to_ret);
 }
 
@@ -105,25 +119,29 @@ int	asm_arch_register(asm_processor *proc, int machine)
  * @param size Size of the vector
  * @return 1 on success, or 0 on error.
  */
-int	asm_register_operand_create(const char *vector_name, int size)
+int asm_register_operand_create(const char *vector_name, int size)
 {
-  u_int		*dims;
-  char		**dimstr;
-  
+  u_int   *dims;
+  char    **dimstr;
+
   dims = malloc(1 * sizeof (u_int));
+
   if (!dims)
     {
       return 0;
     }
+
   dimstr = malloc(1 * sizeof (char *));
+
   if (!dimstr)
     {
       return 0;
     }
+
   dims[0] = size;
   dimstr[0] = "OPERAND";
   aspect_register_vector((char *)vector_name, asm_operand_fetch_default,
-			 dims, dimstr, 1, ASPECT_TYPE_CADDR);
+                         dims, dimstr, 1, ASPECT_TYPE_CADDR);
   return (1);
 }
 
@@ -136,11 +154,11 @@ int	asm_register_operand_create(const char *vector_name, int size)
  * @return 1 on success, 0 on error.
  */
 
-int asm_register_operand(const char *vector_name, int operand_type, 
-                          unsigned long fcn)
+int asm_register_operand(const char *vector_name, int operand_type,
+                         unsigned long fcn)
 {
-  vector_t	*vec;
-  u_int		dim[1];
+  vector_t  *vec;
+  u_int   dim[1];
 
   LIBASM_PROFILE_FIN();
   vec = aspect_vector_get((char *)vector_name);
@@ -156,25 +174,29 @@ int asm_register_operand(const char *vector_name, int operand_type,
  *
  */
 
-int	asm_register_opcode_create(const char *vector_name, int size)
+int asm_register_opcode_create(const char *vector_name, int size)
 {
-  u_int		*dims;
-  char		**dimstr;
-  
+  u_int   *dims;
+  char    **dimstr;
+
   dims = malloc(1 * sizeof (u_int));
+
   if (!dims)
     {
       return 0;
     }
+
   dimstr = malloc(1 * sizeof (char *));
+
   if (!dimstr)
     {
       return 0;
     }
+
   dims[0] = size;
   dimstr[0] = "opcode";
   aspect_register_vector((char *) vector_name, asm_operand_fetch_default,
-			 dims, dimstr, 1, ASPECT_TYPE_CADDR);  
+                         dims, dimstr, 1, ASPECT_TYPE_CADDR);
   return (1);
 }
 
@@ -186,20 +208,22 @@ int	asm_register_opcode_create(const char *vector_name, int size)
  *
  */
 
-int	asm_register_opcode(const char *vector_name, int opcode,
-			    unsigned long fcn)
+int asm_register_opcode(const char *vector_name, int opcode,
+                        unsigned long fcn)
 {
-  vector_t	*vec;
-  u_int		dim[1];
-  int		to_ret;
-  
+  vector_t  *vec;
+  u_int   dim[1];
+  int   to_ret;
+
   LIBASM_PROFILE_FIN();
-  to_ret = 0;  
+  to_ret = 0;
+
   if ((vec = aspect_vector_get((char *)vector_name)) != NULL)
     {
       dim[0] = opcode;
       aspect_vectors_insert(vec, dim, fcn);
       to_ret = 1;
     }
-  LIBASM_PROFILE_FOUT(to_ret);  
+
+  LIBASM_PROFILE_FOUT(to_ret);
 }

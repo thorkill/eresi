@@ -4,8 +4,8 @@ n** @ingroup ARM_instrs
 */
 #include "libasm.h"
 
-int     asm_arm_qdadd(asm_instr * ins, u_char * buf, u_int len,
-                    asm_processor * proc)
+int     asm_arm_qdadd(asm_instr *ins, u_char *buf, u_int len,
+                      asm_processor *proc)
 {
   struct s_arm_decode_multiply opcode;
   struct s_asm_proc_arm *inter;

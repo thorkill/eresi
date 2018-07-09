@@ -4,12 +4,12 @@
  * @ingroup IA32_instrs
  * $Id$
  * ChangeLog:
- * 2007-05-30	Fixed a bug in fetching. The vector used was the previously defined.
- *		strauss set up a new disasm vector and didn't know about it which
- *		was called here.
- *		Filled instruction opcode pointer.
- *		Removed the old unused handler.
- *		Added minimal error management.
+ * 2007-05-30 Fixed a bug in fetching. The vector used was the previously defined.
+ *    strauss set up a new disasm vector and didn't know about it which
+ *    was called here.
+ *    Filled instruction opcode pointer.
+ *    Removed the old unused handler.
+ *    Added minimal error management.
  */
 #include <libasm.h>
 #include <libasm-int.h>
@@ -33,15 +33,24 @@ int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
 
   // XXX: Use asm_set_error to set error code to LIBASM_ERROR_TOOSHORT
   if (len < 2)
-    return (-1);
-  
+    {
+      return (-1);
+    }
+
   opcode = *(buf + 1);
   opcode += 0x100;
   fetch = asm_opcode_fetch(LIBASM_VECTOR_OPCODE_IA32, opcode);
+
   if (!fetch)
-    return (-1);
+    {
+      return (-1);
+    }
+
   if (!ins->ptr_instr)
-    ins->ptr_instr = buf;
+    {
+      ins->ptr_instr = buf;
+    }
+
   ins->len += 1;
   return (fetch(ins, buf + 1, len - 1, proc));
 }

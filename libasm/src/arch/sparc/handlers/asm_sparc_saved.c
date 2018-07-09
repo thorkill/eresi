@@ -10,8 +10,8 @@
 #include "libasm.h"
 
 int
-asm_sparc_saved(asm_instr * ins, u_char * buf, u_int len,
-		asm_processor * proc)
+asm_sparc_saved(asm_instr *ins, u_char *buf, u_int len,
+                asm_processor *proc)
 {
   struct s_decode_format3 opcode;
   struct s_asm_proc_sparc *inter;
@@ -19,15 +19,21 @@ asm_sparc_saved(asm_instr * ins, u_char * buf, u_int len,
 
   inter = proc->internals;
   ins->instr = inter->op2_table[opcode.op3];
-  
+
   ins->type = ASM_TYPE_PROLOG;
 
   if (opcode.rd == 0)
-    ins->instr = ASM_SP_SAVED;
+    {
+      ins->instr = ASM_SP_SAVED;
+    }
   else if (opcode.rd == 1)
-    ins->instr = ASM_SP_RESTORED;
+    {
+      ins->instr = ASM_SP_RESTORED;
+    }
   else
-    ins->instr = ASM_SP_BAD;
+    {
+      ins->instr = ASM_SP_BAD;
+    }
 
   return 4;
 }

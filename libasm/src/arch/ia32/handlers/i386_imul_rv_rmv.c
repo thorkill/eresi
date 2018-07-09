@@ -10,20 +10,22 @@
 */
 
 int i386_imul_rv_rmv(asm_instr *new, u_char *opcode, u_int len,
-		     asm_processor *proc)
+                     asm_processor *proc)
 {
-    new->instr = ASM_IMUL;
-    new->len += 1;
+  new->instr = ASM_IMUL;
+  new->len += 1;
 
 #if LIBASM_USE_OPERAND_VECTOR
-    new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL, new);
-    new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_GENERAL,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
 #else
-    new->op[0].content = ASM_CONTENT_GENERAL;
-    new->op[0].size = ASM_OSIZE_VECTOR;
-    new->op[1].content = ASM_CONTENT_ENCODED;
-    new->op[1].size = ASM_OSIZE_VECTOR;
-    operand_rv_rmv(new, opcode + 1, len - 1, proc);
+  new->op[0].content = ASM_CONTENT_GENERAL;
+  new->op[0].size = ASM_OSIZE_VECTOR;
+  new->op[1].content = ASM_CONTENT_ENCODED;
+  new->op[1].size = ASM_OSIZE_VECTOR;
+  operand_rv_rmv(new, opcode + 1, len - 1, proc);
 #endif
-    return (new->len);
+  return (new->len);
 }

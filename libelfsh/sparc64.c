@@ -2,13 +2,13 @@
 * @file libelfsh/sparc64.c
  * @ingroup libelfsh
  * sparc64.c for libelfsh
- * 
+ *
  * Started on  Sat Jan 15 14:25:37 2005 jfv
  * Last update Sat Jan 15 14:26:39 2005 jfv
- * 
+ *
  * Cut & Pasted from the sparc32 backend
  * 64 bits backend work-in-progress
- * 
+ *
  *
  * $Id$
  *
@@ -21,21 +21,21 @@
 */
 
 /**
- * @brief Static hooking for Sparc64 
+ * @brief Static hooking for Sparc64
  * @param null
  * @param snull
  * @param null2
  * @param null3
  * @return
  */
-int	elfsh_cflow_sparc64(elfshobj_t  *null,
-			    char	*snull,
-			    elfsh_Sym	*null2,
-			    eresi_Addr	null3)
+int elfsh_cflow_sparc64(elfshobj_t  *null,
+                        char  *snull,
+                        elfsh_Sym *null2,
+                        eresi_Addr  null3)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		    "Unsupported Arch, ELF type, or OS", -1);
+  PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+               "Unsupported Arch, ELF type, or OS", -1);
 }
 
 /**
@@ -45,34 +45,34 @@ int	elfsh_cflow_sparc64(elfshobj_t  *null,
  * @param addr
  * @return
  */
-int		elfsh_hijack_plt_sparc64(elfshobj_t *file, 
-					 elfsh_Sym *symbol,
-					 eresi_Addr addr)
+int   elfsh_hijack_plt_sparc64(elfshobj_t *file,
+                               elfsh_Sym *symbol,
+                               eresi_Addr addr)
 {
-  int		foffset;
-  uint32_t	addrh, addrl;
-  uint32_t	opcode[3];
-  
+  int   foffset;
+  uint32_t  addrh, addrl;
+  uint32_t  opcode[3];
+
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_SPARCV9)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
-		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
-		   "SPARC\n", -1);
+                 "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
+                 "SPARC\n", -1);
 
   /* compute the sparc %hi(), %lo() address */
   addrh = addr & 0xfffffc00;
   addrl = addr & 0x3ff;
 
-  /* sethi %hi(addrh), %g1	*/
+  /* sethi %hi(addrh), %g1  */
   opcode[0] = 0x03000000 | addrh >> 10;
 
-  /* jmp %g1 + addrl	! addr	*/
+  /* jmp %g1 + addrl  ! addr  */
   opcode[1] = 0x81c06000 | addrl;
 
   /* Add a nop for delay slot */
   opcode[2] = 0x01000000;
-  
+
   foffset = elfsh_get_foffset_from_vaddr(file, symbol->st_value);
   elfsh_writememf(file, foffset, opcode, 3 * sizeof(uint32_t));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -80,18 +80,18 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
 
 
 
-/* 
+/*
 
    Used for hijacking the first PLT entry, when %g1 needs to be kept.
    This 16 instructions lenght code copies the first updated .plt
    entry to the first not-yet-updated .alt.plt entry in runtime. This
    operation needs to recompute the 'call elf_bndr' since its operand is
-   relative. 
+   relative.
 
    This fix is necessary so that we keep a consistent relocation offset
-   (because first .alt.plt entry 's %i7 is used for computing the relocation 
-   offset on solaris/sparc, I guess this is not a very standard behavior ;). 
-   If we dont do that, the hook is removed after the first original (hijacked) 
+   (because first .alt.plt entry 's %i7 is used for computing the relocation
+   offset on solaris/sparc, I guess this is not a very standard behavior ;).
+   If we dont do that, the hook is removed after the first original (hijacked)
    function call, and thats not what we want (in case we need to call the original
    function from the hook function.) -mm
 
@@ -106,20 +106,20 @@ int		elfsh_hijack_plt_sparc64(elfshobj_t *file,
  * @param addr
  * @return
  */
-int		elfsh_hijack_altplt_sparc64(elfshobj_t *file, 
-					    elfsh_Sym *symbol,
-					    eresi_Addr addr)
+int   elfsh_hijack_altplt_sparc64(elfshobj_t *file,
+                                  elfsh_Sym *symbol,
+                                  eresi_Addr addr)
 {
-  int		foffset;
-  uint32_t	addrh, addrl;
-  uint32_t	opcode[12];
+  int   foffset;
+  uint32_t  addrh, addrl;
+  uint32_t  opcode[12];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (file->hdr->e_machine != EM_SPARCV9)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "requested "
-		   "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
-		   "SPARC\n", -1);
+                 "ELFSH_HIJACK_CPU_SPARC while the elf file is not "
+                 "SPARC\n", -1);
 
   addr += 4;
 
@@ -177,12 +177,12 @@ int		elfsh_hijack_altplt_sparc64(elfshobj_t *file,
  * @return
  */
 int       elfsh_relocate_sparc64(elfshsect_t       *new,
-				 elfsh_Rela        *cur,
-				 eresi_Addr        *dword,
-				 eresi_Addr        addr,
-				 elfshsect_t	   *mod)
+                                 elfsh_Rela        *cur,
+                                 eresi_Addr        *dword,
+                                 eresi_Addr        addr,
+                                 elfshsect_t     *mod)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 
-		     (elfsh_relocate_sparc32(new, cur, dword, addr, mod)));
+  PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
+                (elfsh_relocate_sparc32(new, cur, dword, addr, mod)));
 }

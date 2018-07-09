@@ -26,7 +26,7 @@ int op_in_eax_dx(asm_instr *new, u_char *opcode, u_int len,
   new->len += asm_operand_fetch(&new->op[1], opcode, ASM_CONTENT_FIXED, new);
   new->op[1].regset = ASM_REGSET_R16;
   new->op[1].baser = ASM_REG_DX;
-	new->op[1].type = ASM_OPTYPE_MEM;
+  new->op[1].type = ASM_OPTYPE_MEM;
   new->op[1].memtype = ASM_OP_BASE | ASM_OP_REFERENCE;
 
   return (new->len);

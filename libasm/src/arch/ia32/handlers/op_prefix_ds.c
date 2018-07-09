@@ -15,10 +15,13 @@
 */
 
 int op_prefix_ds(asm_instr *new, u_char *opcode, u_int len,
-		 asm_processor *proc)
+                 asm_processor *proc)
 {
   if (!new->ptr_prefix)
-    new->ptr_prefix = opcode;
+    {
+      new->ptr_prefix = opcode;
+    }
+
   new->len += 1;
   new->prefix |= ASM_PREFIX_DS;
   return (proc->fetch(new, opcode + 1, len - 1, proc));

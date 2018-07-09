@@ -17,25 +17,28 @@
  * @param proc Pointer to the processor structure
  * @return -1
  */
-int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
-			  asm_processor *proc)
+int asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
+                      asm_processor *proc)
 {
-  int	to_ret;
+  int to_ret;
 
   LIBASM_PROFILE_FIN();
 
   switch (proc->type)
     {
 #if LIBASM_ENABLE_SPARC
+
     case ASM_PROC_SPARC:
       to_ret = asm_sparc_illegal(ins, opcode, len, proc);
       break;
 #endif
 #if LIBASM_ENABLE_ARM
+
     case ASM_PROC_ARM:
       to_ret = asm_arm_illegal(ins, opcode, len, proc);
       break;
 #endif
+
     default:
       to_ret = -1;
     }
@@ -53,8 +56,8 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
  * @return -1
  *
  */
-int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
-				  asm_instr *ins)
+int asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
+                              asm_instr *ins)
 {
   LIBASM_PROFILE_FIN();
   LIBASM_PROFILE_FOUT(-1);
@@ -66,11 +69,11 @@ int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
  * @param opcode
  *
  */
-void	*asm_opcode_fetch(const char *vector_name, int opcode)
+void  *asm_opcode_fetch(const char *vector_name, int opcode)
 {
-  vector_t	*vec;
-  u_int		dim[1];
-  void		*fcn_ptr;
+  vector_t  *vec;
+  u_int   dim[1];
+  void    *fcn_ptr;
 
   vec = aspect_vector_get((char *) vector_name);
   dim[0] = opcode;

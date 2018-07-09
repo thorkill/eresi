@@ -16,11 +16,18 @@ char            *aproxy_strdup(const char *s)
   void          *dup;
 
   if (!s)
-    return (NULL);
+    {
+      return (NULL);
+    }
+
   size = strlen((char *) s);
   dup = (void *) aproxy_malloc(size + 1);
+
   if (!dup)
-    return (NULL);
+    {
+      return (NULL);
+    }
+
   memcpy(dup, (char *) s, size + 1);
   return ((char *) dup);
 }

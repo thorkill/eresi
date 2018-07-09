@@ -4,8 +4,8 @@
 */
 #include "libasm.h"
 
-int     asm_arm_str(asm_instr * ins, u_char * buf, u_int len,
-                   asm_processor * proc)
+int     asm_arm_str(asm_instr *ins, u_char *buf, u_int len,
+                    asm_processor *proc)
 {
   struct s_arm_decode_ldst opcode;
   struct s_asm_proc_arm *inter;
@@ -13,11 +13,12 @@ int     asm_arm_str(asm_instr * ins, u_char * buf, u_int len,
   LIBASM_PROFILE_FIN();
 
   inter = proc->internals;
-  arm_convert_ldst(&opcode,buf);
+  arm_convert_ldst(&opcode, buf);
 
   arm_decode_condition(ins, opcode.cond);
 
-  ins->instr = inter->ldst_table[(opcode.l << 6) | ((!opcode.p && opcode.w) << 5) | opcode.b << 4 | opcode.cond];
+  ins->instr = inter->ldst_table[(opcode.l << 6) | ((!opcode.p
+                                                 && opcode.w) << 5) | opcode.b << 4 | opcode.cond];
 
   ins->name = ins->proc->instr_table[ins->instr];
 

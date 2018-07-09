@@ -10,17 +10,17 @@
 /* SDBBP code */
 
 int asm_mips_sdbbp(asm_instr *ins, u_char *buf, u_int len,
-                  asm_processor *proc)
+                   asm_processor *proc)
 {
-   struct s_mips_decode_jump temp;
+  struct s_mips_decode_jump temp;
 
-   ins->instr = ASM_MIPS_SDBBP;
-   ins->type = ASM_TYPE_ARCH;
-   mips_convert_format_j(&temp,buf);
-   ins->op[0].imm = (temp.ta >> 6) & 0xFFFFF;
-   asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_JUMP, ins);
+  ins->instr = ASM_MIPS_SDBBP;
+  ins->type = ASM_TYPE_ARCH;
+  mips_convert_format_j(&temp, buf);
+  ins->op[0].imm = (temp.ta >> 6) & 0xFFFFF;
+  asm_mips_operand_fetch(&ins->op[0], buf, ASM_MIPS_OTYPE_JUMP, ins);
 
-   /* Exceptions: Debug Breakpoint Exception */
+  /* Exceptions: Debug Breakpoint Exception */
 
-   return 4;
+  return 4;
 }

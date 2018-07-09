@@ -1,11 +1,11 @@
 /**
 * @file libetrace/func_remove.c
 ** @ingroup libetrace
-** 
+**
 ** @brief trace table remove functions.
-** 
+**
 ** Started Jul 2 2005 00:03:44 mxatone
-** 
+**
 **
 ** $Id$
 **
@@ -14,26 +14,26 @@
 
 
 /**
- * Delete the function from the trace table 
+ * Delete the function from the trace table
  * @param trace trace name
  * @param name function name
  */
-int			etrace_funcrm(char *trace, char *name)
+int     etrace_funcrm(char *trace, char *name)
 {
-  trace_t		*ret_trace;
-  hash_t		*table;
+  trace_t   *ret_trace;
+  hash_t    *table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid parameters", -1);
 
   table = etrace_get(trace);
 
   if (!table)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Trace table not found", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Trace table not found", -1);
 
   ret_trace = hash_get(table, name);
 
@@ -48,37 +48,39 @@ int			etrace_funcrm(char *trace, char *name)
 }
 
 /**
- * Delete all functions of a trace 
+ * Delete all functions of a trace
  * @param trace trace name
  */
-int			etrace_funcrmall(char *trace)
+int     etrace_funcrmall(char *trace)
 {
-  char			**keys;
-  u_int			index;
-  int			keynbr;
-  trace_t		*ret_trace;
-  hash_t		*table;
+  char      **keys;
+  u_int     index;
+  int     keynbr;
+  trace_t   *ret_trace;
+  hash_t    *table;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   table = etrace_get(trace);
 
   if (!table)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Trace table not found", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Trace table not found", -1);
 
   keys = hash_get_keys(table, &keynbr);
 
   if (keys)
     {
       for (index = 0; index < keynbr; index++)
-	{
-	  ret_trace = (trace_t *) hash_get(table, keys[index]);
-	  hash_del(table, keys[index]);
+        {
+          ret_trace = (trace_t *) hash_get(table, keys[index]);
+          hash_del(table, keys[index]);
 
-	  if (ret_trace)
-	    XFREE(__FILE__, __FUNCTION__, __LINE__, ret_trace);
-	}
+          if (ret_trace)
+            {
+              XFREE(__FILE__, __FUNCTION__, __LINE__, ret_trace);
+            }
+        }
 
       hash_free_keys(keys);
     }
@@ -87,29 +89,30 @@ int			etrace_funcrmall(char *trace)
 }
 
 
- 
-/** 
- * Delete a function from a trace 
+
+/**
+ * Delete a function from a trace
  * @param file target
  * @param name function name
  * @param optarg trace name (optional)
  */
-int		traces_rm(elfshobj_t *file, char *name, char **optarg)
+int   traces_rm(elfshobj_t *file, char *name, char **optarg)
 {
-  char		buf[BUFSIZ];
+  char    buf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!name || !name[0])
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Invalid parameters", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Invalid parameters", -1);
 
   if (etrace_funcrm(optarg ? *optarg : NULL, name) < 0)
-    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, 
-		 "Delete function failed", -1);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Delete function failed", -1);
 
-  snprintf(buf, BUFSIZ - 1, "\t[*] Deleted function %s successfully from trace %s\n\n",
-	   name, optarg && *optarg ? *optarg : ETRACE_TYPE_DEFAULT);
+  snprintf(buf, BUFSIZ - 1,
+           "\t[*] Deleted function %s successfully from trace %s\n\n",
+           name, optarg && *optarg ? *optarg : ETRACE_TYPE_DEFAULT);
   aspectworld.profile(buf);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

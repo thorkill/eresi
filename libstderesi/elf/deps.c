@@ -19,22 +19,32 @@
  * @param b
  * @return
  */
-static int	__eint_pow(int a, int b)
+static int  __eint_pow(int a, int b)
 {
   double res = 1;
   float f;
 
   if (b == 0)
-    return 1;
+    {
+      return 1;
+    }
+
   if (b < 0)
     {
       for (; b < 0; b++)
-        res = res * a;
+        {
+          res = res * a;
+        }
+
       f = 1 / res;
       return (int) f;
     }
+
   for (; b > 0; b--)
-    res = res * a;
+    {
+      res = res * a;
+    }
+
   return (int) res;
 }
 
@@ -45,23 +55,27 @@ static int	__eint_pow(int a, int b)
  * @param file
  * @return
  */
-static void*	revm_get_another_parent(hash_t *hash, elfshobj_t *file)
+static void  *revm_get_another_parent(hash_t *hash, elfshobj_t *file)
 {
-  char		**keys;
-  int		index;
-  int		idx;
+  char    **keys;
+  int   index;
+  int   idx;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!hash || hash_size(hash) <= 1)
-      PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                        "Unable to find another parent", NULL);
+    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                 "Unable to find another parent", NULL);
+
   keys = hash_get_keys(hash, &index);
+
   for (idx = 0; idx < index; idx++)
     if (strcmp(keys[idx], file->name))
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-                         hash_get(hash, keys[idx]));
+                    hash_get(hash, keys[idx]));
+
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                    "Unable to find another parent", NULL);
+               "Unable to find another parent", NULL);
 }
 
 
@@ -75,24 +89,28 @@ static void*	revm_get_another_parent(hash_t *hash, elfshobj_t *file)
  * @param action
  * @return
  */
-static int	revm_update_depinfo(elfshobj_t	*child,
-                                    elfshobj_t	*root,
-                                    hash_t	*dephash,
-                                    char	action)
+static int  revm_update_depinfo(elfshobj_t  *child,
+                                elfshobj_t  *root,
+                                hash_t  *dephash,
+                                char  action)
 {
-  char		**key;
-  int		index;
-  int		keynbr;
-  elfshobj_t	*cur;
-  int		newid;
-  void		*present;
+  char    **key;
+  int   index;
+  int   keynbr;
+  elfshobj_t  *cur;
+  int   newid;
+  void    *present;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   /* Cut the recursion in case of circular dependencies */
   present = hash_get(dephash, child->name);
+
   if (present)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   hash_add(dephash, strdup(child->name), (void *) 1);
 
   /* Change ID of object before recursing */
@@ -105,19 +123,25 @@ static int	revm_update_depinfo(elfshobj_t	*child,
 
   /* ... including on the child objects */
   key = hash_get_keys(&child->child_hash, &keynbr);
+
   for (index = 0; index < keynbr; index++)
     {
       cur = hash_get(&child->child_hash, key[index]);
+
       if (revm_update_depinfo(cur, root, dephash, action))
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                          "Dependence failed to perform action", -1);
+                     "Dependence failed to perform action", -1);
     }
 
   /* Remove the roots after recursion, so avoid unwanted unloading */
   if (action & REVM_HASH_MERGE)
-    hash_merge(&child->root_hash, &root->root_hash);
+    {
+      hash_merge(&child->root_hash, &root->root_hash);
+    }
   else if (action & REVM_HASH_UNMERGE)
-    hash_unmerge(&child->root_hash, &root->root_hash);
+    {
+      hash_unmerge(&child->root_hash, &root->root_hash);
+    }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
@@ -132,16 +156,17 @@ static int	revm_update_depinfo(elfshobj_t	*child,
  * @return
  *
  */
-static int	revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash, hash_t *dephash)
+static int  revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash,
+                                  hash_t *dephash)
 {
-  elfsh_Dyn	*dyn_entrie;
-  u_int		dyn_num;
-  u_int		index;
-  char		nbasename[BUFSIZ];
-  char		*path;
-  elfshobj_t	*child;
-  char		**hashkeys;
-  int		keys_num;
+  elfsh_Dyn *dyn_entrie;
+  u_int   dyn_num;
+  u_int   index;
+  char    nbasename[BUFSIZ];
+  char    *path;
+  elfshobj_t  *child;
+  char    **hashkeys;
+  int   keys_num;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -149,53 +174,79 @@ static int	revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash, hash_t *depha
   if (!obj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Invalid argument", -1);
+
   if (hash_get(rechash, obj->name))
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   hash_add(rechash, strdup(obj->name), (void *) 1);
 
   /* Retrieve .dynamic table for DT_NEEDED entries */
   dyn_entrie = elfsh_get_dynamic(obj, &dyn_num);
+
   if (dyn_entrie == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "No .dynamic information", -1);
+                 "No .dynamic information", -1);
 
   /* Loop on the .dynamic section entries */
   for (index = 0; index < dyn_num && dyn_entrie[index].d_tag != DT_NULL; index++)
     {
       /* Only needed entries */
       if (dyn_entrie[index].d_tag != DT_NEEDED)
-        continue;
+        {
+          continue;
+        }
 
       /* Retrieve the value */
       revm_dynentinfo(obj, dyn_entrie + index, nbasename);
+
       if (*nbasename == 0x00)
-        continue;
+        {
+          continue;
+        }
 
       /* Search the path for this library */
       path = revm_load_searchlib(nbasename);
+
       if (!path)
-        continue;
+        {
+          continue;
+        }
 
       child = hash_get(&world.curjob->loaded, path);
+
       if (!child)
-        revm_load_dep(obj, path, 0, 0, dephash);
+        {
+          revm_load_dep(obj, path, 0, 0, dephash);
+        }
       else
         {
           if (!hash_get(&obj->child_hash, child->name))
-            hash_add(&obj->child_hash, child->name, child);
+            {
+              hash_add(&obj->child_hash, child->name, child);
+            }
+
           if (!hash_get(&child->parent_hash, obj->name))
-            hash_add(&child->parent_hash, obj->name, obj);
+            {
+              hash_add(&child->parent_hash, obj->name, obj);
+            }
+
           revm_update_depinfo(child, obj, dephash, REVM_HASH_MERGE);
         }
     }
 
   /* Retrieve all childs keys then load dep for each child */
   hashkeys = hash_get_keys(&obj->child_hash, &keys_num);
+
   for (index = 0; hashkeys != NULL && index < keys_num; index++)
     {
       child = (elfshobj_t *) hash_get(&obj->child_hash, hashkeys[index]);
+
       if (child)
-        revm_load_enumdep_rec(child, rechash, dephash);
+        {
+          revm_load_enumdep_rec(child, rechash, dephash);
+        }
     }
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
@@ -208,10 +259,10 @@ static int	revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash, hash_t *depha
  * @param obj
  * @return
  */
-int		revm_load_enumdep(elfshobj_t *obj)
+int   revm_load_enumdep(elfshobj_t *obj)
 {
-  hash_t	rechash;
-  hash_t	dephash;
+  hash_t  rechash;
+  hash_t  dephash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   bzero(&rechash, sizeof(rechash));
@@ -232,15 +283,15 @@ int		revm_load_enumdep(elfshobj_t *obj)
  */
 char            *revm_load_searchlib(char *name)
 {
-  int		len;
-  char		*libpath;
+  int   len;
+  char    *libpath;
   char          *retpath = NULL;
   char          *p;
-  char		*f, *f2;
+  char    *f, *f2;
   int           dlen;
-  char		testpath[BUFSIZ];
-  char		tmplibpath[BUFSIZ];
-  FILE		*fp;
+  char    testpath[BUFSIZ];
+  char    tmplibpath[BUFSIZ];
+  FILE    *fp;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   libpath = revm_lookup_string(REVM_VAR_LIBPATH);
@@ -248,27 +299,35 @@ char            *revm_load_searchlib(char *name)
   /* The variable doesn't exist */
   if (libpath == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "ERESI_LIBPATH not found", NULL);
+                 "ERESI_LIBPATH not found", NULL);
 
   /* We copy data because we will make some modifications */
-  strncpy(tmplibpath, libpath, BUFSIZ -1);
+  strncpy(tmplibpath, libpath, BUFSIZ - 1);
   tmplibpath[BUFSIZ - 1] = '\0';
 
   len = strlen(tmplibpath);
+
   for (p = tmplibpath; p != NULL && p[0] != '\0'; p = f + 1)
     {
       f  = strchr(p, ';');
       f2 = strchr(p, ':');
+
       if ((!f && f2) || (f2 && f - f2 > 0))
-        f = f2;
+        {
+          f = f2;
+        }
 
       /* If a ; is found, we seperate the tree */
       if (f != NULL)
+        {
           f[0] = '\0';
+        }
 
       /* Trim ended / */
       for (dlen = strlen(p); p[dlen] == '/'; dlen--)
-        p[dlen] = '\0';
+        {
+          p[dlen] = '\0';
+        }
 
       snprintf(testpath, BUFSIZ - 1,
                "%s/%s", p, name);
@@ -283,12 +342,14 @@ char            *revm_load_searchlib(char *name)
 
       /* If we don't found the ;, it's the last path */
       if (f == NULL)
-        break;
+        {
+          break;
+        }
     }
 
   if (retpath != NULL)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
-                       strdup(retpath));
+                  strdup(retpath));
 
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
@@ -300,35 +361,41 @@ char            *revm_load_searchlib(char *name)
  * @param id
  * @return
  */
-elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id)
+elfshobj_t  *revm_is_depid(elfshobj_t *obj, int id)
 {
-  elfshobj_t	*child;
-  elfshobj_t	*subchild;
-  int		tid;
-  int		oid;
-  int		tcount;
-  int		ocount;
-  int		keynums;
-  char		**keys;
-  int		index;
+  elfshobj_t  *child;
+  elfshobj_t  *subchild;
+  int   tid;
+  int   oid;
+  int   tcount;
+  int   ocount;
+  int   keynums;
+  char    **keys;
+  int   index;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!obj)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Invalid paramters", NULL);
+                 "Invalid paramters", NULL);
 
   /* We don't search a dependence or we are too far */
   if (id < ELFSH_CHILD_MAX || !hash_size(&obj->child_hash) || obj->id > id)
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
+    }
 
   /* Count how many digits */
   for (ocount = 0, oid = obj->id; oid > 0; ocount++)
-    oid /= 10;
+    {
+      oid /= 10;
+    }
 
   /* Count how many digits */
   for (tcount = 0, tid = id; tid > 0; tcount++)
-    tid /= 10;
+    {
+      tid /= 10;
+    }
 
   oid = obj->id;
   tid = id;
@@ -337,15 +404,21 @@ elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id)
   if (oid == tid / __eint_pow(10, tcount - ocount))
     {
       keys = hash_get_keys(&obj->child_hash, &keynums);
+
       for (index = 0; index < keynums; index++)
         {
           child = hash_get(&obj->child_hash, keys[index]);
+
           if (child->id == id)
-            PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+            }
 
           /* Search for a child of the child ! */
           if ((subchild = revm_is_depid(child, id)) != NULL)
-            PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, subchild);
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, subchild);
+            }
         }
     }
 
@@ -361,18 +434,18 @@ elfshobj_t	*revm_is_depid(elfshobj_t *obj, int id)
  * @param path
  * @return
  */
-elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path)
+elfshobj_t  *revm_is_dep(elfshobj_t *obj, char *path)
 {
-  char		**hashkeys;
-  int		index;
-  elfshobj_t	*child;
-  int		keys_num;
+  char    **hashkeys;
+  int   index;
+  elfshobj_t  *child;
+  int   keys_num;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (!obj || !path)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Invalid paramters", NULL);
+                 "Invalid paramters", NULL);
 
   hashkeys = hash_get_keys(&obj->child_hash, &keys_num);
 
@@ -383,11 +456,16 @@ elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path)
       if (child)
         {
           if (!strcmp(path, hashkeys[index]))
-            PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+            }
 
           child = revm_is_dep(child, path);
+
           if (child)
-            PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+            {
+              PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
+            }
         }
     }
 
@@ -403,37 +481,41 @@ elfshobj_t	*revm_is_dep(elfshobj_t *obj, char *path)
  * @param dephash
  * @return
  */
-int		revm_load_dep(elfshobj_t *parent, char *name,
-                              eresi_Addr base, elfshlinkmap_t *lm,
-                              hash_t *dephash)
+int   revm_load_dep(elfshobj_t *parent, char *name,
+                    eresi_Addr base, elfshlinkmap_t *lm,
+                    hash_t *dephash)
 {
-  elfshobj_t	*new;
-  char		logbuf[BUFSIZ];
+  elfshobj_t  *new;
+  char    logbuf[BUFSIZ];
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (!parent || !name)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Invalid argument", -1);
+                 "Invalid argument", -1);
 
   /* Map the standard ELF object */
   new = elfsh_map_obj(name);
+
   if (NULL == new)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Cannot load object", -1);
+                 "Cannot load object", -1);
+
   if (elfsh_get_arch(new->hdr) != elfsh_get_arch(parent->hdr))
     {
       snprintf(logbuf, sizeof (logbuf) - 1, "Parent file and dependance %s"
                " architecture unmatched", name);
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                        logbuf, -1);
+                   logbuf, -1);
     }
 
   /* Print a msg if not in quiet mode */
   new->loadtime = time(&new->loadtime);
+
   if (!world.state.revm_quiet)
     {
       snprintf(logbuf, BUFSIZ - 1, " [*] New object dependences loaded : %s\n",
-              name);
+               name);
       revm_output(logbuf);
     }
 
@@ -444,7 +526,7 @@ int		revm_load_dep(elfshobj_t *parent, char *name,
   /* Add the object of child objects */
   if (parent->lastchildid >= ELFSH_CHILD_MAX)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-                      "Cannot create more child", -1);
+                 "Cannot create more child", -1);
 
   /* Generate a child id */
   new->id = ELFSH_CHILD_NEW(parent);
@@ -471,10 +553,16 @@ int		revm_load_dep(elfshobj_t *parent, char *name,
   /* Add reference to the private (or shared) list */
   hash_add(&new->parent_hash, parent->name, parent);
   hash_add(&parent->child_hash, new->name, new);
+
   if (world.state.revm_shared)
-    hash_add(&world.shared_hash, new->name, new);
+    {
+      hash_add(&world.shared_hash, new->name, new);
+    }
   else
-    hash_add(&world.curjob->loaded, new->name, new);
+    {
+      hash_add(&world.curjob->loaded, new->name, new);
+    }
+
   hash_add(&file_hash, new->name, new);
   revm_update_depinfo(new, parent, dephash, REVM_HASH_MERGE);
 
@@ -490,29 +578,37 @@ int		revm_load_dep(elfshobj_t *parent, char *name,
  * @param dephash
  * @return
  */
-static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
-                                    hash_t *rechash, hash_t *dephash)
+static int  revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
+                                hash_t *rechash, hash_t *dephash)
 {
-  elfshobj_t	*actual;
-  char		logbuf[BUFSIZ];
-  char		**keys;
-  int		index;
-  int		keynbr;
-  time_t	uloadt;
-  int		ret;
+  elfshobj_t  *actual;
+  char    logbuf[BUFSIZ];
+  char    **keys;
+  int   index;
+  int   keynbr;
+  time_t  uloadt;
+  int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
+
   if (hash_get(rechash, obj->name))
-    PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    {
+      PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
+    }
+
   hash_add(rechash, strdup(obj->name), (void *) 1);
 
   /* Unload each dependence */
   keys = hash_get_keys(&obj->child_hash, &keynbr);
+
   for (ret = index = 0; index < keynbr; index++)
     {
       actual = hash_get(&obj->child_hash, keys[index]);
+
       if (!actual || !actual->name || hash_get(rechash, actual->name))
-        continue;
+        {
+          continue;
+        }
 
       //printf("Unloading dependence %s \n", actual->name);
 
@@ -533,8 +629,10 @@ static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
           if (hash_get(&actual->root_hash, root->name))
             {
               hash_del(&actual->parent_hash, obj->name);
-              revm_update_depinfo(actual, root, dephash, REVM_CREATE_NEWID | REVM_HASH_UNMERGE);
+              revm_update_depinfo(actual, root, dephash,
+                                  REVM_CREATE_NEWID | REVM_HASH_UNMERGE);
             }
+
           continue;
         }
 
@@ -542,16 +640,25 @@ static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
       if (world.curjob->curfile && world.curjob->curfile->id == actual->id)
         {
           world.curjob->curfile = hash_get_one(&world.curjob->loaded);
+
           if (!world.curjob->curfile)
-            world.curjob->curfile = hash_get_one(&world.shared_hash);
+            {
+              world.curjob->curfile = hash_get_one(&world.shared_hash);
+            }
         }
 
       /* A dependence can have its own dependences */
       hash_del(&file_hash, actual->name);
+
       if (hash_get(&world.shared_hash, actual->name))
-        hash_del(&world.shared_hash, actual->name);
+        {
+          hash_del(&world.shared_hash, actual->name);
+        }
       else
-        hash_del(&world.curjob->loaded, actual->name);
+        {
+          hash_del(&world.curjob->loaded, actual->name);
+        }
+
       revm_unload_dep_rec(actual, root, rechash, dephash);
 
       /* Print message of removing */
@@ -562,6 +669,7 @@ static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
                    actual->name, ctime(&uloadt));
           revm_output(logbuf);
         }
+
       elfsh_unload_obj(actual);
       ret++;
     }
@@ -576,10 +684,10 @@ static int	revm_unload_dep_rec(elfshobj_t *obj, elfshobj_t *root,
  * @param root
  * @return Always 0
  */
-int		revm_unload_dep(elfshobj_t *obj, elfshobj_t *root)
+int   revm_unload_dep(elfshobj_t *obj, elfshobj_t *root)
 {
-  hash_t	rechash;
-  hash_t	dephash;
+  hash_t  rechash;
+  hash_t  dephash;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   bzero(&rechash, sizeof(rechash));

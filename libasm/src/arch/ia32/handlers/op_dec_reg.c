@@ -28,7 +28,7 @@ int op_dec_reg(asm_instr *new, u_char *opcode, u_int len,
 
   new->type = ASM_TYPE_ARITH | ASM_TYPE_INCDEC | ASM_TYPE_WRITEFLAG;
   new->flagswritten = ASM_FLAG_AF | ASM_FLAG_OF | ASM_FLAG_PF |
-                        ASM_FLAG_SF | ASM_FLAG_ZF;
+                      ASM_FLAG_SF | ASM_FLAG_ZF;
 
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_OPMOD, new);
 

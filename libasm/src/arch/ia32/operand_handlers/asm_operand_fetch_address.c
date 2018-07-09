@@ -9,7 +9,7 @@
 #include <libasm-int.h>
 
 /**
- * Fetch operands of 
+ * Fetch operands of
  *
  *
  */
@@ -22,10 +22,10 @@
  * @param ins Pointer to instruction structure.
  * @return Operand length
  */
-int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode, 
-				  int otype, asm_instr *ins)
+int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode,
+                                  int otype, asm_instr *ins)
 {
-  u_int	len;
+  u_int len;
 
   operand->content = ASM_CONTENT_ADDRESS;
   operand->type = ASM_OPTYPE_IMM;
@@ -34,7 +34,11 @@ int     asm_operand_fetch_address(asm_operand *operand, u_char *opcode,
   len = asm_proc_opsize(ins->proc) ? 2 : 4;
   operand->len = len;
   memcpy(&operand->imm, opcode, len);
+
   if (len == 2)
-    operand->imm = operand->imm & 0xFFFF;
+    {
+      operand->imm = operand->imm & 0xFFFF;
+    }
+
   return (len);
 }

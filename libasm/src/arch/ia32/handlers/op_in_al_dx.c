@@ -10,7 +10,8 @@
  */
 
 int     op_in_al_dx(asm_instr *new, u_char *opcode, u_int len,
-                         asm_processor *proc) {
+                    asm_processor *proc)
+{
   new->len += 1;
   new->instr = ASM_IN;
   new->type = ASM_TYPE_LOAD | ASM_TYPE_IO;

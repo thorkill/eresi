@@ -20,8 +20,10 @@ int op_mov_segr_rm(asm_instr *new, u_char *opcode, u_int len,
   new->ptr_instr = opcode;
   new->instr = ASM_MOV;
 
-  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SEGMENT, new);
-  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED, new);
+  new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_SEGMENT,
+                                new);
+  new->len += asm_operand_fetch(&new->op[1], opcode + 1, ASM_CONTENT_ENCODED,
+                                new);
 
   return (new->len);
 }

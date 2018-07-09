@@ -4,8 +4,8 @@
 */
 #include "libasm.h"
 
-int     asm_arm_mrrc(asm_instr * ins, u_char * buf, u_int len,
-                    asm_processor * proc)
+int     asm_arm_mrrc(asm_instr *ins, u_char *buf, u_int len,
+                     asm_processor *proc)
 {
   struct s_arm_decode_coproc_mov2 opcode;
   struct s_asm_proc_arm *inter;

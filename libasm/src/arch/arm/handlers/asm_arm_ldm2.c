@@ -4,8 +4,8 @@
 */
 #include "libasm.h"
 
-int     asm_arm_ldm2(asm_instr * ins, u_char * buf, u_int len,
-                   asm_processor * proc)
+int     asm_arm_ldm2(asm_instr *ins, u_char *buf, u_int len,
+                     asm_processor *proc)
 {
   struct s_arm_decode_ldst_mult opcode;
   struct s_asm_proc_arm *inter;
@@ -17,7 +17,8 @@ int     asm_arm_ldm2(asm_instr * ins, u_char * buf, u_int len,
 
   arm_decode_condition(ins, opcode.cond);
 
-  ins->instr = inter->ldst_mult_table[(opcode.l << 6) | (opcode.cond << 2) | (opcode.p << 1) | opcode.u];
+  ins->instr = inter->ldst_mult_table[(opcode.l << 6) | (opcode.cond << 2) |
+                                                      (opcode.p << 1) | opcode.u];
 
   ins->name = ins->proc->instr_table[ins->instr];
 

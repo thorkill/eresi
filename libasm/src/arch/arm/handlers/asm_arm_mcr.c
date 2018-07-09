@@ -4,8 +4,8 @@
 */
 #include "libasm.h"
 
-int     asm_arm_mcr(asm_instr * ins, u_char * buf, u_int len,
-                   asm_processor * proc)
+int     asm_arm_mcr(asm_instr *ins, u_char *buf, u_int len,
+                    asm_processor *proc)
 {
   struct s_arm_decode_coproc_mov opcode;
   struct s_asm_proc_arm *inter;
@@ -24,8 +24,11 @@ int     asm_arm_mcr(asm_instr * ins, u_char * buf, u_int len,
   MASSIGNTYPE(ins, ASM_TYPE_ASSIGN);
 
   ins->nb_op = 5;
+
   if (opcode.op2 != 0)
-    ins->nb_op = 6;
+    {
+      ins->nb_op = 6;
+    }
 
   /* Decode operands */
   ins->op[0].imm = opcode.cpnum;

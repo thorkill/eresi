@@ -10,8 +10,8 @@
 #include "revm.h"
 
 
-/** 
- * List the loaded ERESI modules 
+/**
+ * List the loaded ERESI modules
  *
  * @return
  */
@@ -27,17 +27,26 @@ int             revm_modlist()
 
   revm_output(" .::. ELFsh modules .::. \n");
   index = 1;
+
   for (actual = world.modlist; actual != NULL; actual = actual->next, index++)
     {
       time = ctime(&actual->loadtime);
       nl = strchr(time, '\n');
+
       if (nl)
-        *nl = 0x00;
+        {
+          *nl = 0x00;
+        }
+
       snprintf(logbuf, BUFSIZ - 1, " [%03u] %s   ID: %u [%s] \n",
-	       index, time, actual->id, actual->path);
+               index, time, actual->id, actual->path);
       revm_output(logbuf);
     }
+
   if (world.modlist == NULL)
-    revm_output(" [*] No loaded module\n");
+    {
+      revm_output(" [*] No loaded module\n");
+    }
+
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

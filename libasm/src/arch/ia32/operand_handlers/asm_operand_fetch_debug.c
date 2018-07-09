@@ -23,10 +23,10 @@
  */
 
 int     asm_operand_fetch_debug(asm_operand *operand, u_char *opcode, int otype,
-				asm_instr *ins)
-{ 
+                                asm_instr *ins)
+{
   struct s_modrm        *modrm;
-  
+
   modrm = (struct s_modrm *) opcode;
   operand->content = ASM_CONTENT_DEBUG;
   operand->type = ASM_OPTYPE_REG;

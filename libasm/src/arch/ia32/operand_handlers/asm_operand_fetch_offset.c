@@ -17,12 +17,12 @@
  */
 
 int     asm_operand_fetch_offset(asm_operand *operand, u_char *opcode,
-				 int otype, asm_instr *ins)
+                                 int otype, asm_instr *ins)
 {
-  u_int	len;
+  u_int len;
 
   operand->content = ASM_CONTENT_OFFSET;
-	operand->type = ASM_OPTYPE_MEM;
+  operand->type = ASM_OPTYPE_MEM;
   operand->memtype = ASM_OP_VALUE | ASM_OP_REFERENCE;
   operand->ptr = opcode;
   operand->imm = 0;

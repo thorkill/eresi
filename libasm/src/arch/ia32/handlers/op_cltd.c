@@ -16,9 +16,13 @@ int op_cltd(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
   new->type = ASM_TYPE_ARITH;
 
   if (asm_proc_opsize(proc))
-    new->instr = ASM_CWTD;
+    {
+      new->instr = ASM_CWTD;
+    }
   else
-  new->instr = ASM_CLTD;
+    {
+      new->instr = ASM_CLTD;
+    }
 
   return (new->len);
 }

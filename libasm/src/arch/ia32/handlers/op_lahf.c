@@ -22,6 +22,6 @@ int op_lahf(asm_instr *new, u_char *opcode, u_int len,
   new->instr = ASM_LAHF;
   new->type = ASM_TYPE_READFLAG;
   new->flagsread = ASM_FLAG_SF | ASM_FLAG_ZF | ASM_FLAG_AF |
-                        ASM_FLAG_PF | ASM_FLAG_CF;
+                   ASM_FLAG_PF | ASM_FLAG_CF;
   return (new->len);
 }

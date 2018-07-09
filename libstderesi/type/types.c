@@ -12,101 +12,106 @@
 
 
 /**
- * Types management command 
+ * Types management command
  */
-int		cmd_type()
+int   cmd_type()
 {
-  int		nocmd;
-  u_char	isunion;
+  int   nocmd;
+  u_char  isunion;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   isunion = !strcmp(world.curjob->curcmd->name, CMD_UNION);
   nocmd = 0;
+
   switch (world.curjob->curcmd->argc)
     {
-      /* type */
+    /* type */
     case 0:
       revm_type_prints();
       break;
 
-      /* type name */
+    /* type name */
     case 1:
       revm_type_print_regex(world.curjob->curcmd->param[0]);
       revm_output("\n");
       break;
 
-      /* Those case are invalid syntaxes */
+    /* Those case are invalid syntaxes */
     case 2:
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			"Invalid syntax for type command", -1);
+                   "Invalid syntax for type command", -1);
 
     default:
+
       /* Add a type */
       if (!strcmp(world.curjob->curcmd->param[1], "=") ||
-	  !strcmp(world.curjob->curcmd->param[1], "is"))
-	{
-	  
-	  /* Dont forget to filter on command names too, as each type
-	     will need to have its name bound on cmd_declare() */
-	  if (hash_get(&cmd_hash, world.curjob->curcmd->param[0]))
-	    nocmd = 1;
-	  if (aspect_type_register(isunion, world.curjob->curcmd->param[0],
-				   world.curjob->curcmd->param + 2,
-				   world.curjob->curcmd->argc - 2) < 0)
-	    PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-			 "Invalid type declaration", -1);
-	
-	  if (!world.state.revm_quiet)
-	    {  
-	      revm_output("\n\t [*] Added type ");
-	      revm_output(world.curjob->curcmd->param[0]);
-	      revm_output(" succesfully \n\n");
-	    }
+          !strcmp(world.curjob->curcmd->param[1], "is"))
+        {
 
-	  /* Create the hash table for objects of that type */
-	  revm_type_hashcreate(world.curjob->curcmd->param[0]);
-	}
+          /* Dont forget to filter on command names too, as each type
+             will need to have its name bound on cmd_declare() */
+          if (hash_get(&cmd_hash, world.curjob->curcmd->param[0]))
+            {
+              nocmd = 1;
+            }
+
+          if (aspect_type_register(isunion, world.curjob->curcmd->param[0],
+                                   world.curjob->curcmd->param + 2,
+                                   world.curjob->curcmd->argc - 2) < 0)
+            PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                         "Invalid type declaration", -1);
+
+          if (!world.state.revm_quiet)
+            {
+              revm_output("\n\t [*] Added type ");
+              revm_output(world.curjob->curcmd->param[0]);
+              revm_output(" succesfully \n\n");
+            }
+
+          /* Create the hash table for objects of that type */
+          revm_type_hashcreate(world.curjob->curcmd->param[0]);
+        }
       else
-	PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		     "Invalid syntax for type command", -1);
- 
+        PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
+                     "Invalid syntax for type command", -1);
+
     }
 
   /* Register this alias as a command */
   if (!nocmd)
-    revm_command_add(world.curjob->curcmd->param[0], cmd_declare, 
-		     revm_getvarparams, 0, HLP_DECLARE);
+    revm_command_add(world.curjob->curcmd->param[0], cmd_declare,
+                     revm_getvarparams, 0, HLP_DECLARE);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
 
 /**
- * Typedef command function 
+ * Typedef command function
  */
-int  		cmd_typedef()
+int     cmd_typedef()
 {
-  int		ret;
+  int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   if (world.curjob->curcmd->argc != 2)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 "Invalid syntax for type command", -1);
+                 "Invalid syntax for type command", -1);
 
-  ret = revm_type_copy(world.curjob->curcmd->param[0], 
-		     world.curjob->curcmd->param[1]);
+  ret = revm_type_copy(world.curjob->curcmd->param[0],
+                       world.curjob->curcmd->param[1]);
 
   if (ret < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
-		 (ret == -1 ? "Type not found" : 
-		  "Failed to create a new type"), -1);
+                 (ret == -1 ? "Type not found" :
+                  "Failed to create a new type"), -1);
 
   /* Register this alias as a command */
-  revm_command_add(world.curjob->curcmd->param[1], cmd_declare, 
-	    revm_getvarparams, 0, HLP_DECLARE);
-  
+  revm_command_add(world.curjob->curcmd->param[1], cmd_declare,
+                   revm_getvarparams, 0, HLP_DECLARE);
+
   /* Output report */
   if (!world.state.revm_quiet)
     {

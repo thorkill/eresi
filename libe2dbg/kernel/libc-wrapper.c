@@ -1,4 +1,4 @@
-/** 
+/**
 * @file libe2dbg/kernel/libc-wrapper.c
  **/
 
@@ -60,8 +60,8 @@ int munmap(unsigned long addr, size_t len)
 
 /*FIXME
 long mmap(unsigned long addr, unsigned long len,
-	  unsigned long prot, unsigned long flags,
-	  unsigned long fd, unsigned long pgoff)
+    unsigned long prot, unsigned long flags,
+    unsigned long fd, unsigned long pgoff)
 {
   return sys_mmap2(addr, len, prot, flags, fd, pgoff);
   }*/

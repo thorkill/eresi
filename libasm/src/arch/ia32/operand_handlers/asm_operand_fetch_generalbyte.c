@@ -19,7 +19,7 @@
  */
 
 int     asm_operand_fetch_generalbyte(asm_operand *operand, u_char *opcode,
-				      int type, asm_instr *ins)
+                                      int type, asm_instr *ins)
 {
   struct s_modrm        *modrm;
 
