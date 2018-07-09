@@ -25,17 +25,18 @@ Here are the most important recommandations :
 
 A/ INDENTATION
 
-   1. The variables definition should be aligned with the function name 
-   2. The indentation must be of 2 characters in the body of functions 
+   1. The variables definition should be aligned with the function name
+   2. The indentation must be of 2 characters in the body of functions
    3. Braces { and } should always be put at next line
    4. Never use automatic indentation unless you know what you are doing
    5. Your code must fit on 80 colums
    6. Your code shoud be compact be clear
+   7. Use astyle with provided configuration file
 
 B/ DEVELOPMENT
 
    1. Never use syscalls directly but use defined macros
-   2. Use the profiler macros carefully ! 
+   2. Use the profiler macros carefully !
    3. Your code should not generate any warnings
    4. Your code should be portable
    5. Your code shoud take advantage of the existing API
@@ -71,7 +72,7 @@ A/ INDENTATION
      char	 c;
      (...)
 
-    
+
    BAD:
 
    int my_function() {
@@ -174,13 +175,21 @@ A/ INDENTATION
 
     - Always put a space after a non-line-terminating ; or a , but not before.
 
-    
+
 			** DONT LET DEAD CODE IN THE CVS **
 
     You can keep that code as commented only, in case you plan to reuse it
     in the future or you are not sure it should be removed because you are
     not the author. In that case, ask on the mailing list.
 
+    7. Use astyle with provided configuration file
+    ----------------------------------------------
+
+    On or before a commit run astyle with our configuratin file.
+
+    $> make astyle
+
+    This will normalize all *.c files in the project.
 
 B/ DEVELOPMENT
 --------------

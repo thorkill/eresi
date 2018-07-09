@@ -1,0 +1,11 @@
+--indent=spaces=2
+--convert-tabs
+-j
+-f
+-A7
+-H
+-p
+-xC80
+-xg
+-k3
+-w
