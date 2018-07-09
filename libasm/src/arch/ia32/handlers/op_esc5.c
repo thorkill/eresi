@@ -20,7 +20,7 @@
 int op_esc5(asm_instr *new, u_char *opcode, u_int len,
 	    asm_processor *proc)
 {
-  struct s_modrm        *modrm;
+  struct s_modrm *modrm;
   new->ptr_instr = opcode;
 
   modrm = (struct s_modrm *) opcode + 1;
@@ -80,43 +80,24 @@ int op_esc5(asm_instr *new, u_char *opcode, u_int len,
 
   if (modrm->mod == 3)
     {
-#if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_FIXED, new, 
-				asm_fixed_pack(0, ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE, 
-					       modrm->m, 0));
-
-#else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_FIXED, new);
-#endif
-      new->op[0].content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_FPU_SCALED, new);
+      new->op[0].type = ASM_OPTYPE_REG;
       new->op[0].len = 1;
       new->op[0].ptr = opcode + 1;
       new->op[0].scale = modrm->m;
-#else
-      new->op[0].type = ASM_OTYPE_FIXED;
-      new->op[0].content = ASM_OP_FPU | ASM_OP_BASE | ASM_OP_SCALE;
-      new->op[0].len = 1;
-      new->op[0].ptr = opcode + 1;
-      new->op[0].scale = modrm->m;
-#endif
     }
   else
     {
 #if LIBASM_USE_OPERAND_VECTOR
-#if WIP
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new, 0);
+      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_CONTENT_ENCODED, new);
 #else
-      new->len += asm_operand_fetch(&new->op[0], opcode + 1, ASM_OTYPE_ENCODED,				    new);
-#endif
-#else
-      new->op[0].type = ASM_OTYPE_ENCODED;
+      new->op[0].content = ASM_CONTENT_ENCODED;
       operand_rmv(&new->op[0], opcode + 1, len - 1, proc);
 #endif
     }
 #if LIBASM_USE_OPERAND_VECTOR
 #else
-  if (new->op[0].type)
+  if (new->op[0].content)
     new->len += new->op[0].len;
 #endif
   return (new->len);

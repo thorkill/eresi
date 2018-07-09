@@ -18,10 +18,10 @@ typedef struct s_asm_i386_processor	asm_i386_processor;
 typedef struct s_asm_i386_table		asm_i386_table;
 
 /* Prototypes for IA32 specific API */
-void		asm_resolve_ia32(void *d, eresi_Addr, char *, u_int);
-int		asm_ia32_get_mode(asm_processor *proc);
-eresi_Addr	asm_dest_resolve(asm_processor *proc, eresi_Addr, u_int shift);
-int		asm_ia32_switch_mode(asm_processor *proc, int mode);
+void asm_resolve_ia32(void *d, eresi_Addr, char *, u_int);
+int asm_ia32_get_mode(asm_processor *proc);
+eresi_Addr asm_dest_resolve(asm_processor *proc, eresi_Addr, u_int shift);
+int asm_ia32_switch_mode(asm_processor *proc, int mode);
 
 /** Are we in protected mode or real mode ? */
 enum e_asm_proc_mode 
@@ -30,16 +30,12 @@ enum e_asm_proc_mode
   INTEL_PROT
 };
 
-/** IA32 related functions */
-int	asm_content_pack(asm_operand *, int, int);
-int	asm_fixed_pack(int, int, int, int);
 
 /**
  * this structure is internal and may not be accessed by user
  * directly. it contains reference to each table describing i386 opcodes
  * refer to sandpile.org
  */
-
 struct		s_asm_proc_i386 
 {
   int		mode;		/*!< processor state: opsize actived or not	*/  
@@ -47,13 +43,11 @@ struct		s_asm_proc_i386
   int		addsize;	/*!< WIPcurrent state of the processor addsize prefix */
   int		opsize;		/*!< WIPcurrent state of the processor addsize prefix */
   int		type;		/*!< WIPcurrent state of the processor addsize prefix */
-  //int		(*get_vect_size)(asm_processor *); /*!< Internal handler unused */
 };
 
 
 /** 
- * Content of the operand.
- * Those flags are stored in asm_operand.content field.
+ * Operand type : Those flags are stored in asm_operand.type field
  *
  * FIXME: MUST BE UNIFIED WITH libasm.h:156 e_op_types
  * WARNING: used for pretty printing in libasm/ia32/
@@ -64,10 +58,9 @@ struct		s_asm_proc_i386
 #define ASM_OP_INDEX		4	/*!< index register present	*/
 #define ASM_OP_SCALE		8	/*!< scale factor present	*/
 
-#define ASM_OP_FIXED		16
-#define ASM_OP_REFERENCE	32	/*!< reference			*/
-#define ASM_OP_ADDRESS		64	/*!< reference to a reference	*/
-#define ASM_OP_FPU		128	/*!< operand is a FPU reference	*/
+#define ASM_OP_REFERENCE	16	/*!< reference			*/
+#define ASM_OP_ADDRESS		32	/*!< reference to a reference	*/
+
 
 /**
  * prefix
@@ -141,133 +134,112 @@ enum e_ia32_flags
 
 
 /**
- * Content of the struct s_operand type field
+ * Content of the struct s_operand content field
  */
-
-enum e_asm_operand_type {
+enum e_asm_operand_content 
+{
   /* no operand				
    */
-  ASM_OTYPE_NONE,	
+  ASM_CONTENT_NONE,	
   /* operand is fixed in instruction coded by this opcode;
    */
-  ASM_OTYPE_FIXED,	
+  ASM_CONTENT_FIXED,	
   /* register is coded in mod field of instruction opcode.
    */
-  ASM_OTYPE_OPMOD,	
+  ASM_CONTENT_OPMOD,	
   /* direct address; no mod R/M byte; 
    * address of operand is encoded in instruction;
    * no base register, index register, or scaling factor can be applied
    */
-  ASM_OTYPE_ADDRESS,	
+  ASM_CONTENT_ADDRESS,	
   /* reg field of mod R/M byte selects a control register
    */
-  ASM_OTYPE_CONTROL,	
+  ASM_CONTENT_CONTROL,	
   /* reg field of mod R/M byte selects a debug register
    */
-  ASM_OTYPE_DEBUG,	
+  ASM_CONTENT_DEBUG,	
   /* mod R/M byte follows opcode and specifies operand; 
    * operand is either a general register or a memory address;
    * if it is a memory address, the address is computed from 
    * a segment register and any of the following values:
    * a base register, an index register, a scaling factor, a displacement
    */
-  ASM_OTYPE_ENCODED,	
-  ASM_OTYPE_ENCODEDBYTE,	
+  ASM_CONTENT_ENCODED,	
+  ASM_CONTENT_ENCODEDBYTE,	
   /* flags registers
    */
-  ASM_OTYPE_FLAGS,	
+  ASM_CONTENT_FLAGS,	
   /* reg field of mod R/M byte selelcts a general register. 
    */
-  ASM_OTYPE_GENERAL,	
-  ASM_OTYPE_GENERALBYTE,	
+  ASM_CONTENT_GENERAL,	
+  ASM_CONTENT_GENERALBYTE,	
   /* immediate data; value of operand is encoded in subsequent bytes 
    * of instruction
    */
-  ASM_OTYPE_IMMEDIATE,	
-  ASM_OTYPE_IMMEDIATEWORD,	
+  ASM_CONTENT_IMMEDIATE,	
+  ASM_CONTENT_IMMEDIATEWORD,	
   /* immediate data; value of operand is encoded in subsequent bytes 
    * of instruction
    */
-  ASM_OTYPE_IMMEDIATEBYTE,	
+  ASM_CONTENT_IMMEDIATEBYTE,	
   /* instruction contains a relative offset to be added 
    * to the instruction pointer register
    */
-  ASM_OTYPE_SHORTJUMP,	
+  ASM_CONTENT_SHORTJUMP,	
   /* instruction contains a relative one byte offset to be added 
    * to the instruction pointer register
    */
-  ASM_OTYPE_JUMP,	
+  ASM_CONTENT_JUMP,	
   /* mod R/M only refer to memory		
    */
-  ASM_OTYPE_MEMORY,	
-  /* instruction has no mod R/M byte;                                                                                                            |   
+  ASM_CONTENT_MEMORY,	
+  /* instruction has no mod R/M byte 
    * offset of operand is coded as a word or double word (depending on 
-   * address size attribute) in instruction;                                   |   
-   * no base register, index register, or scaling factor can be applied; 
+   * address size attribute) in instruction
+   * no base register, index register, or scaling factor can be applied;
    * eg. MOV (A0..A3h)                          
    */
-  ASM_OTYPE_OFFSET,	
+  ASM_CONTENT_OFFSET,	
   /* reg field of mod R/M byte selects a packed quadword MMX register
    */
-  ASM_OTYPE_PMMX,	
+  ASM_CONTENT_PMMX,
   /* mod R/M byte follows opcode and specifies operand; operand is 
    * either an MMX register or a memory address;
    * if it is a memory address, the address is computed 
    * from a segment register and any of the following values:
    * |a base register, an index register, a scaling factor, a displacement
    */
-  ASM_OTYPE_QMMX,	
+  ASM_CONTENT_QMMX,
   /*
    * mod field of mod R/M byte may refer only to a general register
    */
-  ASM_OTYPE_REGISTER,
+  ASM_CONTENT_REGISTER,
   /* reg field of mod R/M byte selects a segment register
    */
-  ASM_OTYPE_SEGMENT,	
-  /* no operand				
+  ASM_CONTENT_SEGMENT,
+  /* operand is a FPU operand
    */
-  ASM_OTYPE_TEST,	
-  /* no operand				
+  ASM_CONTENT_FPU,
+  /* operand is a scaled FPU operand
    */
-  ASM_OTYPE_VSFP,	
-  /* no operand				
-   */
-  ASM_OTYPE_WSFP,	
+  ASM_CONTENT_FPU_SCALED,
   /* memory addressed by ds:si		
    */
-  ASM_OTYPE_XSRC,	
+  ASM_CONTENT_XSRC,
   /* memory addressed by es:di		
    */
-  ASM_OTYPE_YDEST,
+  ASM_CONTENT_YDEST,
   /* immediate value encoded in instruction
    */
-  ASM_OTYPE_VALUE,
-  ASM_OTYPE_REG0,
-  ASM_OTYPE_REG1,
-  ASM_OTYPE_REG2,
-  ASM_OTYPE_REG3,
-  ASM_OTYPE_REG4,
-  ASM_OTYPE_REG5,
-  ASM_OTYPE_REG6,
-  ASM_OTYPE_REG7,
-  
-  ASM_OTYPE_ST,
-  ASM_OTYPE_ST_0,
-  ASM_OTYPE_ST_1,
-  ASM_OTYPE_ST_2,
-  ASM_OTYPE_ST_3,
-  ASM_OTYPE_ST_4,
-  ASM_OTYPE_ST_5,
-  ASM_OTYPE_ST_6,
-  ASM_OTYPE_ST_7,
-  ASM_OTYPE_NUM
+  ASM_CONTENT_VALUE,
+  ASM_CONTENT_NUM
 };
+
 
 /**
  * Content of the struct s_operand size field
  *
  */
-
 enum e_asm_operand_size {
   ASM_OSIZE_NONE,
   ASM_OSIZE_BYTE,

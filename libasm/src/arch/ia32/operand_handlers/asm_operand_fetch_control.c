@@ -1,6 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_control.c
- *
+ * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_control.c
  * @ingroup IA32_operands
  * $Id$
  */
@@ -9,9 +8,8 @@
 #include <libasm-int.h>
 
 /**
- * Decode data for operand type ASM_OTYPE_CONTROL
- *
- * @ingroup IA32_operands
+ * Decode data for operand type ASM_CONTENT_CONTROL
+ * @ingroup operand_handler
  * @param operand Pointer to operand structure to fill.
  * @param opcode Pointer to operand data
  * @param otype
@@ -19,19 +17,14 @@
  * @return Operand length
  */
 
-#if WIP
-int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otype, 
-				asm_instr *ins, int opt)
-#else
-int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otype, 
+int asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otype, 
                                   asm_instr *ins)
-#endif
 {
   struct s_modrm        *modrm;
 
   modrm = (struct s_modrm *) opcode;
-  operand->type = ASM_OTYPE_CONTROL;
-  operand->content = ASM_OP_BASE;
+  operand->content = ASM_CONTENT_CONTROL;
+  operand->type = ASM_OPTYPE_REG;
   operand->regset = ASM_REGSET_CREG;
   operand->baser = modrm->r;
   operand->ptr = opcode;
@@ -39,5 +32,5 @@ int     asm_operand_fetch_control(asm_operand *operand, u_char *opcode, int otyp
   operand->len = 0;
   operand->sbaser = get_reg_intel(operand->baser, operand->regset);
   operand->sindex = get_reg_intel(operand->indexr, operand->regset);
-  return (1);
+  return (0);
 }

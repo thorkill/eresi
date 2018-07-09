@@ -17,21 +17,6 @@
  * @param proc Pointer to the processor structure
  * @return -1
  */
-#if 0 && WIP
-int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
-			  asm_processor *proc, int opt)
-{
-  int	to_ret;
-  LIBASM_PROFILE_FIN();
-#if LIBASM_ENABLE_SPARC
-  if (proc->type == ASM_PROC_SPARC)
-    to_ret = asm_sparc_illegal(ins, opcode, len, proc);
-  else	
-#endif
-    to_ret = -1;
-  LIBASM_PROFILE_FOUT(to_ret);
-}
-#else
 int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len, 
 			  asm_processor *proc)
 {
@@ -57,7 +42,6 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
 
   LIBASM_PROFILE_FOUT(to_ret);
 }
-#endif
 
 /**
  * @brief Default handler for the operand vector
@@ -69,21 +53,12 @@ int	asm_fetch_default(asm_instr *ins, u_char *opcode, u_int len,
  * @return -1
  *
  */
-#if WIP
-int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
-				  asm_instr *ins, int opt)
-{
-  LIBASM_PROFILE_FIN();
-  LIBASM_PROFILE_FOUT(-1);
-}
-#else
 int	asm_operand_fetch_default(asm_operand *op, u_char *opcode, int otype,
 				  asm_instr *ins)
 {
   LIBASM_PROFILE_FIN();
   LIBASM_PROFILE_FOUT(-1);
 }
-#endif
 
 /**
  * @brief Return handler associated with an opcode

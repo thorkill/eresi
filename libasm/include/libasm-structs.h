@@ -16,8 +16,10 @@ struct s_asm_op
   u_int	len;			
   /* pointer to operand in buffer */
   u_char *ptr;
-  /* operand type: contain operandb type flags */
+  /* operand type: ASM_OPTYPE_* enum */
   u_int	type;
+  /* memory operand type: ASM_OP_* flags (for mem operands only) */
+  u_int memtype;
   /* a pointer to the operand name in string format */
   char *name;
   /* contain operand size flags	*/
@@ -36,12 +38,9 @@ struct s_asm_op
   /* index register: auxiliary register */
   int indexr;
   /* String for base register */
-  char	*sbaser;
+  char *sbaser;
   /* String for index register */
-  char	*sindex;
-  /* Determines if this register is source or destination */
-  int destination;
-
+  char *sindex;
   /* address space (sparc only) 
    * 
    * has to be different than ASM_SP_ASI_P for ASM_SP_OTYPE_IMM_ADDRESS
@@ -56,6 +55,8 @@ struct s_asm_op
   u_int indexing;
   /* determines if offset is added or subtracted from the base (arm only) */
   u_int offset_added;
+  /* determines if this register is source or destination */
+  int destination;
 };
 
 

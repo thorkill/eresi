@@ -397,7 +397,12 @@ void		asm_set_resolve_handler(asm_processor *,
 					void *);
 
 /**
- *
+ * Return a string describing the operand content
+ */
+char    *asm_operand_content_string(int content);
+
+/**
+ * Return a string describing the operand type
  */
 char    *asm_operand_type_string(int type);
 
