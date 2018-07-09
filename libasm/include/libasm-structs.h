@@ -55,6 +55,8 @@ struct s_asm_op
   u_int indexing;
   /* determines if offset is added or subtracted from the base (arm only) */
   u_int offset_added;
+  /* determines if this register is source or destination */
+  int destination;
 };
 
 
