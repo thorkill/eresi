@@ -7,7 +7,6 @@
 ** @brief Common generic API for libe2dbg
 ** @ingroup common
 **
-** $Id$
 */
 #include "libe2dbg.h"
 

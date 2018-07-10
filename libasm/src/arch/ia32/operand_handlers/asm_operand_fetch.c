@@ -4,7 +4,6 @@
  * @ingroup IA32_operands
  * @brief Implements top-level fetching handler for IA32 operands.
  *
- * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>

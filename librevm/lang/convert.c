@@ -20,7 +20,6 @@
 ** Started on  Tue Feb 08 12:21:12 2005 jfv
 **
 **
-** $Id$
 **
 */
 #include "revm.h"

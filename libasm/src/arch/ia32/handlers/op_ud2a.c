@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction ud2a opcode 0x??
- * $Id$
  *
  */
 #include <libasm.h>

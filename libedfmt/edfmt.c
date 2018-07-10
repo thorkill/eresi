@@ -4,7 +4,6 @@
 ** @brief External interface functions for the ERESI debug format
 **
 ** Started Dec 25 2006 15:41:35 mxatone
-** $Id$
 */
 
 #include "libedfmt.h"

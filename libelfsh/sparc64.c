@@ -10,7 +10,6 @@
  * 64 bits backend work-in-progress
  *
  *
- * $Id$
  *
  */
 #include "libelfsh.h"

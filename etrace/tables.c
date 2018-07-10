@@ -6,7 +6,6 @@
  ** @brief All command and objects definitions for scripting
  **
  ** Started on  Sat Jan 25 07:48:41 2003 mxatone
- ** $Id$
  */
 #include "etrace.h"
 

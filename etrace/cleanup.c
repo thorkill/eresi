@@ -4,7 +4,6 @@
  *
  * Started on  Sat May 31 23:48:41 2005 mxatone
  *
- * $Id$
  *
  */
 #include "etrace.h"

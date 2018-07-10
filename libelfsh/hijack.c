@@ -6,7 +6,6 @@
 ** Started on  Tue Feb  4 14:41:34 2003 emsi
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

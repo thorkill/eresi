@@ -3,7 +3,6 @@
  * @ingroup lang
  * @brief List all variables currently existing.
  *
- * $Id$
  */
 #include "libstderesi.h"
 

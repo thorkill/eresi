@@ -5,7 +5,6 @@
  * @brief Contain ELFsh internal lists related API.
  *
  * Started on  Fri Jul 13 20:26:18 2007 jfv
- * $Id$
  */
 
 #include "libaspect.h"

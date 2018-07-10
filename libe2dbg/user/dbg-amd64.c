@@ -12,7 +12,6 @@
 ** Vectors can also be accessed with 'vectors' cmd in any eresi interpreter
 **
 ** Started   Sat Sep 24 07:17:33 2005 jfv
-** $Id$
 */
 #include "libe2dbg.h"
 

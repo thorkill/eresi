@@ -8,7 +8,6 @@
  * The continue command in e2dbg
  *
  *
- * $Id$
  *
  */
 #include "libe2dbg.h"

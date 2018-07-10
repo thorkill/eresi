@@ -3,7 +3,6 @@
 ** @ingroup libaspect
 **
 ** Started on  Thu Nov 08 02:08:28 2001 mm
-** $Id$
 */
 #include "libaspect.h"
 

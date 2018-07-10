@@ -3,7 +3,6 @@
 ** @ingroup kedbg
 ** @brief Implement kedbg-specific vector handlers.
 **
-** $Id$
 */
 #include "kedbg.h"
 #include "interface.h"

@@ -5,7 +5,6 @@
  *
  *
  *
- * $Id$
  *
  */
 #include "libstderesi.h"

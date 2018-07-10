@@ -2,7 +2,6 @@
 ** symtab_extend.c for ERESI testsuite
 **
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
-** $Id$
 */
 #include  "libelfsh.h"
 

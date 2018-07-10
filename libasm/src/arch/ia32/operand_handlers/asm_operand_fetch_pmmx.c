@@ -1,6 +1,5 @@
 /**
  * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_pmmx.c
- * $Id$
  */
 
 #include <libasm.h>

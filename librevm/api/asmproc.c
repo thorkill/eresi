@@ -3,7 +3,6 @@
  * @ingroup librevm
  * Author: jfv
  *
- * $Id$
  *
  */
 #include "revm.h"

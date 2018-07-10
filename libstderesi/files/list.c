@@ -3,7 +3,6 @@
 ** @ingroup files
 ** Started on  Sat Jan 25 11:20:20 2003 jfv
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

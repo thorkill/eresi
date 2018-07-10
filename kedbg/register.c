@@ -3,7 +3,6 @@
 ** @ingroup kedbg
 ** @brief Implement registration of vector handlers
 **
-** $Id$
 */
 #include "kedbg.h"
 

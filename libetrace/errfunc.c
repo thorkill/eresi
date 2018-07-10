@@ -5,7 +5,6 @@
 ** @brief This file contain one function for error collection.
 **
 **
-** $Id$
 **
 */
 #include "libetrace.h"

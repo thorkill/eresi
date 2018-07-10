@@ -3,7 +3,6 @@
  * @brief Handler for instruction cmpsb opcode 0xa6
  *
  * @ingroup IA32_instrs
- * $Id$
  *
  */
 #include <libasm.h>

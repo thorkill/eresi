@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  * @brief <instruction opcode="0xd7" func="op_xlatb"/>
- * $Id$
  *
  */
 #include <libasm.h>

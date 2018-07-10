@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor, opcode 0x33
- * $Id$
  *
  */
 #include <libasm.h>

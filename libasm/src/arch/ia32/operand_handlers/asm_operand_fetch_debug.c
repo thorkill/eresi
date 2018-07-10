@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_debug.c
  *
  * @ingroup IA32_operands
- * $Id$
  */
 
 #include <libasm.h>

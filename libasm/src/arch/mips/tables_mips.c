@@ -5,7 +5,6 @@
 /**
 * @file libasm/src/arch/mips/tables_mips.c
  * @brief MIPS processor mnemonic table.
- * $Id$
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki

@@ -8,7 +8,6 @@
 */
 /*
  * Started by Adam 'pi3' Zabrocki
- * $Id$
  */
 
 #include <libasm.h>

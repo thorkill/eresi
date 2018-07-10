@@ -5,7 +5,6 @@
 **
 ** Started September 16 03:11:04 2005 mm
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/op_lodsb.c
  *
  * @ingroup IA32_instrs
- * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>

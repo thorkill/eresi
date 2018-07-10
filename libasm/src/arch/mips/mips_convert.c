@@ -6,7 +6,6 @@
 * @file libasm/src/arch/mips/mips_convert.c
  * @brief Convert MIPS instruction to definied types and fill suitable structures.
  *
- * $Id$
  *
  * Integrated to vectors
  *            - Adam 'pi3' Zabrocki

@@ -4,7 +4,6 @@
 * @brief Various API for manipulating types.
 *
 * Started on Sun Jan 9 07:23:58 2007 jfv
-* $Id$
 **
 */
 #include "revm.h"

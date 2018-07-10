@@ -5,7 +5,6 @@
 **
 ** Last update December 10 2006 may
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

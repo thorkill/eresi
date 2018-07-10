@@ -2,7 +2,6 @@
 * @file libasm/src/generic.c
  * @ingroup libasm
  * Latest edition Author : $Author: may $
- * $Id$
  * Started : Wed Jul 24 18:45:15 2002
  * Updated : Sat Mar 20 05:26:26 2004
  */

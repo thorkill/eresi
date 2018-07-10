@@ -1,7 +1,6 @@
 /*
 ** Testsuite for reflection in ERESI
 **
-** $Id$
 */
 #include <stdio.h>
 

@@ -5,7 +5,6 @@
  * This file contains all command and objects definitions for specific Evarista scripting
  *
  * Started on Fri Jun 22 07:48:41 2007 jfv
- * $Id$
  *
  */
 #include "evarista.h"

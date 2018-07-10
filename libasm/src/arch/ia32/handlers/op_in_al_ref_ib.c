@@ -4,7 +4,6 @@
  * @ingroup IA32_instrs
  * @brief Handler for instruction in al,ib opcode 0xe4
 
- * $Id$
  *
  */
 #include <libasm.h>

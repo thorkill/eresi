@@ -2,7 +2,6 @@
 * @file libstderesi/cmd/source.c
 ** @ingroup cmd
 ** Started on  Fri May 16 15:18:35 2005 jfv
-** $Id$
 */
 #include "libstderesi.h"
 

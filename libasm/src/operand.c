@@ -4,7 +4,6 @@
  * @brief Contains arch-independent generic operand manipulation functions.
  *
  * Author  : <kahmm@altdev.net>
- * $Id$
 */
 
 #include <libasm.h>

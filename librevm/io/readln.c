@@ -7,7 +7,6 @@
  * when the user recompiles enabling/disabling readline.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
- * $Id$
  */
 #include "revm.h"
 

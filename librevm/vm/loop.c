@@ -4,7 +4,6 @@
  * @brief This file include the control flow support for scripting.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
- * $Id$
  */
 #include "revm.h"
 

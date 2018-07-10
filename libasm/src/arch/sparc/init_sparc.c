@@ -10,7 +10,6 @@
 ** Started : Sun Nov 30 20:13:12 2003
 ** Updated : Thu Dec  4 03:01:07 2003
 **
-** $Id$
 **
 */
 

@@ -6,7 +6,6 @@
 ** Started     Nov 22 01:26:01 2003 jfv
 **
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

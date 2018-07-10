@@ -3,7 +3,6 @@
  * @ingroup etrace
  * Updated on  Wed Jan 03 17:51:04 2007 mxatone
  *
- * $Id$
  *
  */
 #include "etrace.h"

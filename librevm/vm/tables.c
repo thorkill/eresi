@@ -8,7 +8,6 @@
 ** @brief This file contains all command and objects definitions for scripting.
 **
 ** Started on  Sat Jan 25 07:48:41 2003 jfv
-** $Id$
 */
 #include "revm.h"
 

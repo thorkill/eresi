@@ -5,7 +5,6 @@
 *
 * Started on  Sat Jul 1 10:10:53 2006 jfv
 *
-* $Id$
 *
 */
 #include "elfsh.h"

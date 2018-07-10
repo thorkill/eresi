@@ -4,7 +4,6 @@
 ** Dynsym.c for libelfsh
 **
 ** Started on  Mon Feb 26 04:13:29 2001 jfv
-** $Id$
 **
 */
 #include "libelfsh.h"

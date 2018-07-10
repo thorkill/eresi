@@ -6,7 +6,6 @@
  * Started Wed Feb 25 22:22:35 2004 yann_malcom
  * Updated Mon Mar 05 04:37:10 2007 jfv
  *
- * $Id$
  *
  */
 #include "revm.h"

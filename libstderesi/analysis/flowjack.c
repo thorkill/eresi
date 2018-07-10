@@ -6,7 +6,6 @@
  * December 10 2006 : merged from modflow to the ELFsh vm -may
  * December 31 2006 : factored and cleaned code -may
  *
- * $Id$
  *
  */
 

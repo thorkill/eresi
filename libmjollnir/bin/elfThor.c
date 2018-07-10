@@ -1,7 +1,6 @@
 /*
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
- * $Id$
  *
  */
 #include <libmjollnir.h>

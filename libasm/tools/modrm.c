@@ -1,6 +1,5 @@
 /**
 * @file libasm/tools/modrm.c
- * $Id$
  * @brief Little utility to display modrm byte to debug ia32.
  */
 #include <stdio.h>

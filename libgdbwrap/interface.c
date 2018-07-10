@@ -7,7 +7,6 @@
  * @brief Implements initial connection to the GDB server.
  * @ingroup libgdbwrap
  *
- * $Id$
  */
 #include "gdbwrapper.h"
 

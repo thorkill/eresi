@@ -10,7 +10,6 @@
 ** Started Jan 11 2004 02:57:03 jfv
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

@@ -4,7 +4,6 @@
  * Started on  Sat Jan 25 11:21:52 2003 jfv
  * Last update Thu Mar 11 07:56:36 2004 jfv
  *
- * $Id$
  *
  */
 #include "libstderesi.h"

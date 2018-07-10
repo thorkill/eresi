@@ -3,7 +3,6 @@
  * @brief Handler for instruction op_imul_rv_rmv_iv opcode 0x69
  *
  * @ingroup IA32_instrs
-** $Id$
 **
 */
 #include <libasm.h>

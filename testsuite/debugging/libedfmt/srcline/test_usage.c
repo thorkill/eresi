@@ -2,7 +2,6 @@
 ** test_usage.c for source level debugging tests in ERESI
 **
 ** Initial version by Eduardo Franklin - 2009
-** $Id$
 */
 #include <libelfsh.h>
 #include <libedfmt.h>

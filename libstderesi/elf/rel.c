@@ -8,7 +8,6 @@
  * Started on  Fri Nov  2 15:19:19 2001 jfv
  *
  *
- * $Id$
  *
  */
 #include "libstderesi.h"

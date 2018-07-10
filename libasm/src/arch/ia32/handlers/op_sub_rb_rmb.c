@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/op_sub_rb_rmb.c
  *
  * @ingroup IA32_instrs
-** $Id$
 **
 */
 #include <libasm.h>

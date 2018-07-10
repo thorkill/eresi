@@ -7,7 +7,6 @@
  * @brief Implement E2DBG client side entry points.
  *
  * Started on  Wed Feb 21 22:02:36 2001 jfv
- * $Id$
  */
 #include "e2dbg.h"
 

@@ -1,5 +1,4 @@
 /**
- * $Id$
 * @file libasm/src/vectors.c
  * @ingroup libasm
  * @brief Initialization the instruction and opcode vectors.

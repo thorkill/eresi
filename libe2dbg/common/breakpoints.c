@@ -3,7 +3,6 @@
 ** @ingroup common
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem
-** $Id$
 */
 #include "libe2dbg.h"
 

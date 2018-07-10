@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction unary rmv opcode 0xf7
- * $Id$
  *
 */
 #include <libasm.h>

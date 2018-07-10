@@ -2,7 +2,6 @@
 * @file libasm/src/error.c
  * @ingroup libasm
 **
-** $Id$
 **
 ** Author  : <kahmm@altdev.net>
 ** Started : Sun Nov 30 19:58:38 2003

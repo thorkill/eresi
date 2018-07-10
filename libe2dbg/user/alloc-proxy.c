@@ -10,7 +10,6 @@
  *
  * Started Fri Oct  7 21:05:26 CEST 2005 crew
  *
- * $Id$
  *
  */
 #include "libe2dbg.h"

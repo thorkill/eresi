@@ -8,7 +8,6 @@
  ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  **
  ** Started on  Tue Mar 26 19:07:23 2002 jfv
- ** $Id$
  */
 #include "libelfsh.h"
 #include "libasm.h"

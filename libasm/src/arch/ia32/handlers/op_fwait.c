@@ -1,5 +1,4 @@
 /**
- * $Id$
 * @file libasm/src/arch/ia32/handlers/op_fwait.c
  */
 #include <libasm.h>

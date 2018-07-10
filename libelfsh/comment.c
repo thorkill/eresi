@@ -9,7 +9,6 @@
 ** Started on  Sun Dec  1 09:22:45 2002 jfv
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

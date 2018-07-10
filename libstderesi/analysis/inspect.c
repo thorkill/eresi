@@ -7,7 +7,6 @@
 **
 ** December 10 2006 : Merged from modflow to the ELFsh vm -may
 **
-** $Id$
 */
 #include "libstderesi.h"
 

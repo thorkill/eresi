@@ -6,7 +6,6 @@
 ** Started : Tue Oct  7 01:45:28 2003
 ** Updated : Tue Oct  7 02:06:29 2003
 **
-** $Id$
 **
 */
 #include <stdio.h>

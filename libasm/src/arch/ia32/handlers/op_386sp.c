@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/op_386sp.c
  *
  * @ingroup IA32_instrs
- * $Id$
  * ChangeLog:
  * 2007-05-30 Fixed a bug in fetching. The vector used was the previously defined.
  *    strauss set up a new disasm vector and didn't know about it which

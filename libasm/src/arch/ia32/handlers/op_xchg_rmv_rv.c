@@ -3,7 +3,6 @@
  * @brief Handler for instruction xchg rmv,rv opcode 0x87
  *
  * @ingroup IA32_instrs
- * $Id$
  *
  */
 #include <libasm.h>

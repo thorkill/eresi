@@ -4,7 +4,6 @@
 ** @brief All functions dealing with libedfmt.
 **
 ** Started on Fev 25 2007 mxatone
-** $Id$
 */
 #include "revm.h"
 

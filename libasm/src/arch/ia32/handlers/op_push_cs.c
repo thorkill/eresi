@@ -2,7 +2,6 @@
  * @brief Handler for instruction push cs opcode 0x0e
  *
  * @ingroup IA32_instrs
-** $Id$
 */
 #include <libasm.h>
 #include <libasm-int.h>

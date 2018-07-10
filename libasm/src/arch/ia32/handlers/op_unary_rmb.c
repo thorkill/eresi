@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction unary rmb opcode 0xf6
- * $Id$
  *
  */
 #include <libasm.h>

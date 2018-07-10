@@ -3,7 +3,6 @@
 ** @ingroup common
 ** @brief Command and API for accessing the LINKMAP linked list.
 **
-** $Id$
 */
 #include "libe2dbg.h"
 

@@ -4,7 +4,6 @@
  * @brief Routines executed when leaving script mode.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
- * $Id$
  */
 #include "revm.h"
 

@@ -4,7 +4,6 @@
  * @brief Create a new job structure.
  * Started on  Wed Jul 20 22:22:35 2005 yann_malcom
  *
- * $Id$
  *
  */
 #include "revm.h"

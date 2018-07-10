@@ -7,7 +7,6 @@
  * Started on  Sat Mar 15 03:45:54 2003 jfv
  * Last update Mon Mar 17 04:40:35 2003 jfv
  *
- * $Id$
  *
  */
 

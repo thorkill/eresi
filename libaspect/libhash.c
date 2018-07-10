@@ -5,7 +5,6 @@
  * @brief Contain ELFsh internal hashtables library calls.
  *
  * Started on  Fri Jan 24 20:26:18 2003 jfv
- * $Id$
  */
 #include "libaspect.h"
 

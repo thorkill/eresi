@@ -9,7 +9,6 @@
  *
  * Last Update Thu Oct 13 19:37:26 2005 mm
  *
- * $Id$
  *
  */
 #include "libe2dbg.h"

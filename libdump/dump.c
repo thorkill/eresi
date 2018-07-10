@@ -5,7 +5,6 @@
 ** Updated on Wed Mar  9 22:02:29 CET 2005 ym
 **
 **
-** $Id$
 **
 */
 #include "libdump.h"

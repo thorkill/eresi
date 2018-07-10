@@ -3,7 +3,6 @@
  * @brief Handler for instruction xchg rmb,rb opcode 0x86
  *
  * @ingroup IA32_instrs
- * $Id$
  *
  */
 #include <libasm.h>

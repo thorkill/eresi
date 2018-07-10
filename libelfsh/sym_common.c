@@ -6,7 +6,6 @@
  * Started on  Tue Dec 31 10:19:01 2002 jfv
  *
  *
- * $Id$
  *
  */
 #include "libelfsh.h"

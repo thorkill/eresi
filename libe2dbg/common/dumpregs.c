@@ -4,7 +4,6 @@
 ** @brief Command and API for register printing.
 **
 ** Started on  Wed Jul 27 04:08:52 2005 ym
-** $Id$
 */
 #include "libe2dbg.h"
 

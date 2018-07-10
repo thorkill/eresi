@@ -4,7 +4,6 @@
  * @brief This file contains various printing facilities API.
  *
  * Started on  Wed Dec 05 23:02:04 2003 jfv
- * $Id$
  */
 #include "revm.h"
 

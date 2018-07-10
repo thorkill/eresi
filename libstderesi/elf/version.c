@@ -9,7 +9,6 @@
  *
  * Started on  Sun Sep 25 15:20:18 2005 mxatone
  *
- * $Id$
  *
  */
 #include "libstderesi.h"

@@ -12,7 +12,6 @@
 ** Started on  Nov 24 2003 jfv
 **
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

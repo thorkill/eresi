@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/op_prefix_ds.c
  *
  * @ingroup IA32_instrs
- * $Id$
  *
  * Changelog
  * 200-07-29 : instruction length was not incremented. fixed.

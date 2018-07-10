@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/i386_group16.c
  *
  * @ingroup IA32_instrs
- * $Id$
  *
  * Changelog
  * 2007-05-29: operand type fixed.

@@ -8,7 +8,6 @@
  * Started on  Mon Feb 24 12:21:12 2003 jfv
  *
  *
- * $Id$
  *
  */
 #include "revm.h"

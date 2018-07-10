@@ -3,7 +3,6 @@
 ** @brief Implement debugger mutexes inside signal handlers (no pthread mutexes)
 ** @ingroup common
 **
-** $Id$
 */
 #include "libe2dbg.h"
 

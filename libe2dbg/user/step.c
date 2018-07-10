@@ -9,7 +9,6 @@
 **
 ** Started on  Tue Aug 16 09:38:03 2005 jfv
 **
-** $Id$
 **
 */
 #include "libe2dbg.h"

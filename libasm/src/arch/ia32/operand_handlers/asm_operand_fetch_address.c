@@ -3,7 +3,6 @@
  * @ingroup ia32
  * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_address.c
  * @ingroup IA32_operands
- * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>

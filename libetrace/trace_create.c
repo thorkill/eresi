@@ -8,7 +8,6 @@
 ** @brief Functions for managing traces creation.
 **
 ** Started Jul 2 2005 00:03:44 mxatone
-** $Id$
 */
 #include "libetrace.h"
 #include "libetrace-intvars.h"

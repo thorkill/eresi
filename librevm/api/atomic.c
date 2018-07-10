@@ -8,7 +8,6 @@
 ** @brief Implement the API for atomic arithmetic and logic ERESI commands.
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
-** $Id$
 **/
 #include "revm.h"
 

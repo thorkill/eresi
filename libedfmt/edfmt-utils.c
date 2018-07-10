@@ -3,7 +3,6 @@
 ** @ingroup libedfmt
 **
 ** Started Jan 13 2007 18:09:02 mxatone
-** $Id$
 */
 
 #include "libedfmt.h"

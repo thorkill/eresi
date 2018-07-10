@@ -2,7 +2,6 @@
 ** etrel_inject.c for elf testsuite in ERESI
 **
 ** Started on  Sat May 10 07:01:59 2003 jfv
-** $Id$
 */
 #include  "libelfsh.h"
 

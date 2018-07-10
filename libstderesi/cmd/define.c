@@ -4,7 +4,6 @@
 ** @brief Allow constant values to be defined on names.
 **
 ** Start on Fri Aug 3 03:55:45 2007 jfv
-** $Id$
 */
 #include "libstderesi.h"
 

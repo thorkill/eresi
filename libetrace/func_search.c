@@ -4,7 +4,6 @@
 ** Libetrace header file in the ERESI project
 **
 ** Started on  Sun Jun 22 12:10:12 2007 jfv
-** $Id$
 **
 */
 #include "libetrace.h"

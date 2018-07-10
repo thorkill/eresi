@@ -5,7 +5,6 @@
 */
 /*
 ** Started on  Fri May 16 15:18:35 2005 jfv
-** $Id$
 */
 #include "revm.h"
 

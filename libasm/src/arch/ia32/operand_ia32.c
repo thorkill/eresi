@@ -1,7 +1,6 @@
 /**
  * @file operand_ia32.c
  * @ingroup libasm_ia32
- * $Id$
  *
  * Author  : <sk at devhell dot org>
  * Started : Tue May 28 13:06:39 2002

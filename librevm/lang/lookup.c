@@ -4,7 +4,6 @@
  * @brief Various object lookup functions built in the language.
  *
  * Started Nov 21 2003 jfv
- * $Id$
  */
 #include "revm.h"
 

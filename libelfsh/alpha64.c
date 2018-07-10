@@ -8,7 +8,6 @@
 ** Skeleton cut & pasted from the sparc64 backend
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

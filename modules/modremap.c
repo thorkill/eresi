@@ -11,7 +11,6 @@
 **
 ** Fixed by ELFsh crew for the ELFsh project
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

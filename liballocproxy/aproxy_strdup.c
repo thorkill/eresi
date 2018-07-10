@@ -4,7 +4,6 @@
 ** Made by jfv for the ERESI project
 **
 **
-** $Id$
 **
 */
 #include "aproxy.h"

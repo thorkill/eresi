@@ -4,7 +4,6 @@
 */
 /*
 **
-** $Id$
 **
 */
 #include "libasm.h"

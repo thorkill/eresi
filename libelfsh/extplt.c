@@ -8,7 +8,6 @@
  *
  * Started on  Wed Jun 12 21:20:07 2005 mm
  *
- * $Id$
  *
  */
 #include "libelfsh.h"

@@ -5,7 +5,6 @@
 /**
 * @file libasm/src/arch/mips/register_mips.c
  * @brief Registration of the MIPS disassembling vectors.
- * $Id$
  *
  * fix and fill
  *          - Adam 'pi3' Zabrocki

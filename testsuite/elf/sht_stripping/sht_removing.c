@@ -2,7 +2,6 @@
 ** sht_removing.c for testsuite in ERESI
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
-** $Id$
 */
 #include "libelfsh.h"
 

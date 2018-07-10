@@ -11,7 +11,6 @@
 ** Last update Sat Jul 30 17:34:52 2005 jfv
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

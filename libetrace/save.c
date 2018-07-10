@@ -4,7 +4,6 @@
 **
 ** @brief This file contain trace save function.
 **
-** $Id$
 **
 */
 #include "libetrace.h"

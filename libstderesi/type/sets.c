@@ -4,7 +4,6 @@
 ** @brief Primitives for manipulating sets
 **
 ** Started Dec 29 2010 18:57:03 jfv
-** $Id$
 */
 #include "libstderesi.h"
 

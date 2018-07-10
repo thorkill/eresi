@@ -4,7 +4,6 @@
 ** @brief Command used to declare a new typed variable in the environment
 **
 ** Started on Fri Jun 22 07:23:58 2007 jfv
-** $Id$
 */
 #include "libstderesi.h"
 

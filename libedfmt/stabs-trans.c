@@ -4,7 +4,6 @@
 ** @brief Translation from STABS to EDFMT debug format.
 **
 ** Started Fev 02 2007 14:35:03 mxatone
-** $Id$
 */
 
 #include "libedfmt.h"

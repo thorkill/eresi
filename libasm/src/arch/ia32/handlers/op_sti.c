@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  *
-** $Id$
 **
 */
 #include <libasm.h>

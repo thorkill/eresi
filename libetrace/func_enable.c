@@ -7,7 +7,6 @@
 ** Started Jul 2 2005 00:03:44 mxatone
 **
 **
-** $Id$
 **
 */
 #include "libetrace.h"

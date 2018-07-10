@@ -2,7 +2,6 @@
 ** ctors_hijack.c for testsuite in ERESI
 **
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
-** $Id$
 */
 #include  "libelfsh.h"
 

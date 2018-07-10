@@ -8,7 +8,6 @@
 ** @brief Interface routines for STABS debug format.
 **
 ** Started Jan 01 2007 21:30:13 mxatone
-** $Id$
 */
 
 #include "libedfmt.h"

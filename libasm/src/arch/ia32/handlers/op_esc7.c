@@ -1,5 +1,4 @@
 /**
- * $Id$
  * @param
  */
 #include <libasm.h>

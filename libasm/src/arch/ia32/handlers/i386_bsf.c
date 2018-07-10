@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/i386_bsf.c
  *
  * @ingroup IA32_instrs
- * $Id$
  *
 */
 #include <libasm.h>

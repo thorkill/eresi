@@ -7,7 +7,6 @@
 ** Started Dec 22 2006 02:57:03 jfv
 **
 **
-** $Id$
 **
 */
 #include "libaspect.h"

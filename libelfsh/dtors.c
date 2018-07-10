@@ -4,7 +4,6 @@
  *
  * Started on  Tue Feb 26 22:12:38 2002 jfv
  *
- * $Id$
  *
  */
 

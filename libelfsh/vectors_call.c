@@ -6,7 +6,6 @@
 **
 ** API for calling handlers of vectors in libelfsh
 **
-** $Id$$
 */
 #include "libelfsh.h"
 

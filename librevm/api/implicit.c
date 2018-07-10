@@ -4,7 +4,6 @@
 ** @ingroup api
 ** Started on  Tue Feb 18 06:45:35 2003 jfv
 **
-** $Id$
 **
 */
 #include "revm.h"

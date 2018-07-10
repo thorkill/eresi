@@ -2,7 +2,6 @@
  * @brief Handler for pop es instruction. Opcode = 0x17
  * @ingroup handlers_ia32
  *
- * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>

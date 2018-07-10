@@ -5,7 +5,6 @@
  *
  * Started on Sept 11 2005 mxatone
  *
- * $Id$
  *
  */
 #include "revm.h"

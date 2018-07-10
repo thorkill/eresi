@@ -4,7 +4,6 @@
 ** @brief The base of the unified type system.
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
-** $Id$
 */
 #include "libaspect.h"
 

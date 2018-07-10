@@ -4,7 +4,6 @@
 ** @brief Pretty printing for ERESI lists
 **
 ** Started Jul 13 2007 18:57:03 jfv
-** $Id$
 */
 #include "libstderesi.h"
 

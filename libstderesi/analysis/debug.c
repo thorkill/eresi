@@ -5,7 +5,6 @@
 **
 ** Started on Fev 25 2007 mxatone
 **
-** $Id$
 **
 */
 #include "libstderesi.h"

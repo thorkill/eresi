@@ -4,7 +4,6 @@
  * @brief Input related functions.
  *
  * Started on  Fri Feb  7 20:53:25 2003 jfv
- * $Id$
  *
  */
 #include "revm.h"

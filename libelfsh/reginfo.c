@@ -7,7 +7,6 @@
 ** Updated on  Wed Mar 23 14:21:32 2005 jfv
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

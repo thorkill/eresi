@@ -2,7 +2,6 @@
  * @file libasm/src/arch/ia32/operand_handlers/asm_operand_fetch_general.c
  *
  * @ingroup IA32_operands
- * $Id$
  * @brief Operand Handler to decode data for operand type ASM_CONTENT_GENERAL
  */
 

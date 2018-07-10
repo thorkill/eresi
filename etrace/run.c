@@ -4,7 +4,6 @@
 ** @ingroup etrace
 **
 ** Started on  Wed Feb 21 22:02:36 2001 mxatone
-** $Id$
 */
 #include "etrace.h"
 

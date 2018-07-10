@@ -1,7 +1,6 @@
 /*
 * @file kernsh/main.c
 ** @ingroup kernsh
-** $Id$
 **
 */
 #include "kernsh.h"

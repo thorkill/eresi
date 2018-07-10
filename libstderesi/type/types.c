@@ -4,7 +4,6 @@
 * Be able to add your own types in runtime
 *
 * Started on  Sun Jan 9 07:23:58 2007 jfv
-* $Id$
 **
 */
 #include "libstderesi.h"

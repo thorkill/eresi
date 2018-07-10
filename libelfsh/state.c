@@ -4,7 +4,6 @@
  * @brief Provide initialization and debugger state related functions.
  *
  * Started on  Sat Jun  2 15:20:18 2005 jfv
- * $Id$
  */
 #include "libelfsh.h"
 

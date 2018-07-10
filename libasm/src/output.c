@@ -2,10 +2,8 @@
  * @brief ASCII Output wrappers.
  * @file output.c
  * @ingroup libasm_engine
- * $Id$
  *
  * Author  : <sk at devhell dot org>
- * $Id$
  */
 #include <libasm.h>
 #include <libasm-int.h>

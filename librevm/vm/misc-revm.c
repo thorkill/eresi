@@ -3,7 +3,6 @@
  * @ingroup vm
  *
  * Started on  Fri Nov  2 15:21:56 2001 jfv
- * $Id$
  */
 #include "revm.h"
 

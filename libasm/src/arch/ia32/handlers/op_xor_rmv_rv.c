@@ -3,7 +3,6 @@
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor rmv,rv opcode 0x31
- * $Id$
  *
  */
 #include <libasm.h>

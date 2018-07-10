@@ -8,7 +8,6 @@
 ** Started on  Mon Jul 25 21:26:54 2005 ym
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

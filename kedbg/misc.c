@@ -3,7 +3,6 @@
 ** @ingroup kedbg
 ** @brief Internal API for KEDBG.
 **
-** $Id$
 */
 #include "kedbg.h"
 #include "interface.h"

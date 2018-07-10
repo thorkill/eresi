@@ -8,7 +8,6 @@
  * @brief Implements API for ELF version tables.
  *
  * Started Nov 25 2003 may
- * $Id$
  */
 #include "libelfsh.h"
 

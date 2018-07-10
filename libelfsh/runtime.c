@@ -10,7 +10,6 @@
 ** Started Sun 05 May 2005 22:29:54 mm
 **
 **
-** $Id$
 **
 */
 #include "libelfsh.h"

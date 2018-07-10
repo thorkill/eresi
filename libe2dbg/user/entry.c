@@ -8,7 +8,6 @@
  * @ingroup user
  *
  * Started on  Tue Jul 11 20:37:33 2003 jfv
- * $Id$
  */
 #include "libe2dbg.h"
 

@@ -1,7 +1,6 @@
 /*
 * @file kernsh/autotypes.c
 ** @ingroup kernsh
-** $Id$
 **
 */
 #include "kernsh.h"

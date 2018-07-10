@@ -3,7 +3,6 @@
  * @brief Implements the GDB serial protocol.
  * @ingroup libgdbwrap
  *
- * $Id$
  */
 
 /*

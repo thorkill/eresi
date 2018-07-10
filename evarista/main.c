@@ -5,7 +5,6 @@
  * The entry point of the static analyzer
  *
  * Started on  Fri Jun 22 14:42:36 2007 jfv
- * $Id$
  */
 #include "evarista.h"
 

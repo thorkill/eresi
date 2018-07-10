@@ -3,7 +3,6 @@
  * @ingroup analysis
  * @brief Various commands related to flow analysis
  *
- * $Id$
  */
 #include "libstderesi.h"
 

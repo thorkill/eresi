@@ -4,7 +4,6 @@
  * @brief ELFsh/vm configure related code
  * 2006 thorkill, Asgard Labs Inc.
  *
- * $Id$
  */
 #include "libstderesi.h"
 

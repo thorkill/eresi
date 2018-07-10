@@ -4,7 +4,6 @@
 ** Started on  Sun Mar 17 06:38:49 2002 jfv
 ** Last update Sat Mar 23 11:00:10 2002 jfv
 **
-** $Id$
 **
 */
 #include <stdio.h>

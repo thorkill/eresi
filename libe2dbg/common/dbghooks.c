@@ -4,7 +4,6 @@
 ** @ingroup common
 **
 ** Started   Sat Sep 24 07:17:33 2005 jfv
-** $Id$
 */
 #include "libe2dbg.h"
 

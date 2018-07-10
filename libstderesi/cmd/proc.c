@@ -3,7 +3,6 @@
 ** @ingroup cmd
 **
 ** Made by jfv <vanegue@eresi-project.org>
-** $Id$
 */
 #include "libstderesi.h"
 

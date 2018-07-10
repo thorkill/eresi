@@ -8,7 +8,6 @@
  * @brief Initialize the IO system.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
- * $Id$
  */
 #include "revm.h"
 

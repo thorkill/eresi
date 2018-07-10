@@ -2,7 +2,6 @@
 * @file libasm/src/arch/ia32/handlers/op_shift_rmb_cl.c
  *
  * @ingroup IA32_instrs
- * $Id$
  *
  * Changelog
  * 2007-05-29 : instruction set was not complete.

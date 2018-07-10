@@ -4,7 +4,6 @@
 * @brief All functions that help to trace content
 *
 * Started Jul 2 2005 00:03:44 mxatone
-* $Id$
 *
 */
 #include "libstderesi.h"

@@ -5,7 +5,6 @@
  * Started on  Thu Mar 13 23:27:58 2003 jfv
  * Last update Sat Mar 15 07:00:38 2003 jfv
  *
- * $Id$
  *
  */
 #include "libui.h"

@@ -2,7 +2,6 @@
 * @file kernsh/hash.c
 * @ingroup kernsh
 **
-** $Id$
 **
 */
 #include "kernsh.h"

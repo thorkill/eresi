@@ -11,7 +11,6 @@
 ** Started on  Fri Jun 10 14:06:47 2005 #!HATE#@!
 ** Last update Thu Jun 16 05:41:18 2005 #!HATE#@!
 **
-** $Id$
 **
 */
 
