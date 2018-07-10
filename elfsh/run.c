@@ -1,13 +1,11 @@
 /**
-* @file elfsh/run.c
+ * @file elfsh/run.c
  * @ingroup elfsh
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  *
  *
  */
 #include "elfsh.h"
-
-
 
 /**
  * Run the binary

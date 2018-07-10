@@ -1,13 +1,12 @@
 /**
-* @file librevm/api/sourcing.c
+ * @file librevm/api/sourcing.c
 **
 ** @ingroup api
 */
-/*
+/**
 ** Started on  Fri May 16 15:18:35 2005 jfv
 */
 #include "revm.h"
-
 
 /**
  * @brief Command interface for ERESI script sourcing.
@@ -184,8 +183,6 @@ int   revm_source(char **params)
 
 }
 
-
-
 /**
  * Restore the previous debugger control context.
  * Mostly useful when using 'continue' command from a debugger script
@@ -277,7 +274,6 @@ int        revm_context_restore(int   savedfd,
   /* Return OK */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Execute a command given by a string in the current job

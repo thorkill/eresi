@@ -1,5 +1,6 @@
+
 /**
-* @file libstderesi/elf/comment.c
+ * @file libstderesi/elf/comment.c
 ** @ingroup elf
 */
 /**
@@ -13,7 +14,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * @brief Display the note section

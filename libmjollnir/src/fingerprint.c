@@ -1,5 +1,5 @@
 /**
-* @file libmjollnir/src/fingerprint.c
+ * @file libmjollnir/src/fingerprint.c
  * @ingroup libmjollnir
  *
  * @brief Functions for fingerprinting inside libmjollnir
@@ -9,7 +9,6 @@
  */
 
 #include "libmjollnir.h"
-
 
 /**
  * @brief Say if a block is the start of a function or not
@@ -50,7 +49,6 @@ int    mjr_block_funcstart(container_t *cntnr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Depth First Search: distance fingerprinting algorithm

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/operand.c
+ * @file libasm/src/operand.c
  * @ingroup libasm
  * @brief Contains arch-independent generic operand manipulation functions.
  *
@@ -80,7 +80,6 @@ int     asm_operand_get_immediate(asm_instr *ins, int num,
   */
   return (1);
 }
-
 
 /**
  * Get base register of operand
@@ -336,7 +335,6 @@ int    asm_operand_set_basereg(asm_instr *ins, int num,
   return (1);
 }
 
-
 /**
  * Set index register of operand
  * @param ins
@@ -463,7 +461,6 @@ int asm_operand_get_type(asm_instr *ins, int num, int opt, void *valptr)
   return (-1);
 }
 
-
 int asm_operand_get_size(asm_instr *ins, int num, int opt, void *valptr)
 {
   int *val, to_ret;
@@ -543,7 +540,6 @@ int asm_operand_get_count(asm_instr *ins, int num, int opt, void *valptr)
   return (num);
 }
 
-
 /**
  * Return wether operand if a reference or not.
  * @param op Pointer to operand structure.
@@ -553,4 +549,3 @@ int asm_operand_is_reference(asm_operand *op)
 {
   return ((op->type == ASM_OPTYPE_MEM) && (op->memtype & ASM_OP_REFERENCE));
 }
-

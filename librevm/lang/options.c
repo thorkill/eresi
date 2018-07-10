@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/options.c
+ * @file librevm/lang/options.c
  * @ingroup lang
  * @brief Implement the commands registration handlers.
  *
@@ -8,7 +8,6 @@
  *
  */
 #include "revm.h"
-
 
 /**
  * Read the input file parameter
@@ -202,7 +201,6 @@ int   revm_getforparams(u_int index, u_int argc, char **argv)
                 revm_getvarparams(index, argc, argv));
 }
 
-
 /**
  * Format the input of a case command
  * @ingroup lang
@@ -256,8 +254,6 @@ int   revm_getcaseparams(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
 
-
-
 /**
  * Format the input of a match/rewrite command
  * @ingroup lang
@@ -279,9 +275,6 @@ int   revm_getmatchparams(u_int index, u_int argc, char **argv)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 revm_getoption2(index, argc, argv));
 }
-
-
-
 
 /**
  * Add an entry to the requested dump list

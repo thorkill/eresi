@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/tables_sparc.c
+ * @file libasm/src/arch/sparc/tables_sparc.c
 ** @ingroup sparc
 */
-/*
+/**
 ** tables_sparc.c for  in /hate/home/hate/code/libasm_current
 **
 ** Made by #!HATE#@!
@@ -53,7 +53,6 @@ int sparc_op2_table[64] =
   ASM_SP_,
   ASM_SP_UDIVCC,
   ASM_SP_SDIVCC,
-
 
   ASM_SP_TADDCC,
   ASM_SP_TSUBCC,
@@ -129,8 +128,6 @@ int sparc_op3_table[64] =
   ASM_SP_LDSTUBA,
   ASM_SP_STXA,
   ASM_SP_SWAPA,
-
-
 
   ASM_SP_LDF,
   ASM_SP_LDFSR, /* LDFSR, LDXFSR */

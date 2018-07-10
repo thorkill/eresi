@@ -1,11 +1,10 @@
 /**
-* @file librevm/vm/misc-revm.c
+ * @file librevm/vm/misc-revm.c
  * @ingroup vm
  *
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  */
 #include "revm.h"
-
 
 /* XXX: to remove ?
 #if defined(USE_READLN)
@@ -14,7 +13,6 @@
 */
 
 char buf[BUFSIZ];
-
 
 /**
  *
@@ -104,7 +102,6 @@ char    *revm_modename_get()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (mode));
 }
 
-
 /**
  * Our system implementation
  */
@@ -148,7 +145,6 @@ int   revm_system(char *cmd)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
 
 /**
  * Decide what to do for exiting depending on the current input
@@ -205,7 +201,6 @@ void  revm_error(char *label, char *param)
   revm_output(buf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * Open the script file
@@ -313,7 +308,6 @@ char    *revm_build_unknown(char *buf, const char *str, u_long type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
 }
 
-
 /**
  * Retreive a file object giving its unique ID
  */
@@ -413,7 +407,6 @@ int   revm_doerror(void (*fct)(char *str), char *str)
                "Bypassed error printing", (-1));
 }
 
-
 /**
  * Change the shell variable
  */
@@ -427,7 +420,6 @@ int   revm_setshell(char *str)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * The internal basename function
@@ -454,8 +446,6 @@ char    *revm_basename(char *str)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 /**
  * Useful to differentiate 0 and a string

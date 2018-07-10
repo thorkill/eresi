@@ -1,9 +1,8 @@
 /**
-* @file libe2dbg/kernel/utils.c
+ * @file libe2dbg/kernel/utils.c
  *
  */
 #include "ke2dbg.h"
-
 
 /*TRUE STDLIB*/
 #ifndef NULL
@@ -68,8 +67,6 @@ static void bad ( char *fmt)
 }
 
 #define put(x) *outbuf++ = (char)x
-
-
 
 unsigned char hexabuf_M[] = "0123456789ABCDEF";
 unsigned char hexabuf_L[] = "0123456789abcdef";
@@ -229,7 +226,6 @@ have_hexa:
 
           continue;
 
-
         case 's':
           s = va_arg(ap, char *);
 
@@ -295,7 +291,6 @@ int ke2dbg_isxdigit(register int c)
   return ((_ctype_ + 1)[c] & _X);
 }
 
-
 /**
  * @param c
  * @return
@@ -304,7 +299,6 @@ int ke2dbg_isspace(register int c)
 {
   return ((_ctype_ + 1)[c] & _S);
 }
-
 
 /**
  * @param c
@@ -315,7 +309,6 @@ int ke2dbg_ispunct(register int c)
   return ((_ctype_ + 1)[c] & _P);
 }
 
-
 /**
  * @param c
  * @return
@@ -324,7 +317,6 @@ int ke2dbg_isalnum(register int c)
 {
   return ((_ctype_ + 1)[c] & (_U | _L | _N));
 }
-
 
 /**
  * @param c
@@ -335,7 +327,6 @@ int ke2dbg_isprint(register int c)
   return ((_ctype_ + 1)[c] & (_P | _U | _L | _N | _B));
 }
 
-
 /**
  * @param c
  * @return
@@ -344,7 +335,6 @@ int ke2dbg_isgraph(register int c)
 {
   return ((_ctype_ + 1)[c] & (_P | _U | _L | _N));
 }
-
 
 /**
  * @param c
@@ -372,10 +362,6 @@ int ke2dbg_toascii(register int c)
 {
   return ((c) & 0177);
 }
-
-
-
-
 
 /**
  * @param p
@@ -858,5 +844,3 @@ void *ke2dbg_memcpy(void *__dest,  void *__src, unsigned int __n)
 
   return __dest;
 }
-
-

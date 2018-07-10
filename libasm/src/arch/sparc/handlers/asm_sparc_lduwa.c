@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/handlers/asm_sparc_lduwa.c
+ * @file libasm/src/arch/sparc/handlers/asm_sparc_lduwa.c
 ** @ingroup SPARC_instrs
 */
-/*
+/**
 **
 **
 */

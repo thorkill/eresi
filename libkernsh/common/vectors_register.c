@@ -1,5 +1,5 @@
-/*
-* @file libkernsh/common/vectors_register.c
+/**
+ * @file libkernsh/common/vectors_register.c
 ** @ingroup common
 **
 */
@@ -52,7 +52,6 @@ int kernsh_register_closemem(u_int archtype, u_int ostype, u_int devicetype,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 int kernsh_register_sct(u_int archtype, u_int ostype, void *fct)
 {
@@ -469,7 +468,6 @@ int   kernsh_register_kvirtm_read_mem(u_int ostype, u_int virtmtype, void *fct)
   aspect_vectors_insert(sct, dim, (u_long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 int kernsh_register_kvirtm_write_virtm(u_int ostype, u_int virtmtype, void *fct)
 {

@@ -1,8 +1,9 @@
+
 /**
-* @file libe2dbg/user/step.c
+ * @file libe2dbg/user/step.c
 ** @ingroup user
 */
-/*
+/**
 ** delete.c for e2dbg
 **
 ** Delete breakpoints
@@ -12,7 +13,6 @@
 **
 */
 #include "libe2dbg.h"
-
 
 /* Perform stepping */
 int   e2dbg_step()
@@ -64,7 +64,6 @@ int   e2dbg_step()
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Impossible step case happened", -1);
 }
-
 
 /* Step-trace command */
 int   cmd_itrace()

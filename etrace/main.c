@@ -1,5 +1,5 @@
 /**
-* @file etrace/main.c
+ * @file etrace/main.c
  * @ingroup etrace
  * Updated on  Wed Jan 03 17:51:04 2007 mxatone
  *
@@ -217,7 +217,6 @@ int   etrace_main(int ac, char **av)
   return (0);
 }
 
-
 /**
  *  The main Etrace routine
  * @param ac Number of arguments
@@ -228,6 +227,3 @@ int   main(int ac, char **av)
 {
   return (etrace_main(ac, av));
 }
-
-
-

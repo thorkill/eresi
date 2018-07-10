@@ -7,7 +7,6 @@
  */
 #include "libstderesi.h"
 
-
 /** Effectively create a new induction variable */
 static revmexpr_t *revm_induction_load(char *name)
 {
@@ -50,7 +49,6 @@ static revmexpr_t *revm_induction_load(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, induction);
 }
-
 
 /** Top-evel for getting the induction variable from its name */
 static revmexpr_t *revm_induction_get(char *name)
@@ -127,8 +125,6 @@ static revmexpr_t *revm_induction_get(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, induction);
 }
-
-
 
 /** Record the induction variable if we have changed its state since the last iteration */
 static int  revm_induction_record(revmexpr_t *induction, char *curkey,
@@ -280,7 +276,6 @@ static int  revm_induction_record(revmexpr_t *induction, char *curkey,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Iterate on an array */
 static int  revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
 {
@@ -346,7 +341,6 @@ static int  revm_loop_array(revmexpr_t *induction, char *infstr, char *supstr)
   var->immed_val.word = infbound++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
-
 
 /** Retreive the iteration object */
 static void *revm_iterator_get(char *itername, char ***keys, int *keynbr,
@@ -483,7 +477,6 @@ static void *revm_iterator_get(char *itername, char ***keys, int *keynbr,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, table);
 }
 
-
 /** Free the current iterator */
 static void revm_iterator_free(hash_t *table, list_t *list, char *indname)
 {
@@ -523,7 +516,6 @@ static void revm_iterator_free(hash_t *table, list_t *list, char *indname)
   revm_move_pc(world.curjob->curcmd->endlabel);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /** Process the current induction variable */
 static int  revm_induction_process(hash_t *table, list_t *list, char *curkey,
@@ -600,7 +592,6 @@ static int  revm_induction_process(hash_t *table, list_t *list, char *curkey,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /** Perform iteration on a container or an array of integers */
 int   cmd_foreach()
@@ -733,7 +724,6 @@ nextelem:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /** End an iteration */
 int   cmd_forend()

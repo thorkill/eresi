@@ -1,12 +1,11 @@
 /**
  * (C) 2006-2008 The ERESI team
  *
-* @file libmjollnir/src/destroy.c
+ * @file libmjollnir/src/destroy.c
  * @ingroup libmjollnir
  * @brief Cleaning API for removing previously saved analysis.
  */
 #include "libmjollnir.h"
-
 
 /** Remove the whole content of as hash table of containers */
 void    mjr_hash_destroy(hash_t *hash, u_char haslists)
@@ -38,7 +37,6 @@ void    mjr_hash_destroy(hash_t *hash, u_char haslists)
   XFREE(__FILE__, __FUNCTION__, __LINE__, keys);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /** Remove existing control flow analysis stored information */
 void    mjr_analyse_destroy(mjrcontext_t *ctx)

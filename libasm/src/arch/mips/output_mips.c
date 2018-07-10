@@ -1,15 +1,14 @@
 /**
-* @file libasm/src/arch/mips/output_mips.c
+ * @file libasm/src/arch/mips/output_mips.c
 ** @ingroup mips
 */
 /**
-* @file libasm/src/arch/mips/output_mips.c
+ * @file libasm/src/arch/mips/output_mips.c
  * @brief This file implements the MIPS ASCII output engine
  *
  * Made by Manuel Martin and Adam Zabrocki
  */
 #include <libasm.h>
-
 
 /**
  * @fn char *asm_mips_display_operand(asm_instr *ins, int num, unsigned int addr)

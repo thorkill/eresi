@@ -1,5 +1,5 @@
 /**
-* @file kedbg/handlers.c
+ * @file kedbg/handlers.c
 ** @ingroup kedbg
 ** @brief Implement kedbg-specific vector handlers.
 **
@@ -8,7 +8,6 @@
 #include "interface.h"
 #include "kedbg.h"
 #include "interface.h"
-
 
 /**
  * This function emulates the "monitor r cr0" we can send in VMWare to
@@ -49,7 +48,6 @@ static Bool     kedbg_isrealmodewmon(void)
       reply[i] = (char)gdbwrap_atoh(ret + BYTE_IN_CHAR * i + 1, 2);
     }
 
-
   /* Last bit is 0. */
   if (!(gdbwrap_atoh(reply + strlen(reply) - 2, 1) & 0x1))
     {
@@ -62,7 +60,6 @@ static Bool     kedbg_isrealmodewmon(void)
       PROFILER_ROUTQ(FALSE);
     }
 }
-
 
 /**
  * When the monitor doesn't work, we inject directly a "mov %cr0,
@@ -195,7 +192,6 @@ void            kedbg_resetstep(void)
 
   PROFILER_OUTQ();
 }
-
 
 /**
  * @ingroup kedbg
@@ -449,7 +445,6 @@ void            kedbg_sigint(int sig)
   PROFILER_OUTQ();
 }
 
-
 /**
  * Reads the content of the memory and returns it as binary.
  * @ingroup kedbg
@@ -537,7 +532,6 @@ eresi_Addr      *kedbg_getpc_ia32(void)
   PROFILER_ROUTQ((eresi_Addr *)&loc->reg32.eip);
 }
 
-
 /**
  * We first sync the registers with the server, then we write the new
  * set ones. They'll be sent to the server when we'll do a "cont".
@@ -577,7 +571,6 @@ void            kedbg_get_regvars_ia32(void)
 
   PROFILER_INQ();
   gdbwrap_readgenreg(loc);
-
 
   E2DBG_GETREG(E2DBG_EAX_VAR, loc->reg32.eax);
   E2DBG_GETREG(E2DBG_EBX_VAR, loc->reg32.ebx);

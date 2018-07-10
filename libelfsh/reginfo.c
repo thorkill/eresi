@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/reginfo.c
+ * @file libelfsh/reginfo.c
  * @ingroup libelfsh
 ** reginfo.c for libelfsh
 **
@@ -10,7 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Get gpvalue
@@ -26,7 +25,6 @@ elfsh_Sword elfsh_get_gpvalue(elfshobj_t *file)
   gp = elfsh_get_gpvalue_addr(file);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*gp));
 }
-
 
 /**
  * Set gpvalue
@@ -51,7 +49,6 @@ int   elfsh_set_gpvalue(elfshobj_t *file, eresi_Addr gp)
   *agp = rgp;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Return a pointer on ".reginfo" ri_gp_value
@@ -86,4 +83,3 @@ elfsh_Sword *elfsh_get_gpvalue_addr(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (&((elfsh_RegInfo *) elfsh_readmem(reginfo))->ri_gp_value));
 }
-

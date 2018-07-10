@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_nop.c
+ * @file libasm/src/arch/ia32/handlers/op_nop.c
  *
  * @ingroup IA32_instrs
  *

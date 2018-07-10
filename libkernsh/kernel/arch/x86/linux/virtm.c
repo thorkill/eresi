@@ -1,5 +1,5 @@
 /**
-* @file libkernsh/kernel/arch/x86/linux/virtm.c
+ * @file libkernsh/kernel/arch/x86/linux/virtm.c
 ** @ingroup kernelmode
 **
 */
@@ -7,7 +7,7 @@
 #include "libkernsh-kernel.h"
 #include "libkernsh-kernel-linux.h"
 
-/*
+/**
  * Dictracy Loadable Kernel Module
  *                          by -  twiz   - twiz@email.it
  *                                thefly - thefly@acaro.org

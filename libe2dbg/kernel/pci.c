@@ -1,10 +1,10 @@
+
 /**
-* @file libe2dbg/kernel/pci.c
+ * @file libe2dbg/kernel/pci.c
  */
 #include "ke2dbg.h"
 #include "ke2dbg-pci.h"
 #include "ke2dbg-pcidata.h"
-
 
 static unsigned char pci_conf_type = PCI_CONF_TYPE_1;//PCI_CONF_TYPE_NONE;
 
@@ -157,7 +157,6 @@ int pci_conf_write(unsigned bus, unsigned dev, unsigned fn, unsigned reg,
   return result;
 }
 
-
 /**
  * @param v
  * @param d
@@ -171,8 +170,6 @@ unsigned int pci_get_name(unsigned int v, unsigned int d,
   pci_desc *vendor;
   pci_desc *device;
   unsigned int precision = 0;
-
-
 
   for (i = 0; i < sizeof(tab_vendor) / sizeof(pci_desc); i++)
     {
@@ -202,7 +199,6 @@ unsigned int pci_get_name(unsigned int v, unsigned int d,
               break;
             }
 
-
           if (device->id == d)
             //printf("%s\n", device->name);
             {
@@ -210,11 +206,9 @@ unsigned int pci_get_name(unsigned int v, unsigned int d,
             }
         }
 
-
       precision = 2;
       return precision;
     }
-
 
   return precision;
 }
@@ -224,7 +218,6 @@ unsigned int pci_get_name(unsigned int v, unsigned int d,
  */
 void pci_list_controller(void)
 {
-
 
   int i;
   unsigned int ctrl_bus;
@@ -237,7 +230,6 @@ void pci_list_controller(void)
   unsigned int device;
   unsigned char pci_data[0x40];
   unsigned char debug[256];
-
 
   for (ctrl_bus = 0; ctrl_bus < 255; ctrl_bus++)
     for (ctrl_dev = 0; ctrl_dev < 31; ctrl_dev++)
@@ -277,11 +269,7 @@ void pci_list_controller(void)
 
             }
 
-
-
         }
-
-
 
 }
 
@@ -290,7 +278,6 @@ void pci_list_controller(void)
  */
 unsigned int pci_detect_display(void)
 {
-
 
   int i;
   unsigned int ctrl_bus;
@@ -311,7 +298,6 @@ unsigned int pci_detect_display(void)
 
   Out_Debug_String("Start pci scan\n");
 
-
   for (ctrl_bus = 0; ctrl_bus < 255; ctrl_bus++)
     for (ctrl_dev = 0; ctrl_dev < 31; ctrl_dev++)
       for (ctrl_fn = 0; ctrl_fn < 7; ctrl_fn++)
@@ -329,7 +315,6 @@ unsigned int pci_detect_display(void)
 
           ke2dbg_sprintf(debug, "%.4X %.4X\n", vendor, device);
           Out_Debug_String(debug);
-
 
           result = pci_conf_read(ctrl_bus, ctrl_dev, ctrl_fn, PCI_header_type, 1,
                                  &header_type_tmp);
@@ -357,7 +342,6 @@ unsigned int pci_detect_display(void)
 
           p_pci_info = (pci_info *)pci_data;
 
-
           //If its not a display device
           if (p_pci_info->class_base != 3)
             {
@@ -377,7 +361,6 @@ unsigned int pci_detect_display(void)
               Out_Debug_String("Strange Header...\n");
               continue;
             }
-
 
           if (reg1_address & PCI_BASE_ADDRESS_SPACE)
             {
@@ -406,4 +389,3 @@ unsigned int pci_detect_display(void)
   return 0;
 
 }
-

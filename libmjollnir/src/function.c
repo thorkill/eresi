@@ -1,5 +1,6 @@
+
 /**
-* @file libmjollnir/src/function.c
+ * @file libmjollnir/src/function.c
  * @ingroup libmjollnir
  *
  * @brief funtion containers related api
@@ -11,7 +12,6 @@
  */
 
 #include <libmjollnir.h>
-
 
 /**
  * @brief Retrieve control flow section content if any
@@ -52,8 +52,6 @@ int   mjr_functions_get(mjrcontext_t *ctxt)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Flow analysis failed", -1);
 }
-
-
 
 /**
  * @brief Function dumping procedure for debug purposes
@@ -98,7 +96,6 @@ void    mjr_function_dump(mjrcontext_t *ctxt, char *where, container_t *c)
       fprintf(D_DESC, "\n");
     }
 }
-
 
 /**
  * @brief Copy the function in a special buffer to fingerprint it
@@ -156,8 +153,6 @@ int   mjr_function_copy(mjrcontext_t  *ctx,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to copy function", 0);
 }
-
-
 
 /**
  * @brief Finger print a function using X method
@@ -230,7 +225,6 @@ void      *mjr_fingerprint_function(mjrcontext_t  *ctx,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
 /**
  * @brief Register function container in the context
  * @param ctx mjollnir context structure
@@ -260,8 +254,6 @@ int   mjr_function_register(mjrcontext_t *ctx, u_int vaddr, container_t *fun)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * @brief Get function container by vaddr
  * @param ctx mjollnir context structure
@@ -280,9 +272,6 @@ container_t   *mjr_function_get_by_vaddr(mjrcontext_t *ctx, u_int vaddr)
   container = (container_t *) hash_get(&ctx->funchash, _vaddr2str(vaddr));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, container);
 }
-
-
-
 
 /**
  * @brief Inject a symbol associated to a function container

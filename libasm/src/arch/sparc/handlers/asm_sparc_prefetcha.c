@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/handlers/asm_sparc_prefetcha.c
+ * @file libasm/src/arch/sparc/handlers/asm_sparc_prefetcha.c
 ** @ingroup SPARC_instrs
 */
-/*
+/**
 **
 **
 */

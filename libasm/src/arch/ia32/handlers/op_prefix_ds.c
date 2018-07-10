@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_prefix_ds.c
+ * @file libasm/src/arch/ia32/handlers/op_prefix_ds.c
  *
  * @ingroup IA32_instrs
  *
@@ -9,7 +9,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_prefix_ds" opcode="0x3e"/>
 */
 

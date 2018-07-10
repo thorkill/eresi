@@ -1,4 +1,4 @@
-/*
+/**
 ** A version of the strdup function that proxy allocation
 **
 ** Made by jfv for the ERESI project

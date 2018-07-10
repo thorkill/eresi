@@ -1,9 +1,9 @@
-/*
+/**
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   Opcode :              0x0c
   Instruction :         OR
 */

@@ -1,11 +1,10 @@
-/*
-* @file libstderesi/cmd/help.c
+/**
+ * @file libstderesi/cmd/help.c
 ** @ingroup cmd
 ** Started on  Sat Jan 25 11:19:18 2003 jfv
 **
 */
 #include "libstderesi.h"
-
 
 /**
  * The ELFsh modules Help command
@@ -53,7 +52,6 @@ int   cmd_modhelp()
   mod->help();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * The Help command

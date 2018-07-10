@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_out_ref_ib_al" opcode="0xe6"/>
 */
-
 
 int op_out_ref_ib_al(asm_instr *new, u_char *opcode, u_int len,
                      asm_processor *proc)

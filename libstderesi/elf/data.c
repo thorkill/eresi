@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/data.c
+ * @file libstderesi/elf/data.c
 ** @ingroup elf
 */
 /**
@@ -11,7 +11,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 revmconst_t     asm_instr_type[] =
 {
@@ -43,7 +42,6 @@ revmconst_t     asm_instr_type[] =
   {"Type that doesn't fit the ones above", "ASM_TYPE_OTHER", ASM_TYPE_OTHER},
 };
 
-
 /**
  * Architecture-independant operand types
  *
@@ -55,7 +53,6 @@ revmconst_t     asm_operand_type[] =
   {"Register operand type", "ASM_OPTYPE_REG", ASM_OPTYPE_REG},
   {"Memory access operand type", "ASM_OPTYPE_MEM", ASM_OPTYPE_MEM},
 };
-
 
 /**
  *  Program header (segment) entry strings
@@ -83,9 +80,6 @@ revmconst_t     elfsh_extseg_type[] =
   {"MIPS Registers informations", "PT_MIPS_REGINFO", PT_MIPS_REGINFO},
 };
 
-
-
-
 /**
  * Encoding type in ELF header
  */
@@ -95,7 +89,6 @@ revmconst_t     elfsh_encoding[] =
   {"Little endian", "ELFDATA2LSB", ELFDATA2LSB},
   {"Big endian", "ELFDATA2MSB", ELFDATA2MSB},
 };
-
 
 /**
  * Section type strings
@@ -120,7 +113,6 @@ revmconst_t     elfsh_sh_type[] =
   {"Version symbol table", "SHT_GNU_versym", SHT_GNU_versym},
 };
 
-
 /**
  * ELF object type strings
  */
@@ -143,7 +135,6 @@ revmconst_t     elfsh_sym_bind[] =
   {"Weak", "STB_WEAK", STB_WEAK},
 };
 
-
 /**
  * Symbol Type strings
  */
@@ -159,7 +150,6 @@ revmconst_t     elfsh_sym_type[] =
   {"BLOCK", "STT_BLOCK", STT_BLOCK},
 };
 
-
 /**
  * Version entry type strings
 */
@@ -170,7 +160,6 @@ revmconst_t                  elfsh_verentry_type[] =
   {"NEED", "ELFSH_VERTYPE_NEED", ELFSH_VERTYPE_NEED},
   {"DEF", "ELFSH_VERTYPE_DEF", ELFSH_VERTYPE_DEF},
 };
-
 
 /**
  * Dynamic section entry type strings
@@ -213,7 +202,6 @@ revmconst_t     elfsh_dynentry_type[] =
   {"Size in bytes of DT_PREINIT_ARRAY", "DT_PREINIT_ARRAYSZ", DT_PREINIT_ARRAYSZ},
   {"Number used", "DT_NUM", DT_NUM},
 };
-
 
 /**
  * Extended dynamic types
@@ -327,7 +315,6 @@ revmconst_t                    elfsh_mipsdyn_type[] =
   {"Address of aux .dynamic", "DT_MIPS_AUX_DYNAMIC", DT_MIPS_AUX_DYNAMIC},
 };
 
-
 /**
  * The next 4 arrays are special flag based DT entries
  */
@@ -339,7 +326,6 @@ revmconst_t     elfsh_feature1[] =
   {"Option 1: PARINIT(?)", "DTF_1_PARINIT", DTF_1_PARINIT},
   {"Option 2: CONFEXP(?)", "DTF_1_CONFEXP", DTF_1_CONFEXP},
 };
-
 
 revmconst_t     elfsh_posflag1[] =
 {
@@ -542,7 +528,6 @@ revmconst_t     elfsh_rel_type_ia64[] =
   {"@ltoff(@dtprel(s+a)), imm22", "R_IA64_LTOFF_DTPREL22", R_IA64_LTOFF_DTPREL22},
 };
 
-
 /**
  * MIPS relocs
  */
@@ -586,7 +571,6 @@ revmconst_t     elfsh_rel_type_mips[] =
   {"", "R_MIPS_JALR", R_MIPS_JALR},
 
 };
-
 
 /**
  * Alpha relocs.
@@ -637,8 +621,6 @@ revmconst_t                    elfsh_rel_type_alpha[] =
   {"Unknown", "R_ALPHA_TPRELLO", R_ALPHA_TPRELLO},
   {"Unknown", "R_ALPHA_TPREL16", R_ALPHA_TPREL16},
 };
-
-
 
 /**
  * Relocation types strings for SPARC
@@ -701,9 +683,6 @@ revmconst_t                    elfsh_rel_type_sparc[] =
   {"Direct 64 bits unaligned", "R_SPARC_UA64", R_SPARC_UA64},
   {"Direct 16 bits unaligned", "R_SPARC_UA16", R_SPARC_UA16},
 };
-
-
-
 
 /**
  * Architecture strings
@@ -806,7 +785,6 @@ revmconst_t      elfsh_arch_type[] =
   {"ARC Cores Tangent-A5 ", "EM_ARC_A5", EM_ARC_A5},
   {"Tensilica Xtensa Architecture ", "EM_XTENSA", EM_XTENSA},
 };
-
 
 /**
  * Stab entry type strings
@@ -1071,9 +1049,6 @@ char    *elfsh_stab_type[] =
   "Unknown",
 };
 
-
-
-
 /**
  *  Control flow analysis link types
  */
@@ -1088,7 +1063,6 @@ revmconst_t     elfsh_link_type[] =
   {"", "LINK_UNKNOW", MJR_LINK_UNKNOWN},
 };
 
-
 /**
  *  Control flow analysis link scopes
  */
@@ -1098,11 +1072,3 @@ revmconst_t     elfsh_link_scope[] =
   {"", "SCOPE_LOCAL", MJR_LINK_SCOPE_LOCAL},
   {"", "SCOPE_GLOBAL", MJR_LINK_SCOPE_GLOBAL},
 };
-
-
-
-
-
-
-
-

@@ -1,12 +1,11 @@
 /**
-* @file libstderesi/type/lists.c
+ * @file libstderesi/type/lists.c
 ** @ingroup type
 ** @brief Pretty printing for ERESI lists
 **
 ** Started Jul 13 2007 18:57:03 jfv
 */
 #include "libstderesi.h"
-
 
 /**
  * Display an element of a keyed linked list
@@ -74,7 +73,6 @@ int   revm_list_display_element(list_t *l, char *key, u_char inside)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Display the content of a list
  * @param name List name to display
@@ -110,10 +108,6 @@ int   revm_list_display_content(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /* Display the header of a list */
 int   revm_list_display(list_t *list, char *name)
 {
@@ -133,7 +127,6 @@ int   revm_list_display(list_t *list, char *name)
   revm_output(logbuf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Display the content of a list
@@ -159,8 +152,6 @@ static void revm_lists_display()
   revm_output("\n Type 'help lists' for more table details.\n\n");
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
 
 /**
  * Display the content of all hash tables that match the regex
@@ -211,7 +202,6 @@ static int  revm_list_display_regx2(char *tableregx, char *elemregx)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Display the content of all hash tables that match the regex
  */
@@ -261,7 +251,6 @@ static int  revm_list_display_regx(char *regx)
   hash_free_keys(keys);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Print and modify internal lists

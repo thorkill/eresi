@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_cmovb" opcode="0x42"/>
 */
-
 
 int i386_cmovb(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

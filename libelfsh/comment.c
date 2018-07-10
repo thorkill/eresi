@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/comment.c
+ * @file libelfsh/comment.c
  * @ingroup libelfsh
 ** comment.c for elfsh in
 **
@@ -12,7 +12,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Get comment section
@@ -49,7 +48,6 @@ elfshsect_t   *elfsh_get_comments(elfshobj_t *file)
   file->secthash[ELFSH_SECTION_COMMENT] = enew;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
-
 
 /**
  * Get an entry from .comment

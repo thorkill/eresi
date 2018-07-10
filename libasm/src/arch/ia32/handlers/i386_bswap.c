@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
  <i386 func="i386_bswap" opcode="0xc8"/>
  <i386 func="i386_bswap" opcode="0xc9"/>
  <i386 func="i386_bswap" opcode="0xca"/>

@@ -1,4 +1,4 @@
-/*
+/**
 ** rel.c for elfsh
 **
 ** Contain all tests for ET_REL injection
@@ -28,7 +28,6 @@ int glvar_testreloc_bss;
 char  glvar_testreloc_bss2;
 short glvar_testreloc_bss3;
 
-
 int hook_func(char *str)
 {
   int sd;
@@ -37,7 +36,6 @@ int hook_func(char *str)
 
   return (old_legit_func(str));
 }
-
 
 int puts_troj(char *str)
 {
@@ -72,7 +70,6 @@ int puts_troj(char *str)
 
   printf("printf called from puts_troj [%s] \n", str);
 
-
   fd = open("/etc/services", 0, O_RDONLY);
 
   if (fd)
@@ -91,7 +88,6 @@ int puts_troj(char *str)
       printf("mmap succeed fd : %d\n", fd);
       close(fd);
     }
-
 
   old_puts(str);
   fflush(stdout);

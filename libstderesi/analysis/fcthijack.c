@@ -1,14 +1,11 @@
-/*
-* @file libstderesi/analysis/fcthijack.c
+/**
+ * @file libstderesi/analysis/fcthijack.c
 ** @ingroup analysis
 ** Started on  Thu Jun 19 17:02:55 2003 jfv
 **
 **
 */
 #include "libstderesi.h"
-
-
-
 
 /* Redirect a function on a OS independant manner */
 int   cmd_hijack()

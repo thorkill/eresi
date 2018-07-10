@@ -3,10 +3,8 @@
    http://neworder.box.sk/newsread.php?newsid=2844.
 */
 
-
 #include "revm.h"
 #include "gdbwrapper.h"
-
 
 extern int errno;
 extern int h_errno;
@@ -187,7 +185,6 @@ int main( int argc, char **argv )
 
     }
   while (strncmp("bye", buffer, 3));
-
 
   close(sd);
   return (0);

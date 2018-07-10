@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/objects.c
+ * @file librevm/lang/objects.c
  * @ingroup lang
  * @brief Methods for creation of objects.
  *
@@ -11,7 +11,6 @@
  *
  */
 #include "revm.h"
-
 
 /**
  * @brief Create constant object : Perm == 1 if the object is writable
@@ -61,7 +60,6 @@ revmobj_t *revm_create_ptr(char perm, eresi_Addr val, u_int type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
 /**
  * @brief Create constant object
  */
@@ -73,7 +71,6 @@ revmobj_t *revm_create_LONG(char perm, eresi_Addr val)
   new = revm_create_ptr(perm, val, ASPECT_TYPE_LONG);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
 }
-
 
 /**
  * @brief Create constant object
@@ -98,7 +95,6 @@ revmobj_t *revm_create_DADDR(char perm, eresi_Addr val)
   new = revm_create_ptr(perm, val, ASPECT_TYPE_DADDR);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, new);
 }
-
 
 /**
  * @brief Create constant object
@@ -142,7 +138,6 @@ revmobj_t *revm_create_BYTE(char perm, u_char val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
 /**
  * @brief Create constant string object
  */
@@ -181,9 +176,6 @@ elfshredir_t  *revm_create_REDIR(u_char type, char *sname, char *dname,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (redir));
 }
 
-
-
-
 /**
  * @brief Now comes Level 1 objects hash functions
  */
@@ -212,7 +204,6 @@ revmL1_t  *revm_create_L1ENT(void *get_obj,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
 /**
  * Now comes Level 2 objects hash functions
  */
@@ -238,8 +229,6 @@ revmL2_t  *revm_create_L2ENT(void *get_obj,
   new->set_data = set_data;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
-
 
 /**
  * @brief The high level function for object conversion
@@ -320,8 +309,6 @@ int   revm_convert_object(revmexpr_t *expr, u_int objtype)
     }
 }
 
-
-
 /**
  * @brief Verify an object sanity
  */
@@ -387,7 +374,6 @@ revmobj_t   *revm_check_object(revmobj_t *pobj)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (pobj));
 }
-
 
 /**
  * @brief Destroy an object

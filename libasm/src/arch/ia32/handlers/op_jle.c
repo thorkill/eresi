@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_jle" opcode="0x7e"/>
 */
 

@@ -10,7 +10,6 @@
  */
 #include "libelfsh.h"
 
-
 /**
  * Create an object map from scratch. Generally used to represent memory without true ELF structure.
  * @param name Name to be given to the map.
@@ -162,7 +161,6 @@ elfshobj_t    *elfsh_create_obj(char *name, eresi_Addr start, u_int size,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
 }
 
-
 /**
  * Open the file 'name' and create a descriptor.
  * @param name File path to open.
@@ -192,8 +190,6 @@ elfshobj_t    *elfsh_load_obj(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file));
 }
-
-
 
 /**
  * Free the ELF descriptor and its fields

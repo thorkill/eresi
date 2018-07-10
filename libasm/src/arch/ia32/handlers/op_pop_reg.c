@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_pop_reg" opcode="0x58"/>
   <instruction func="op_pop_reg" opcode="0x59"/>
   <instruction func="op_pop_reg" opcode="0x5a"/>

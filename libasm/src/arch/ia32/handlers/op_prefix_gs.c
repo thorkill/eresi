@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_prefix_gs" opcode="0x65"/>
  */
 

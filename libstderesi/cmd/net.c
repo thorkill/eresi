@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/cmd/net.c
+ * @file libstderesi/cmd/net.c
 ** @ingroup cmd
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:26:11 2007 jfv
@@ -159,7 +159,6 @@ int   cmd_netkill()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * print the list of dump neighbors
  */
@@ -200,7 +199,6 @@ int   cmd_peerslist()
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * connect to a dump node
@@ -247,7 +245,6 @@ int   cmd_connect()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 #endif
 }
-
 
 /**
  * disconnect from a dump node
@@ -317,7 +314,6 @@ int     cmd_rcmd()
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Not in 'net' mode", (-1));
     }
 
-
   /* 1 char for the REVM_DUMP_CMD */
   data[0] = ' ';
   data[1] = '\0';
@@ -380,5 +376,3 @@ int     cmd_rcmd()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-

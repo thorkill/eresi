@@ -1,15 +1,13 @@
 /**
-* @file elfsh/rlheap.c
-* @ingroup elfsh
-* @brief Handle the readline malloc/free to avoid messing with the alloc proxy.
+ * @file elfsh/rlheap.c
+ * @ingroup elfsh
+ * @brief Handle the readline malloc/free to avoid messing with the alloc proxy.
 *
-* Started on  Sat Jul 1 10:10:53 2006 jfv
+ * Started on  Sat Jul 1 10:10:53 2006 jfv
 *
 *
 */
 #include "elfsh.h"
-
-
 
 /**
  * When inside elfsh and not e2dbg, readline should allocate
@@ -31,4 +29,3 @@ void  revm_readline_free(void *ptr)
 {
   free(ptr);
 }
-

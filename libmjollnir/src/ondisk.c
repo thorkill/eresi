@@ -1,5 +1,6 @@
+
 /**
-* @file libmjollnir/src/ondisk.c
+ * @file libmjollnir/src/ondisk.c
  * @ingroup libmjollnir
  *
  * @brief Implement routines to store and load analysis data on disk
@@ -8,7 +9,6 @@
  *
  */
 #include "libmjollnir.h"
-
 
 /**
  * @brief Save and prepare a buffer which will be saved into the elfshobj.
@@ -82,9 +82,6 @@ static int  mjr_flow_store_links(container_t *c, u_int type, mjrbuf_t *buf)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf->maxlen);
 }
 
-
-
-
 /**
  * @brief Link containers in the control flow graph
  */
@@ -148,11 +145,6 @@ static int  mjr_flow_load_links(mjrcontext_t  *ctxt,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
 
 /**
  * @brief Create the data dump to be saved in file
@@ -221,13 +213,6 @@ static int    mjr_unit_save(container_t *cur, mjrbuf_t *buf, u_int typeid)
   buf->counter++;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
-
 
 /**
  * @brief Create the control flow graph using the information stored in .elfsh.control
@@ -350,8 +335,6 @@ int     mjr_flow_load(mjrcontext_t *ctxt, u_int typeid)
   cnt = hash_size(table);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, cnt);
 }
-
-
 
 /**
  * @brief Store the blocks and functions on disk
@@ -536,4 +519,3 @@ int     mjr_flow_store(mjrcontext_t *ctxt, u_int typeid)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf.counter);
 }
-

@@ -137,7 +137,6 @@ list_t    *elist_empty(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, list);
 }
 
-
 /* Reverse a list */
 list_t    *elist_reverse(list_t *l)
 {
@@ -161,7 +160,6 @@ list_t    *elist_reverse(list_t *l)
   XFREE(__FILE__, __FUNCTION__, __LINE__, l);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newlist);
 }
-
 
 /* Destroy a list */
 void    elist_destroy(list_t *h)
@@ -250,8 +248,6 @@ list_t    *elist_copy(list_t *h, u_char datacopy)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newlist);
 }
 
-
-
 /**
  * @brief Add an element at the head of the list
  */
@@ -318,7 +314,7 @@ int   elist_append(list_t *h, char *key, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/*
+/**
  * @brief Push an element on the list (used as a stack)
  */
 int   elist_push(list_t *h, void *data)
@@ -336,7 +332,7 @@ int   elist_push(list_t *h, void *data)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/*
+/**
  * @brief Pop an element off the list (used as a stack)
  */
 void    *elist_pop(list_t *h)
@@ -361,7 +357,6 @@ void    *elist_pop(list_t *h)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, h->head->data);
 }
-
 
 /**
  * @brief Delete an element from a list
@@ -544,7 +539,6 @@ int   elist_replace(list_t *h, char *key, list_t *newlist)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Cannot find element to be swapped", -1);
 }
-
 
 /* Return the array of keys */
 char    **elist_get_keys(list_t *h, int *n)

@@ -1,13 +1,11 @@
-/*
-* @file librevm/api/printing.c
+/**
+ * @file librevm/api/printing.c
  * @ingroup api
  * @brief This file contains various printing facilities API.
  *
  * Started on  Wed Dec 05 23:02:04 2003 jfv
  */
 #include "revm.h"
-
-
 
 /**
  * Debug purpose
@@ -44,7 +42,6 @@ int   revm_printscript(revmargv_t *start)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Scripting report purpose
  * @param cur
@@ -72,6 +69,3 @@ void    revm_print_actual(revmargv_t *cur)
   fprintf(stderr, "\n");
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
-

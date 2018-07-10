@@ -1,5 +1,5 @@
 /**
-* @file libaspect/init.c
+ * @file libaspect/init.c
 ** @ingroup libaspect
 **
 ** @brief Implement the modularity for the framework.
@@ -11,9 +11,7 @@
 */
 #include "libaspect.h"
 
-
 static u_char aspect_initialized = 0;
-
 
 /***************** ERESI Constructors help functions **********************/
 
@@ -43,9 +41,7 @@ int   aspect_called_ctors_finished()
   return (called_ctors == 3);
 }
 
-
 /*************** E2DBG presence help functions *******************/
-
 
 /**
  * @brief Set debugger presence
@@ -80,7 +76,6 @@ u_char    e2dbg_presence_get()
 
   return (dbgpresent);
 }
-
 
 /**
  * @brief Set kernsh presence flag
@@ -136,13 +131,11 @@ void    e2dbg_kpresence_set(u_char pres)
 
 /**************** LIBASPECT initiazation ******************/
 
-
 /** @brief Initialize the vector hash table */
 static void aspect_vectors_init()
 {
   vector_hash = (hash_t *) hash_find("type_vector");
 }
-
 
 /** @brief Initialize base types : each type has a hash table of typed objects */
 static void aspect_types_init()
@@ -150,7 +143,6 @@ static void aspect_types_init()
   hash_init(&types_hash, "types", 11, ASPECT_TYPE_UNKNOW);
   aspect_basetypes_create();
 }
-
 
 /** @brief Configuration initialization in libaspect */
 static void aspect_config_init()
@@ -164,7 +156,6 @@ static void aspect_config_init()
             CONFIG_HASH_SIZE, ASPECT_TYPE_UNKNOW);
 
   aspectworld.proflevel = PROFILE_NONE;
-
 
   /* XXX: should go in their respective library */
 

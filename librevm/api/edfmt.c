@@ -1,5 +1,5 @@
-/*
-* @file librevm/api/edfmt.c
+/**
+ * @file librevm/api/edfmt.c
 ** @ingroup api
 ** @brief All functions dealing with libedfmt.
 **
@@ -89,8 +89,6 @@ add:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
 
 /* Analyze a given uniform type and add it into ERESI type engine */
 static int    revm_edfmt_type_parse(edfmttype_t *type)

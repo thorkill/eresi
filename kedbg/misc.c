@@ -1,5 +1,5 @@
-/*
-* @file kedbg/misc.c
+/**
+ * @file kedbg/misc.c
 ** @ingroup kedbg
 ** @brief Internal API for KEDBG.
 **
@@ -28,7 +28,6 @@ char            *kedbg_getstr(void *addr, char *buf, unsigned maxsize)
   return buf;
 }
 
-
 elfshlinkmap_t   *kedbg_linkmap_getaddr(void)
 {
   elfshsect_t    *got;
@@ -44,7 +43,6 @@ elfshlinkmap_t   *kedbg_linkmap_getaddr(void)
   //  kedbg_readmema(NULL, linkmap_entry, &linkmap_copy, sizeof(elfshlinkmap_t));
 }
 
-
 void             kedbg_continue(void)
 {
   gdbwrap_t      *loc = gdbwrap_current_get();
@@ -52,23 +50,18 @@ void             kedbg_continue(void)
   gdbwrap_continue(loc);
 }
 
-
 /* void            *kedbg_linkmap_lnext() */
 /* { */
 /* } */
-
 
 /* void            *kedbg_linkmap_lprev() */
 /* { */
 /* } */
 
-
 /* void            *kedbg_linkmap_laddr() */
 /* { */
 /* } */
 
-
 /* void            *kedbg_linkmap_lname() */
 /* { */
 /* } */
-

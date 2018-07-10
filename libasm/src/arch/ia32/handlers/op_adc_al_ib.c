@@ -1,9 +1,9 @@
-/*
+/**
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_adc_al_ib" opcode="0x14"/>
 */
 

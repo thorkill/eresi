@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/prompt.c
+ * @file librevm/io/prompt.c
  * @ingroup io
  * @brief Interface for prompt management.
  * @ingroup io
@@ -10,11 +10,8 @@
 */
 #include "revm.h"
 
-
 void  (*prompt_token_setup)(char *name, u_int size);
 char  prompt_token[512];
-
-
 
 /**
  * @brief TO COMPLETE
@@ -85,7 +82,6 @@ char *revm_get_prompt()
 
   return "UNKNOWN MODE> ";
 }
-
 
 /**
  * @brief Display the prompt

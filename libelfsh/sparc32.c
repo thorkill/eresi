@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/sparc32.c
+ * @file libelfsh/sparc32.c
  * @ingroup libelfsh
  * sparc32.c for libelfsh
  *
@@ -9,8 +9,6 @@
  *
  */
 #include "libelfsh.h"
-
-
 
 /**
  * @brief Static hooking for Sparc
@@ -162,7 +160,6 @@ int   elfsh_hijack_plt_sparc32(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief PLT hijacking on SPARC
  * Based on a early version by emsi, delay slot added by ELFsh crew, now it's works yes
@@ -206,10 +203,7 @@ int   elfsh_hijack_plt_sparc32_second(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-/*
+/**
    Used for hijacking the first PLT entry, when %g1 needs to be kept.
    This 16 instructions lenght code copies the first updated .plt
    entry to the first not-yet-updated .alt.plt entry in runtime. This
@@ -268,7 +262,6 @@ int   elfsh_hijack_altplt_sparc32(elfshobj_t *file,
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                   (elfsh_hijack_plt_sparc32_second(file, sym, symbol->st_value)));
   }
-
 
   //Not needed anymore ?
   addr += 4;
@@ -532,5 +525,3 @@ int       elfsh_relocate_sparc32(elfshsect_t       *new,
   *word += (uint32_t) result;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
-
-

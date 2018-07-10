@@ -1,5 +1,5 @@
 /**
-* @file libaspect/profiler.c
+ * @file libaspect/profiler.c
 ** @ingroup libaspect
 **
 ** Started on  Thu Nov 08 02:08:28 2001 mm
@@ -30,11 +30,7 @@ static profallocentry_t   allocentries[PROFILER_MAX_ALLOC];
 /* Current allocation depth */
 static u_int  profiler_adepth = 0;
 
-
-
 /***************** Now the allocator profiler *********************/
-
-
 
 /**
  * @brief Find an entry in the allocation profiler cache
@@ -81,7 +77,6 @@ profallocentry_t  *profiler_alloc_find(u_char direction,
     }
 }
 
-
 /**
  * @brief Print the warning string
  * @param str Header string to be printed
@@ -116,9 +111,6 @@ void    profiler_alloc_warnprint(char *str, int fatal, int idx)
       exit(-1);
     }
 }
-
-
-
 
 /**
  * @brief Warn if anything bad is happening. Good when we cannot use valgrind.
@@ -231,8 +223,6 @@ void      profiler_alloc_warning(u_char warntype)
     }
 }
 
-
-
 /**
  * @brief Shift the allocation history
  */
@@ -247,8 +237,6 @@ void      profiler_alloc_shift()
 
   profiler_adepth--;
 }
-
-
 
 /**
  * @brief Add an entry in the allocation cache
@@ -271,7 +259,6 @@ static void   profiler_alloc_add(char *file, char *func,
   allocentries[profiler_adepth].addr      = addr;
   profiler_adepth++;
 }
-
 
 /**
  * @brief Update allocation cache with a new entry
@@ -308,15 +295,7 @@ int     profiler_alloc_update(char *file, char *func,
   return (1);
 }
 
-
-
-
 /***************** Now the profiler for function calls ***************/
-
-
-
-
-
 
 /**
  * @brief Reset profiler memory
@@ -332,7 +311,6 @@ void    profiler_reset(u_int lsel)
       hit[lsel][idx] = 0;
     }
 }
-
 
 /**
  * @brief Generic routine for profiler output
@@ -422,7 +400,6 @@ int   profiler_print(char *file, char *func,
   return (0);
 }
 
-
 /**
  * @brief Generic routine for profiler error output
  * @param file Generally called with __FILE__ (gcc), contains the file name where allocation is done
@@ -490,7 +467,6 @@ void    profiler_err(char *file, char *func,
 
   profiler_reset(0);
 }
-
 
 /**
  * @brief Write the last profiling information
@@ -562,7 +538,6 @@ u_char    profiler_started()
 {
   return (aspectworld.profstarted);
 }
-
 
 /**
  * @brief Set the current function depth and direction

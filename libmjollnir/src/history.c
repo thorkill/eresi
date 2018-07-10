@@ -1,5 +1,6 @@
+
 /**
-* @file libmjollnir/src/history.c
+ * @file libmjollnir/src/history.c
  * @ingroup libmjollnir
  *
  * (C) 2001-2008 Devhell Labs / Asgard Labs : thorolf / sk / jfv
@@ -49,4 +50,3 @@ void  mjr_history_write(mjrcontext_t *cur, asm_instr *i, eresi_Addr a, int idx)
   memcpy(&cur->hist[idx].instr, i, sizeof(asm_instr));
   cur->hist[idx].vaddr = a;
 }
-

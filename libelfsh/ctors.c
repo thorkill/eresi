@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/ctors.c
+ * @file libelfsh/ctors.c
  * @ingroup libelfsh
  *
  * Started on  Tue Feb 26 22:11:12 2002 jfv
@@ -7,8 +8,6 @@
  *
  */
 #include "libelfsh.h"
-
-
 
 /**
  * Read the constructor array in .ctors
@@ -62,9 +61,6 @@ eresi_Addr      *elfsh_get_ctors(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(enew)));
 }
 
-
-
-
 /**
  * Shift CTORS on ET_DYN
  * @param file
@@ -101,8 +97,6 @@ int   elfsh_shift_ctors(elfshobj_t *file, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
-
 /**
  * Modify a CTORS entry using its index
  * @param file
@@ -133,8 +127,6 @@ int   elfsh_set_ctors_entry_by_index(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Modify a CTORS entry using its name
  * @param file
@@ -160,8 +152,6 @@ int   elfsh_set_ctors_entry_by_name(elfshobj_t  *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Return a entry giving its parent and its index
  * @param ctors
@@ -179,8 +169,6 @@ eresi_Addr      *elfsh_get_ctors_entry_by_index(eresi_Addr *ctors,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ctors + index));
 }
-
-
 
 /**
  * Return an entry giving the matching symbol name
@@ -220,7 +208,6 @@ eresi_Addr      *elfsh_get_ctors_entry_by_name(elfshobj_t *file, char *name)
                NULL);
 }
 
-
 /**
  * Return a entry giving its parent and its index : used as INTERNAL hash handler
  * @param ctors
@@ -240,7 +227,6 @@ int   elfsh_set_ctors_entry(eresi_Addr *ctors, eresi_Addr vaddr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return a entry value giving its parent and its index : used as INTERNAL hash handler
  * @param ctors
@@ -257,5 +243,3 @@ eresi_Addr      elfsh_get_ctors_entry(eresi_Addr *ctors)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*ctors));
 }
-
-

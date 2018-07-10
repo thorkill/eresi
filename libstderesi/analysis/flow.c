@@ -6,7 +6,6 @@
  */
 #include "libstderesi.h"
 
-
 /**
  * Manually add function pointer information
  */
@@ -55,7 +54,6 @@ int   cmd_control()
   revm_output("\n [*] Control flow information dumped \n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* Change the graph verbose level */
 int cmd_setgvl(void)

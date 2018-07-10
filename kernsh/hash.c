@@ -1,6 +1,6 @@
-/*
-* @file kernsh/hash.c
-* @ingroup kernsh
+/**
+ * @file kernsh/hash.c
+ * @ingroup kernsh
 **
 **
 */
@@ -73,7 +73,6 @@ int   cmd_kmem_hash()
                new_size,
                actual->off,
                buffhash);
-
 
       revm_setvar_str(REVM_VAR_RESULT, (char *)buffhash);
 

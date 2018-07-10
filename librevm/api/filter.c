@@ -50,11 +50,8 @@ void      revm_filter_zero(char *buf)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
-
 /* Replace \xNUM taking care of the \x00 in a string */
-/*
+/**
 char    *revm_filter_param(char *buf, char *ptr)
 {
   u_int   nbr;

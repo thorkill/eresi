@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/i386_cmove.c
+ * @file libasm/src/arch/ia32/handlers/i386_cmove.c
  *
  * @ingroup IA32_instrs
  *
@@ -7,10 +7,9 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_cmove" opcode="0x44"/>
 */
-
 
 int i386_cmove(asm_instr *new, u_char *opcode, u_int len,
                asm_processor *proc)
@@ -30,4 +29,3 @@ int i386_cmove(asm_instr *new, u_char *opcode, u_int len,
 #endif
   return (new->len);
 }
-

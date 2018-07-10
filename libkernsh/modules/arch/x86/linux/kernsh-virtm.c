@@ -168,7 +168,6 @@ ssize_t kernsh_virtm_vio_input(struct file *filp,
       break;
     }
 
-
   return len;
 }
 

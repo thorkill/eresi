@@ -1,9 +1,10 @@
+
 /**
  * @defgroup libelfsh libelfsh: The ELF shell library.
  * @ingroup elfsh
  */
 /**
-* @file libelfsh/version.c
+ * @file libelfsh/version.c
  * @ingroup libelfsh
  * @brief Implements API for ELF version tables.
  *
@@ -131,7 +132,6 @@ int     elfsh_set_verneed_aux(elfsh_Verneed *need, elfsh_Word val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return a Version need (aux) entry value for count (count)
  * @param need verneed entry
@@ -241,7 +241,6 @@ elfsh_Word        elfsh_get_verneed_next(void *p)
   need = p;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (need->vn_next));
 }
-
 
 /**
  * Set a Version need (aux) entry value for next (next) normal & parent
@@ -419,7 +418,6 @@ elfsh_Half        elfsh_get_verneed_ndx(elfsh_Vernaux *naux)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (naux->vna_other));
 }
 
-
 /**
  * Set a Version need (aux) entry value for other (index)
  * @param naux vernaux entry
@@ -586,7 +584,6 @@ int     elfsh_set_verdef_cname(elfsh_Verdaux *def, elfsh_Word val)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Return a Version def entry value for cnext (next) [child]
@@ -874,7 +871,6 @@ elfsh_Half        elfsh_get_verdef_ndx(elfsh_Verdef *def)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (def->vd_ndx));
 }
 
-
 /**
  * Set a Version def entry value for ndx (index)
  * @param def verdef entry
@@ -974,7 +970,6 @@ elfsh_Half        *elfsh_get_versym_entry_by_index(elfsh_Half *s,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s + index));
 }
 
-
 /**
  * Return a Version symbol entry value
  * @param sym versym entry
@@ -990,7 +985,6 @@ elfsh_Half        elfsh_get_versym_val(elfsh_Half *sym)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*sym));
 }
-
 
 /**
  * Set a Version symbol entry value
@@ -1009,7 +1003,6 @@ int     elfsh_set_versym_val(elfsh_Half *sym, elfsh_Half val)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Return the version symbol entry giving its name
@@ -1059,7 +1052,6 @@ elfsh_Half    *elfsh_get_versym_by_name(elfshobj_t *file, char *name)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Symbol not found", NULL);
 }
-
 
 /**
  * Build name list of verdaux entries
@@ -1200,7 +1192,6 @@ int     elfsh_load_deftable(hash_t *t, void *ps, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Get a pointer on the version string table
  * @param file file which host version string table
@@ -1241,7 +1232,6 @@ void        *elfsh_get_verstrtable(elfshobj_t *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
 
 /**
  * Get verneed file string
@@ -1451,7 +1441,6 @@ void      *elfsh_get_verneedtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
 /**
  * Preload verdef section and return data pointer
  * @param file target file
@@ -1572,4 +1561,3 @@ elfshsect_t         *elfsh_get_verdeftab_by_idx(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect));
 }
-

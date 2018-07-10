@@ -1,5 +1,5 @@
 /**
-* @file libedfmt/dwarf2-abbrev.c
+ * @file libedfmt/dwarf2-abbrev.c
 ** @ingroup libedfmt
 ** @brief Abbreviation table access for DWARF2 debug format.
 **
@@ -465,7 +465,6 @@ fvstart:
 
   NOPROFILER_ROUT(0);
 }
-
 
 /**
  * Follow .debug_info form using abbrev_table as structure reference

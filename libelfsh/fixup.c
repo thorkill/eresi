@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/fixup.c
+ * @file libelfsh/fixup.c
  * @ingroup libelfsh
 ** fixup.c for elfsh
 **
@@ -9,8 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * TERMINAL FUNCTION ! Fixup size for section symbols, if symtab doesnt exist, create it
@@ -163,9 +162,6 @@ elfshsect_t *elfsh_fixup_symtab(elfshobj_t *file, int *strindex)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (symtab));
 }
 
-
-
-
 /**
  * Recompute .dynsym symbols address which are zeroed by new versions of ld
  *
@@ -277,12 +273,8 @@ elfsh_Sym *elfsh_restore_dynsym(elfshobj_t *file, elfshsect_t *plt,
          plt->parent->name);
 #endif
 
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym);
 }
-
-
-
 
 /**
  * Fixup the dynamic symbol table (recompute all zeroed symbols)
@@ -330,8 +322,6 @@ int     elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
                                    dynsym->shdr->sh_size / sizeof(elfsh_Sym),
                                    plt->shdr->sh_addr + off, NULL, ELFSH_EXACTSYM);
 
-
-
       /* New versions of ld do not fill the vaddr of dynamic symbols, do it ourself */
       if (sym == NULL)
         {
@@ -354,4 +344,3 @@ int     elfsh_fixup_dynsymtab(elfshsect_t *dynsym)
   elfsh_set_mode(mode);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

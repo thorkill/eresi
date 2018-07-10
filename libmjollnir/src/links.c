@@ -1,5 +1,5 @@
 /**
-* @file libmjollnir/src/links.c
+ * @file libmjollnir/src/links.c
  * @ingroup libmjollnir
  *
  * @brief All the functions that deal with linking other objects, such
@@ -9,8 +9,6 @@
  */
 
 #include <libmjollnir.h>
-
-
 
 /**
  * @brief Link function layer
@@ -131,7 +129,6 @@ int                     mjr_link_func_call(mjrcontext_t *ctxt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Create a link between blocks on a call
  */
@@ -209,7 +206,6 @@ int                     mjr_link_block_call(mjrcontext_t *ctxt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
-
 /**
  * @brief This function does prepare linking of blocks on conditional jumps
  */
@@ -273,7 +269,6 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
   mjr_container_add_link(ctxt, cdst, csrc->id,
                          MJR_LINK_BLOCK_COND_TRUE, MJR_LINK_SCOPE_LOCAL, CONTAINER_LINK_IN);
 
-
 #if __DEBUG_LINKS__
   fprintf(D_DESC, "[D] %s: cret: "XFMT"\n",
           __FUNCTION__, ret);
@@ -290,11 +285,7 @@ int             mjr_link_block_jump(mjrcontext_t *ctxt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
-
-
 /* Those functions are static and should not be used by external API */
-
-
 
 /**
  * @brief Update link information when splitting a block
@@ -328,9 +319,6 @@ static int      mjr_block_relink(mjrcontext_t *ctx,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
-
-
-
 
 /**
  * @brief This function does split a block carried by given container

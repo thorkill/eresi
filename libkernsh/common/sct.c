@@ -1,5 +1,5 @@
-/*
-* @file libkernsh/common/sct.c
+/**
+ * @file libkernsh/common/sct.c
 ** @ingroup common
 **
 */
@@ -259,4 +259,3 @@ int kernsh_syscall_linux(int num, int argc, unsigned int argv[])
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, __ret);
 }
-

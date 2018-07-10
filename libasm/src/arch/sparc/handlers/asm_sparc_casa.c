@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/handlers/asm_sparc_casa.c
+ * @file libasm/src/arch/sparc/handlers/asm_sparc_casa.c
 ** @ingroup SPARC_instrs
 */
-/*
+/**
 **
 **
 */

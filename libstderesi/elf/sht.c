@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/sht.c
+ * @file libstderesi/elf/sht.c
 ** @ingroup elf
 */
 /**
@@ -34,7 +34,6 @@ char    *revm_fetch_sht_typedesc(elfsh_Word typenum)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * Display The Section header table (SHT)
@@ -161,8 +160,6 @@ int   revm_sht_print(elfsh_Shdr *shdr, u_int num, char rtflag)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Print section header table
  */
@@ -191,7 +188,6 @@ int   cmd_sht()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Print runtime section header table
  */
@@ -218,4 +214,3 @@ int   cmd_rsht()
   revm_sht_print(shdr, num, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

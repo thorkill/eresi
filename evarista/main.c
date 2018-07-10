@@ -1,5 +1,6 @@
+
 /**
-* @file evarista/main.c
+ * @file evarista/main.c
  * @ingroup evarista
  *
  * The entry point of the static analyzer
@@ -7,7 +8,6 @@
  * Started on  Fri Jun 22 14:42:36 2007 jfv
  */
 #include "evarista.h"
-
 
 /**
  * Prompt related functions for evarista
@@ -51,7 +51,6 @@ void    eva_setup_prompt()
   revm_set_prompt(eva_create_prompt);
 }
 
-
 /**
  * Print the etrace banner
  * @ingroup evarista
@@ -79,8 +78,6 @@ void    eva_banner_print()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /**
  * The real main function
  * @ingroup evarista
@@ -105,7 +102,6 @@ int   eva_main(int ac, char **av)
   return (0);
 }
 
-
 /**
  * The main ELFsh routine
  * @ingroup evarista
@@ -114,6 +110,3 @@ int   main(int ac, char **av)
 {
   return (eva_main(ac, av));
 }
-
-
-

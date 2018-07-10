@@ -1,4 +1,4 @@
-/*
+/**
 ** Author  : <sk at devhell dot org>
 ** Started : Mon Jun 10 01:49:20 2002
 ** Updated : Thu Dec  4 02:46:23 2003
@@ -6,7 +6,7 @@
 **
 */
 
-/*
+/**
  * this tool is designed to disassemble binary with the same output as
  * objdump (except symbols.)
  *
@@ -23,7 +23,6 @@
 #include <signal.h>
 #include <libelfsh.h>
 #include <libasm.h>
-
 
 int usage(char *p)
 {
@@ -70,7 +69,6 @@ int main(int ac, char **av)
       return (-1);
     }
 
-
   /* fetching 2nd argument <start> : symbol or vaddr */
 
   arch = elfsh_get_arch(obj->hdr);
@@ -114,7 +112,6 @@ int main(int ac, char **av)
         }
     }
 
-
   end = vaddr + len;
 
   /* select arch */
@@ -153,7 +150,6 @@ int main(int ac, char **av)
     {
       printf("Converted vaddr %08x to file offset : %i\n", vaddr, start);
     }
-
 
   curr = elfsh_readmemf(obj, start, ptr, len);
 
@@ -212,8 +208,3 @@ int main(int ac, char **av)
   elfsh_unload_obj(obj);
   return (0);
 }
-
-
-
-
-

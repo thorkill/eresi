@@ -1,5 +1,6 @@
+
 /**
-* @file libstderesi/elf/ctors.c
+ * @file libstderesi/elf/ctors.c
 ** @ingroup elf
 */
 /**
@@ -11,9 +12,6 @@
  *
 */
 #include "libstderesi.h"
-
-
-
 
 /**
  * Display the constructor section
@@ -78,7 +76,6 @@ int   cmd_ctors()
 
       revm_endline();
     }
-
 
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

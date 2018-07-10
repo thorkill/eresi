@@ -1,4 +1,4 @@
-/*
+/**
 ** tracer.c for testsuite in elfsh
 **
 ** Started on  Sat March 21 22:49:23 2007 mxatone

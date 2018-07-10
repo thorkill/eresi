@@ -1,12 +1,11 @@
 /**
-* @file librevm/lang/arith.c
+ * @file librevm/lang/arith.c
  * @ingroup lang
  * @brief Implementation of arithmetics for expressions
  *
  * Started on Nov 11 2008 23:39:51 jfv
  */
 #include "revm.h"
-
 
 /**
  * Get an expression by its name
@@ -96,7 +95,6 @@ static revmexpr_t *revm_deref(revmexpr_t *ref)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
 
-
 /**
  * Compute an intermediate numerical result
  * @ingroup lang
@@ -144,7 +142,6 @@ static revmexpr_t *revm_compute_intermediate(revmexpr_t **left, revmexpr_t *res,
   *op = REVM_OP_UNKNOW;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, final);
 }
-
 
 /**
  * Recursive eager evaluation of arithmetic expressions in ERESI
@@ -293,8 +290,6 @@ static revmexpr_t *revm_compute_rec(char **str)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, res);
 }
-
-
 
 /** Eager evaluation of arithmetic expressions in ERESI */
 revmexpr_t  *revm_compute(char *str)

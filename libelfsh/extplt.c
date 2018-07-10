@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/extplt.c
+ * @file libelfsh/extplt.c
  * @ingroup libelfsh
  * extplt.c for libelfsh
  *
@@ -187,7 +187,6 @@ int     elfsh_extplt_expand_hash(elfshobj_t *file, elfshsect_t *hash,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * When performing EXTPLT technique, we need to mirror some sections
  * if we want to be able to extend them : .rel(a).{got,dyn,plt}, .dynsym, .dynstr
@@ -273,7 +272,6 @@ int   elfsh_extplt_mirror_sections(elfshobj_t *file)
     }
 
   fprintf(stderr, "found relgotname = %s \n", relgotname);
-
 
   /* Copy a double sized .dynsym somewhere else */
   enew = elfsh_insert_section(file, ELFSH_SECTION_NAME_ALTDYNSYM, NULL,
@@ -440,7 +438,6 @@ int   elfsh_extplt_mirror_sections(elfshobj_t *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Insert a new function entry point for dynamic resolution
@@ -702,4 +699,3 @@ elfsh_Sym *elfsh_request_pltent(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 elfsh_readmem(dynsym) + dynsym->curend - sizeof(elfsh_Sym));
 }
-

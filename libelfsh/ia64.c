@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/ia64.c
+ * @file libelfsh/ia64.c
  * @ingroup libelfsh
 ** ia64.c for libelfsh
 **
@@ -11,7 +11,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Static hooking for IA64
@@ -30,7 +29,6 @@ int elfsh_cflow_ia64(elfshobj_t     *null,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", -1);
 }
-
 
 /**
  * PLT hijacking on IA64
@@ -99,5 +97,3 @@ int       elfsh_relocate_ia64(elfshsect_t       *new,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
-
-

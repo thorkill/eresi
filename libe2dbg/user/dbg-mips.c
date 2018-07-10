@@ -1,8 +1,9 @@
+
 /**
-* @file libe2dbg/user/dbg-mips.c
+ * @file libe2dbg/user/dbg-mips.c
 ** @ingroup user
 */
-/*
+/**
 ** dbg-mips.c for e2dbg in the ERESI framework
 **
 ** INCOMPLETE Debugger backend for the MIPS architecture
@@ -14,7 +15,6 @@
 ** Started   Sat Sep 24 07:17:33 2005 jfv
 */
 #include "libe2dbg.h"
-
 
 /* Printregs handlers for the IA32 architecture on NetBSD */
 void    e2dbg_print_regvars_mips_irix()

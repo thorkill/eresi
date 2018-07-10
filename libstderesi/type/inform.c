@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/type/inform.c
+/**
+ * @file libstderesi/type/inform.c
 ** @ingroup type
 ** @brief Commands for doing annotations on program objects
 **
@@ -7,9 +7,6 @@
 **
 */
 #include "libstderesi.h"
-
-
-
 
 /**
  * Inform a given type
@@ -55,9 +52,6 @@ int   cmd_inform()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Uninform a given type

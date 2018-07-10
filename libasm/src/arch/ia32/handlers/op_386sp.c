@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_386sp.c
+ * @file libasm/src/arch/ia32/handlers/op_386sp.c
  *
  * @ingroup IA32_instrs
  * ChangeLog:
@@ -12,7 +12,6 @@
  */
 #include <libasm.h>
 #include <libasm-int.h>
-
 
 /**
  * This is the handler for 2 bytes instruction, opcode 0x0f
@@ -53,4 +52,3 @@ int     op_386sp(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)
   ins->len += 1;
   return (fetch(ins, buf + 1, len - 1, proc));
 }
-

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/interp.c
+ * @file libstderesi/elf/interp.c
 ** @ingroup elf
 */
 /**
@@ -11,9 +11,6 @@
 **
 */
 #include "libstderesi.h"
-
-
-
 
 /**
  * @brief Display the interpretor (.interp) section

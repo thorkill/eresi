@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/hijack.c
+ * @file libelfsh/hijack.c
  * @ingroup libelfsh
 ** hijack.c in elfsh
 **
@@ -9,7 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Perform custom function hijack, return 0 on success -1 on error

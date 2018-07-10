@@ -1,5 +1,6 @@
-/*
-* @file kedbg/register.c
+
+/**
+ * @file kedbg/register.c
 ** @ingroup kedbg
 ** @brief Implement registration of vector handlers
 **
@@ -71,7 +72,6 @@ void     kedbg_register_command(void)
   /*   revm_command_add(CMD_THREADS  , (void *) cmd_threads  , revm_getvarparams, 1, HLP_THREADS); */
 
 }
-
 
 /**************** Vector registration ****************/
 void     kedbg_register_vector(void)

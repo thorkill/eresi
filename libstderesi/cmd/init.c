@@ -84,7 +84,6 @@ static void eresi_constants_init()
              (char *) elfsh_rel_type_mips[index].name,
              elfsh_rel_type_mips + index);
 
-
   for (index = 0; index < ELFSH_DYNAMIC_MAX; index++)
     hash_add(&const_hash,
              (char *) elfsh_dynentry_type[index].name,
@@ -150,7 +149,6 @@ static void eresi_constants_init()
              (char *) elfsh_arch_type[index].name,
              elfsh_arch_type + index);
 }
-
 
 /**
  * @brief Setup the command hash table
@@ -487,7 +485,6 @@ void    eresi_commands_init()
     revm_command_add(typeinfo[index].name, cmd_declare,
                      revm_getvarparams, 0, HLP_DECLARE);
 }
-
 
 /**
  * @brief Constructor for libstderesi

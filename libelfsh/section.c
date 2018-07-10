@@ -52,7 +52,6 @@ char  elfsh_shift_section(elfshsect_t *sct, elfshsect_t *tmp, u_char mode)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-
 /**
  * INTERNAL FUNCTION : Add a given section to the file's section list
  *
@@ -82,7 +81,6 @@ int   elfsh_add_section(elfshobj_t  *file,
   char    inserted;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
 
 #if __DEBUG_RUNTIME__
   printf("[DEBUG_RUNTIME] Adding section with range = %u, file->rhdr.rshtnbr = %u, shnum = %u (%s) \n",
@@ -210,9 +208,6 @@ int   elfsh_add_section(elfshobj_t  *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief Add a runtime section. This function is internal, do not use it directly.
@@ -343,8 +338,6 @@ elfshsect_t *elfsh_get_section_by_name(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect));
 }
-
-
 
 /**
  * Search section by type, with list parameter
@@ -798,7 +791,6 @@ int   elfsh_fill_section(elfshsect_t  *sect,
     }
 }
 
-
 /**
  * This function is quite context dependant and should be rewritten.
  * Symbol table shifting might be avoided in some obscure
@@ -906,7 +898,6 @@ int   elfsh_append_data_to_section(elfshsect_t  *sect,
             actual->shdr->sh_offset += len;
           }
       }
-
 
 end:
 
@@ -1092,7 +1083,6 @@ int     elfsh_remove_section(elfshobj_t *obj, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return the last section of the list
  * @param file
@@ -1131,8 +1121,7 @@ elfshsect_t   *elfsh_get_tail_rsection(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 }
 
-
-/*
+/**
 *******************************************************************************
 ** ELFsh section objet handlers (see elfsh.h: elfshpath_t, elfshL1_t, elfshL2_t)
 **
@@ -1189,7 +1178,6 @@ elfshsect_t   *elfsh_get_rsection_list(elfshobj_t *file, int *num)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->rsectlist));
 }
-
 
 /**
  * @brief Return the section giving its index

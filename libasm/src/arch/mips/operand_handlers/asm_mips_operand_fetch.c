@@ -3,10 +3,10 @@
  * @ingroup mips
  */
 /**
-* @file libasm/src/arch/mips/operand_handlers/asm_mips_operand_fetch.c
+ * @file libasm/src/arch/mips/operand_handlers/asm_mips_operand_fetch.c
 ** @ingroup MIPS_operands
 */
-/*
+/**
  * Started by Adam 'pi3' Zabrocki
  */
 

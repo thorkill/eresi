@@ -1,9 +1,9 @@
 /**
-* @file libe2dbg/user/e2dbg-misc.c
+ * @file libe2dbg/user/e2dbg-misc.c
 ** @ingroup user
 */
 /**
-* @file libe2dbg/user/e2dbg-misc.c
+ * @file libe2dbg/user/e2dbg-misc.c
  *
  * Misc routines for the debugger
  *
@@ -13,7 +13,6 @@
  *
  */
 #include "libe2dbg.h"
-
 
 /**
  * Get the identity of the current process or thread
@@ -32,7 +31,6 @@ int   e2dbg_self()
 
   return ((int) pthread_self());
 }
-
 
 /**
  * Send a signal
@@ -97,7 +95,6 @@ static void e2dbg_stack_get(e2dbgthread_t *cur)
 
 }
 
-
 /**
  * Only called when running a monothread program
  * @return
@@ -131,7 +128,6 @@ int   e2dbg_curthread_init(void)
                  (unsigned int) new->tid, new->stackaddr, new->stacksize);
   write(1, logbuf, ret);
 #endif
-
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }

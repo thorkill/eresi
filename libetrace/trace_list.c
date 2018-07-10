@@ -1,5 +1,5 @@
-/*
-* @file libetrace/trace_list.c
+/**
+ * @file libetrace/trace_list.c
 **
 ** Libetrace implementation in the ERESI project.
 **
@@ -7,7 +7,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Detail listing of a trace
@@ -161,4 +160,3 @@ int   traces_list(elfshobj_t *file, char *name, char **optarg)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

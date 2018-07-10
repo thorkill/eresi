@@ -1,12 +1,12 @@
+
 /**
-* @file libe2dbg/common/backtrace.c
+ * @file libe2dbg/common/backtrace.c
 ** @brief Implement the backtrace functionality.
 ** @ingroup common
 **
 ** Started on  Tue Aug 16 09:38:03 2005 jfv
 */
 #include "libe2dbg.h"
-
 
 /* Display backtrace with sym resolution */
 int   e2dbg_bt()
@@ -132,9 +132,6 @@ int   e2dbg_bt()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /* Backtrace command */
 int   cmd_bt()
 {
@@ -154,4 +151,3 @@ int   cmd_bt()
   ret = e2dbg_bt();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-

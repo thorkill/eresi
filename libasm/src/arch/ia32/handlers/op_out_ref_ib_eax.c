@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_out_ref_ib_eax.c
+ * @file libasm/src/arch/ia32/handlers/op_out_ref_ib_eax.c
  *
  * @ingroup IA32_instrs
  *
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_out_ref_ib_eax" opcode="0xe7"/>
 */
 

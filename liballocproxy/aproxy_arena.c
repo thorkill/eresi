@@ -18,7 +18,6 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32*1024)
@@ -117,7 +116,6 @@ int __aproxy_initialized = -1;
         } else { \
           ptr = arena_get2(ptr, (size)); } \
     } while(0)
-
 
 /* find the heap and corresponding arena for a given ptr */
 #define heap_for_ptr(ptr) \
@@ -409,7 +407,6 @@ aproxy_ptmalloc_init_minimal (void)
   mp_.trim_threshold = DEFAULT_TRIM_THRESHOLD;
   mp_.pagesize       = malloc_getpagesize;
 }
-
 
 #ifdef _LIBC
 # ifdef SHARED
@@ -1112,7 +1109,7 @@ aproxy_int_new_arena(size_t size)
 
 #endif /* USE_ARENAS */
 
-/*
+/**
  * Local variables:
  * c-basic-offset: 2
  * End:

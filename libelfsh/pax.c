@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/pax.c
+ * @file libelfsh/pax.c
  * @ingroup libelfsh
 ** pax.c for elfsh
 **
@@ -9,7 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Change the ELF header flags field
@@ -32,7 +32,6 @@ int   elfsh_set_paxflags(elfsh_Ehdr *hdr, eresi_Addr flags)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return the ELF header flags field
  * @param hdr
@@ -51,7 +50,6 @@ elfsh_Word  elfsh_get_paxflags(elfsh_Ehdr *hdr)
   pax_flags   = (u_short *) ((char *) hdr->e_ident + EI_PAX);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*pax_flags));
 }
-
 
 /**
  * Change the section header table file offset
@@ -103,8 +101,6 @@ char    elfsh_get_pax_pageexec(elfsh_Ehdr *hdr)
                 ((*pax_flags & ELFSH_PAX_PAGEEXEC) &&
                  !(*pax_flags & ELFSH_PAX_SEGMEXEC)));
 }
-
-
 
 /**
  * Change the section header table file offset
@@ -206,7 +202,6 @@ char    elfsh_get_pax_mprotect(elfsh_Ehdr *hdr)
                 (!(*pax_flags & ELFSH_PAX_MPROTECT)));
 }
 
-
 /**
  * Change the section header table file offset
  * @param hdr
@@ -257,7 +252,6 @@ char    elfsh_get_pax_randmmap(elfsh_Ehdr *hdr)
                 (!(*pax_flags & ELFSH_PAX_RANDMMAP)));
 }
 
-
 /**
  * Change the section header table file offset
  * @param hdr
@@ -307,7 +301,6 @@ char    elfsh_get_pax_randexec(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 ((*pax_flags & ELFSH_PAX_RANDEXEC)));
 }
-
 
 /**
  * Change the section header table file offset

@@ -1,12 +1,11 @@
 /**
-* @file librevm/vm/fini.c
+ * @file librevm/vm/fini.c
  * @ingroup vm
  * @brief Routines executed when leaving script mode.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
  */
 #include "revm.h"
-
 
 /** Clean scripting context */
 void    revm_clean()
@@ -23,7 +22,6 @@ void    revm_cleanup()
   revm_conditional_rlquit();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /* Mostly for some post-execution code inside etrace */
 void    revm_postexec(int retval)

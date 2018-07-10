@@ -8,7 +8,6 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-
 /**
  * @brief Wrapper to internal resolving handler for immediate values.
  * @param proc Pointer to processor structure
@@ -24,7 +23,6 @@ void  asm_resolve_immediate(asm_processor *proc, eresi_Addr val,
   LIBASM_PROFILE_VOUT();
 }
 
-
 /**
  * @brief Wrapper to internal Ascii output handler.
  * @param instr Pointer to instruction structure
@@ -39,7 +37,6 @@ char  *asm_display_instr_att(asm_instr *instr, eresi_Addr addr)
   to_ret = instr->proc->display_handle(instr, addr);
   LIBASM_PROFILE_ROUT(to_ret);
 }
-
 
 /**
  * @brief Debug dump to stderr of an operand
@@ -193,4 +190,3 @@ char  *asm_operand_type_string(int type)
       return ("none");
     }
 }
-

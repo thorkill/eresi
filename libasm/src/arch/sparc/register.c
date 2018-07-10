@@ -1,9 +1,9 @@
 /**
-* @file libasm/src/arch/sparc/register.c
+ * @file libasm/src/arch/sparc/register.c
 ** @ingroup sparc
 */
 /**
-* @file libasm/src/arch/sparc/register.c
+ * @file libasm/src/arch/sparc/register.c
  * @brief
  *
  */

@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/mips/operand_handlers/asm_mips_operand_j.c
+ * @file libasm/src/arch/mips/operand_handlers/asm_mips_operand_j.c
 ** @ingroup MIPS_operands
 */
-/*
+/**
  * - Adam 'pi3' Zabrocki
  *
  */

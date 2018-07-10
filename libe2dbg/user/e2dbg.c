@@ -1,9 +1,9 @@
 /**
-* @file libe2dbg/user/e2dbg.c
+ * @file libe2dbg/user/e2dbg.c
 ** @ingroup user
 */
 /**
-* @file libe2dbg/user/e2dbg.c
+ * @file libe2dbg/user/e2dbg.c
  *
  * Starting routines for the debugger
  *
@@ -13,7 +13,6 @@
  *
  */
 #include "libe2dbg.h"
-
 
 /* The debugger world */
 /* e2dbgworld_t e2dbgworld; */
@@ -60,7 +59,6 @@ void            e2dbg_register_command(void)
   revm_command_add(CMD_ITRACE, (void *) cmd_itrace, revm_getvarparams, 1,
                    HLP_ITRACE);
 }
-
 
 /**
  * Configure and launch the VM from the debugger.
@@ -163,8 +161,6 @@ int   e2dbg_entry(e2dbgparams_t *params)
   return (ret ? 0 : -1);
 }
 
-
-
 /**
  * Load all process files in the debugger
  * @param name
@@ -189,4 +185,3 @@ int     e2dbg_setup(char *name)
   revm_doswitch(1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

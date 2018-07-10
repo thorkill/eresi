@@ -1,5 +1,5 @@
-/*
-* @file kernsh/close.c
+/**
+ * @file kernsh/close.c
 ** @ingroup kernsh
 **
 */

@@ -1,13 +1,11 @@
-/*
-* @file libstderesi/cmd/define.c
+/**
+ * @file libstderesi/cmd/define.c
 ** @ingroup cmd
 ** @brief Allow constant values to be defined on names.
 **
 ** Start on Fri Aug 3 03:55:45 2007 jfv
 */
 #include "libstderesi.h"
-
-
 
 /* Define a new value as constant */
 int     cmd_define()
@@ -60,8 +58,6 @@ int     cmd_define()
   hash_add(&const_hash, world.curjob->curcmd->param[0], cons);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Undefine a constant value */
 int     cmd_undef()

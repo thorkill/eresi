@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/arm/decode_arm.c
+ * @file libasm/src/arch/arm/decode_arm.c
 ** @ingroup arm
 */
 #include "libasm.h"
@@ -182,7 +182,6 @@ void  arm_decode_ldst_misc_offop(asm_instr *ins, u_char *buf, u_int op_nr,
 
   asm_arm_op_fetch(op, buf, ASM_ARM_OTYPE_REG_OFFSET, ins);
 }
-
 
 // XXX: this can become the handler for smlal, smull, umlal and umull */
 void  arm_decode_multiply_long(asm_instr *ins, u_char *buf,

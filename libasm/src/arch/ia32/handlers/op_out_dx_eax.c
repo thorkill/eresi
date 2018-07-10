@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_out_dx_eax.c
+ * @file libasm/src/arch/ia32/handlers/op_out_dx_eax.c
  *
  * @ingroup IA32_instrs
  *
@@ -8,7 +8,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_out_dx_eax" opcode="0xef"/>
  */
 
@@ -19,7 +19,6 @@ int     op_out_dx_eax(asm_instr *new, u_char *opcode, u_int len,
   new->ptr_instr = opcode;
   new->instr = ASM_OUT;
   new->type = ASM_TYPE_IO | ASM_TYPE_STORE;
-
 
   new->len += asm_operand_fetch(&new->op[0], opcode, ASM_CONTENT_FIXED, new);
   new->op[0].type = ASM_OPTYPE_MEM;

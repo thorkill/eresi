@@ -1,5 +1,5 @@
 /**
-* @file libetrace/search_addr.c
+ * @file libetrace/search_addr.c
 ** @ingroup libetrace
 **
 ** @brief add function to a trace table
@@ -10,7 +10,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Setup asm_processor structure correctly

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/output_ia32.c
+ * @file libasm/src/arch/ia32/output_ia32.c
  * @ingroup ia32
 **
 ** Author  : <sk at devhell dot org>
@@ -35,7 +35,6 @@ void  output_instr(asm_instr *instr)
 {
   printf("%10s\n", instr->proc->instr_table[instr->instr]);
 }
-
 
 /**
  * Return register ascii string
@@ -88,7 +87,6 @@ char *get_reg_intel(int r, int regset)
 
   return ("\?\?\?");
 }
-
 
 /**
  * Dump an operand output in att syntax to a buffer.
@@ -322,9 +320,6 @@ int asm_operand_get_att(asm_instr *ins, int num, int opt, void *valptr)
   return (1);
 }
 
-
-
-
 /**
  * @brief Return at&t ascii representation of an instruction
  * @param instr Pointer to an instruction structure.
@@ -455,4 +450,3 @@ char  *asm_ia32_display_instr_att(asm_instr *instr,
 
   return (buffer);
 }
-

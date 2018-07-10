@@ -1,15 +1,14 @@
-/*
-* @file librevm/api/screen.c
+/**
+ * @file librevm/api/screen.c
 ** @ingroup api
 */
-/*
+/**
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:22:11 2007 jfv
 **
 **
 */
 #include "revm.h"
-
 
 /**
  * Clear the content of the current screen
@@ -26,7 +25,6 @@ int   revm_screen_clear(int i, char c)
   revm_ctrl_set(i, c);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Update the screen depending of the actual job
@@ -61,7 +59,6 @@ int   revm_screen_update(u_short isnew, u_short prompt_display)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Switch screen with switching workspace
  *
@@ -77,7 +74,6 @@ int   revm_screen_switch()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, revm_screen_update(0, 1));
 }
-
 
 /**
  * Switch to the next workspace

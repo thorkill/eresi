@@ -1,5 +1,5 @@
 /**
-* @file libedfmt/edfmt-utils.c
+ * @file libedfmt/edfmt-utils.c
 ** @ingroup libedfmt
 **
 ** Started Jan 13 2007 18:09:02 mxatone
@@ -48,11 +48,6 @@ char      *edfmt_cline(char *buf, u_int size, u_int line, char *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
-
-
-
-
-
 
 /**
  * Create a string from an addr (used in hash table)
@@ -117,8 +112,6 @@ eresi_Addr    edfmt_lookup_addr(elfshobj_t *file, char *param)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to lookup address object", (eresi_Addr) 0);
 }
-
-
 
 /**
  * Create an allocation pool used to store different data and optimize performance

@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/hooks.c
+ * @file libelfsh/hooks.c
  * @ingroup libelfsh
 ** hooks.c for libelfsh (The ELF shell library)
 **
@@ -13,8 +13,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * Initialize hook hash table
@@ -109,7 +107,6 @@ int   elfsh_init_vectors()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Initialize all vectors of libelfsh
@@ -307,7 +304,6 @@ void    elfsh_setup_hooks()
   /***********************************/
   /* Now register Relocation hooks */
   /***********************************/
-
 
   /* Usual REL targets for ET_EXEC/i386 */
   elfsh_register_relhook(ELFSH_ARCH_IA32, ELFSH_FILE_EXEC,
@@ -557,7 +553,6 @@ void    elfsh_setup_hooks()
   elfsh_register_encodeplt1hook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,
                                 ELFSH_OS_BEOS, elfsh_encodeplt1_ia32);
 
-
   /*** Now EXTPLT handlers ***/
 
   /* Usual EXTPLT targets for ET_EXEC/IA32 */
@@ -583,7 +578,6 @@ void    elfsh_setup_hooks()
                             ELFSH_OS_SOLARIS, elfsh_extplt_ia32);
   elfsh_register_extplthook(ELFSH_ARCH_IA32, ELFSH_FILE_LIB,
                             ELFSH_OS_BEOS, elfsh_extplt_ia32);
-
 
   /***************************************/
   /****** ARGC arguments counting  ******/

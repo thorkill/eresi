@@ -1,4 +1,5 @@
-/*
+
+/**
 ** section_injection.c
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
@@ -15,7 +16,6 @@
 #define    TROJANED_FILE "./hijackme64"
 #define    OUTPUT_FILE "./fake_aout64"
 #endif
-
 
 /* test for non-mapped data */
 char  *str = "stop looking at me ! \n";
@@ -70,10 +70,3 @@ int   main(int argc, char **argv)
   printf("Relinking *%s* \n", (ret  < 0 ? "Error" : "OK"));
   return (ret);
 }
-
-
-
-
-
-
-

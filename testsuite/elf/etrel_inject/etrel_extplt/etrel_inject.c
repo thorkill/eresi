@@ -1,10 +1,9 @@
-/*
+/**
 ** etrel_inject.c for elf testsuite in ERESI
 **
 ** Started on  Sat May 10 07:01:59 2003 jfv
 */
 #include  "libelfsh.h"
-
 
 #if ERESI32
 #define         TROJANED_FILE   "hijackme32"
@@ -76,7 +75,6 @@ int   main(int argc, char **argv)
     {
       goto err;
     }
-
 
   /* Save it */
   idx = elfsh_save_obj(host, OUTPUT_FILE);

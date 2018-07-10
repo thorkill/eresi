@@ -1,12 +1,10 @@
-/*
+/**
 **
 **
 */
 #include <stdio.h>
 
-
 void  my_dtors() __attribute__ ((destructor));
-
 
 void  new_dtors()
 {
@@ -17,7 +15,6 @@ void  my_dtors()
 {
   printf("My dtors ! \n");
 }
-
 
 int main()
 {

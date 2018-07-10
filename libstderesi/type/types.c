@@ -1,14 +1,12 @@
 /**
-* @file libstderesi/type/types.c
-* @ingroup type
-* Be able to add your own types in runtime
+ * @file libstderesi/type/types.c
+ * @ingroup type
+ * Be able to add your own types in runtime
 *
-* Started on  Sun Jan 9 07:23:58 2007 jfv
+ * Started on  Sun Jan 9 07:23:58 2007 jfv
 **
 */
 #include "libstderesi.h"
-
-
 
 /**
  * Types management command
@@ -84,7 +82,6 @@ int   cmd_type()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Typedef command function

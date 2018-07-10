@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
  * Opcode :             0x00
  * ADD
  * Destination is an encoded byte.

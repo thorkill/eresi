@@ -1,5 +1,6 @@
-/*
-* @file librevm/api/implicit.c
+
+/**
+ * @file librevm/api/implicit.c
 ** @brief Load the working files.
 ** @ingroup api
 ** Started on  Tue Feb 18 06:45:35 2003 jfv
@@ -7,8 +8,6 @@
 **
 */
 #include "revm.h"
-
-
 
 /* Load the working files */
 void        revm_workfiles_load()
@@ -48,9 +47,6 @@ void        revm_workfiles_load()
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
-
 
 /* Unload (and save if asked) files */
 int       revm_workfiles_unload()
@@ -95,9 +91,6 @@ int       revm_workfiles_unload()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /* Do all implicit operation when calling elfsh from a script */
 int   revm_implicit(revmcmd_t *actual)
@@ -145,19 +138,3 @@ int   revm_implicit(revmcmd_t *actual)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

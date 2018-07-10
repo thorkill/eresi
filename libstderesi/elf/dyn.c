@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/dyn.c
+ * @file libstderesi/elf/dyn.c
 ** @ingroup elf
 */
 /**
@@ -11,7 +11,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * Handlers for value for special tags
@@ -145,8 +144,6 @@ void      revm_do_mipsflags(elfshobj_t *file, elfsh_Dyn *entry, char *info)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
 
 /**
  * Provide human readable output for .dynamic entries.
@@ -348,7 +345,6 @@ void    revm_dynentinfo(elfshobj_t  *file,
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * GNU and SUN extensions for the dynamic section.
  * @param type
@@ -372,7 +368,6 @@ char    *revm_getdyntype(u_int type)
   return ("[?]");
 }
 
-
 /**
  * GNU and Sun extensions for the dynamic section.
  * @param type
@@ -395,9 +390,6 @@ char    *revm_getdyntype_short(u_int type)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, "[?]");
 }
-
-
-
 
 /**
  * Display the .dynamic section entries
@@ -493,10 +485,3 @@ int   cmd_dyn()
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
-

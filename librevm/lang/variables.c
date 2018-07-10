@@ -3,15 +3,13 @@
  * @ingroup librevm
  */
 /**
-* @file librevm/lang/variables.c
+ * @file librevm/lang/variables.c
  * @ingroup lang
  * @brief Contain functions for easy variables accesses.
  *
  * Started September 16 2005 04:01:03 jfv
  */
 #include "revm.h"
-
-
 
 /**
  * Set a variable to a string value
@@ -53,7 +51,6 @@ int   revm_setvar_str(char *varname, char *value)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
 /**
  * Set a variable to a string value
  */
@@ -90,8 +87,6 @@ int             revm_setvar_raw(char *varname, char *value, u_int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
-
 /**
  * Set a variable to a string value
  */
@@ -123,7 +118,6 @@ int   revm_setvar_byte(char *varname, u_char byte)
   expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
 
 /**
  * Set a variable to a string value
@@ -157,7 +151,6 @@ int   revm_setvar_short(char *varname, u_short val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
 /**
  * Set a variable to a string value
  */
@@ -189,7 +182,6 @@ int   revm_setvar_int(char *varname, u_int val)
   expr->type = var->otype;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
 
 /**
  * Set a variable to a string value
@@ -223,8 +215,6 @@ int             revm_setvar_long(char *varname, u_long val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
-
 /* Allocate a new temporary variable name */
 char    *revm_tmpvar_create()
 {
@@ -240,7 +230,6 @@ char    *revm_tmpvar_create()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, name);
 }
-
 
 /* Return 1 if variable is temporary, 0 if not */
 int   revm_variable_istemp(revmexpr_t *e)

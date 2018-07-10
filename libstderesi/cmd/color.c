@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/cmd/color.c
+ * @file libstderesi/cmd/color.c
 ** @ingroup cmd
 ** @brief All functions about colors
 **

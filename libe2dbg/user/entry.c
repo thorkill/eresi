@@ -1,18 +1,16 @@
+
 /**
  * @defgroup user Userland debugging API.
  * @ingroup libe2dbg
  */
 /**
-* @file libe2dbg/user/entry.c
+ * @file libe2dbg/user/entry.c
  * @brief The debugger file for OS dependant entry points
  * @ingroup user
  *
  * Started on  Tue Jul 11 20:37:33 2003 jfv
  */
 #include "libe2dbg.h"
-
-
-
 
 /**
  * Our fake main function
@@ -115,11 +113,7 @@ int     e2dbg_fake_main(int argc, char **argv, char **aux)
   return (ret);
 }
 
-
-
-
 #if defined(linux)
-
 
 /**
  * Entry point for Linux
@@ -192,7 +186,6 @@ int __libc_start_main(int (*main) (int, char **, char **aux),
 
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(sun)
 
-
 /**
  * Find the number of arguments by inspecting the environment on the stack
  * @param args
@@ -243,8 +236,6 @@ again:
   args[index] = NULL;
   return (argc);
 }
-
-
 
 /**
  * Entry point on FreeBSD
@@ -329,7 +320,7 @@ int       atexit(void (*fini)(void))
  * @param ubp_av
  * @return
  */
-/*
+/**
   void      __fpstart(int argc, char **ubp_av)
   {
   eresi_Addr    orig;
@@ -374,7 +365,6 @@ int       atexit(void (*fini)(void))
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
   }
 */
-
 
 #else
 #warning "E2DBG Not yet implemented on this OS/Arch"

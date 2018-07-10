@@ -1,16 +1,16 @@
+
 /**
-* @file libe2dbg/user/linkmap.c
+ * @file libe2dbg/user/linkmap.c
 ** @ingroup user
 */
 /**
-* @file libe2dbg/user/linkmap.c
+ * @file libe2dbg/user/linkmap.c
  *
  * Started on  Tue Aug 16 09:38:03 2005 jfv
  *
  *
  */
 #include "libe2dbg.h"
-
 
 /**
  * Load linkmap
@@ -121,7 +121,6 @@ int     e2dbg_linkmap_load(char *name)
   fprintf(stderr, "[e2dbg_linkmap_load] BASE = %08x\n",
           world.curjob->curfile->rhdr.base);
 #endif
-
 
   /* Fix first file linkmap entry */
   if (world.curjob->curfile->linkmap == E2DBG_DYNAMIC_LINKMAP)
@@ -237,7 +236,3 @@ int     e2dbg_linkmap_load(char *name)
   done = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-

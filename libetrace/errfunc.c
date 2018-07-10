@@ -1,5 +1,5 @@
 /**
-* @file libetrace/errfunc.c
+ * @file libetrace/errfunc.c
 ** @ingroup libetrace
 **
 ** @brief This file contain one function for error collection.
@@ -20,14 +20,12 @@ char      *etrace_geterrfunc()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, last_parsed_function);
 }
 
-
 /* Start tracing after everything has been injected */
 char    *etrace_start_tracing(elfshobj_t *file)
 {
   char    *buggyfunc;
 
   profiler_error_reset();
-
 
   if (traces_run(file, NULL, 0) < 0)
     {

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_xor_eax_iv.c
+ * @file libasm/src/arch/ia32/handlers/op_xor_eax_iv.c
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xor eax,iv opcode 0x35
@@ -16,7 +16,6 @@
  * @param proc Pointer to processor structure.
  * @return Length of instruction.
  */
-
 
 int op_xor_eax_iv(asm_instr *new, u_char *opcode, u_int len,
                   asm_processor *proc)
@@ -41,4 +40,3 @@ int op_xor_eax_iv(asm_instr *new, u_char *opcode, u_int len,
 
   return (new->len);
 }
-

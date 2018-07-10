@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/convert.c
+ * @file librevm/lang/convert.c
 ** @ingroup lang
 ** @brief The implementation of the Lazy Abstract Type System (LATS).
 **
@@ -23,7 +23,6 @@
 **
 */
 #include "revm.h"
-
 
 /**
  * Convert to string object
@@ -179,7 +178,6 @@ int   revm_convert2int(revmobj_t *obj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Convert to a long object
  */
@@ -255,7 +253,6 @@ int   revm_convert2addr(revmobj_t *obj, u_int type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Small handlers for same sized types
  */
@@ -273,9 +270,6 @@ int   revm_convert2long(revmobj_t *obj)
 {
   return (revm_convert2addr(obj, ASPECT_TYPE_LONG));
 }
-
-
-
 
 /**
  * Convert to a raw data object
@@ -509,4 +503,3 @@ int   revm_convert2short(revmobj_t *obj)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

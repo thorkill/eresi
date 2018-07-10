@@ -1,4 +1,4 @@
-/*
+/**
 ** hash_read.c for testsuite in ERESI
 **
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
@@ -33,4 +33,3 @@ int   main(int argc, char **argv)
 
   return (0);
 }
-

@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/relinject.c
+ * @file libelfsh/relinject.c
  * @ingroup libelfsh
 ** relinject.c for libelfsh
 **
@@ -15,8 +16,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * Perform relocation on entry (Now use ELFsh 0.6 hooks model)
@@ -44,7 +43,6 @@ static int      elfsh_relocate_entry(elfshsect_t        *enew,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * Find the host symbol we rely on for performing the relocation
@@ -88,7 +86,6 @@ static int  elfsh_find_relocsym(elfshsect_t *enew, elfshsect_t *reltab,
           PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
         }
     }
-
 
   /* We have a different behavior depending on the symbol type */
   switch (symtype)
@@ -173,7 +170,6 @@ static int  elfsh_find_relocsym(elfshsect_t *enew, elfshsect_t *reltab,
       printf("STT_BLOCK\n");
     }
 
-
 #if __DEBUG_STATIC__
   printf("[DEBUG_STATIC] Not found after OLD check : sym = %s \n", name);
 #endif
@@ -181,9 +177,6 @@ static int  elfsh_find_relocsym(elfshsect_t *enew, elfshsect_t *reltab,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Cant find requested symbol in ET_EXEC\n", -1);
 }
-
-
-
 
 /**
  * Relocate the just injected section
@@ -317,7 +310,6 @@ retry:
 
         }
 
-
       /* Compute addr giving the injected section's vaddr in ET_EXEC */
       else
         {
@@ -372,7 +364,6 @@ retry:
                   sect->name, (eresi_Addr) addr);
 #endif
 
-
         }
 
       /* Perform relocation */
@@ -384,9 +375,6 @@ retry:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Relocate the object
@@ -449,9 +437,6 @@ int   elfsh_relocate_object(elfshobj_t *file, elfshobj_t *rel, u_char stage)
   /* This can happen on very simple .o files */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Inject a section from ET_REL object into ET_EXEC
@@ -676,7 +661,6 @@ int   elfsh_inject_etrel(elfshobj_t *file, elfshobj_t *rel)
          file->name,
          depth++);
 #endif
-
 
   /* Set pending injection flag */
   rel->pending = 1;

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/hdr.c
+ * @file libstderesi/elf/hdr.c
 ** @ingroup elf
 */
 /**
@@ -11,8 +11,6 @@
  *
  */
 #include "libstderesi.h"
-
-
 
 /**
  * Change ELFCLASS and ELFMAGIC if necessary
@@ -89,7 +87,6 @@ static char *revm_printostype(elfshobj_t *file)
     }
 }
 
-
 /**
  * Display the elf header
  */
@@ -151,7 +148,6 @@ int   cmd_elf()
           snprintf(buf, sizeof(buf), "%s", name);
         }
     }
-
 
   /* Retreive names from the ELF header */
   archnum = elfsh_get_arch(header);

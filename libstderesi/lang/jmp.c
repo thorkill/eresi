@@ -1,5 +1,6 @@
-/*
-* @file libstderesi/lang/jmp.c
+
+/**
+ * @file libstderesi/lang/jmp.c
 ** @ingroup lang
 ** Made by jfv
 ** Login   <jfv@devhell.org>
@@ -10,7 +11,6 @@
 **
 */
 #include "libstderesi.h"
-
 
 /**
  * Handler for the jmp instruction
@@ -137,7 +137,6 @@ int   cmd_jl()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Handler for the jge instruction

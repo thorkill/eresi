@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_js" opcode="0x88"/>
 */
-
 
 int i386_js(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

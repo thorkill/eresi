@@ -1,5 +1,6 @@
+
 /**
-* @file libetrace/func_exclude.c
+ * @file libetrace/func_exclude.c
 ** @ingroup libetrace
 **
 ** @brief trace table exclude functions
@@ -10,7 +11,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Exclude functions by regex during the last stage
@@ -74,7 +74,6 @@ int     etrace_funcrmexclude(char *regstr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Exclude functions by regexec during the last stage

@@ -3,17 +3,17 @@
  * @ingroup arm
  */
 /**
-* @file libasm/src/arch/arm/operand_handlers/asm_arm_op_name.c
+ * @file libasm/src/arch/arm/operand_handlers/asm_arm_op_name.c
 ** @ingroup ARM_operands
 */
 #include <libasm.h>
 
-/*
+/**
 #define ASM_POOL_SIZE 100
 #define ASM_OP_NAME_LEN 64
 */
 /* FIFO sort-of memory manager */
-/*
+/**
 char    *asm_name_pool_alloc()
 {
   static char *asm_name_pool[ASM_POOL_SIZE] = {};

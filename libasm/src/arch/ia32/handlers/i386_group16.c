@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/i386_group16.c
+ * @file libasm/src/arch/ia32/handlers/i386_group16.c
  *
  * @ingroup IA32_instrs
  *
@@ -30,7 +30,6 @@ int i386_group16(asm_instr *new, u_char *opcode, u_int len,
 
   new->len += 1;
   new->instr = ASM_BAD;
-
 
   modrm = (struct s_modrm *) opcode + 1;
 

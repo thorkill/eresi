@@ -1,5 +1,5 @@
 
-/*
+/**
  * (C) 2006 Asgard Labs, thorolf
  *
  */
@@ -43,4 +43,3 @@ int main(void)
   srunner_free(sr);
   return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-

@@ -1,7 +1,8 @@
+
 /**
  * 2001-2008 Devhell Labs, Rfdslabs, Asgardlabs
  *
-* @file libmjollnir/src/container.c
+ * @file libmjollnir/src/container.c
  * @ingroup libmjollnir
  * @brief An API for generic containers data structures
  *
@@ -123,7 +124,6 @@ container_t *mjr_lookup_container(mjrcontext_t *ctx, unsigned int id)
   return ctx->reg_containers[id];
 }
 
-
 /**
  * Add a generic link (input or output) to a container
  */
@@ -210,8 +210,6 @@ mjrlink_t *mjr_container_add_link(mjrcontext_t  *ctx,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, link);
 }
 
-
-
 /**
  * Return a link giving its type
  */
@@ -238,7 +236,6 @@ mjrlink_t *mjr_get_link_by_type(list_t *listlink, int link_type)
   return (NULL);
 }
 
-
 /**
  *
  */
@@ -251,9 +248,6 @@ int   match_block(void *elem, void *match)
 
   return (blk_match->vaddr - blk_elem->vaddr);
 }
-
-
-
 
 /**
  * @brief Creates a block container
@@ -305,7 +299,6 @@ container_t *mjr_create_block_container(mjrcontext_t  *ctx,
   btree_insert_sort(&ctx->block_btree, match_block, newcntnr);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
-
 
 /**
  * Creates function container
@@ -367,7 +360,6 @@ container_t *mjr_create_function_container(mjrcontext_t *ctx,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newcntnr);
 }
 
-
 /**
  * @brief This function should be used only for debug
  * It is O(n) since this api doesn't know about hashes in the mjr context
@@ -389,7 +381,6 @@ container_t *mjr_get_container_by_vaddr(mjrcontext_t *ctx, eresi_Addr vaddr,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
-
 
 /* Debug output help function for containers */
 void    mjr_container_dump(mjrcontext_t *ctx, int what)
@@ -417,7 +408,6 @@ void    mjr_container_dump(mjrcontext_t *ctx, int what)
     }
 }
 
-
 /**
  * @brief Get the list of links for the desired direction (input or output)
  */
@@ -439,11 +429,3 @@ list_t    *mjr_link_get_by_direction(container_t *c, int dir)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
-
-
-
-
-

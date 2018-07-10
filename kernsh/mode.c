@@ -1,5 +1,5 @@
-/*
-* @file kernsh/mode.c
+/**
+ * @file kernsh/mode.c
 ** @ingroup kernsh
 **
 */

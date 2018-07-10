@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/hash.c
+ * @file libstderesi/elf/hash.c
 ** @ingroup elf
 */
 /**

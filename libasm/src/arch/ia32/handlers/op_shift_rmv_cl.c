@@ -1,12 +1,12 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_shift_rmv_cl.c
+ * @file libasm/src/arch/ia32/handlers/op_shift_rmv_cl.c
  *
  * @ingroup IA32_instrs
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_shift_rmv_cl" opcode="0xd3"/>
 */
 

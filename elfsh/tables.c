@@ -1,15 +1,15 @@
+
 /**
  * @defgroup elfsh elfsh: The ELF shell.
  */
 /**
-* @file elfsh/tables.c
+ * @file elfsh/tables.c
  * @ingroup elfsh
  * @brief This file contains all command and objects definitions for scripting
  *
  * Started on  Sat Jan 25 07:48:41 2003 jfv
  */
 #include "elfsh.h"
-
 
 /**
  * Setup the command hash table

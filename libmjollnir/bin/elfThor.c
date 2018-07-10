@@ -1,4 +1,5 @@
-/*
+
+/**
  * (C) 2006-2007 Asgard Labs, thorolf
  * BSD License
  *
@@ -15,7 +16,6 @@ void    usage()
          "\t -r \t - rename symbol   \n"
          "\t -o \t - output file     \n");
 }
-
 
 int   main(int ac, char **av)
 {

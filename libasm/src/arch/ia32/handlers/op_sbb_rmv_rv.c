@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_sbb_rmv_rv.c
+ * @file libasm/src/arch/ia32/handlers/op_sbb_rmv_rv.c
  *
  * @ingroup IA32_instrs
 **
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_sbb_rmv_rv" opcode="0x19"/>
 */
 

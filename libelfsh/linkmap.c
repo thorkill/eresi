@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/linkmap.c
+ * @file libelfsh/linkmap.c
  * @ingroup libelfsh
 ** linkmap.c for libelfsh
 **
@@ -189,7 +189,6 @@ void    elfsh_linkmap_set_lprev(elfshlinkmap_t *lm,
       PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
     }
 
-
   lm->lprev = lprev;
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
@@ -218,7 +217,6 @@ elfshlinkmap_t  *elfsh_linkmap_by_name(elfshlinkmap_t *lm, char *name)
         PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, actual);
       }
 
-
   for (actual = lm; actual != NULL; actual = elfsh_linkmap_get_lnext(actual))
     if (!strcmp(name, elfsh_linkmap_get_lname(actual)))
       {
@@ -228,17 +226,3 @@ elfshlinkmap_t  *elfsh_linkmap_by_name(elfshlinkmap_t *lm, char *name)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Linkmap entry not found", (NULL));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

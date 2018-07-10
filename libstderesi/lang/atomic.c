@@ -1,13 +1,11 @@
 /**
-* @file libstderesi/lang/atomic.c
- ** @ingroup lang
- ** @brief Implement arithmetic operations
- **
- ** Started on  Sun Feb  9 22:43:34 2003 jfv
+ * @file libstderesi/lang/atomic.c
+ * @ingroup lang
+ * @brief Implement arithmetic operations
+ *
+ * Started on  Sun Feb  9 22:43:34 2003 jfv
  */
 #include "libstderesi.h"
-
-
 
 /* SET command */
 int     cmd_set()
@@ -232,8 +230,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Comparison command */
 int     cmd_cmp()
 {
@@ -318,10 +314,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /* Bit testing command */
 int     cmd_test()
 {
@@ -381,11 +373,7 @@ int     cmd_test()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /************************ Now arithmetic commands *****************/
-
-
 
 /* ADD command */
 int     cmd_add()
@@ -472,9 +460,6 @@ end:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /* SUB command */
 int     cmd_sub()
@@ -574,7 +559,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* MUL command */
 int     cmd_mul()
 {
@@ -616,7 +600,6 @@ int     cmd_mul()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* DIV command */
 int     cmd_div()
@@ -660,7 +643,6 @@ int     cmd_div()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* MOD command */
 int     cmd_mod()
 {
@@ -702,5 +684,3 @@ int     cmd_mod()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-

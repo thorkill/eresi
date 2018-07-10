@@ -1,5 +1,6 @@
+
 /**
-* @file libstderesi/elf/rel.c
+ * @file libstderesi/elf/rel.c
 ** @ingroup elf
 */
 /**
@@ -11,7 +12,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * @brief Choose relocation tables strings array giving the architecture
@@ -57,7 +57,6 @@ revmconst_t    *revm_getrelascii(elfshobj_t *file)
     }
 }
 
-
 /**
  * @brief Return the max number of relocation type for this architecture
  * @param file
@@ -97,7 +96,6 @@ int           revm_getmaxrelnbr(elfshobj_t *file)
       PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Unknown architecture", (-1));
     }
 }
-
 
 /**
  * @brief Display relocation entries
@@ -163,7 +161,6 @@ int   cmd_rel()
               rel = (elfsh_Rel *) data + index;
               addstr[0] = 0x00;
             }
-
 
           /* Get linked symbol name */
           name = elfsh_get_symname_from_reloc(world.curjob->curfile, rel);

@@ -1,4 +1,4 @@
-/*
+/**
 ** @file librevm/api/inform.c
 ** @ingroup api
 ** @brief API for annotating program objects.
@@ -7,7 +7,6 @@
 **
 */
 #include "revm.h"
-
 
 /**
  * @brief Create an expression tree ad-hoc, recursively, and without initialization
@@ -125,8 +124,6 @@ static revmexpr_t *revm_inform_subtype(char   *curpath,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rootexpr);
 }
 
-
-
 /* Print registered variables for a given type */
 int   revm_informed_print(char *name)
 {
@@ -198,7 +195,6 @@ int   revm_check_addr(elfshobj_t *obj, eresi_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Add an element to the inform table for a given type, by real address */
 revmexpr_t  *revm_inform_type_addr(char   *type,
                                    char   *varname,
@@ -223,7 +219,6 @@ revmexpr_t  *revm_inform_type_addr(char   *type,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to inform type by address", NULL);
 }
-
 
 /**
  * @brief Add an element to the inform table for a given type
@@ -312,7 +307,6 @@ revmexpr_t  *revm_inform_toplevel(char *type, char *varname,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 
-
 /** Add type information for a memory address */
 revmexpr_t  *revm_inform_type(char *type, char *realname,
                               eresi_Addr addr, revmexpr_t *expr,
@@ -399,8 +393,6 @@ revmexpr_t  *revm_inform_type(char *type, char *realname,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 
-
-
 /* Add an element to the inform table for a given type */
 int   revm_uninform_type(char *type, char *varname, u_char print)
 {
@@ -455,4 +447,3 @@ int   revm_uninform_type(char *type, char *varname, u_char print)
   hash_del(hash, realname);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

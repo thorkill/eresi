@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/dynamic.c
+ * @file libelfsh/dynamic.c
  * @ingroup libelfsh
 ** dynamic.c for libelfsh
 **
@@ -9,7 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Change endianess of .dynamic
@@ -50,8 +50,6 @@ int   elfsh_endianize_dynamic(elfshsect_t *newent)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Return a ptr on the dynamic section
@@ -101,9 +99,6 @@ elfsh_Dyn *elfsh_get_dynamic(elfshobj_t *file, u_int *num)
   ret = (elfsh_Dyn *) elfsh_readmem(newent);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 
 /**
  * Return the tag field of the dynamic entry
@@ -155,7 +150,6 @@ elfsh_Word  elfsh_get_dynentry_val(elfsh_Dyn *d)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (d->d_un.d_val));
 }
 
-
 /**
  * Change the val field of the dynamic entry
  * @param d
@@ -173,8 +167,6 @@ int   elfsh_set_dynentry_val(elfsh_Dyn *d, eresi_Addr val)
   d->d_un.d_val = (elfsh_Word) val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Retreive the information giving the entry
@@ -205,7 +197,6 @@ char    *elfsh_get_dynentry_string(elfshobj_t *file, elfsh_Dyn *ent)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 ((char *) data + ent->d_un.d_val));
 }
-
 
 /**
  * Get .dynamic entries by type
@@ -285,8 +276,6 @@ int   elfsh_shiftable_dynent(elfsh_Dyn *ent)
   return (0);
 }
 
-
-
 /**
  * Shift the .dynamic section in ET_DYN files
  *
@@ -315,8 +304,6 @@ int   elfsh_shift_dynamic(elfshobj_t *file, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
 
-
-
 /**
  * FIXME: TEST?
  * Just a test
@@ -338,4 +325,3 @@ int   elfsh_get_dynent_by_type(elfshobj_t *robj,
   idx = idx / sizeof(elfsh_Dyn);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, idx);
 }
-

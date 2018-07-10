@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/version.c
+ * @file libstderesi/elf/version.c
 ** @ingroup elf
 */
 /**
@@ -76,7 +76,6 @@ int     revm_version_punk(hashneed_t *pneed, hashdef_t *pdef,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Need doxygen comment.
@@ -290,7 +289,6 @@ int     revm_version_print(elfsh_Half *sym_table, elfsh_Sym *dsym_table,
         {
           type = ELFSH_NULL_STRING;
         }
-
 
       if (pdef != NULL && pneed == NULL)
         {

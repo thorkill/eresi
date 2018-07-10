@@ -10,7 +10,6 @@
  */
 #include "libelfsh.h"
 
-
 /**
  * @brief Get the buffered address from the real virtual address
  */
@@ -59,7 +58,6 @@ void    *elfsh_get_raw_by_addr(elfshobj_t *current, eresi_Addr addr, void *buf,
 
 }
 
-
 /**
  * @brief Nice embedded debugging trick : return a pointer on the section data.
  * @brief This function makes the difference between static data and runtime data.
@@ -99,7 +97,6 @@ void      *elfsh_get_raw(elfshsect_t *sect)
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Invalid parameter", NULL);
 }
-
 
 /**
  * Perform a raw write on the object cache data
@@ -151,11 +148,8 @@ int   elfsh_raw_write(elfshobj_t  *file,
       memcpy(dst + sect_off, src_buff, len);
     }
 
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
 }
-
-
 
 /**
  * Perform a raw read on the object cache data
@@ -196,7 +190,6 @@ int   elfsh_raw_read(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (len));
 }
 
-
 /**
  * Retreive the file offset from the virtual address
  * @param file
@@ -223,7 +216,6 @@ int   elfsh_get_foffset_from_vaddr(elfshobj_t *file, eresi_Addr vaddr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Retreive the virtual address given the file offset

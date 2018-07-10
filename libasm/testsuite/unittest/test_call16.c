@@ -2,11 +2,8 @@
 #include <stdio.h>
 #include <libaspect.h>
 
-
 #define OPCODE_TO_TEST "\xE8\x00\x00\x5b"
 #define OPCODE_VADDR   0x0000EDA7
-
-
 
 /**
  * @return 1 on success, 0 on failure
@@ -54,8 +51,6 @@ int test16(void)
 /**
  * Call both test for protected and real mode
  */
-
-
 
 int main(int ac, char **av)
 {

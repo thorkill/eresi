@@ -1,5 +1,5 @@
-/*
-* @file libetrace/trace_flush.c
+/**
+ * @file libetrace/trace_flush.c
 **
 ** Libetrace code for the ERESI project.
 **
@@ -7,7 +7,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * @brief Delete a trace.
@@ -59,4 +58,3 @@ int   traces_flush(elfshobj_t *file, char *name, char **optarg)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

@@ -1,5 +1,5 @@
 /**
-* @file libkernsh/user/kvirtm.c
+ * @file libkernsh/user/kvirtm.c
 ** @ingroup usermode
 **
 */
@@ -120,7 +120,6 @@ int kernsh_kvirtm_read_virtm_proc_linux(pid_t pid, eresi_Addr addr,
   XOPEN(fd, proc_entry_root_tmp, O_RDWR, 0777, -1);
   ret = read(fd, buffer, len);
   XCLOSE(fd, -1);
-
 
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
@@ -517,12 +516,10 @@ int kernsh_kvirtm_readmem_proc_linux(eresi_Addr addr, char *buffer, int len)
   ret = read(fd, buffer, len);
   XCLOSE(fd, -1);
 
-
   XFREE(__FILE__, __FUNCTION__, __LINE__, proc_entry_root_tmp);
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * @brief Write into kernel memory with kernsh-virtm module
@@ -784,7 +781,6 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
            PROC_ENTRY_KERNSH_VIRTM,
            PROC_ENTRY_KERNSH_VIRTM_VIO_INFO);
 
-
   blen = sizeof(kvirtm_virtual_task_struct_t) * 2 +
          (sizeof(kvirtm_virtual_task_struct_t) / sizeof(unsigned long)) * 3;
 
@@ -805,7 +801,6 @@ int kernsh_kvirtm_task_pid_proc_linux(pid_t pid, list_t *h)
     }
 
   XCLOSE(fd, -1);
-
 
   snprintf(proc_entry_root_tmp, nlen, "%s%s/%s",
            PROC_ENTRY_ROOT,

@@ -1,5 +1,5 @@
 /**
-* @file libetrace/func_disable.c
+ * @file libetrace/func_disable.c
 ** @ingroup libetrace
 **
 ** @brief trace table disable functions.
@@ -10,7 +10,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Disable a functions of a trace
@@ -85,9 +84,6 @@ int     etrace_funcdisableall(char *trace)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Disable a function from a trace

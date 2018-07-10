@@ -1,13 +1,11 @@
 /**
-* @file libe2dbg/common/stack.c
+ * @file libe2dbg/common/stack.c
 ** @ingroup common
 ** @brief Implement commands and API for reading the stack.
 **
 ** Started on  Tue Aug 16 09:38:03 2005 jfv
 */
 #include "libe2dbg.h"
-
-
 
 /* Symbol matching on the stack content. Always useful */
 int   e2dbg_stack_dump(uint32_t size, eresi_Addr start)
@@ -48,8 +46,6 @@ int   e2dbg_stack_dump(uint32_t size, eresi_Addr start)
   e2dbg_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Stack display with symbols */
 int   cmd_stack()
@@ -97,9 +93,6 @@ int   cmd_stack()
                "Invalid parameter", -1);
 }
 
-
-
-
 /* Debugger stack display with symbols */
 int   cmd_dbgstack()
 {
@@ -135,4 +128,3 @@ int   cmd_dbgstack()
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Invalid parameter", -1);
 }
-

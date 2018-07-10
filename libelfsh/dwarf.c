@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/dwarf.c
+ * @file libelfsh/dwarf.c
  * @ingroup libelfsh
 ** dwarf.c for libelfsh
 **

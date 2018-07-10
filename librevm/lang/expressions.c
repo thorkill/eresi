@@ -1,3 +1,4 @@
+
 /**
  * @file librevm/lang/expressions.c
  * @ingroup lang
@@ -6,7 +7,6 @@
  * Started on Jun 23 2007 23:39:51 jfv
  */
 #include "revm.h"
-
 
 typedef struct s_exprcontext
 {
@@ -17,12 +17,10 @@ typedef struct s_exprcontext
   revmexpr_t  *prevexpr;
 }   revmexprctx_t;
 
-
 static revmexpr_t *revm_expr_init(revmexprctx_t *ctx,
                                   aspectype_t *curtype,
                                   void    *srcdata,
                                   char    *datavalue);
-
 
 /** Create a context for a (sub)expression initialization */
 revmexprctx_t   *revm_expr_context_init(revmexpr_t *curexpr,
@@ -53,7 +51,6 @@ revmexprctx_t   *revm_expr_context_init(revmexpr_t *curexpr,
   exprctx->pathbuf[len] = 0x00;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, exprctx);
 }
-
 
 /* Remove an expression context */
 void      revm_expr_context_destroy(revmexprctx_t *ctx)
@@ -197,7 +194,6 @@ static revmexpr_t *revm_expr_read(char **datavalue)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Malformed parent field value", NULL);
 }
-
 
 /* Initialize a field for an ERESI expression */
 static int    revm_expr_init_field(revmexprctx_t *ctx, aspectype_t *parenttype,
@@ -379,7 +375,6 @@ static int  revm_expr_init_rec(revmexprctx_t *ctx, void *srcdata)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Prepare the new expression for initialization */
 static revmexpr_t *revm_expr_preinit(revmexprctx_t *ctx, aspectype_t *curtype,
                                      char **datavalue)
@@ -407,7 +402,6 @@ static revmexpr_t *revm_expr_preinit(revmexprctx_t *ctx, aspectype_t *curtype,
   if (!ctx->toplevel && !newexpr->label)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Failed to read expression label", NULL);
-
 
   /* If we are at the root expression and that type was explicitly given, perform type checking */
   if (ctx->toplevel && newexpr->label)
@@ -465,10 +459,6 @@ static revmexpr_t *revm_expr_preinit(revmexprctx_t *ctx, aspectype_t *curtype,
   newexpr->strval = (char *) strdup(newexpr->strval);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newexpr);
 }
-
-
-
-
 
 /* Initialize an ERESI expression */
 static revmexpr_t *revm_expr_init(revmexprctx_t *ctx,
@@ -579,7 +569,6 @@ static revmexpr_t *revm_expr_init(revmexprctx_t *ctx,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, rootexpr);
 }
 
-
 /* This function is called when the LHS is an unknown variable which has to be created */
 /* When the command has a LHS of the form "set $base.field val" and $base has no current
 value for $field. If the DSTNAME parameter starts with a variable prefix and contains
@@ -666,7 +655,6 @@ revmexpr_t    *revm_expr_extend(char *dstname, char *srcvalue)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 
-
 /* Compare or Set source and destination */
 /* OP = REVM_OP_SET or REVM_OP_MATCH */
 static int    revm_expr_handle(revmexpr_t *dest,
@@ -746,10 +734,6 @@ static int    revm_expr_handle(revmexpr_t *dest,
   /* Final checks and result */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
 
 /* Get (and optionally print) the tree of an expression */
 static int  revm_expr_printrec(revmexpr_t *expr, u_int taboff,
@@ -912,7 +896,6 @@ static int  revm_expr_printrec(revmexpr_t *expr, u_int taboff,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Recursive copy of an expression */
 static int    revm_expr_copyrec(revmexpr_t    *parent,
                                 revmexpr_t  *dest,
@@ -1016,9 +999,6 @@ static int    revm_expr_copyrec(revmexpr_t    *parent,
   /* Final checks and result */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /* Copy an expression (set $e1 $e2) */
 revmexpr_t  *revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
@@ -1133,7 +1113,6 @@ revmexpr_t  *revm_expr_copy(revmexpr_t *source, char *dstname, u_char isfield)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-
 /* Create an expression from an object */
 revmexpr_t  *revm_expr_create_from_object(revmobj_t *copyme, char *name,
     u_char force)
@@ -1204,7 +1183,6 @@ revmexpr_t  *revm_expr_create_from_object(revmobj_t *copyme, char *name,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
-
 
 /* Print an annotated expression */
 int   revm_expr_print(revmexpr_t *expr, u_char quiet)
@@ -1354,7 +1332,6 @@ int   revm_expr_set_by_name(char *dest, char *source)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Set an expression to the value of another (only if compatible) */
 int   revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 {
@@ -1413,8 +1390,6 @@ int   revm_expr_set(revmexpr_t *adst, revmexpr_t *asrc)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Compare 2 typed expressions */
 int   revm_expr_compare_by_name(char *original, char *candidate,
@@ -1497,7 +1472,6 @@ int   revm_expr_compare(revmexpr_t *orig, revmexpr_t *candid, eresi_Addr *val)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Match or not 2 typed expressions */
 int   revm_expr_match_by_name(char *original, char *candidate)
 {
@@ -1522,7 +1496,6 @@ int   revm_expr_match_by_name(char *original, char *candidate)
   ret = revm_expr_match(candid, orig);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /* Match or not 2 typed expressions */
 int   revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
@@ -1571,9 +1544,6 @@ int   revm_expr_match(revmexpr_t *candid, revmexpr_t *orig)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 
 /* Create a new revm expression */
 revmexpr_t  *revm_expr_create(aspectype_t *datatype,
@@ -1659,7 +1629,6 @@ revmexpr_t  *revm_expr_create(aspectype_t *datatype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
 
-
 /* Simply create an expression from a constant value */
 revmexpr_t  *revm_simple_expr_create(aspectype_t *datatype, char *name,
                                      char *value)
@@ -1707,7 +1676,6 @@ revmexpr_t  *revm_simple_expr_create(aspectype_t *datatype, char *name,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, expr);
 }
-
 
 /* Read the requested type for an expression in ascii form */
 aspectype_t *revm_exprtype_get(char *exprvalue)
@@ -1840,7 +1808,6 @@ static int  revm_expr_erase(revmexprctx_t *ctx)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Unlink an expression */
 static int  revm_expr_unlinkrec(revmexprctx_t *ctx, u_char exprfree,
                                 u_char datafree)
@@ -1937,7 +1904,6 @@ static int  revm_expr_unlinkrec(revmexprctx_t *ctx, u_char exprfree,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Unlink an expression : top level */
 static int  revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree,
                              u_char datafree)
@@ -1983,7 +1949,6 @@ static int  revm_expr_unlink(revmexprctx_t *ctx, u_char exprfree,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Destroy an expression and remove it from the hash table */
 int   revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree)
 {
@@ -2024,7 +1989,6 @@ int   revm_expr_unlink_by_name(char *e, u_char exprfree, u_char datafree)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Destroy an expression and remove it from the hash table : front end function */
 int   revm_expr_destroy_by_name(char *ename)
 {
@@ -2044,7 +2008,6 @@ int   revm_expr_destroy_by_name(char *ename)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /** Destroy an expression and remove it from the hash table : front end function */
 int   revm_expr_destroy(revmexpr_t *expr)
@@ -2074,7 +2037,6 @@ int   revm_expr_destroy(revmexpr_t *expr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Remove expression from the hash table without destruction : front end function */
 int   revm_expr_hide(char *ename)
 {
@@ -2095,7 +2057,6 @@ int   revm_expr_hide(char *ename)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /** Remove expression from the hash table without data destruction : front end function */
 int   revm_expr_clean(char *ename)
 {
@@ -2115,7 +2076,6 @@ int   revm_expr_clean(char *ename)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* This function lookup an expression from an object id */
 revmexpr_t  *revm_expr_lookup(u_int oid)

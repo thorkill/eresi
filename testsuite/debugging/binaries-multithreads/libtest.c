@@ -1,4 +1,4 @@
-/*
+/**
 **
 **
 */
@@ -22,7 +22,6 @@ void  *print_message_function_lib( void *ptr )
     }
 }
 
-
 void print_lib()
 {
   while (1)
@@ -32,7 +31,6 @@ void print_lib()
       sleep(1);
     }
 }
-
 
 void test_lib()
 {

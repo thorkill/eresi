@@ -1,13 +1,11 @@
 /**
-* @file libe2dbg/common/dumpregs.c
+ * @file libe2dbg/common/dumpregs.c
 ** @ingroup common
 ** @brief Command and API for register printing.
 **
 ** Started on  Wed Jul 27 04:08:52 2005 ym
 */
 #include "libe2dbg.h"
-
-
 
 /* Resolve a register */
 void    e2dbg_register_dump(char *name, ureg32 reg)
@@ -24,7 +22,6 @@ void    e2dbg_register_dump(char *name, ureg32 reg)
     printf("\t [%s] %08X (%010u) <%s + " UFMT "> \n",
            name, reg, reg, str, off);
 }
-
 
 /* The register dumping function */
 /* Print the registers state just before entering the breakpoint */

@@ -1,11 +1,10 @@
-/*
-* @file libkernsh/common/vectors_default.c
+/**
+ * @file libkernsh/common/vectors_default.c
 ** @ingroup common
 **
 */
 
 #include "libkernsh.h"
-
 
 int kernsh_openmem_default()
 {

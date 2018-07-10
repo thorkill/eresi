@@ -3,14 +3,13 @@
 ** @ingroup librevm
 */
 /**
-* @file librevm/api/atomic.c
+ * @file librevm/api/atomic.c
 ** @ingroup api
 ** @brief Implement the API for atomic arithmetic and logic ERESI commands.
 **
 ** Started on  Sun Feb  9 22:43:34 2003 jfv
 **/
 #include "revm.h"
-
 
 /* Convert and see if interaction is possible between two expressions */
 int   revm_nextconds_atomics(revmexpr_t *o1, revmexpr_t *o2)
@@ -38,7 +37,6 @@ int   revm_nextconds_atomics(revmexpr_t *o1, revmexpr_t *o2)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* Preconditions on atomic operations set (only called by cmd_set) */
 int                     revm_preconds_atomics(revmexpr_t **o1, revmexpr_t **o2)
@@ -225,8 +223,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* API for adding in hash */
 int     revm_hash_add(hash_t *h, revmexpr_t *e)
 {
@@ -301,8 +297,6 @@ int     revm_hash_add(hash_t *h, revmexpr_t *e)
   hash_add(h, strdup((char *) key), (void *) elem);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* API for adding in hash */
 int     revm_elist_add(list_t *h, revmexpr_t *e)
@@ -380,10 +374,6 @@ int     revm_elist_add(list_t *h, revmexpr_t *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /* API for deleting in hash */
 int     revm_hash_del(hash_t *h, revmexpr_t *e)
 {
@@ -441,8 +431,6 @@ int     revm_hash_del(hash_t *h, revmexpr_t *e)
   hash_del(h, o->kname);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* REVM API for deleting in lists */
 int     revm_elist_del(list_t *h, revmexpr_t *e)
@@ -502,9 +490,6 @@ int     revm_elist_del(list_t *h, revmexpr_t *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /* API for setting elements inside hash */
 int     revm_hash_set(char *table, char *elmname, void *obj, u_int type)
 {
@@ -535,9 +520,6 @@ int     revm_hash_set(char *table, char *elmname, void *obj, u_int type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /* API for setting elements inside lists */
 int     revm_elist_set(char *table, char *elmname, void *obj, u_int type)
 {
@@ -567,7 +549,6 @@ int     revm_elist_set(char *table, char *elmname, void *obj, u_int type)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Copy a simply typed object into another one
@@ -774,10 +755,6 @@ ptrcopy:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /* Comparison function */
 int     revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
 {
@@ -916,8 +893,6 @@ int     revm_object_compare(revmexpr_t *e1, revmexpr_t *e2, eresi_Addr *val)
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Test a bit in a bitfield */
 int     revm_testbit(revmexpr_t *e1, revmexpr_t *e2, u_int *result)

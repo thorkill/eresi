@@ -116,7 +116,6 @@ int   mjr_create_context_as_current(mjrsession_t *sess, elfshobj_t *obj)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-
 /**
  * @brief Create a new context
  * @param obj elf shell object
@@ -201,4 +200,3 @@ int   mjr_setup_processor(mjrsession_t *sess, asm_processor *existing)
 
   return 1;
 }
-

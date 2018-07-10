@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/files/reladd.c
+ * @file libstderesi/files/reladd.c
  * @ingroup files
  * Started on  Fri Mar 28 14:58:57 2003 jfv
  * Last update Thu Mar 11 14:39:48 2004 jfv
@@ -7,7 +7,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * Inject a .o into an executable

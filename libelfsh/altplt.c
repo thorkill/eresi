@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/altplt.c
+ * @file libelfsh/altplt.c
  * @ingroup libelfsh
 ** altplt.c for libelfsh
 **
@@ -12,7 +12,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * @brief Patch the first PLT entry (a special case which must handled by this function).
@@ -85,12 +84,6 @@ int   elfsh_altplt_firstent(elfshsect_t *enew,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
-
 
 /**
  * @brief Copy the PLT of an ET_EXEC object for the ALTPLT technique.
@@ -256,7 +249,6 @@ int   elfsh_relink_plt(elfshobj_t *file, u_int mod)
 
   file->secthash[ELFSH_SECTION_ALTPLT] = enew;
 
-
   /* Map .alt.got (all architectures except SPARC) */
   /* On IA32, remap GOT with a doubled size for non-present symbol resolving */
   if (FILE_IS_MIPS(file) || FILE_IS_ALPHA64(file) || FILE_IS_IA32(file))
@@ -290,7 +282,6 @@ int   elfsh_relink_plt(elfshobj_t *file, u_int mod)
       altgot->shdr->sh_entsize = sizeof(eresi_Addr);
     }
 
-
   /* Insert EXTPLT in order to be able to resolve non present symbols */
   if (FILE_IS_IA32(file))
     {
@@ -317,8 +308,6 @@ int   elfsh_relink_plt(elfshobj_t *file, u_int mod)
       file->secthash[ELFSH_SECTION_EXTPLT] = extplt;
       extplt->curend = elfsh_get_first_pltentsz(file);
     }
-
-
 
   /* Loop on .plt and inject 'old_symnam' symbols */
   for (off = 0; off < plt->shdr->sh_size; off += entsz)
@@ -444,7 +433,6 @@ int   elfsh_relink_plt(elfshobj_t *file, u_int mod)
   printf("[DEBUG_COPYPLT] Section Mirrored Successfully ! \n");
 #endif
 
-
   /* Everything is 0k4y */
   if (elfsh_sync_sorted_symtab(symtab) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
@@ -457,10 +445,6 @@ int   elfsh_relink_plt(elfshobj_t *file, u_int mod)
   elfsh_sync_sectnames(file);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
 
 /**
  * @brief On MIPS there is no .plt section : call to libraries are done
@@ -513,7 +497,6 @@ int   elfsh_build_plt(elfshobj_t *file)
   if (!elfsh_get_anonymous_section(file, text))
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Unable to get an anonymous section", -1);
-
 
   /*
   ** Find the embedded plt by searching the nop;nop;nop;nop; signature
@@ -589,9 +572,6 @@ found:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief Main function performing ALTPLT, ALTGOT, and EXTPLT techniques.

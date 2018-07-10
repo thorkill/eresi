@@ -1,4 +1,4 @@
-/*
+/**
 ** modtest.c for elfsh
 **
 ** Started on  Wed Feb 19 08:20:07 2003 jfv
@@ -8,9 +8,7 @@
 */
 #include "libstderesi.h"
 
-
 /* ELFSH_DECMD(mod_newcmd); */
-
 
 #define CMD_MYTEST  "cmdtest"
 
@@ -25,7 +23,6 @@ int mod_newcmd()
   puts("\n [*] This is a new command, oh no ! \n");
   return (0);
 }
-
 
 void  elfsh_help()
 {
@@ -45,4 +42,3 @@ void  elfsh_fini()
   revm_command_set(CMD_PRINT, cmd_print, ERESI_ORIG, (u_int) ERESI_ORIG);
   revm_command_del(CMD_MYTEST);
 }
-

@@ -1,3 +1,4 @@
+
 /**
  * @file libmjollnir/src/core.c
  * @ingroup libmjollnir

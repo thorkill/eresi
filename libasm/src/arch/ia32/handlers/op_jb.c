@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_jb" opcode="0x72"/>
 */
-
 
 int  op_jb(asm_instr *new, u_char *opcode, u_int len,
            asm_processor *proc)

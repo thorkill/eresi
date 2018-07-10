@@ -1,16 +1,14 @@
 /**
-* @file librevm/io/select.c
- ** @ingroup io
- ** @brief The interface for I/O based on select().
- **
+ * @file librevm/io/select.c
+ * @ingroup io
+ * @brief The interface for I/O based on select().
+ *
 ** Started on Fri Mar 5 00:55:40 2004 jfv
 ** Updated on Mon Mar 5 18:47:41 2007 jfv
 **
 **
 */
 #include "revm.h"
-
-
 
 /**
  * @brief Return the greatest socket from the elfsh_net_client_list and sock.
@@ -100,11 +98,6 @@ int             revm_getmaxfd()
 }
 #endif
 
-
-
-
-
-
 /**
  * @brief Add a main socket and client's sockets to the sockets list used by select
  * and call get_max_fd to get the greatest
@@ -190,8 +183,6 @@ int   revm_prepare_select(fd_set *sel_sockets)
   return (revm_getmaxfd());
 }
 
-
-
 /**
  * @brief Check if we had any network event
  * @ingroup io
@@ -233,10 +224,6 @@ int     revm_check_net_select(fd_set *sel_sockets, int cursock)
 
   return (0);
 }
-
-
-
-
 
 /**
  * @brief Set IO to the choosen socket
@@ -304,7 +291,6 @@ int     revm_preselect_prompt()
 
   return (0);
 }
-
 
 /**
  * @brief Wait for all input

@@ -1,5 +1,5 @@
 /**
-* @file libetrace/check.c
+ * @file libetrace/check.c
 ** @ingroup libetrace
 **
 ** @brief check functions, valid faddr or is tracable.
@@ -127,10 +127,8 @@ int     etrace_valid_faddr(elfshobj_t *file, eresi_Addr addr,
       *vaddr = addr;
     }
 
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, retvalue);
 }
-
 
 /**
  * @brief Check if a function can be traced or not.

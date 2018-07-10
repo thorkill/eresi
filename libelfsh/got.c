@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/got.c
+ * @file libelfsh/got.c
  * @ingroup libelfsh
 ** got.c for elfsh
 **
@@ -9,9 +9,6 @@
 **
 */
 #include "libelfsh.h"
-
-
-
 
 /**
  * Shift GOT on ET_DYN
@@ -29,7 +26,6 @@ int   elfsh_shift_got(elfshobj_t *file,
   int   nbr;
   u_int   idx;
   eresi_Addr  *addr;
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 #if __DEBUG_ETRELintoETDYN__
@@ -57,7 +53,6 @@ int   elfsh_shift_got(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
 
 /**
  * Change endianess of GOT
@@ -97,8 +92,6 @@ int   elfsh_endianize_got(elfshsect_t *newsect)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Read the global offset table in section .got
@@ -158,9 +151,6 @@ eresi_Addr      *elfsh_get_got(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(enew)));
 }
 
-
-
-
 /**
  * Return the real GOT section
  *
@@ -209,7 +199,6 @@ elfshsect_t *elfsh_get_gotsct(elfshobj_t *file)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to get GOT by name", NULL);
 }
-
 
 /**
  * Return the 'range'th got - seems ok
@@ -290,9 +279,6 @@ elfshsect_t     *elfsh_get_got_by_idx(elfshobj_t *file,
                "Cannot reach requested range", NULL);
 }
 
-
-
-
 /**
  * Modify a GOT entry
  *
@@ -324,9 +310,6 @@ int   elfsh_set_got_entry_by_index(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
  * Modify the got entry for the dynamic symbol 'n'
  *
@@ -357,8 +340,6 @@ int   elfsh_set_got_entry_by_name(elfshobj_t *f,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Return a entry giving its parent and its index
  * @param got
@@ -376,8 +357,6 @@ eresi_Addr      *elfsh_get_got_entry_by_index(eresi_Addr *got,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (got + index));
 }
-
-
 
 /**
  * Return a entry giving its parent and its index
@@ -427,9 +406,6 @@ eresi_Addr      *elfsh_get_got_entry_by_name(elfshobj_t *file, char *name)
                "GOT entry not found", NULL);
 }
 
-
-
-
 /**
  * Return a entry giving its parent and
  * its index : used as INTERNAL hash handler
@@ -450,8 +426,6 @@ int   elfsh_set_got_entry(eresi_Addr *got, eresi_Addr vaddr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Return a entry value giving its parent and its
  * index : used as INTERNAL hash handler
@@ -470,8 +444,6 @@ eresi_Addr    elfsh_get_got_entry(eresi_Addr *got)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
 }
 
-
-
 /**
  * Return a GOT entry value
  *
@@ -489,8 +461,6 @@ eresi_Addr    elfsh_get_got_val(eresi_Addr *got)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
 }
 
-
-
 /**
  * Return a GOT entry address
  *
@@ -507,8 +477,6 @@ eresi_Addr    elfsh_get_got_addr(eresi_Addr *got)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (*got));
 }
-
-
 
 /**
  * Change a GOT entry val
@@ -528,8 +496,6 @@ u_int     elfsh_set_got_val(eresi_Addr *got, eresi_Addr val)
   *got = val;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Change a GOT entry addr

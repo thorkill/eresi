@@ -1,6 +1,6 @@
 /**
 **
-* @file libaspect/libbtree.c
+ * @file libaspect/libbtree.c
 ** @ingroup libaspect
 **
 ** Author  : <087432084750432042>
@@ -205,7 +205,6 @@ void  btree_browse_prefix(btree_t *root, int (*apply)(void *, void *),
     }
 }
 
-
 void  btree_browse_infix(btree_t *root, int (*apply)(void *, void *), void *ptr)
 {
   if (root)
@@ -263,7 +262,6 @@ void  btree_free(btree_t *root, int mode)
     }
 }
 
-
 #ifndef __KERNEL__
 
 /**
@@ -318,7 +316,6 @@ void  btree_browse_prefix_debug(btree_t *root, int (*apply)(void *, void *,
         }
     }
 }
-
 
 void  btree_debug(btree_t *root, char *filename,
                   void (*apply)(void *, void *))

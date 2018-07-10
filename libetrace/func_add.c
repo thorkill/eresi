@@ -1,5 +1,6 @@
+
 /**
-* @file libetrace/func_add.c
+ * @file libetrace/func_add.c
 ** @ingroup libetrace
 **
 ** @brief add function to a trace table.
@@ -10,7 +11,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Add the function on the trace table
@@ -46,8 +46,6 @@ trace_t     *etrace_func_add(char *trace,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtrace);
 }
-
-
 
 /**
  * Add a function on a trace (from commande line)

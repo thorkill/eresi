@@ -1,9 +1,8 @@
 /**
-* @file libe2dbg/kernel/interrupts.c
+ * @file libe2dbg/kernel/interrupts.c
  *
  */
 #include "ke2dbg.h"
-
 
 /* FB PCI AGP */
 unsigned char fb_hw_padding_var1[0x1000];
@@ -86,10 +85,6 @@ unsigned char scratch[0x100] = "\
 ????????????????\
 ";
 
-
-
-
-
 /**
  * Print register state when kernel stopped
  * @bug affichage des GS FS en 16bit
@@ -158,7 +153,6 @@ void ke2dbg_register_print(Reg_struct *regstack)
       ke2dbg_memcpy(&screen_colors[1][57], "11111111", 8);
     }
 
-
   ke2dbg_sprintf( debug_, "%.8X", regstack->reg_ESI );
   ke2dbg_text_display(5, 2, debug_);
 
@@ -206,7 +200,6 @@ void ke2dbg_register_print(Reg_struct *regstack)
     {
       ke2dbg_memcpy(&screen_colors[2][44], "11111111", 8);
     }
-
 
   debug_[4] = 0;
   ke2dbg_sprintf(debug_, "%.2X", regstack->reg_CS);
@@ -281,13 +274,10 @@ void ke2dbg_register_print(Reg_struct *regstack)
       ke2dbg_memcpy(&screen_colors[3][70], "11111111", 8);
     }
 
-
   ke2dbg_sprintf(debug_, "%.8X", key_scan_code);
   ke2dbg_text_display(43, cmd_win_y + 1, debug_);
 
-
   ke2dbg_text_display(53, 2, "FLG=");
-
 
   ke2dbg_sprintf( debug_, "%c%c%c%c%c%c%c%c%c",
                   regstack->reg_EFLAG & 0x800 ? 'O' : 'o',
@@ -303,7 +293,6 @@ void ke2dbg_register_print(Reg_struct *regstack)
                   //2
                   regstack->reg_EFLAG & 0x1 ? 'C' : 'c' );
   ke2dbg_text_display(57, 2, debug_);
-
 
   screen_colors[2][57] = (regstack->reg_EFLAG & 0x800) ==
                          (old_reg_data.reg_EFLAG & 0x800) ? ' ' : '1';
@@ -338,8 +327,6 @@ void ke2dbg_register_print(Reg_struct *regstack)
   ke2dbg_display_refresh();
 }
 
-
-
 /**
  * affiche les codes des touches appuyées
  * @param oo
@@ -347,7 +334,6 @@ void ke2dbg_register_print(Reg_struct *regstack)
  */
 void ke2dbg_keystate_print (unsigned int oo)
 {
-
 
   ke2dbg_sprintf(debug_, "Key: %.8X", oo);
   ke2dbg_text_display(52, cmd_win_y + 1, debug_);
@@ -360,9 +346,6 @@ void ke2dbg_keystate_print (unsigned int oo)
   ke2dbg_display_refresh();
 
 }
-
-
-
 
 /**
  * affiche le contenu de la fenetre de code
@@ -415,8 +398,6 @@ void ke2dbg_printf_disasm(eresi_Addr selector, eresi_Addr current_eip)
           tab_true_byte[i] = ke2dbg_true_byte_bp((char *) current_eip + i);
         }
     }
-
-
 
   asm_lines_adresse_n = 0;
 
@@ -541,8 +522,6 @@ void ke2dbg_printf_disasm(eresi_Addr selector, eresi_Addr current_eip)
 
 }
 
-
-
 /**
  * affiche la fenetre data. si les pages memoire
  * de l'adresse ne sont pas presente, affiche des
@@ -556,7 +535,6 @@ void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
   eresi_Addr    virtual_eip;
   unsigned char buff[1024];
   unsigned int index_chaine;
-
 
   if (ptr == 0)
     {
@@ -607,7 +585,6 @@ void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
   ke2dbg_display_refresh();
 }
 
-
 #if defined(__GNUC__)
 #define DUMMY_ERR_CODE\
   _asm_("\t"\
@@ -615,7 +592,6 @@ void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
        );
 
 /*TODO: BUG: ERR de prot gnrale a cause de la restauration de GS ?!? */
-
 
 #define HOOK_INT_HEADER_ASM(old_hooker)\
   _asm_("\t"\
@@ -635,8 +611,6 @@ void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
        );\
   reg_stack->reg_dummy_ret = (unsigned int)old_hooker;
 
-
-
 #define HOOK_INT_END_NOERR_ASM(hooker)\
   _asm_("\t"\
         "popa\n\t"\
@@ -652,7 +626,6 @@ void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
         "not_"hooker":\n\t"\
         "ret $0x4\n\t"\
        );
-
 
 #define HOOK_INT_END_ERR_ASM(hooker)\
   _asm_("\t"\
@@ -670,7 +643,6 @@ void ke2dbg_data_dump(eresi_Addr selector, eresi_Addr ptr)
         "ret\n\t"\
        );
 #endif
-
 
 /**
  * handler du clavier:
@@ -715,7 +687,6 @@ void _ke2dbg_kbdhandle ()
   /* boucle de tempo pour ack du 8259 */
   for (i = 0; i < 100000; i++);
 
-
 }
 
 /**
@@ -730,7 +701,6 @@ void __declspec_naked ke2dbg_kbdhandle(void)
   ke2dbg_keystroke_print();
   //_ke2dbg_kbdhandle();
   //HOOK_INT_END_NOERR_ASM("kbh");
-
 
 #if defined(__GNUC__)
   _asm_("\t"
@@ -754,8 +724,6 @@ void __declspec_naked ke2dbg_kbdhandle(void)
 #endif
 
 }
-
-
 
 /**
  * rr0d stepping function
@@ -831,14 +799,12 @@ void ke2dbg_step (void)
       ke2dbg_text_display(52, cmd_win_y - 1, debug_);
     }
 
-
   do
     {
       if (fired)
         {
           key_scan_code = (unsigned char)ke2dbg_scancode_read();
           ke2dbg_handle_scancode(key_scan_code);
-
 
           //if (old_data_ptr!= data_ptr)
           {
@@ -863,7 +829,6 @@ void ke2dbg_step (void)
               update_disasm = 1;
             }
 
-
           if (update_disasm)
             {
               update_disasm = 0;
@@ -877,7 +842,6 @@ void ke2dbg_step (void)
               ke2dbg_keystate_print(key_scan_code);
             }
         }
-
 
     }
   while ( ((key_scan_code & 0xFF) != STEP_INTO) &&
@@ -930,11 +894,9 @@ void ke2dbg_step (void)
                        BP_ONE_SHOT);
     }
 
-
   old_reg_data = *reg_stack;
 
 }
-
 
 /*handler de la division par 0                    */
 void  _ke2dbg_int0_handle (void)
@@ -993,7 +955,6 @@ void __declspec_naked ke2dbg_int0_handle (void)
   HOOK_INT_END_NOERR_ASM("int0");
 };
 
-
 /**
  * handler de l'interruption 1
  *(appelee quant le trap flag est a 1 (pas a pas)
@@ -1003,7 +964,6 @@ void __declspec_naked ke2dbg_int0_handle (void)
 void  _ke2dbg_int1_handle (void)
 {
 
-
   current_reg_stack = *reg_stack;
   fired = 1;
   force_disasm = 0;
@@ -1012,7 +972,6 @@ void  _ke2dbg_int1_handle (void)
   ke2dbg_dr7_set(dr7_value);
   ke2dbg_sprintf(debug_, "int1: %X", reg_stack->reg_EIP);
   ke2dbg_logbuf_insert(debug_);
-
 
   //printk("int1 enter dr7 val:%X\n", ke2dbg_dr7_get());
   /*
@@ -1044,7 +1003,6 @@ void  _ke2dbg_int1_handle (void)
         }
     }
 
-
   if (old_id_hw_bp)
     {
       ke2dbg_idhwbp_enable(id_hw_bp);
@@ -1057,7 +1015,6 @@ void  _ke2dbg_int1_handle (void)
         }
 
     }
-
 
   //printk("int1-1 enter dr7 val:%X\n", ke2dbg_dr7_get());
   /*
@@ -1078,13 +1035,8 @@ void  _ke2dbg_int1_handle (void)
 
   /*if single step caused by hw bp*/
 
-
   if ((id_hw_bp = ke2dbg_hwbp_check()) != 0)
     {
-
-
-
-
 
       //      ke2dbg_dr7_set(ke2dbg_dr7_get() | (3 << (id_hw_bp>>1)));
       /*
@@ -1106,7 +1058,6 @@ void  _ke2dbg_int1_handle (void)
       ke2dbg_logbuf_insert("YuuuupPP HW Str4ngE");
       break;
 
-
       }
       */
 
@@ -1115,19 +1066,12 @@ void  _ke2dbg_int1_handle (void)
       fired = 1;
       ke2dbg_logbuf_insert("(_.-HW BP SpAWN InT 1-._)");
 
-
       step_on = 1;
       ke2dbg_idhwbp_disable(id_hw_bp);
 
-
       old_id_hw_bp = id_hw_bp;
 
-
-
-
-
     }
-
 
   //printk("int1-4 enter dr7 val:%X\n", ke2dbg_dr7_get());
 
@@ -1145,8 +1089,6 @@ void  _ke2dbg_int1_handle (void)
       ke2dbg_logbuf_print();
       ke2dbg_Refresh_AW();
       ke2dbg_display_refresh();
-
-
 
       ke2dbg_step();
 
@@ -1169,7 +1111,6 @@ void  _ke2dbg_int1_handle (void)
   */
   //printk("int ret dr7 val:%X\n", ke2dbg_dr7_get());
 
-
 }
 
 /**
@@ -1184,9 +1125,7 @@ void __declspec_naked ke2dbg_int1_handle (void)
   _ke2dbg_int1_handle();
   HOOK_INT_END_NOERR_ASM("int1");
 
-
 };
-
 
 /**
  * handler de l'interruption 3
@@ -1208,7 +1147,6 @@ void  _ke2dbg_int3_handle (void)
   update_disasm = 1;
 
   reg_stack->reg_EFLAG = 0x100 | reg_stack->reg_EFLAG;
-
 
   /*
     __asm("push %eax\n"
@@ -1261,7 +1199,6 @@ void  _ke2dbg_int3_handle (void)
       spawn_bp = 1;
     }
 
-
   //printk("int3-1 enter dr7 val:%X\n", ke2dbg_dr7_get());
 
   if ((bp_num != -1) && (list_breakpoints[bp_num].attrib == BP_ONE_SHOT))
@@ -1289,7 +1226,6 @@ void  _ke2dbg_int3_handle (void)
   ke2dbg_Refresh_AW();
   ke2dbg_display_refresh();
 
-
   //printk("int3-3 enter dr7 val:%X\n", ke2dbg_dr7_get());
 
   ke2dbg_step();
@@ -1301,7 +1237,6 @@ void  _ke2dbg_int3_handle (void)
     }
 
   //printk("int3 ret dr7 val:%X\n", ke2dbg_dr7_get());
-
 
   dr7_value = ke2dbg_dr7_get();
 }
@@ -1319,8 +1254,6 @@ void __declspec_naked ke2dbg_int3_handle (void)
   HOOK_INT_END_NOERR_ASM("int3");
 
 };
-
-
 
 /**
  * handler de invalid opcode
@@ -1375,7 +1308,6 @@ void __declspec_naked ke2dbg_int6_handle (void)
   HOOK_INT_END_NOERR_ASM("int6");
 }
 
-
 /**
  * handler d' erreur de protection generale
  * ps: l'interruption de la mort
@@ -1405,7 +1337,6 @@ void  _ke2dbg_int13_handle (void)
       ke2dbg_logbuf_insert("(_.-general prot fault  ziiip -._)");
     }
 
-
   ke2dbg_logbuf_print();
   ke2dbg_Refresh_AW();
   ke2dbg_display_refresh();
@@ -1431,7 +1362,6 @@ void __declspec_naked ke2dbg_int13_handle (void)
   HOOK_INT_END_ERR_ASM("int13");
 }
 
-
 /**
  * handler de page fault
  */
@@ -1453,7 +1383,6 @@ void  _ke2dbg_int14_handle (void)
     {
       ke2dbg_logbuf_insert("(_.-div 14  ziiip -._)");
     }
-
 
   //  if (reg_stack->reg_ERROR!=4 && reg_stack->reg_ERROR!=6 && reg_stack->reg_ERROR!=7)
   {
@@ -1497,9 +1426,6 @@ void __declspec_naked ke2dbg_int14_handle (void)
   _ke2dbg_int14_handle();
   HOOK_INT_END_ERR_ASM("int14");
 }
-
-
-
 
 /**
  * handler de l'interruption 80
@@ -1549,7 +1475,6 @@ void __declspec_naked ke2dbg_int128_handle (void)
   HOOK_INT_END_NOERR_ASM("int128");
 }
 
-
 /**
  *
  */
@@ -1567,7 +1492,6 @@ int ke2dbg_init(void)
   font_x = 8;
   font_y = 12;
   font_bpp = 8;
-
 
   data_ptr = 0;
   old_data_ptr = 1;
@@ -1647,9 +1571,7 @@ int ke2dbg_init(void)
   addrnewint[14] = ((unsigned int) &ke2dbg_int14_handle);
   addrnewint[128] = ((unsigned int) &ke2dbg_int128_handle);
 
-
   Out_Debug_String("install hook...\n\r");
-
 
   ke2dbg_wpbit_reset();
 
@@ -1677,7 +1599,6 @@ int ke2dbg_init(void)
   //__asm{int 3};
   ke2dbg_console_on();
   Out_Debug_String("init fini.2\n\r");
-
 
   //ke2dbg_display_refresh();
 
@@ -1749,7 +1670,6 @@ void ke2dbg_cleanup(void)
         }
     }
 
-
   SPY_Dynamic_Exit();
 }
 
@@ -1796,8 +1716,3 @@ int SPY_Dynamic_Exit(void)
 
   return (1);
 }
-
-
-
-
-

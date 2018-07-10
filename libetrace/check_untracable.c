@@ -1,5 +1,6 @@
+
 /**
-* @file libetrace/check_untracable.c
+ * @file libetrace/check_untracable.c
 ** @ingroup libetrace
 **
 ** @brief All functions that help check, remote untracable content.
@@ -14,7 +15,6 @@
 /* Hash table of untracable functions */
 hash_t    traces_untracable;
 u_char    untracable_ostype;
-
 
 /**
  * @brief Fix this doxygen tag.

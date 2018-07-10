@@ -1,5 +1,6 @@
+
 /**
-* @file librevm/io/color.c
+ * @file librevm/io/color.c
  * @ingroup io
  * @brief All functions about colors.
  *
@@ -8,7 +9,6 @@
  *
  */
 #include "revm.h"
-
 
 /**
  * Token system
@@ -21,7 +21,6 @@ static u_int  curtok = 0;
  * 0 = color, 1 = without color
  */
 u_int     nocolor = 1;
-
 
 /**
  * Init color structure
@@ -67,7 +66,6 @@ color_t   *revm_colortable(char *type, char *text)
           snprintf(_v, 15, "%s%u", (!set ? S_STARTCOLOR : COLOR_SEPARE), _z);   \
           set = 1; }                \
     } while(0)
-
 
 /**
  * Generate the color pattern for a given color structure
@@ -131,8 +129,6 @@ static char *revm_colornothing(char *sp, void *object)
 
   NOPROFILER_ROUT(tokens[curtok++]);
 }
-
-
 
 /**
  * Trim a string from blank char and copy it on to argument
@@ -362,7 +358,6 @@ char *revm_colornumber(char *pattern, eresi_Off numb)
 {
   return revm_colorget(pattern, "number", &numb);
 }
-
 
 /* Misc functions */
 

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/init_i386.c
+ * @file libasm/src/arch/ia32/init_i386.c
  * @ingroup ia32
  *
  */
@@ -10,7 +10,6 @@
 #include <libasm-int.h>
 
 void  init_instr_table(asm_processor *);
-
 
 /**
  * Handler to fetch i386 bytecode.
@@ -101,7 +100,6 @@ eresi_Addr  asm_dest_resolve(asm_processor *proc, eresi_Addr addr, u_int shift)
   return (addr);
 }
 
-
 /** Get mode of IA32 processor */
 int asm_ia32_get_mode(asm_processor *proc)
 {
@@ -110,7 +108,6 @@ int asm_ia32_get_mode(asm_processor *proc)
   inter = proc->internals;
   return (inter->mode);
 }
-
 
 /**
  * Switch

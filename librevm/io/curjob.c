@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/curjob.c
+ * @file librevm/io/curjob.c
  * @ingroup io
  * @brief Implement job API necessary for revm-io.
  *
@@ -8,7 +8,6 @@
  *
  */
 #include "revm.h"
-
 
 /**
  * @brief Return the current local job

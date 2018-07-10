@@ -1,6 +1,6 @@
 /**
  * @ingroup kedbg
-* @file kedbg/cmd.c
+ * @file kedbg/cmd.c
  */
 
 #include "kedbg.h"
@@ -60,7 +60,6 @@ static void     kedbg_step_over_bp(eresi_Addr addr)
       e2dbg_setbreak(world.curjob->curfile, bp);
     }
 }
-
 
 /**
  * Continue command.
@@ -219,7 +218,6 @@ int             cmd_kedbgprintivt(void)
   PROFILER_ROUTQ(0);
 }
 
-
 /**
  * Wrapper to cmd_disasm, but checks wether we are in realmode or
  * not. It will set internal variable in case we change mode.
@@ -232,7 +230,6 @@ int             cmd_kedbgdisasm(void)
   cmd_disasm();
   PROFILER_ROUTQ(0);
 }
-
 
 /**
  * Hooks all the IVT entries. Since a lot of entries are the same, we
@@ -269,7 +266,6 @@ int             cmd_kedbghookivt(void)
   PROFILER_ROUTQ(0);
 }
 
-
 /**
  * In case you get pissed of with the itrace...
  * @ingroup kedbg
@@ -281,7 +277,6 @@ void            kedbg_itracesigint(int sig)
   e2dbgworld.curthread->trace = FALSE;
   PROFILER_OUTQ();
 }
-
 
 /**
  * Do steppig until we reach a known breakpoint.

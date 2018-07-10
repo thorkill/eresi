@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/rpht.c
+ * @file libelfsh/rpht.c
  * @ingroup libelfsh
 ** rpht.c for elfsh
 **
@@ -10,7 +11,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * @brief Return a ptr on the program header table
@@ -102,5 +102,3 @@ elfsh_Phdr  *elfsh_insert_runtime_phdr(elfshobj_t *file, elfsh_Phdr *h)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (file->rpht + file->rhdr.rphtnbr - 1));
 }
-
-

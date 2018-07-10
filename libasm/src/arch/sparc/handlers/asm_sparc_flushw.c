@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/handlers/asm_sparc_flushw.c
+ * @file libasm/src/arch/sparc/handlers/asm_sparc_flushw.c
 ** @ingroup SPARC_instrs
 */
-/*
+/**
 **
 **
 */

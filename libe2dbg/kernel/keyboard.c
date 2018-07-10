@@ -1,5 +1,5 @@
 /**
-* @file libe2dbg/kernel/keyboard.c
+ * @file libe2dbg/kernel/keyboard.c
  */
 #include "ke2dbg.h"
 #include "ke2dbg-keyb.h"
@@ -253,9 +253,6 @@ unsigned int ke2dbg_scancode_read(void)
   return key_code_loc;
 }
 
-
-
-
 /**
  * Translate raw keyboard data to ascii
  * @param scancode
@@ -336,9 +333,6 @@ char ke2dbg_scan_to_ascii(int scancode)
   return KBUP;
 }
 
-
-
-
 /**
  * essaye de remonter le listing asm
  * de facon un peu pourie (brute
@@ -411,7 +405,6 @@ long    back_disasm(unsigned int cur_eip, int min_back_line)
   return (cur_eip - testing_eip);
 }
 
-
 /**
  * ajoute un caractere a la commande courante
  *
@@ -449,12 +442,10 @@ void ke2dbg_cmdkey_delete()
 
       screen_lines[cmd_win_y][CommandLength] = ' ';
 
-
       CommandLength--;
       Command[CommandLength] = 0x0;
     };
 }
-
 
 /**
  * Handler for ENTER key
@@ -531,9 +522,7 @@ void    ke2dbg_keyb_enter()
   ke2dbg_Refresh_AW();
 }
 
-
-
-/*
+/**
 int   old_keyb_enter()
 {
   int   ret;
@@ -723,7 +712,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
 
             }
 
-
           if ((!alt_key) && (ctrl_key) && (!shift_key))
             {
               /*
@@ -738,7 +726,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
               code_ptr -= len ? len : 0x20;
               force_disasm = 1;
               update_disasm = 1;
-
 
             }
 
@@ -814,7 +801,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
 
             }
 
-
           if ((!alt_key) && (ctrl_key) && (!shift_key))
             {
               /*
@@ -827,7 +813,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
               break;
 
             }
-
 
           if ((alt_key) && (ctrl_key) && (!shift_key))
             {
@@ -842,8 +827,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
               ke2dbg_display_refresh();
               break;
             }
-
-
 
         }
 
@@ -883,7 +866,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
               break;
             }
 
-
           if ((alt_key) && (ctrl_key) && (!shift_key))
             {
               screen_offset_y++;
@@ -897,7 +879,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
               ke2dbg_display_refresh();
               break;
             }
-
 
         }
 
@@ -946,7 +927,6 @@ void    ke2dbg_handle_scancode(unsigned char scancode)
         }
 
       break;
-
 
     case KBESC:
       edit_mode = 0;

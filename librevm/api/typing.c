@@ -1,13 +1,12 @@
 /**
-* @file librevm/api/typing.c
-* @ingroup api
-* @brief Various API for manipulating types.
+ * @file librevm/api/typing.c
+ * @ingroup api
+ * @brief Various API for manipulating types.
 *
-* Started on Sun Jan 9 07:23:58 2007 jfv
+ * Started on Sun Jan 9 07:23:58 2007 jfv
 **
 */
 #include "revm.h"
-
 
 /**
  * Do a copy meta-representation of a datatype
@@ -199,7 +198,6 @@ int   revm_type_print(char *type, char mode)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
-
 /**
  * Print types matching a regular expression
  *
@@ -237,8 +235,6 @@ int   revm_type_print_regex(char *regex)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Print available types
  *
@@ -251,7 +247,6 @@ int   revm_type_prints()
   int   index;
   int   total;
   char    buf[BUFSIZ];
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -273,7 +268,6 @@ int   revm_type_prints()
   revm_output(buf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* This function reflect a data structure */
 int   revm_type_reflect(hash_t *hash, char *typename)

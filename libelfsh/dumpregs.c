@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/dumpregs.c
+ * @file libelfsh/dumpregs.c
  * @ingroup libelfsh
 ** dumpregs.c for elfsh
 **
@@ -10,9 +11,7 @@
 */
 #include "libelfsh.h"
 
-
 //static elfshia32regs_t regs;
-
 
 struct    s_regs_ia32
 {
@@ -27,8 +26,6 @@ struct    s_regs_ia32
   uint32_t  es; /* 16bits but we want to keep alignment */
   uint32_t  ds; /* 16bits but we want to keep alignment */
 }   ia32regs_t;
-
-
 
 /**
  * The breakpoint routine. Save registers and callback

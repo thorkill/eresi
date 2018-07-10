@@ -1,5 +1,5 @@
 /**
-* @file libetrace/func_enable.c
+ * @file libetrace/func_enable.c
 ** @ingroup libetrace
 **
 ** @brief trace table enable functions.
@@ -10,7 +10,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Enable the function from the trace table
@@ -90,9 +89,6 @@ int     etrace_funcenableall(char *trace)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Enable a function from a trace

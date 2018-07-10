@@ -1,12 +1,11 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_test_rmb_rb.c
+ * @file libasm/src/arch/ia32/handlers/op_test_rmb_rb.c
  *
  * @ingroup IA32_instrs
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
-
 
 /**
  * @brief Handler for instruction test rmb,rb opcode 0x84

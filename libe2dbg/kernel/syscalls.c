@@ -1,6 +1,7 @@
+
 /**
-* @file libe2dbg/kernel/syscalls.c
- **/
+ * @file libe2dbg/kernel/syscalls.c
+ */
 
 #include "ke2dbg.h"
 #include "ke2dbg-syscalls.h"

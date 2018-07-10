@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/vectors_default.c
+ * @file libelfsh/vectors_default.c
 ** @ingroup libelfsh
 **
 ** vectors_default.c for libelfsh (The ELF shell library)
@@ -9,7 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 void *elfsh_default_readmem(elfshsect_t *sect)
 {
@@ -34,7 +34,6 @@ int elfsh_default_writemem(elfshobj_t *file, eresi_Addr addr, void *buff,
                "Unsupported Arch, ELF type, or OS", -1);
 }
 
-
 int elfsh_default_writememf(elfshobj_t *file, u_int off, char *buff, int len)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -48,7 +47,6 @@ int elfsh_default_readmemf(elfshobj_t *file, u_int off, char *buff, int len)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", -1);
 }
-
 
 /**
  * @brief Default hooks handlers
@@ -113,7 +111,6 @@ int elfsh_default_cflowhandler(elfshobj_t   *null,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", -1);
 }
-
 
 /**
  * @brief Default EXTPLT handler.
@@ -181,4 +178,3 @@ eresi_Addr elfsh_default_rmaphandler(elfshobj_t *file, size_t size, int prot)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", ELFSH_INVALID_ADDR);
 }
-

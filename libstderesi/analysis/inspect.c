@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/analysis/inspect.c
+/**
+ * @file libstderesi/analysis/inspect.c
 ** @ingroup analysis
 ** @brief Inspect the content of a basic block
 **
@@ -9,8 +9,6 @@
 **
 */
 #include "libstderesi.h"
-
-
 
 /**
  * Some API that needs to be moved in another file !
@@ -26,7 +24,6 @@ eresi_Addr  revm_get_block_vaddr_by_id(int id)
   block     = (mjrblock_t *) container->data;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, block->vaddr);
 }
-
 
 /**
  * Inspect command for basic blocks

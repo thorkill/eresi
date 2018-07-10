@@ -1,4 +1,4 @@
-/*
+/**
 **
 **
 */
@@ -12,7 +12,6 @@ void *print_message_function(void *ptr);
 extern void *print_message_function_lib(void *);
 
 typedef void (*sighandler_t)(int);
-
 
 void       sigtrap_handler(int num)
 {
@@ -63,9 +62,6 @@ main()
   fprintf(stderr, "Thread 3 returns: %d\n", iret3);
   exit(0);
 }
-
-
-
 
 void  *print_message_function( void *ptr )
 {

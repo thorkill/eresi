@@ -1,5 +1,5 @@
 /**
-* @file libetrace/func_remove.c
+ * @file libetrace/func_remove.c
 ** @ingroup libetrace
 **
 ** @brief trace table remove functions.
@@ -10,7 +10,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Delete the function from the trace table
@@ -86,8 +85,6 @@ int     etrace_funcrmall(char *trace)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Delete a function from a trace

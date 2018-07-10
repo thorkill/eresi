@@ -1,13 +1,11 @@
-/*
-* @file libstderesi/type/declare.c
+/**
+ * @file libstderesi/type/declare.c
 ** @ingroup type
 ** @brief Command used to declare a new typed variable in the environment
 **
 ** Started on Fri Jun 22 07:23:58 2007 jfv
 */
 #include "libstderesi.h"
-
-
 
 /* Declare a new typed variable */
 int   cmd_declare()

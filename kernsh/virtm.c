@@ -1,6 +1,6 @@
 /**
  *
-* @file kernsh/virtm.c
+ * @file kernsh/virtm.c
  * @ingroup kernsh
  *
  */
@@ -17,7 +17,6 @@ int   cmd_kvirtm_info()
   int   ret;
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
-
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }

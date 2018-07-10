@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
  * Opcode :             0x02
  * Instruction :                ADD
  * Destination is a byte register

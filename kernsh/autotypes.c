@@ -1,5 +1,6 @@
-/*
-* @file kernsh/autotypes.c
+
+/**
+ * @file kernsh/autotypes.c
 ** @ingroup kernsh
 **
 */

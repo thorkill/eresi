@@ -1,5 +1,5 @@
 /**
-* @file libedfmt/edfmt.c
+ * @file libedfmt/edfmt.c
 ** @ingroup libedfmt
 ** @brief External interface functions for the ERESI debug format
 **
@@ -71,7 +71,6 @@ elfshsect_t       *edfmt_get_sect(elfshobj_t *file, u_int hash, char *hash_name,
                 file->secthash[hash]);
 }
 
-
 /* The internal basename function */
 static char     *edfmt_basename(char *str)
 {
@@ -96,7 +95,6 @@ static char     *edfmt_basename(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (char *) (ret));
 }
 
-
 /**
  * Main point of the debug format library
  * This function manages this steps for every debugging formats:
@@ -117,7 +115,6 @@ int     edfmt_format(elfshobj_t *file)
   if (file == NULL)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Wrong file object", -1);
-
 
   if (file->name)
     {

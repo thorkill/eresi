@@ -409,7 +409,6 @@ eresi_Addr     mjr_get_call_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-
 /**
  * @brief Resolve the destination address of current jmp instruction
  * @param context mjollnir context structure
@@ -553,8 +552,6 @@ eresi_Addr  mjr_get_jmp_destaddr(mjrcontext_t *context)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dest);
 }
 
-
-
 /**
  * @brief Check if we missed some function start
  * @param ctxt mjollnir context structure
@@ -564,7 +561,7 @@ eresi_Addr  mjr_get_jmp_destaddr(mjrcontext_t *context)
 
 /** @} */
 
-/*
+/**
 int     mjr_asm_check_function_start(mjrcontext_t *ctxt)
 {
   char      *tmpstr;
@@ -651,5 +648,3 @@ int     mjr_asm_check_function_start(mjrcontext_t *ctxt)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 */
-
-

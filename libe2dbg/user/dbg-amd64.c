@@ -1,8 +1,8 @@
 /**
-* @file libe2dbg/user/dbg-amd64.c
+ * @file libe2dbg/user/dbg-amd64.c
 ** @ingroup user
 */
-/*
+/**
 ** dbg-amd64.c for e2dbg in the ERESI framework
 **
 ** Debugger backend for the AMD64 architecture
@@ -110,7 +110,6 @@ void      e2dbg_get_regvars_amd64_sysv()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /* Regvars handler for the AMD64 architecture */
 void      e2dbg_set_regvars_amd64_bsd()
 {
@@ -151,8 +150,6 @@ void      e2dbg_set_regvars_amd64_bsd()
 #endif
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
 
 /* Regvars handler for the AMD64 architecture on SYSV */
 void    e2dbg_set_regvars_amd64_sysv()
@@ -244,7 +241,6 @@ void    e2dbg_set_regvars_amd64_sysv()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /* Get Program Counter register */
 eresi_Addr   *e2dbg_getpc_bsd_amd64()
 {
@@ -269,8 +265,6 @@ eresi_Addr   *e2dbg_getpc_sysv_amd64()
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
-
-
 
 /* Get Program Counter register */
 eresi_Addr   *e2dbg_getfp_bsd_amd64()
@@ -297,7 +291,6 @@ eresi_Addr   *e2dbg_getfp_sysv_amd64()
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
-
 
 /* Enable stepping on BSD */
 void      e2dbg_setstep_bsd_amd64()
@@ -343,7 +336,6 @@ void      e2dbg_resetstep_bsd_amd64()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * Get the next frame pointer given the current one
  */
@@ -375,7 +367,6 @@ void    *e2dbg_getret_amd64(void *frame)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (void *) (*((eresi_Addr *) frame + 1)));
 }
-
 
 /**
  * Write a breakpoint 0xCC in memory

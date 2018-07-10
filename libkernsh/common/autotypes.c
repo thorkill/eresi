@@ -1,5 +1,6 @@
-/*
-* @file libkernsh/common/autotypes.c
+
+/**
+ * @file libkernsh/common/autotypes.c
 ** @ingroup common
 **
 */
@@ -151,7 +152,6 @@ int kernsh_autotask_offsetpid_linux_2_6(char *buffer, size_t size)
     {
       first_addr = *(unsigned long *)(buffer + i);
 
-
       if (first_addr == 0x1)
         {
           second_addr = first_addr;
@@ -261,7 +261,6 @@ int   kernsh_autotask_linux_2_6()
 #if __DEBUG_KERNSH__
   printf("OFFSET_NEXT %d\n", libkernshworld.typetask.offset_next);
 #endif
-
 
   elfsh_readmema(libkernshworld.root,
                  lst_addr + libkernshworld.typetask.offset_next,

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_mov_subreg_ib.c
+ * @file libasm/src/arch/ia32/handlers/op_mov_subreg_ib.c
  *
  * @ingroup IA32_instrs
  *
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_mov_subreg_ib" opcode="0xb0"/>
   <instruction func="op_mov_subreg_ib" opcode="0xb1"/>
   <instruction func="op_mov_subreg_ib" opcode="0xb2"/>

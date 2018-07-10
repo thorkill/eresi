@@ -1,4 +1,4 @@
-/*
+/**
 **
 **
 */
@@ -13,7 +13,6 @@ char *message1 = "T1";
 char *message2 = "T2";
 
 typedef void (*sighandler_t)(int);
-
 
 int   sigtrap_handler(int signum)
 {

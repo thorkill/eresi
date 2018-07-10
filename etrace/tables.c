@@ -1,14 +1,14 @@
+
 /**
- ** tables.c for etrace
- **
-* @file etrace/tables.c
- ** @ingroup etrace
- ** @brief All command and objects definitions for scripting
- **
- ** Started on  Sat Jan 25 07:48:41 2003 mxatone
+ * tables.c for etrace
+ *
+ * @file etrace/tables.c
+ * @ingroup etrace
+ * @brief All command and objects definitions for scripting
+ *
+ * Started on  Sat Jan 25 07:48:41 2003 mxatone
  */
 #include "etrace.h"
-
 
 /**
  * Setup the command hash table

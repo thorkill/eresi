@@ -1,5 +1,5 @@
-/*
-* @file libetrace/func_run.c
+/**
+ * @file libetrace/func_run.c
 **
 ** Libetrace implementation in the ERESI project.
 **
@@ -30,4 +30,3 @@ int     trace_param_add(int argc, char **argv)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

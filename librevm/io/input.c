@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/input.c
+ * @file librevm/io/input.c
  * @ingroup io
  * @brief Input related functions.
  *
@@ -7,8 +7,6 @@
  *
  */
 #include "revm.h"
-
-
 
 /**
  * @brief Read a new line, avoiding comments and void lines
@@ -88,7 +86,6 @@ char    *revm_getln()
   NOPROFILER_ROUT(buf);
 }
 
-
 /**
  * @brief Read input from the current IO file descriptor
  */
@@ -154,7 +151,6 @@ end:
   NOPROFILER_ROUT((*tmpbuf ? strdup(tmpbuf) : NULL));
 }
 
-
 /**
  * IO Input handler for the debugger
  */
@@ -198,7 +194,6 @@ char    *revm_fifoinput()
   return (ret);
 }
 
-
 /**
  * INPUT IO handler for stdin
  */
@@ -219,7 +214,6 @@ char    *revm_stdinput()
   /* If not, read the stdin file descriptor */
   NOPROFILER_ROUT(revm_read_input());
 }
-
 
 /**
  * Change the Input IO file descriptor

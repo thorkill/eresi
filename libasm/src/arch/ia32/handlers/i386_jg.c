@@ -4,10 +4,9 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_jg" opcode="0x8f"/>
 */
-
 
 int i386_jg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

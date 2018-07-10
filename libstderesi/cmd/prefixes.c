@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/cmd/prefixes.c
+ * @file libstderesi/cmd/prefixes.c
 ** @ingroup cmd
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Thu Jan 04 11:26:11 2007 jfv
@@ -7,8 +7,6 @@
 **
 */
 #include "libstderesi.h"
-
-
 
 /**
  * Change the VM state as QUIET
@@ -19,7 +17,6 @@ int   cmd_quiet()
   world.state.revm_quiet = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Change the VM state as VERBOSE (default)
@@ -75,7 +72,6 @@ int   cmd_glregx()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Read the sorting parameter
  */
@@ -103,8 +99,6 @@ int   cmd_sort()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Set the share flag
  */
@@ -114,6 +108,3 @@ int   cmd_shared()
   world.state.revm_shared = 1;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-

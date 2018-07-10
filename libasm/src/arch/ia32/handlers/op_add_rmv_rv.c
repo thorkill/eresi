@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
  * Opcode :             0x01
  * Instruction :                ADD
  * Operands:            Destination: encoded vector.

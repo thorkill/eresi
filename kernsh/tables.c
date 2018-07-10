@@ -1,5 +1,5 @@
-/*
-* @file kernsh/tables.c
+/**
+ * @file kernsh/tables.c
 ** @ingroup kernsh
 **
 */
@@ -86,7 +86,6 @@ void  setup_local_cmdhash()
                    (void *) revm_getvarparams,
                    0,
                    HLP_KMEM_CHASH);
-
 
   revm_command_add(CMD_KVIRTM_INFO, (void *)cmd_kvirtm_info,
                    (void *) revm_getvarparams,

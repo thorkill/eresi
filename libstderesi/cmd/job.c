@@ -7,7 +7,6 @@
  */
 #include "libstderesi.h"
 
-
 int      revm_create_new_workspace(char *ws_name)
 {
   revmjob_t *job;
@@ -50,7 +49,6 @@ int      revm_create_new_workspace(char *ws_name)
 
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Incorrect workspace name", -1);
 }
-
 
 /**
  * Need doxygen comment

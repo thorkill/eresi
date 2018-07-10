@@ -1,5 +1,4 @@
 
-
 int main()
 {
   char  *a;

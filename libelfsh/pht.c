@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/pht.c
+ * @file libelfsh/pht.c
  * @ingroup libelfsh
 ** pht.c for libelfsh
 **
@@ -9,8 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * Check if segment is readable
@@ -359,7 +358,6 @@ elfsh_Phdr  *elfsh_get_segment_by_type(elfshobj_t *file,
                "Unable to find PHDR by type", NULL);
 }
 
-
 /**
  * Change endianess of PHT
  * @param p
@@ -402,7 +400,6 @@ void    elfsh_endianize_pht(elfsh_Phdr *p, char byteorder, uint16_t sz)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * Return an array of program (segment) header
  * @param file
@@ -443,7 +440,6 @@ int   elfsh_load_pht(elfshobj_t *file)
                       file->hdr->e_phnum);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Find the parent segment for this section
@@ -497,7 +493,6 @@ elfsh_Phdr  *elfsh_get_parent_segment(elfshobj_t *file, elfshsect_t *enew)
                "Unable to get parent PHDR", NULL);
 }
 
-
 /**
  * Tell if the section belongs to the segment or not
  * @param new
@@ -526,7 +521,6 @@ int   elfsh_segment_is_parent(elfshsect_t *new, elfsh_Phdr *p)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Get the base virtual address for an object
@@ -561,7 +555,6 @@ eresi_Addr  elfsh_get_object_baseaddr(elfshobj_t *file)
                 (elfsh_get_objtype(file->hdr) == ET_DYN ?
                  vaddr + file->rhdr.base :  vaddr));
 }
-
 
 /**
  * Return a ptr on the program header table
@@ -598,8 +591,6 @@ elfsh_Phdr  *elfsh_get_pht_entry_by_index(elfsh_Phdr *pht,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (pht + index));
 }
 
-
-
 /**
  * Create a new PHT entry
  * @param t
@@ -624,7 +615,6 @@ elfsh_Phdr  elfsh_create_phdr(elfsh_Word t,
   new.p_align = al;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
 
 /**
  * Insert a PHT entry ondisk
@@ -744,7 +734,6 @@ end:
                 enew + (file->hdr->e_phnum - 1));
 }
 
-
 /**
  * Remove a PHDR
  * @param current
@@ -770,10 +759,6 @@ int   elfsh_remove_phdr(elfshobj_t *current, int index)
   current->hdr->e_phnum--;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
 
 /**
  * @brief Set PHT entry rights from elfsh section mode.

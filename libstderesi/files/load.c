@@ -60,7 +60,6 @@ int   revm_is_loaded(char *name)
           }
       }
 
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
@@ -101,7 +100,6 @@ int   revm_file_loads(char *regex)
   // if matched load files
   return (0);
 }
-
 
 /**
  * @brief Load a file in e2dbg.
@@ -245,8 +243,6 @@ int   revm_file_load(char *name, eresi_Addr base, elfshlinkmap_t *lm)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  *  Insert an object in the list of opened elfsh descriptors

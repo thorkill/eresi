@@ -1,5 +1,5 @@
 /**
-* @file libe2dbg/kernel/buffering.c
+ * @file libe2dbg/kernel/buffering.c
  *
  *
  */
@@ -13,7 +13,6 @@ char buff_cmd[BUFFERMAXCMD][80];
 int insertcmdindex;
 int cmdindex;
 char buffering[BUFFERMAXLINES][80];       /* 200 lines and 80 chars */
-
 
 /**
  * nettoie le buffer de log
@@ -35,7 +34,6 @@ void ke2dbg_logbuf_clean(void)
 
     }
 }
-
 
 /**
  * insere une commande dans l historique
@@ -71,7 +69,6 @@ void ke2dbg_command_recall(int decal)
 
 }
 
-
 /**
  * insere une ligne dans la file du buffer de log
  * @param ptr
@@ -81,7 +78,6 @@ void ke2dbg_logbuf_insert(char *ptr)
   unsigned int i;
   char buf[] =
     "                                                                                ";
-
 
   if (insertbufferindex >= BUFFERMAXLINES)
     {
@@ -106,7 +102,6 @@ void ke2dbg_logbuf_insert(char *ptr)
                 insertbufferindex - buff_win_dim;
 }
 
-
 /**
  * affiche le bufer de log dans la fenetre de log
  *
@@ -122,7 +117,6 @@ void ke2dbg_logbuf_print()
       ke2dbg_print_AW("                                                                              ",
                       x);
     }
-
 
   for (x = 0; x < buff_win_dim; x++)
     {

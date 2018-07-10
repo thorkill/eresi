@@ -16,7 +16,6 @@ int func2(char *str)
   return 0;
 }
 
-
 // Potential Memory leak in that function
 int func3(char **str)
 {
@@ -24,7 +23,6 @@ int func3(char **str)
   *str = (char *) malloc(BUFSIZ + 5);
   return 0;
 }
-
 
 int mystrncmp(char *one, char *two, unsigned int n)
 {
@@ -38,7 +36,6 @@ int mystrncmp(char *one, char *two, unsigned int n)
 
   return (0);
 }
-
 
 // This example is interresting, it contains many kind of
 // incorrect heap manipulations or corruptions

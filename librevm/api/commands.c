@@ -1,5 +1,6 @@
-/*
-* @file librevm/api/commands.c
+
+/**
+ * @file librevm/api/commands.c
 ** @ingroup api
 ** @brief Commands functions.
 ** Started on  Mon Feb 24 15:52:06 2003 jfv
@@ -8,8 +9,6 @@
 **
 */
 #include "revm.h"
-
-
 
 /* Create the cmdhandler passed to hash_add() */
 revmcmd_t *revm_create_CMDENT(int  (*exec)(void *file, void *av),
@@ -28,7 +27,6 @@ revmcmd_t *revm_create_CMDENT(int  (*exec)(void *file, void *av),
   new->help   = help;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
 
 /* Change the handler for an ELFsh command */
 int   revm_command_set(char *cmd, void *exec, void *reg, u_int needcur)
@@ -79,7 +77,6 @@ int   revm_command_add(char *cmd, int (*exec)(void *, void *), void *reg,
            help));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* Delete a command */
 int   revm_command_del(char *cmd)

@@ -1,11 +1,11 @@
 /**
-* @file libgdbwrap/gdbwrapper.c
+ * @file libgdbwrap/gdbwrapper.c
  * @brief Implements the GDB serial protocol.
  * @ingroup libgdbwrap
  *
  */
 
-/*
+/**
  *  See gdb documentation, section D for more information on the
  *  remote serial protocol. To make it short, a packet looks like the following:
  *
@@ -27,7 +27,6 @@ static char          *gdbwrap_lastmsg(gdbwrap_t *desc)
 {
   return desc->packet;
 }
-
 
 static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
 {
@@ -78,12 +77,10 @@ static Bool          gdbwrap_errorhandler(gdbwrap_t *desc, const char *error)
   return TRUE;
 }
 
-
 static Bool         gdbwrap_is_interrupted(gdbwrap_t *desc)
 {
   return desc->interrupted;
 }
-
 
 /**
  * This function parses a string *strtoparse* starting at character
@@ -174,7 +171,6 @@ static la32          gdbwrap_little_endian(la32 addr)
   return addrlittle;
 }
 
-
 static uint8_t       gdbwrap_calc_checksum(gdbwrap_t *desc, const char *str)
 {
   unsigned           i;
@@ -197,7 +193,6 @@ static uint8_t       gdbwrap_calc_checksum(gdbwrap_t *desc, const char *str)
 
   return  sum;
 }
-
 
 static char          *gdbwrap_make_message(gdbwrap_t *desc, const char *query)
 {
@@ -223,7 +218,6 @@ static char          *gdbwrap_make_message(gdbwrap_t *desc, const char *query)
 
   return desc->packet;
 }
-
 
 /**
  * This function performes a run-length decoding and writes back to
@@ -280,7 +274,6 @@ static char          *gdbwrap_run_length_decode(char *dstpacket,
 
   return dstpacket;
 }
-
 
 /**
  * Populate the gdb registers with the values received in the
@@ -343,12 +336,10 @@ static void         gdbwrap_populate_reg(gdbwrap_t *desc, char *packet)
     }
 }
 
-
 static void          gdbwrap_send_ack(gdbwrap_t *desc)
 {
   send(desc->fd, GDBWRAP_COR_CHECKSUM, strlen(GDBWRAP_COR_CHECKSUM), 0x0);
 }
-
 
 static Bool          gdbwrap_check_ack(gdbwrap_t *desc)
 {
@@ -379,7 +370,6 @@ static Bool          gdbwrap_check_ack(gdbwrap_t *desc)
     }
 }
 
-
 static char          *gdbwrap_get_packet(gdbwrap_t *desc)
 {
   int                 rval;
@@ -405,7 +395,6 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
     }
   while (sumrval >= 3 &&
          desc->packet[sumrval - 3] != GDBWRAP_END_PACKETC && rval);
-
 
   /* if rval == 0, it means the host is disconnected/dead. */
   if (rval)
@@ -453,7 +442,6 @@ static char          *gdbwrap_get_packet(gdbwrap_t *desc)
   return NULL;
 }
 
-
 static char          *gdbwrap_send_data(gdbwrap_t *desc, const char *query)
 {
   int                 rval = 0;
@@ -485,14 +473,12 @@ static char          *gdbwrap_send_data(gdbwrap_t *desc, const char *query)
   return mes;
 }
 
-
 /******************** External functions ********************/
-
 
 /**
  * Returns the last signal. We return the signal number or 0 if no
  * signal was returned.
- **/
+ */
 unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
 {
   unsigned           ret = 0;
@@ -509,7 +495,6 @@ unsigned             gdbwrap_lastsignal(gdbwrap_t *desc)
   return ret;
 }
 
-
 u_char               gdbwrap_lasterror(gdbwrap_t *desc)
 {
   u_char             ret = 0;
@@ -525,7 +510,6 @@ u_char               gdbwrap_lasterror(gdbwrap_t *desc)
   return ret;
 }
 
-
 Bool                 gdbwrap_is_active(gdbwrap_t *desc)
 {
   if (desc->is_active)
@@ -537,7 +521,6 @@ Bool                 gdbwrap_is_active(gdbwrap_t *desc)
       return FALSE;
     }
 }
-
 
 /* If the last command is not supported, we return TRUE. */
 Bool                 gdbwrap_cmdnotsup(gdbwrap_t *desc)
@@ -554,12 +537,10 @@ Bool                 gdbwrap_cmdnotsup(gdbwrap_t *desc)
     }
 }
 
-
 Bool                 gdbwrap_erroroccured(gdbwrap_t *desc)
 {
   return desc->erroroccured;
 }
-
 
 unsigned             gdbwrap_atoh(const char *str, unsigned size)
 {
@@ -587,9 +568,6 @@ unsigned             gdbwrap_atoh(const char *str, unsigned size)
   return hex;
 }
 
-
-
-
 /**
  * Set/Get the gdbwrapworld variable. It's not mandatory to use the
  * other functions, but sometimes a global variable is required.
@@ -601,12 +579,10 @@ gdbwrapworld_t       gdbwrap_current_set(gdbwrap_t *world)
   return gdbwrapworld;
 }
 
-
 gdbwrap_t            *gdbwrap_current_get(void)
 {
   return gdbwrapworld.gdbwrapptr;
 }
-
 
 /**
  * Initialize the descriptor. We provide a default value of 1000B for
@@ -628,14 +604,12 @@ gdbwrap_t            *gdbwrap_init(int fd)
   return desc;
 }
 
-
 void                gdbwrap_close(gdbwrap_t *desc)
 {
   ASSERT(desc != NULL && desc->packet != NULL);
   free(desc->packet);
   free(desc);
 }
-
 
 /**
  * Initialize a connection with the gdb server and allocate more
@@ -683,7 +657,6 @@ void                gdbwrap_hello(gdbwrap_t *desc)
     }
 }
 
-
 /**
  * Send a "disconnect" command to the server and free the packet.
  */
@@ -693,7 +666,6 @@ void                gdbwrap_bye(gdbwrap_t *desc)
   gdbwrap_send_data(desc, GDBWRAP_DISCONNECT);
   printf("\nThx for using gdbwrap :)\n");
 }
-
 
 void                gdbwrap_reason_halted(gdbwrap_t *desc)
 {
@@ -710,7 +682,6 @@ void                gdbwrap_reason_halted(gdbwrap_t *desc)
       gdbwrap_errorhandler(desc, GDBWRAP_NO_TABLE);
     }
 }
-
 
 /**
  * Great, the gdb protocol has absolutely no consistency, thus we
@@ -744,7 +715,6 @@ gdbwrap_gdbreg32     *gdbwrap_readgenreg(gdbwrap_t *desc)
     }
 }
 
-
 void                 gdbwrap_continue(gdbwrap_t *desc)
 {
   char               *rec;
@@ -759,7 +729,6 @@ void                 gdbwrap_continue(gdbwrap_t *desc)
         }
     }
 }
-
 
 /**
  * Set a breakpoint. We read the value in memory, save it and write a
@@ -781,7 +750,6 @@ void                 gdbwrap_setbp(gdbwrap_t *desc, la32 linaddr,
   gdbwrap_writemem(desc, linaddr, &bp, sizeof(u_char));
 }
 
-
 void                 gdbwrap_simplesetbp(gdbwrap_t *desc, la32 linaddr)
 {
   char               packet[MSG_BUF];
@@ -791,13 +759,11 @@ void                 gdbwrap_simplesetbp(gdbwrap_t *desc, la32 linaddr)
   gdbwrap_send_data(desc, packet);
 }
 
-
 void                 gdbwrap_delbp(gdbwrap_t *desc, la32 linaddr,
                                    void *datasaved)
 {
   gdbwrap_writemem(desc, linaddr, datasaved, sizeof(u_char));
 }
-
 
 void                 gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr)
 {
@@ -807,7 +773,6 @@ void                 gdbwrap_simpledelbp(gdbwrap_t *desc, la32 linaddr)
            GDBWRAP_SEP_COMMA, linaddr, GDBWRAP_SEP_COMMA, 0x1);
   gdbwrap_send_data(desc, packet);
 }
-
 
 char                 *gdbwrap_readmem(gdbwrap_t *desc, la32 linaddr,
                                       unsigned bytes)
@@ -821,7 +786,6 @@ char                 *gdbwrap_readmem(gdbwrap_t *desc, la32 linaddr,
 
   return rec;
 }
-
 
 static void          *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr,
     void *value, unsigned bytes)
@@ -843,7 +807,6 @@ static void          *gdbwrap_writememory(gdbwrap_t *desc, la32 linaddr,
 
   return rec;
 }
-
 
 static void          *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr,
     void *value, unsigned bytes)
@@ -868,7 +831,6 @@ static void          *gdbwrap_writememory2(gdbwrap_t *desc, la32 linaddr,
 
   return rec;
 }
-
 
 void                 gdbwrap_writemem(gdbwrap_t *desc, la32 linaddr,
                                       void *value, unsigned bytes)
@@ -910,7 +872,6 @@ void                 gdbwrap_writemem(gdbwrap_t *desc, la32 linaddr,
     }
 }
 
-
 /**
  * Write a specific register. This command seems not to be supported
  * by the gdbserver. See gdbwrap_writereg2.
@@ -925,7 +886,6 @@ static void          gdbwrap_writeregister(gdbwrap_t *desc, ureg32 regNum,
            GDBWRAP_WRITEREG, regNum, val);
   gdbwrap_send_data(desc, regpacket);
 }
-
 
 static void          gdbwrap_writeregister2(gdbwrap_t *desc, ureg32 regNum,
     la32 val)
@@ -948,7 +908,6 @@ static void          gdbwrap_writeregister2(gdbwrap_t *desc, ureg32 regNum,
   snprintf(locreg, sizeof(locreg), "%s%s", GDBWRAP_WGENPURPREG, ret);
   gdbwrap_send_data(desc, locreg);
 }
-
 
 void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regnum, la32 val)
 {
@@ -991,7 +950,6 @@ void                 gdbwrap_writereg(gdbwrap_t *desc, ureg32 regnum, la32 val)
     }
 }
 
-
 /**
  * Ship all the registers to the server in only 1 query. This is used
  * when modifying multiple registers at once for example.
@@ -1022,7 +980,6 @@ char                 *gdbwrap_shipallreg(gdbwrap_t *desc)
   return gdbwrap_send_data(desc, locreg);
 }
 
-
 void                gdbwrap_ctrl_c(gdbwrap_t *desc)
 {
   u_char            sended = CTRL_C;
@@ -1037,7 +994,6 @@ void                gdbwrap_ctrl_c(gdbwrap_t *desc)
               0x0);
   ASSERT(rval);
 }
-
 
 /**
  * Here's the format of a signal:
@@ -1059,7 +1015,6 @@ void                 gdbwrap_signal(gdbwrap_t *desc, int signal)
   rec = gdbwrap_send_data(desc, signalpacket);
 }
 
-
 void                 gdbwrap_stepi(gdbwrap_t *desc)
 {
   char               *rec;
@@ -1077,13 +1032,12 @@ void                 gdbwrap_stepi(gdbwrap_t *desc)
     }
 }
 
-
 /**
  * Sends a custom remote command. This heavily depends on the
  * server. We "transform" the char into its corresponding ASCII code
  * (in char).
  * @param: cmd the command to send, in clear text.
- **/
+ */
 char                *gdbwrap_remotecmd(gdbwrap_t *desc, char *cmd)
 {
   char              signalpacket[MSG_BUF];

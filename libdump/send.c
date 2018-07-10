@@ -1,4 +1,4 @@
-/*
+/**
 ** send.c for elfsh
 **
 ** Started on Tue Feb 15 12:51:34 CET 2005 ym
@@ -28,7 +28,6 @@ int dump_send_real(int s, pkt_t *pkt)
 #endif
       return (-1);
     }
-
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, data, sizeof (char)*len, -1);
 
@@ -209,4 +208,3 @@ int   dump_send(dump_id_t dst, void *data, dump_len_t len)
   XFREE(__FILE__, __FUNCTION__, __LINE__, path);
   return 0;
 }
-

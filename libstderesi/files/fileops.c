@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/files/fileops.c
+/**
+ * @file libstderesi/files/fileops.c
 ** @ingroup files
 ** Started on  Thu Feb 13 04:06:45 2003 jfv
 ** Last update Wed Mar 10 12:31:49 2004 jfv
@@ -7,8 +7,6 @@
 **
 */
 #include "libstderesi.h"
-
-
 
 /* Write command */
 int     cmd_write()
@@ -134,7 +132,6 @@ int     cmd_write()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Append command : 2 parameters, a section and the string to be appended */
 int   cmd_append()
 {
@@ -219,7 +216,6 @@ int   cmd_append()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Extend command : 2 parameters, a section and the extansion size */
 int   cmd_extend()
 {
@@ -278,7 +274,6 @@ int   cmd_extend()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Request to fixup the bss from command line */
 int   cmd_fixup()
 {
@@ -298,4 +293,3 @@ int   cmd_fixup()
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Failed to fixup BSS", (-1));
 }
-

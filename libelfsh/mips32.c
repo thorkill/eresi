@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/mips32.c
+ * @file libelfsh/mips32.c
  * @ingroup libelfsh
 ** mips32.c for libelfsh
 **
@@ -170,9 +170,6 @@ int     elfsh_cflow_mips32(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
  * PLT hijacking on MIPS32, not needed thus unimplemented for now
  * @param file
@@ -188,11 +185,6 @@ int   elfsh_hijack_plt_mips32(elfshobj_t *file,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS\n", 0);
 }
-
-
-
-
-
 
 /**
  * ALTPLT hijacking on MIPS32
@@ -371,7 +363,6 @@ int     elfsh_relocate_mips32(elfshsect_t       *new,
 
   eresi_Addr    old_HI16_dword = NULL;
 
-
 #define VERIFY16(x)     (((x) & (0xFFFFFFFF << 16)) ? 1 : 0)
 
 #define TRUNCATE16(x)   ((x) & ~(0xFFFFFFFF << 16))
@@ -381,7 +372,6 @@ int     elfsh_relocate_mips32(elfshsect_t       *new,
 #define ISEXTERNAL(x)   (!(x->r_info & STB_LOCAL))
 #define ISGPDISP(x)     (elfsh_get_symbol_by_name(new->parent, "_gp_disp")->st_value == \
                          elfsh_get_symbol_from_reloc(new->parent, x)->st_value)
-
 
 #define S (addr)          /* XXX Assume we only face local symbols */
 #define A (*dword)
@@ -462,7 +452,6 @@ int     elfsh_relocate_mips32(elfshsect_t       *new,
 
       TRUNCATE16(((AHL + S) - (short) (AHL + S))>>16)
       */
-
 
       /* remember last R_MIPS_HI16 */
       HI16_todo = 1;
@@ -554,8 +543,6 @@ int     elfsh_relocate_mips32(elfshsect_t       *new,
                                                     + (short) A)/*AHL*/
                                                    + HI16_addr/*S*/)) >> 16);
 
-
-
             }
 
           HI16_todo = 0;
@@ -566,7 +553,6 @@ int     elfsh_relocate_mips32(elfshsect_t       *new,
           *dword = VERIFY16(((old_HI16_dword << 16) + (short) A) + GP + P + 4);
           PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
         }
-
 
       if (ISLOCAL(cur))
         {
@@ -689,5 +675,3 @@ int     elfsh_relocate_mips32(elfshsect_t       *new,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
-
-

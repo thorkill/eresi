@@ -13,6 +13,5 @@ static void original_exit(void)
   printk(KERN_ALERT "ORIGINAL END\n");
 }
 
-
 module_init(original_init);
 module_exit(original_exit);

@@ -1,4 +1,4 @@
-/*
+/**
 ** sht_extend.c
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
@@ -66,12 +66,8 @@ char sc[] =
 
 #endif
 
-
-
 /* test for non-mapped data */
 char  *str = "stop looking at me ! \n";
-
-
 
 /* Here we map the shellcode in a newly inserted mapped section (.devhell) and modify the entry point */
 int   main(int argc, char **argv)
@@ -132,10 +128,3 @@ err:
   elfsh_error();
   return (-1);
 }
-
-
-
-
-
-
-

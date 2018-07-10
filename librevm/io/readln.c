@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/readln.c
+ * @file librevm/io/readln.c
  * @ingroup io
  * @brief Interface readline with librevm.
  *
@@ -159,7 +159,6 @@ void    revm_screen_getsize(int *lines, int *cols)
 #endif
 }
 
-
 void    revm_buffer_free(char *buf)
 {
 #if !defined(USE_READLN)
@@ -168,7 +167,6 @@ void    revm_buffer_free(char *buf)
   NOPROFILER_OUT();
 #endif
 }
-
 
 /**
  * @brief  Strip readline escape characters from buffer
@@ -194,7 +192,6 @@ void    revm_strip_char(char *str, char c)
   NOPROFILER_OUT();
 #endif
 }
-
 
 void    revm_prompt_postselect_restore(fd_set *sel_sockets)
 {
@@ -222,14 +219,12 @@ void    revm_callback_handler_install(char *prompt, void (*fct)(char *str))
 #endif
 }
 
-
 void    revm_prompt_log()
 {
 #if defined (USE_READLN)
   revm_log(revm_get_prompt());
 #endif
 }
-
 
 void    revm_conditional_rlquit()
 {
@@ -270,7 +265,6 @@ int   revm_is_enabled()
   return (0);
 #endif
 }
-
 
 int   revm_is_stdinput()
 {

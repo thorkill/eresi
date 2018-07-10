@@ -8,7 +8,6 @@
  */
 #include "revm.h"
 
-
 /**
  * @brief Get a va_list of parameters
  */
@@ -22,7 +21,6 @@ static int  parse_lookup_varlist(char *param, char *fmt, ...)
   va_end(arg_ptr);
   return (rc);
 }
-
 
 /**
  * @brief Parse a vector access
@@ -75,7 +73,6 @@ revmobj_t *parse_vector(char *param, char *fmt)
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * @brief Parse a hash access
@@ -151,9 +148,6 @@ revmobj_t *parse_hash(char *param, char *fmt)
   /* Success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 
 /**
  * @brief Parse a hash access

@@ -1,5 +1,5 @@
-/*
-* @file librevm/api/misc.c
+/**
+ * @file librevm/api/misc.c
 ** @ingroup api
 ** Started on  Fri Nov  2 15:21:56 2001 jfv
 ** Updated on  Fri Sep 11 17:26:11 2005 jfv
@@ -7,7 +7,6 @@
 **
 */
 #include "revm.h"
-
 
 /**
  * return the project name accordingly to mode
@@ -30,7 +29,6 @@ char    *revm_modename_get()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (mode));
 }
-
 
 /**
  * Our system implementation
@@ -76,7 +74,6 @@ int   revm_system(char *cmd)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-
 
 /**
  * Decide what to do for exiting depending on the current input
@@ -144,7 +141,6 @@ void  revm_error(char *label, char *param)
   revm_output(buf);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * Open the script file
@@ -265,7 +261,6 @@ char    *revm_build_unknown(char *buf, const char *str, u_long type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (buf));
 }
 
-
 /**
  * Retreive a file object giving its unique ID
  */
@@ -365,7 +360,6 @@ int   revm_doerror(void (*fct)(char *str), char *str)
                "Bypassed error printing", (-1));
 }
 
-
 /**
  * Change the shell variable
  */
@@ -379,7 +373,6 @@ int   revm_setshell(char *str)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * The internal basename function
@@ -405,8 +398,6 @@ char    *revm_basename(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
 /**
  * Useful to differentiate 0 and a string
  */
@@ -425,8 +416,6 @@ int revm_isnbr(char *string)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
-
-
 
 /**
  *  Concatenate all parameters and return a single string
@@ -451,7 +440,6 @@ char  *revm_string_get(char **params)
                "Empty parameter", NULL);
 }
 
-
 /**
  *  Get and Set fields of structures
  */
@@ -460,12 +448,10 @@ uint8_t  revm_get_argc(void)
   return world.curjob->curcmd->argc;
 }
 
-
 char     *revm_get_cur_job_parameter(uint8_t p)
 {
   return world.curjob->curcmd->param[p];
 }
-
 
 char     *revm_get_cur_job_parameter_with_job(revmjob_t *job, uint8_t p)
 {

@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/sanitize.c
+ * @file libelfsh/sanitize.c
  * @ingroup libelfsh
 ** sanitize.c for elfsh
 **
@@ -9,7 +10,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * @brief Update the sh_name field in the section header table entry
@@ -198,4 +198,3 @@ void    elfsh_update_symtab_shidx(elfshobj_t *file, int idx, int diff)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-

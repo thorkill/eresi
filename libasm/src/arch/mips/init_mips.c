@@ -1,9 +1,9 @@
 /**
-* @file libasm/src/arch/mips/init_mips.c
+ * @file libasm/src/arch/mips/init_mips.c
 ** @ingroup mips
 */
 /**
-* @file libasm/src/arch/mips/init_mips.c
+ * @file libasm/src/arch/mips/init_mips.c
  * @brief This file have function for initializing and fetch code for MIPS architecture.
  *
  * fix and fill
@@ -13,7 +13,6 @@
  */
 
 #include <libasm.h>
-
 
 /**
  * @fn int asm_fetch_mips(asm_instr *ins, u_char *buf, u_int len, asm_processor *proc)

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/sym.c
+ * @file libstderesi/elf/sym.c
 ** @ingroup elf
 */
 /**
@@ -11,7 +11,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * Print the chosen symbol table
@@ -130,8 +129,6 @@ int   ds(elfshobj_t *file,
           *off = '\0';
         }
 
-
-
       /* Different output depending on the quiet flag */
       if (!world.state.revm_quiet)
         {
@@ -188,10 +185,6 @@ int   ds(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /**
  * Display the symbol table
  */
@@ -224,9 +217,6 @@ int   cmd_sym()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 
 /**
  * Display the dynamic symbol table
@@ -275,15 +265,3 @@ int   cmd_dynsym()
                 ds(world.curjob->curfile, sct,
                    num, tmp, elfsh_get_dynsymbol_name));
 }
-
-
-
-
-
-
-
-
-
-
-
-

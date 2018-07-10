@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/ia32.c
+ * @file libelfsh/ia32.c
  * @ingroup libelfsh
  * ia32.c for libelfsh
  *
@@ -110,8 +110,6 @@ int   elfsh_extplt_ia32(elfshsect_t *extplt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got
  * Should work on both ET_EXEC and ET_DYN (similar encoding offsets even if different jmp)
@@ -193,8 +191,6 @@ int   elfsh_reencode_pltentry_ia32(elfshobj_t   *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * On IA32 we need to reencode the PLT so that it uses the .alt.got instead of .got
  * Should work on both ET_EXEC and ET_DYN
@@ -230,8 +226,6 @@ int   elfsh_reencode_first_pltentry_ia32(elfshobj_t  *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Hook for ENCODEPLT1 on IA32 : Simple wrapper for both calls
  *
@@ -259,9 +253,6 @@ int   elfsh_encodeplt1_ia32(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
  * Hook for ENCODEPLT on IA32
  *
@@ -284,8 +275,6 @@ int   elfsh_encodeplt_ia32(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Static hooking for IA32
@@ -411,10 +400,6 @@ int     elfsh_cflow_ia32(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /**
  * PLT hijacking on i386 for ET_DYN objects
  * @param file
@@ -462,9 +447,6 @@ int   elfsh_hijack_plt_ia32(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Perform relocation on entry for INTEL architecture.
@@ -532,7 +514,6 @@ int      elfsh_relocate_ia32(elfshsect_t  *new,
 
       *dword = elfsh_get_reloffset(rel_entry) - section->sh_addr;
 
-
       break;
 
     case R_386_PLT32:
@@ -550,7 +531,6 @@ int      elfsh_relocate_ia32(elfshsect_t  *new,
           if (symname == NULL)
             PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                          "Unable to find symbol name", -1);
-
 
           symbol = elfsh_get_symbol_from_reloc(mod->parent, cur);
 
@@ -772,7 +752,7 @@ static int    elfsh_ac_largs_add(int  add,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-/*
+/**
 Used with Forward analysis
 TODO: Keep it ?
 static eresi_Addr elfsh_ac_foundcallto(elfshobj_t *file, eresi_Addr vaddr, eresi_Addr *before)
@@ -862,7 +842,6 @@ static char *elfsh_ac_get_sect_ptr(elfshobj_t *file, eresi_Addr vaddr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, buf);
 }
 
-
 /**
  * TODO: implement forward / backward
  *
@@ -893,7 +872,6 @@ int             *elfsh_args_count_ia32(elfshobj_t *file, u_int foffset,
   int       args[ELFSH_TRACE_MAX_ARGS + 1];
   u_int   arg_count;
   u_int   max_arg_offset;
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 

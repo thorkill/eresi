@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/map.c
+ * @file libelfsh/map.c
  * @ingroup libelfsh
 ** map.c for libelfsh
 **
@@ -9,7 +9,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Fixup the binary, inject symbols and sort SHT
@@ -37,7 +36,6 @@ void          elfsh_fixup(elfshobj_t *file)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * Load all the part of the binary.
@@ -87,7 +85,6 @@ int           elfsh_read_obj(elfshobj_t *file)
       elfsh_get_core_notes(file);
       goto out;
     }
-
 
   /*
    ** We cannot use simply elfsh_get_anonymous_section() here

@@ -1,9 +1,9 @@
 /**
-* @file libasm/src/arch/mips/register_mips.c
+ * @file libasm/src/arch/mips/register_mips.c
 ** @ingroup mips
 */
 /**
-* @file libasm/src/arch/mips/register_mips.c
+ * @file libasm/src/arch/mips/register_mips.c
  * @brief Registration of the MIPS disassembling vectors.
  *
  * fix and fill
@@ -159,7 +159,6 @@ int asm_register_mips_operands()
 
   return 1;
 }
-
 
 /**
  * @fn int asm_register_mips_operand(unsigned int type, unsigned long func)

@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_cmovae" opcode="0x43"/>
 */
-
 
 int i386_cmovae(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

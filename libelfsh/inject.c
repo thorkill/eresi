@@ -12,9 +12,6 @@
  */
 #include "libelfsh.h"
 
-
-
-
 /**
  * Insert a new section at the first place in the executable PT_LOAD
  * This function is not e2dbg safe and should only be used for ondisk files
@@ -267,19 +264,15 @@ int   elfsh_insert_code_section(elfshobj_t  *file,
                            elfsh_get_entrypoint(file->hdr) + sect->shdr->sh_size);
     }
 
-
   /* Inject the SECT symbol */
   if (elfsh_insert_sectsym(file, sect) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Unable to insert section symbol", -1);
 
-
   /* Okay ! */
   sect->phdr = phdr;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
-
-
 
 /**
  * Insert a new section at the first place in the executable PT_LOAD
@@ -463,10 +456,6 @@ int   elfsh_insert_code_section_up(elfshobj_t   *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
 
-
-
-
-
 /**
  * Insert a data section in the object
  * This function is not e2dbg safe and should only be used with ondisk files
@@ -488,7 +477,6 @@ int   elfsh_insert_data_section(elfshobj_t  *file,
   u_int   pad = 0;
   elfsh_Phdr  *phdr = NULL, *phdr2 = NULL;
   u_int   range;
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -582,8 +570,6 @@ int   elfsh_insert_data_section(elfshobj_t  *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
-
-
 
 /**
  *
@@ -714,8 +700,6 @@ int   elfsh_insert_runtime_section(elfshobj_t  *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
 
-
-
 /**
  * Static binary injection : section injection for static binaries
  *
@@ -758,7 +742,6 @@ int   elfsh_insert_static_section(elfshobj_t   *file,
     {
       lastsect = lastsect->next;
     }
-
 
 #if __DEBUG_STATIC__
   printf("[DEBUG_STATIC] Found last section for static injection : %s \n",
@@ -885,10 +868,6 @@ int   elfsh_insert_static_section(elfshobj_t   *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
 
-
-
-
-
 /**
  * Insert a mapped section in the object
  * This function is e2dbg safe
@@ -971,7 +950,6 @@ int   elfsh_insert_mapped_section(elfshobj_t  *file,
     }
 }
 
-
 /**
  * Insert a non-mapped section in the object
  *
@@ -1035,7 +1013,6 @@ int   elfsh_insert_unmapped_section(elfshobj_t  *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
-
 
 /**
  * Insert a section in the object
@@ -1118,7 +1095,6 @@ elfshsect_t    *elfsh_insert_section(elfshobj_t  *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect));
 }
 
-
 /**
  * Insert a section at the requested index
  * Should only be used with ondisk files
@@ -1181,7 +1157,6 @@ int   elfsh_insert_section_idx(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sect->index));
 }
-
 
 /**
  * HANDLER OF THE WRITEMEM VECTOR !!!

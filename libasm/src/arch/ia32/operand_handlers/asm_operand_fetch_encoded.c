@@ -7,7 +7,6 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-
 /**
  * @ingroup operand_handler
  * Decode data for operand type ASM_CONTENT_ENCODED

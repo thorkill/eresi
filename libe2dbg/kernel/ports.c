@@ -1,5 +1,5 @@
 /**
-* @file libe2dbg/kernel/ports.c
+ * @file libe2dbg/kernel/ports.c
  */
 #include "ke2dbg.h"
 
@@ -64,7 +64,6 @@ void ke2dbg_outb (unsigned char Value, unsigned int Port)
           "d" (Port));
 #endif
 }
-
 
 /**
  * @param Value

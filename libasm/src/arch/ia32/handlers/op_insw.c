@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_insw" opcode="0x6d"/>
   <instruction func="op_insd" opcode="0x6d"/>
 */

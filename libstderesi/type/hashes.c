@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/type/hashes.c
+/**
+ * @file libstderesi/type/hashes.c
 ** @ingroup type
 ** @brief Pretty printing for elfsh hash tables.
 **
@@ -78,7 +78,6 @@ int   revm_table_display_element(hash_t *h, char *key, u_char inside)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Display the content of a hash table
  * @param name Hash table name to display
@@ -122,10 +121,6 @@ int   revm_table_display_content(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /**
  * Display the header of a hash table
  * @param table
@@ -149,8 +144,6 @@ int   revm_table_display(hash_t *table, char *name)
   revm_output(logbuf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Display the content of a hash table
@@ -176,8 +169,6 @@ static void revm_tables_display()
   revm_output("\n Type 'help tables' for more table details.\n\n");
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
 
 /**
  * Display the content of all hash tables that match the regex
@@ -230,9 +221,6 @@ static int  revm_table_display_regx2(char *tableregx, char *elemregx)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
  * Display the content of all hash tables that match the regex
  * @param regx
@@ -283,7 +271,6 @@ static int  revm_table_display_regx(char *regx)
 
 }
 
-
 /**
  *  Print and modify internal hash tables
  */
@@ -330,8 +317,6 @@ int   cmd_tables()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Empty a hash table

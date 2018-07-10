@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/dynsym.c
+ * @file libelfsh/dynsym.c
  * @ingroup libelfsh
 ** Dynsym.c for libelfsh
 **
@@ -7,7 +7,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Return the dynsymbol name giving its index in the dynamic symbol string table
@@ -35,8 +34,6 @@ char    *elfsh_get_dynsymbol_name(elfshobj_t *file, elfsh_Sym *s)
   ret = (char *) rdata + s->st_name;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
 
 /**
  * Return the used offset in .dynstr or -1 if failed
@@ -91,11 +88,6 @@ int   elfsh_set_dynsymbol_name(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_name));
 }
-
-
-
-
-
 
 /**
  * Return a ptr on the dynamic symbol table num is filled with the entries total number
@@ -197,7 +189,6 @@ void    *elfsh_get_dynsymtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /**
  * Get symtab entry by vaddr
  * @param file
@@ -226,7 +217,6 @@ elfsh_Sym   *elfsh_get_dynsymbol_by_value(elfshobj_t  *file,
                 (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
 }
 
-
 /**
  * Return the dynamic symbol name giving its value,
  * Fill 'offset' with the difference between sym->st_value and 'value'
@@ -247,7 +237,6 @@ char    *elfsh_reverse_dynsymbol(elfshobj_t *file,
   char    *str;
   elfsh_Sym *pltsym;
   elfshsect_t *plt;
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -342,7 +331,6 @@ char    *elfsh_reverse_dynsymbol(elfshobj_t *file,
             str = NULL;
           }
 
-
         PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (str));
       }
 
@@ -350,7 +338,6 @@ char    *elfsh_reverse_dynsymbol(elfshobj_t *file,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "No valid symbol interval", NULL);
 }
-
 
 /**
  * Return the symbol entry giving its name
@@ -429,8 +416,6 @@ elfsh_Sym *elfsh_get_dynsymbol_by_name(elfshobj_t *file, char *name)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Symbol not found", NULL);
 }
-
-
 
 /**
  * Shift the dynamic symbol table, mostly useful on ET_DYN objects

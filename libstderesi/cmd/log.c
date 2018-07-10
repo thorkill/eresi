@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/cmd/log.c
+/**
+ * @file libstderesi/cmd/log.c
 ** @ingroup cmd
 ** Implement logging facilities
 **
@@ -57,7 +57,6 @@ int     cmd_log()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Export in environment command

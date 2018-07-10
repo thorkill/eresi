@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/strip.c
+ * @file libelfsh/strip.c
  * @ingroup libelfsh
  * Made by jfv
  * Login   <jfv@devhell.org>
@@ -51,4 +51,3 @@ int   elfsh_strip(elfshobj_t *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

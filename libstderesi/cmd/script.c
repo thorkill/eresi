@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/cmd/script.c
+ * @file libstderesi/cmd/script.c
  * @ingroup cmd
  * Started on  Fri May 16 15:18:35 2005 jfv
  *
@@ -8,7 +8,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * Script used as command function.
@@ -62,7 +61,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Set then scriptsdir directory and add cmd corresponding to scripts
  * @param dir_name Directory path where scripts are located.
@@ -105,7 +103,6 @@ int   revm_add_script_cmd(char *dir_name)
             }
         }
     }
-
 
   while ( (dir_entry = readdir(dir)))
     {
@@ -157,7 +154,6 @@ int   revm_add_script_cmd(char *dir_name)
   closedir(dir);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Elfsh/E2dbg command for revm_add_script_cmd()

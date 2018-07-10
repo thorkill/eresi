@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction name="pushf" func="op_pushf" opcode="0x9c"/>
 */
-
 
 int op_pushf(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

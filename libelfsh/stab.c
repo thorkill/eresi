@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/stab.c
+ * @file libelfsh/stab.c
  * @ingroup libelfsh
  * stabs.c for libelfsh
  *
@@ -96,7 +96,6 @@ void    *elfsh_get_stab(elfshobj_t *file, int *num)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * @brief Return the symbol type name giving its index in the symtype array

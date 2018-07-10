@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/scanner.c
+ * @file librevm/lang/scanner.c
  * @ingroup lang
  * Started on  Fri Feb  7 20:53:25 2003 jfv
  * Updated on  Fri Mar  5 18:47:41 2007 jfv
@@ -7,7 +7,6 @@
  *
  */
 #include "revm.h"
-
 
 /**
  * Replace \xNUM by the value, I wished readline could have done that
@@ -154,8 +153,6 @@ void      revm_replace_speblanks(u_int argc, char **argv)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /**
  * Count blanks, so that we can allocate argv
  */
@@ -219,7 +216,6 @@ u_int   revm_findblanks(char *buf)
 
   return (nbr);
 }
-
 
 /**
  * Cut words of the newline and create argv
@@ -292,13 +288,6 @@ char    **revm_doargv(u_int nbr, u_int *argc, char *buf)
 
   NOPROFILER_ROUT(argv);
 }
-
-
-
-
-
-
-
 
 /* Its lighter than flex ... */
 char    **revm_input(int *argc, char *available_line)

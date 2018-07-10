@@ -1,13 +1,12 @@
 /**
-* @file libstderesi/analysis/trace.c
-* @ingroup analysis
-* @brief All functions that help to trace content
+ * @file libstderesi/analysis/trace.c
+ * @ingroup analysis
+ * @brief All functions that help to trace content
 *
-* Started Jul 2 2005 00:03:44 mxatone
+ * Started Jul 2 2005 00:03:44 mxatone
 *
 */
 #include "libstderesi.h"
-
 
 /* XXX: The good syntax should be :
 **
@@ -155,7 +154,6 @@ int     cmd_tracerun()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Create the structure that store trace cmd informations

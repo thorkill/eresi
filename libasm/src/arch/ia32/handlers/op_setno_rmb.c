@@ -1,5 +1,6 @@
+
 /**
-* @file libasm/src/arch/ia32/handlers/op_setno_rmb.c
+ * @file libasm/src/arch/ia32/handlers/op_setno_rmb.c
  *
  * @ingroup IA32_instrs
  *
@@ -25,4 +26,3 @@ int op_setno_rmb(asm_instr *new, u_char *opcode, u_int len,
                                 new);
   return (new->len);
 }
-

@@ -80,8 +80,6 @@ void    e2dbg_display_print()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /* Execute all displayed commands for a breakpoint or a step */
 int   e2dbg_display(char **cmd, u_int nbr)
 {
@@ -119,8 +117,6 @@ int   e2dbg_display(char **cmd, u_int nbr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Display on breakpoint or step */
 int   cmd_display()

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_sahf.c
+ * @file libasm/src/arch/ia32/handlers/op_sahf.c
  *
  * @ingroup IA32_instrs
 **
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction opcode="0x9e" func="op_sahf"/>
  */
 

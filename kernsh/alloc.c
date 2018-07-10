@@ -1,11 +1,10 @@
-/*
-* @file kernsh/alloc.c
+/**
+ * @file kernsh/alloc.c
 ** @ingroup kernsh
 **
 */
 #include "kernsh.h"
 #include "libkernsh.h"
-
 
 /* Alloc contiguous kernel memory */
 int   cmd_kalloc()
@@ -43,8 +42,6 @@ int   cmd_kalloc()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Free contiguous kernel memory */
 int   cmd_kfree()
 {
@@ -81,8 +78,6 @@ int   cmd_kfree()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Alloc non contiguous kernel memory */
 int   cmd_kallocnc()
 {
@@ -118,7 +113,6 @@ int   cmd_kallocnc()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* Free non contiguous kernel memory */
 int   cmd_kfreenc()

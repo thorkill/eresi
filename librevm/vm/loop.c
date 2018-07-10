@@ -1,12 +1,11 @@
 /**
-* @file librevm/vm/loop.c
+ * @file librevm/vm/loop.c
  * @ingroup vm
  * @brief This file include the control flow support for scripting.
  *
  * Started on  Wed Nov 19 23:02:04 2003 jfv
  */
 #include "revm.h"
-
 
 /**
  * The infinite main loop of the interactive command
@@ -168,8 +167,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
 /**
  * Execute an ERESI script (only used in non-interactive mode or when sourcing a script)
  */
@@ -281,7 +278,6 @@ int   revm_execscript()
         }
     }
 
-
   /* We finished executing the script for now */
 end:
 
@@ -307,8 +303,6 @@ end:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, status);
 }
-
-
 
 /**
  * Execute the current script command
@@ -356,7 +350,6 @@ int   revm_execmd()
                         REVM_SCRIPT_CONTINUE);
       }
 
-
 end:
 
   curjob->recur[curjob->curscope].script = curjob->curcmd = NULL;
@@ -369,10 +362,6 @@ end:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
 
 /**
  * Take the ERESI machine control flow in charge

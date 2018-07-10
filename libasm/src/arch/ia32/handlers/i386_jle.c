@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_jle" opcode="0x8e"/>
 */
-
 
 int i386_jle(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

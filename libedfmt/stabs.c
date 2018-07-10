@@ -3,7 +3,7 @@
  * @brief Implement DWARF2, STABS, and the ERESI debug formats.
  */
 /**
-* @file libedfmt/stabs.c
+ * @file libedfmt/stabs.c
 ** @ingroup libedfmt
 ** @brief Interface routines for STABS debug format.
 **
@@ -19,7 +19,7 @@
  * This version of stabs format parsing has been approved for x86
  * and gentoo linux, some bugs can append on Sparc, more test will
  * be done to make this work correctly
-* @file libedfmt/stabs.c
+ * @file libedfmt/stabs.c
  */
 
 #define STABS_HNAME_TYPE_REF    "stabs_type_reference"
@@ -112,7 +112,6 @@ edfmtstabsinfo_t *stabs_info = NULL;
         PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,  \
                      "Pool allocation failed", _ret);       \
     } while (0)
-
 
 /**
  * Actual parsed file

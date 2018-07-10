@@ -1,3 +1,4 @@
+
 /**
  * @file librevm/api/job.c
  * @ingroup api
@@ -7,7 +8,6 @@
  *
  */
 #include "revm.h"
-
 
 /* Create a new job structure */
 revmjob_t *revm_clone_job(char *newname, revmjob_t *job)
@@ -63,7 +63,6 @@ revmjob_t *revm_clone_job(char *newname, revmjob_t *job)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
 
-
 /* Switch of current job */
 void    revm_switch_job(revmjob_t      *job)
 {
@@ -105,7 +104,6 @@ int   revm_valid_workspace(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
-
 
 /* Is this workspace the current one ? */
 int   revm_own_job(revmjob_t *job)

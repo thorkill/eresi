@@ -6,7 +6,6 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-
 /**
  * @brief Handler for instruction push cs opcode 0x0e
  */

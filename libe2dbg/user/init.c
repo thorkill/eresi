@@ -1,9 +1,8 @@
 /**
-* @file libe2dbg/user/init.c
+ * @file libe2dbg/user/init.c
 ** @ingroup user
 */
 #include "libe2dbg.h"
-
 
 /**
  * Debugger library initialisation

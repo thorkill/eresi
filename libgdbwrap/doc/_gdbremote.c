@@ -282,7 +282,6 @@ struct remote_arch_state
   long remote_packet_size;
 };
 
-
 /* Handle for retreving the remote protocol data from gdbarch.  */
 static struct gdbarch_data *remote_gdbarch_data_handle;
 
@@ -502,7 +501,6 @@ static struct target_ops extended_async_remote_ops;
    remote_wait()/wait_for_inferior() have gained a timeout parameter
    this can go away.  */
 static int wait_forever_enabled_p = 1;
-
 
 /* This variable chooses whether to send a ^C or a break when the user
    requests program interruption.  Although ^C is usually what remote
@@ -1117,7 +1115,6 @@ void (*deprecated_target_resume_hook) (void);
 void (*deprecated_target_wait_loop_hook) (void);
 
 
-
 /* These are the threads which we last sent to the remote system.
    -1 for all or -2 for not sent yet.  */
 static int general_thread;
@@ -1378,7 +1375,6 @@ static int remote_unpack_thread_info_response (char *pkt,
     struct gdb_ext_thread_info
     *info);
 
-
 static int remote_get_threadinfo (threadref *threadid,
                                   int fieldset, /*TAG mask */
                                   struct gdb_ext_thread_info *info);
@@ -1604,7 +1600,6 @@ pack_threadid (char *pkt, threadref *id)
   return pkt;
 }
 
-
 static char *
 unpack_threadid (char *inbuf, threadref *id)
 {
@@ -1705,7 +1700,7 @@ threadmatch (threadref *dest, threadref *src)
   return 1;
 }
 
-/*
+/**
    threadid:1,        # always request threadid
    context_exists:2,
    display:4,
@@ -1982,7 +1977,6 @@ remote_get_threadlist (int startflag, threadref *nextthread, int result_limit,
    getting partial thread lists from the remote target so, polling the
    quit_flag is required.  */
 
-
 /* About this many threadisds fit in a packet.  */
 
 #define MAXTHREADLISTRESULTS 32
@@ -2093,7 +2087,7 @@ remote_find_new_threads (void)
     }
 }
 
-/*
+/**
  * Find all threads for info threads command.
  * Uses new thread protocol contributed by Cisco.
  * Falls back and attempts to use the older method (above)
@@ -2154,7 +2148,7 @@ remote_threads_info (void)
   return;
 }
 
-/*
+/**
  * Collect a descriptive string about the given thread.
  * The target may say anything it wants to about the thread
  * (typically info about its blocked / runnable state, name, etc.).
@@ -2855,7 +2849,6 @@ remote_query_supported (void)
         feature->func (feature, feature->default_support, NULL);
       }
 }
-
 
 static void
 remote_open_1 (char *name, int from_tty, struct target_ops *target,
@@ -4604,7 +4597,6 @@ hexnumstr (char *buf, ULONGEST num)
   return hexnumnstr (buf, num, len);
 }
 
-
 /* Set BUF to the hex digits representing NUM, padded to WIDTH characters.  */
 
 static int
@@ -5699,7 +5691,6 @@ getpkt (char **buf,
   timed_out = getpkt_sane (buf, sizeof_buf, forever);
 }
 
-
 /* Read a packet from the remote machine, with error checking, and
    store it in *BUF.  Resize *BUF using xrealloc if necessary to hold
    the result, and update *SIZEOF_BUF.  If FOREVER, wait forever
@@ -6080,7 +6071,6 @@ remote_insert_watchpoint (CORE_ADDR addr, int len, int type)
                   _("remote_insert_watchpoint: reached end of function"));
 }
 
-
 static int
 remote_remove_watchpoint (CORE_ADDR addr, int len, int type)
 {
@@ -6114,7 +6104,6 @@ remote_remove_watchpoint (CORE_ADDR addr, int len, int type)
   internal_error (__FILE__, __LINE__,
                   _("remote_remove_watchpoint: reached end of function"));
 }
-
 
 int remote_hw_watchpoint_limit = -1;
 int remote_hw_breakpoint_limit = -1;
@@ -6183,7 +6172,6 @@ remote_stopped_data_address (struct target_ops *target, CORE_ADDR *addr_p)
   return rc;
 }
 
-
 static int
 remote_insert_hw_breakpoint (struct bp_target_info *bp_tgt)
 {
@@ -6226,7 +6214,6 @@ remote_insert_hw_breakpoint (struct bp_target_info *bp_tgt)
   internal_error (__FILE__, __LINE__,
                   _("remote_insert_hw_breakpoint: reached end of function"));
 }
-
 
 static int
 remote_remove_hw_breakpoint (struct bp_target_info *bp_tgt)
@@ -6898,7 +6885,6 @@ threadset_test_cmd (char *cmd, int tty)
   set_thread (sample_thread, 1);
 }
 
-
 static void
 threadalive_test (char *cmd, int tty)
 {
@@ -7424,7 +7410,6 @@ show_remote_cmd (char *args, int from_tty)
   /* Close the tuple.  */
   do_cleanups (showlist_chain);
 }
-
 
 /* Function to be called whenever a new objfile (shlib) is detected.  */
 static void

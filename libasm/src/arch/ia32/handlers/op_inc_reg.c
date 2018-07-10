@@ -1,10 +1,10 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_inc_reg" opcode="0x40"/>
   <instruction func="op_inc_reg" opcode="0x41"/>
   <instruction func="op_inc_reg" opcode="0x42"/>
@@ -14,7 +14,6 @@
   <instruction func="op_inc_reg" opcode="0x46"/>
   <instruction func="op_inc_reg" opcode="0x47"/>
 */
-
 
 int op_inc_reg(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

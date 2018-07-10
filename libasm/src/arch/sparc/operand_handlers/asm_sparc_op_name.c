@@ -3,7 +3,7 @@
  * @ingroup sparc
  */
 /**
-* @file libasm/src/arch/sparc/operand_handlers/asm_sparc_op_name.c
+ * @file libasm/src/arch/sparc/operand_handlers/asm_sparc_op_name.c
 ** @ingroup SPARC_operands
 */
 #include <libasm.h>
@@ -102,4 +102,3 @@ char *asm_sparc_get_op_name(asm_operand *op)
 
     }
 }
-

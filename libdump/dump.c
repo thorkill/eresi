@@ -1,4 +1,4 @@
-/*
+/**
 ** dump.c for elfsh
 **
 ** Started on Tue Feb 15 12:51:34 CET 2005 ym
@@ -98,7 +98,6 @@ int   dump_add_Rr_recently_seen(pkt_id_t id)
   time_t  *date;
 
   NOPROFILER_IN();
-
 
   XALLOC(__FILE__, __FUNCTION__, __LINE__, str, sizeof (char) * 20, -1);
   XALLOC(__FILE__, __FUNCTION__, __LINE__, date, sizeof (time_t), -1);
@@ -408,7 +407,6 @@ dump_id_t dump_get_myid(int s)
           }
     }
 
-
   snprintf(tmp, 5 - 1, "%d", s);
 
   tmp2 = (char *) hash_get(&dump_world.myids, tmp);
@@ -425,7 +423,6 @@ dump_id_t dump_get_myid(int s)
   return ret;
 }
 
-
 /* add an id to myids hash table */
 int dump_add_myid(dump_id_t id, int s)
 {
@@ -436,7 +433,6 @@ int dump_add_myid(dump_id_t id, int s)
   hash_add(&dump_world.myids, strdup(tmp), (void *) strdup(inet_ntoa(id)));
   return 0;
 }
-
 
 /* del an id from myids hash table */
 int dump_del_myid(int s)

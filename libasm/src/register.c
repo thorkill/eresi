@@ -1,12 +1,11 @@
 /**
-* @file libasm/src/register.c
+ * @file libasm/src/register.c
  * @ingroup libasm
  * @brief Registration of instruction and operand handlers.
  */
 
 #include <libasm.h>
 #include <libasm-int.h>
-
 
 /**
  * Wrapper for Architecture initialization.
@@ -144,7 +143,6 @@ int asm_register_operand_create(const char *vector_name, int size)
   return (1);
 }
 
-
 /**
  * Generic function to register operand handlers.
  * @param vector_name name of the vector to store the handlers (arch specific)
@@ -165,7 +163,6 @@ int asm_register_operand(const char *vector_name, int operand_type,
   aspect_vectors_insert(vec, dim, fcn);
   LIBASM_PROFILE_FOUT(1);
 }
-
 
 /**
  *

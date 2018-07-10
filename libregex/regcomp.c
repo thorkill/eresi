@@ -246,7 +246,6 @@ weak_alias (__re_compile_pattern, re_compile_pattern)
    become read-only after dumping.  */
 reg_syntax_t re_syntax_options;
 
-
 /* Specify the precise syntax of regexps for compilation.  This provides
    for compatibility for various utilities which historically have
    different, incompatible syntaxes.
@@ -617,7 +616,6 @@ size_t errbuf_size;
 weak_alias (__regerror, regerror)
 #endif
 
-
 #ifdef RE_ENABLE_I18N
 /* This static array is used for the map to single-byte characters when
    UTF-8 is used.  Otherwise we would allocate memory just to initialize
@@ -629,7 +627,6 @@ static const bitset_t utf8_sb_map =
   [0 ... 0x80 / BITSET_WORD_BITS - 1] = BITSET_WORD_MAX
 };
 #endif
-
 
 static void
 free_dfa_content (re_dfa_t *dfa)
@@ -697,7 +694,6 @@ free_dfa_content (re_dfa_t *dfa)
 
   re_free (dfa);
 }
-
 
 /* Free dynamically allocated space used by PREG.  */
 
@@ -4706,7 +4702,6 @@ free_tree (void *extra, bin_tree_t *node)
   free_token (&node->token);
   return REG_NOERROR;
 }
-
 
 /* Duplicate the node SRC, and return new node.  This is a preorder
    visit similar to the one implemented by the generic visitor, but

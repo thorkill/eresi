@@ -1,3 +1,4 @@
+
 /**
  * @file libstderesi/elf/got.c
  * @ingroup elf
@@ -94,5 +95,3 @@ next:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-

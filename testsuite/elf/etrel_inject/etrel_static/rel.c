@@ -1,4 +1,4 @@
-/*
+/**
 ** rel.c for elfsh
 **
 ** Contain all tests for ET_REL injection
@@ -12,23 +12,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 int glvar_testreloc = 42;
 
 int glvar_testreloc_bss;
 char  glvar_testreloc_bss2;
 short glvar_testreloc_bss3;
 
-
-
-
 int hook_func(char *str)
 {
   printf("HOOK FUNC %s !\n", str);
   return (old_legit_func(str));
 }
-
-
 
 int puts_troj(char *str)
 {
@@ -40,7 +34,6 @@ int puts_troj(char *str)
   int glvar_testreloc_bss;
   char  glvar_testreloc_bss2;
   short glvar_testreloc_bss3;
-
 
   str2 = malloc(10);
   *str2 = 'Z';

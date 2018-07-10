@@ -1,4 +1,5 @@
-/*
+
+/**
 **
 **
 */
@@ -8,7 +9,6 @@ void  new_sleep()
 {
   printf("hijacked sleep ! \n");
 }
-
 
 int main()
 {

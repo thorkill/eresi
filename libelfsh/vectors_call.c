@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/vectors_call.c
+ * @file libelfsh/vectors_call.c
 ** @ingroup libelfsh
 **
 ** vectors_call.c for libelfsh (The ELF shell library)
@@ -8,10 +9,6 @@
 **
 */
 #include "libelfsh.h"
-
-
-
-
 
 /**
  * Call the relocation hook
@@ -65,7 +62,6 @@ int     elfsh_rel(elfshobj_t *file, elfshsect_t *s, elfsh_Rel *r,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Call the relocation hook
  * @param file
@@ -112,7 +108,6 @@ int             elfsh_cflow(elfshobj_t *file, char *name, elfsh_Sym *old,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Call the PLT hook
  * @param file
@@ -156,8 +151,6 @@ int             elfsh_plt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
 
 /**
  * Call the ENCODEPLT hook
@@ -207,8 +200,6 @@ int             elfsh_encodeplt(elfshobj_t *file, elfshsect_t *plt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
-
 /**
  * Call the ENCODEPLT1 hook
  *
@@ -257,8 +248,6 @@ int             elfsh_encodeplt1(elfshobj_t *file, elfshsect_t *plt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
-
 /**
  * Call the ALTPLT hook
  *
@@ -303,7 +292,6 @@ int             elfsh_altplt(elfshobj_t *file, elfsh_Sym *s, eresi_Addr new)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * Call the EXTPLT hook
@@ -353,7 +341,6 @@ int             elfsh_extplt(elfshsect_t *extplt, elfshsect_t *altgot,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /**
  * Call the arg count hook
  *
@@ -391,8 +378,6 @@ int     *elfsh_args_count(elfshobj_t *file, u_int off, eresi_Addr vaddr)
   fct    = aspect_vectors_select(argch, dim);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, fct(file, off, vaddr));
 }
-
-
 
 /**
  * @brief Read the analysed object memory
@@ -439,7 +424,6 @@ void    *elfsh_readmem(elfshsect_t *sect)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /**
  * @brief Read the analysed object memory
  * @param file File to read data from.
@@ -478,7 +462,6 @@ void    *elfsh_readmema(elfshobj_t *file, eresi_Addr addr, void *buf,
   ret = fct(file, addr, buf, size);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * @brief Write into analyzed object memory
@@ -522,7 +505,6 @@ int   elfsh_writemem(elfshobj_t *file, eresi_Addr addr, void *buf, u_int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /**
  * @brief Write in raw memory at indicated file offset
  * @param file The elf object
@@ -547,7 +529,6 @@ int   elfsh_writememf(elfshobj_t *file, u_int foffset, void *src_buff, int len)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /**
  * @brief Read raw memory at indicated file offset
  * @param file The elf object
@@ -571,8 +552,6 @@ int   elfsh_readmemf(elfshobj_t *file, u_int foffset, void *dest_buff, int len)
   ret = fct(file, foffset, dest_buff, len);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
 
 /**
  * @brief Map a new area in memory
@@ -609,9 +588,6 @@ eresi_Addr   elfsh_runtime_map(elfshobj_t *file, u_int memsz, int prot)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (addr));
 }
 
-
-
-
 /**
  * @brief Remove memory credentials.
  * @param file Parent file we are working on.
@@ -638,9 +614,6 @@ int    elfsh_mprotect(elfshobj_t *file, eresi_Addr addr, u_int memsz, int prot)
   ret = fct(file, addr, memsz, prot);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
 
 /**
  * @brief Restore memory credentials.

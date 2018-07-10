@@ -1,5 +1,5 @@
 /**
-* @file libetrace/delete.c
+ * @file libetrace/delete.c
 ** @ingroup libetrace
 **
 ** @brief trace deletion function

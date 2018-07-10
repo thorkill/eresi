@@ -204,7 +204,6 @@ re_string_realloc_buffers (re_string_t *pstr, int new_buf_len)
   return REG_NOERROR;
 }
 
-
 static void
 internal_function
 re_string_construct_common (const char *str, int len, re_string_t *pstr,

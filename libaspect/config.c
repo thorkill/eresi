@@ -1,5 +1,5 @@
-/*
-* @file libaspect/config.c
+/**
+ * @file libaspect/config.c
 ** @ingroup libaspect
 **
 ** Started on  Sat Jun  2 15:20:18 2005 jfv
@@ -7,10 +7,7 @@
 */
 #include "libaspect.h"
 
-
 aspectworld_t aspectworld;
-
-
 
 /**
  * @brief Wrapper for updating value depending on data type
@@ -87,7 +84,6 @@ void    config_update_key(char *name, void *data)
   hash_del(&aspectworld.config_hash, name);
   hash_add(&aspectworld.config_hash, tmp->name, tmp);
 }
-
 
 /**
  * @brief Retreive the value of a configuration item

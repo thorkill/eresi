@@ -1,9 +1,9 @@
-/*
+/**
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_and_al_ib" opcode="0x24"/>
 */
 

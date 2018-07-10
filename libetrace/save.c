@@ -1,5 +1,5 @@
 /**
-* @file libetrace/save.c
+ * @file libetrace/save.c
 ** @ingroup libetrace
 **
 ** @brief This file contain trace save function.
@@ -7,7 +7,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Check if this function name is excluded
@@ -157,7 +156,6 @@ static int    etrace_save_tracing_table(FILE *fp, elfshobj_t *file,
   int     ret;
   u_char    typed;
   char      bufex[BUFSIZ];
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -737,8 +735,6 @@ fretry:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief Save a binary file on disk for tracing (interface function).

@@ -1,4 +1,5 @@
-/*
+
+/**
 ** recv.c for elfsh
 **
 ** Started on Tue Feb 15 12:51:34 CET 2005 ym
@@ -9,7 +10,6 @@
 */
 
 #include "libdump.h"
-
 
 /* read a complete packet from given socket */
 pkt_t *dump_recv_pkt(int s)
@@ -208,7 +208,6 @@ pkt_t *dump_recv_pkt(int s)
   return msg;
 }
 
-
 /* handle RR packet */
 int   dump_receive_RR(pkt_t *pkt)
 {
@@ -332,7 +331,6 @@ int dump_receive_Rr(pkt_t *pkt)
   int i;
   int next_hop_socket;
   pkt_t *spkt;
-
 
   if (dump_lookup_Rr_recently_seen(pkt->id))
     {
@@ -480,7 +478,6 @@ pkt_t *dump_receive_DATA(pkt_t *pkt)
                   return (pkt_t *) (-1);
                 }
 
-
               if (dump_send_real(next_hop_socket, pkt) < 0)
                 {
 #if !defined(ERESI_INTERNAL)
@@ -496,7 +493,6 @@ pkt_t *dump_receive_DATA(pkt_t *pkt)
 
   return NULL;
 }
-
 
 /* receive callback */
 void  *dump_receive_cb(int s)
@@ -569,5 +565,3 @@ void  *dump_receive_cb(int s)
 
   return NULL;
 }
-
-

@@ -1,5 +1,5 @@
 /**
-* @file libkernsh/user/kernimage.c
+ * @file libkernsh/user/kernimage.c
 ** @ingroup usermode
 **
 */
@@ -56,7 +56,6 @@ int kernsh_decompkernel_linux()
 #if __DEBUG_KERNSH__
   printf("DECOMP KERNEL LINUX\n");
 #endif
-
 
   XOPEN(fd,
         (char *) config_get_data(LIBKERNSH_CONFIG_KERNEL),
@@ -128,7 +127,6 @@ int kernsh_decompkernel_linux()
 
   bufgz[strlen(bufgz) - 3] = '\0';
 
-
   memset(bufelf, '\0', sizeof(bufelf));
   snprintf(bufelf, sizeof(bufelf), "%s%s",
            (char *) config_get_data(LIBKERNSH_CONFIG_STORAGE_PATH),
@@ -150,4 +148,3 @@ int kernsh_decompkernel_linux()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

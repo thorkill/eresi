@@ -1,4 +1,5 @@
-/*
+
+/**
 ** modremap.c for elfsh
 **
 ** Coded by spacewalker, grace day of 14th March 2003
@@ -15,9 +16,7 @@
 */
 #include "libstderesi.h"
 
-
 #define   CMD_REMAP "remap"
-
 
 int   remap_cmd()
 {
@@ -120,6 +119,3 @@ void elfsh_fini()
   revm_output(" [*] ELFsh modremap fini -OK- \n");
   revm_command_del(CMD_REMAP);
 }
-
-
-

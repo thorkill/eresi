@@ -1,12 +1,11 @@
 /**
-* @file libe2dbg/common/mode.c
+ * @file libe2dbg/common/mode.c
 ** @brief Implement command for switching between static and dynamic mode.
 ** @ingroup common
 **
 ** Started on  Tue Aug 16 09:38:03 2005 jfv
 */
 #include "libe2dbg.h"
-
 
 /* Change between static (ondisk) and dynamic (memory) mode */
 int   cmd_mode()
@@ -64,4 +63,3 @@ int   cmd_mode()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/reloc.c
+ * @file libelfsh/reloc.c
  * @ingroup libelfsh
 ** reloc.c for elfsh
 **
@@ -10,7 +10,6 @@
 */
 #include "libelfsh.h"
 
-
 /**
  * Contain the last requested relocation type
  * This ugly flag may be sensible to race conditions if 2 users use
@@ -20,7 +19,6 @@
  *  a bit of flexibility here.
  */
 static char isrel = 1;
-
 
 /**
  * Create relocation entry
@@ -135,7 +133,6 @@ u_int elfsh_set_relsym(elfsh_Rel *r, eresi_Addr sym)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return the relocation offset
  * @param r
@@ -169,7 +166,6 @@ int   elfsh_set_reloffset(elfsh_Rel *r, eresi_Addr off)
   r->r_offset = off;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Return the add-end
@@ -259,7 +255,6 @@ int   elfsh_endianize_relocs(elfshsect_t *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return the 'range'th relocation table
  * @param file
@@ -317,7 +312,6 @@ elfshsect_t *elfsh_get_reloc(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s));
 }
 
-
 /**
  * Insert a symbol in the given symbol table
  * @param sect
@@ -353,8 +347,6 @@ int   elfsh_insert_relent(elfshsect_t *sect, elfsh_Rel *rel)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (index));
 }
 
-
-
 /**
  * Return the symbol name associated with the relocation entry
  * @param file
@@ -386,8 +378,6 @@ char    *elfsh_get_symname_from_reloc(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_get_dynsymbol_name(file,
                 sym)));
 }
-
-
 
 /**
  * Return the Symbol associated with the relocation entry
@@ -434,8 +424,6 @@ elfsh_Sym *elfsh_get_symbol_from_reloc(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (sym));
 }
 
-
-
 /**
  * Ugly hook, but necessary for keeping track of the reloc element type
  * since elfsh_get_relent_by_index cannot do it since it shares a function
@@ -450,7 +438,6 @@ void    elfsh_setrel(char b)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * Used as internal handler for elfsh hashes
@@ -472,8 +459,6 @@ elfsh_Rel *elfsh_get_relent_by_index(elfsh_Rel *table, eresi_Addr index)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (isrel ? table + index : (elfsh_Rel *) ((elfsh_Rela *) atable + index)));
 }
-
-
 
 /**
  * Used as internal handler for elfsh hashes
@@ -524,8 +509,6 @@ elfsh_Rel *elfsh_get_relent_by_name(elfshobj_t *file, char *name)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Relentry not found", NULL);
 }
-
-
 
 /**
  * Create relocation table for section

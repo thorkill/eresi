@@ -1,10 +1,9 @@
 /**
-* @file libe2dbg/kernel/commands.c
+ * @file libe2dbg/kernel/commands.c
  *
  *
  */
 #include "ke2dbg.h"
-
 
 /**
  *
@@ -75,7 +74,6 @@ int   cmd_rr0d_idt()
   return (0);
 }
 
-
 /**
  *
  * @return Always 0
@@ -87,8 +85,6 @@ int   cmd_rr0d_bpm()
   return (0);
 }
 
-
-
 /**
  *
  * @return Always 0
@@ -99,7 +95,6 @@ int   cmd_rr0d_info()
   kedbg_physpage_get(adresse_ret_1);
   return (0);
 }
-
 
 /**
  *
@@ -118,7 +113,6 @@ int   cmd_rr0d_editmem()
   ke2dbg_logbuf_insert("MeM Edit mode");
   return (0);
 }
-
 
 /**
  *
@@ -157,7 +151,6 @@ int   cmd_rr0d_inthook()
   is_int_hooked[adresse_ret_1] = is_int_hooked[adresse_ret_1] ? 0 : 1;
   return (0);
 }
-
 
 /**
  *
@@ -203,7 +196,6 @@ int   cmd_rr0d_unfoolmode()
   ke2dbg_allwin_refresh();
   return (0);
 }
-
 
 /**
  *
@@ -285,9 +277,6 @@ int   cmd_rr0d_print()
   return (0);
 }
 
-
-
-
 /**
  *
  * @return Always 0
@@ -341,7 +330,6 @@ int   cmd_rr0d_set()
   return (0);
 }
 
-
 /**
  *
  * @return Always 0
@@ -351,7 +339,6 @@ int   cmd_rr0d_insertbp()
   ke2dbg_insert_bp(current_reg_stack.reg_CS, adresse_ret_1, BP_CLASSIC);
   return (0);
 }
-
 
 /**
  *

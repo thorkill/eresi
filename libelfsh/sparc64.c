@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/sparc64.c
+ * @file libelfsh/sparc64.c
  * @ingroup libelfsh
  * sparc64.c for libelfsh
  *
@@ -14,7 +15,7 @@
  */
 #include "libelfsh.h"
 
-/*
+/**
   Here some temporary info on openssl64
   printf : 0x100255560 (plt + 672)
 */
@@ -77,9 +78,7 @@ int   elfsh_hijack_plt_sparc64(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-/*
+/**
 
    Used for hijacking the first PLT entry, when %g1 needs to be kept.
    This 16 instructions lenght code copies the first updated .plt

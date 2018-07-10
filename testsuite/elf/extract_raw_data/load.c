@@ -38,7 +38,6 @@ int main(int ac, char **av)
     }
 }
 
-
 int test_binary(char *binary)
 {
   elfshobj_t  *obj;
@@ -90,4 +89,3 @@ leave:
   elfsh_unload_obj(obj);
   return (to_ret);
 }
-

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/dtors.c
+ * @file libstderesi/elf/dtors.c
 ** @ingroup elf
 */
 /**
@@ -11,9 +11,6 @@
 **
 */
 #include "libstderesi.h"
-
-
-
 
 /**
  * Display the destructor section
@@ -78,7 +75,6 @@ int   cmd_dtors()
 
       revm_endline();
     }
-
 
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);

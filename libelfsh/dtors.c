@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/dtors.c
+ * @file libelfsh/dtors.c
  * @ingroup libelfsh
  *
  * Started on  Tue Feb 26 22:12:38 2002 jfv
@@ -8,7 +8,6 @@
  */
 
 #include "libelfsh.h"
-
 
 /**
  * Read the destructor array in .dtors
@@ -60,9 +59,6 @@ eresi_Addr  *elfsh_get_dtors(elfshobj_t *file, int *num)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_readmem(enew)));
 }
-
-
-
 
 /**
  * Shift DTORS on ET_DYN
@@ -132,7 +128,6 @@ int   elfsh_set_dtors_entry_by_index(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Modify a DTORS entry using its name
  * @param file
@@ -157,7 +152,6 @@ int   elfsh_set_dtors_entry_by_name(elfshobj_t  *file,
   *dtors = new_addr;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Get DTORS entry by name
@@ -197,8 +191,6 @@ eresi_Addr      *elfsh_get_dtors_entry_by_name(elfshobj_t *file, char *name)
                "DTORS entry not found", NULL);
 }
 
-
-
 /**
  * Return a entry giving its parent and its index : used as INTERNAL hash handler
  * @param dtors
@@ -217,7 +209,6 @@ eresi_Addr      *elfsh_get_dtors_entry_by_index(eresi_Addr *dtors,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (dtors + index));
 }
 
-
 /**
  * Return a entry giving its parent and its index : used as INTERNAL hash handler
  * @param dtors
@@ -235,7 +226,6 @@ int   elfsh_set_dtors_entry(eresi_Addr *dtors, eresi_Addr vaddr)
   *dtors = vaddr;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Return a entry value giving its parent and its index : used as INTERNAL hash handler

@@ -1,12 +1,11 @@
 /**
-* @file libe2dbg/common/dbghooks.c
+ * @file libe2dbg/common/dbghooks.c
 ** @brief Vectors for debugging features
 ** @ingroup common
 **
 ** Started   Sat Sep 24 07:17:33 2005 jfv
 */
 #include "libe2dbg.h"
-
 
 /* Void handlers for the 3 register-related vectors */
 void      e2dbg_default_getregs()
@@ -26,7 +25,6 @@ void       e2dbg_default_printregs()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /* Error handler by default for them */
 eresi_Addr   *e2dbg_default_getpc()
@@ -87,8 +85,6 @@ int   e2dbg_default_deletebreak_handler(elfshbp_t *bp)
                "Unsupported Arch, ELF type, or OS", -1);
 }
 
-
-
 /* Register a next frame-pointer handler */
 int   e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
                                 u_char ostype, void *(*fct)(void *frame))
@@ -118,8 +114,6 @@ int   e2dbg_register_nextfphook(u_char archtype, u_char hosttype,
   aspect_vectors_insert(nextfp, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Register a next return-addr handler */
 int   e2dbg_register_getrethook(u_char archtype, u_char hosttype,
@@ -366,7 +360,6 @@ int      e2dbg_register_resetstephook(u_char archtype, u_char hosttype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Register a breakpoint redirection handler
  */
@@ -398,7 +391,6 @@ int   e2dbg_register_breakhook(u_char archtype, u_char hosttype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Register a breakpoint deletion handler
  */
@@ -418,9 +410,6 @@ int   e2dbg_register_delbreakhook(u_char hosttype, void *fct)
   aspect_vectors_insert(breakp, dim, (u_long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /* Initialize libe2dbg.hook vectors */
 static int  e2dbg_register_vectors()
@@ -486,7 +475,6 @@ static int  e2dbg_register_vectors()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Setup internal VM hooks */
 void    e2dbg_setup_hooks()
 {
@@ -505,8 +493,6 @@ void    e2dbg_setup_hooks()
   done = TRUE;
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
 
 /* Call the getregs hook */
 int     e2dbg_getregs()
@@ -542,9 +528,6 @@ int     e2dbg_getregs()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /* Call the setregs hook */
 int     e2dbg_setregs()
 {
@@ -579,7 +562,6 @@ int     e2dbg_setregs()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /* Call the setregs hook */
 int   e2dbg_printregs()
 {
@@ -613,8 +595,6 @@ int   e2dbg_printregs()
   fct();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* Call the getpc hook */
 eresi_Addr     *e2dbg_getpc()
@@ -654,7 +634,6 @@ eresi_Addr     *e2dbg_getpc()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, pc);
 }
 
-
 /* Call the getfp hook */
 eresi_Addr     *e2dbg_getfp()
 {
@@ -692,7 +671,6 @@ eresi_Addr     *e2dbg_getfp()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, fp);
 }
-
 
 /* Call the getregs hook */
 int     e2dbg_setstep()
@@ -758,8 +736,6 @@ int     e2dbg_resetstep()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Call the getregs hook */
 eresi_Addr  e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr)
 {
@@ -799,7 +775,6 @@ eresi_Addr  e2dbg_nextfp(elfshobj_t *file, eresi_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /* Call the getregs hook */
 eresi_Addr  e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
 {
@@ -837,7 +812,6 @@ eresi_Addr  e2dbg_getret(elfshobj_t *file, eresi_Addr addr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
 
 /**
  * Call the breakpoint hook
@@ -878,8 +852,6 @@ int     e2dbg_setbreak(elfshobj_t *file, elfshbp_t *bp)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Call the breakpoint deletion hook

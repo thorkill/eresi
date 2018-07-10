@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/handlers/asm_sparc_fmovqr.c
+ * @file libasm/src/arch/sparc/handlers/asm_sparc_fmovqr.c
 ** @ingroup SPARC_instrs
 */
-/*
+/**
 **
 **
 */

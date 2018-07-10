@@ -1,12 +1,11 @@
 /**
-* @file libstderesi/cmd/modules.c
+ * @file libstderesi/cmd/modules.c
 ** @ingroup cmd
 ** Started on  Wed Feb 19 04:42:47 2003 jfv
 **
 **
 */
 #include "libstderesi.h"
-
 
 /**
  * Guess if the file is an ELFsh module or not
@@ -109,7 +108,6 @@ err:
 #endif
 }
 
-
 /**
  * Unload an elfsh module
  */
@@ -206,7 +204,6 @@ end:
   XFREE(__FILE__, __FUNCTION__, __LINE__, todel);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /* In case linked in static */
 #if USE_STATIC && !defined(__FreeBSD__)

@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/type/sets.c
+/**
+ * @file libstderesi/type/sets.c
 ** @ingroup cmd
 ** @brief Primitives for manipulating sets
 **

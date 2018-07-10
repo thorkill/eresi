@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/pht.c
+ * @file libstderesi/elf/pht.c
 ** @ingroup elf
 */
 /**
@@ -11,8 +11,6 @@
  *
  */
 #include "libstderesi.h"
-
-
 
 /**
  * @brief Display description for extended PHT types
@@ -34,7 +32,6 @@ char    *revm_display_pdesc(u_int type)
                 revm_build_unknown(type_unk, "type", type));
 }
 
-
 /**
  * @brief Display name for extended PHT types
  * @param type
@@ -53,7 +50,6 @@ char    *revm_display_pname(u_int type)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 "Unknown");
 }
-
 
 /**
  * @brief Display a PHT
@@ -232,8 +228,6 @@ void          revm_pht_print(elfsh_Phdr *phdr, uint16_t num, eresi_Addr base)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /**
  * @brief Display the program header table (PHT)
  */
@@ -260,8 +254,6 @@ int   cmd_pht()
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief Print the runtime PHT
@@ -290,4 +282,3 @@ int             cmd_rpht()
   revm_output("\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-

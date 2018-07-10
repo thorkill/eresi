@@ -1,12 +1,11 @@
 /**
-* @file libmjollnir/src/blocks.c
+ * @file libmjollnir/src/blocks.c
  * @ingroup libmjollnir
  * @{
  * Authors : sk, jfv, thorkill, strauss
  *
  */
 #include "libmjollnir.h"
-
 
 /**
  * @brief Retreive control flow section content if any
@@ -47,9 +46,6 @@ int     mjr_blocks_get(mjrcontext_t *ctxt)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Flow analysis failed", -1);
 }
-
-
-
 
 /**
  * @brief Get a block by vaddr
@@ -127,9 +123,6 @@ container_t *mjr_block_get_by_vaddr(mjrcontext_t  *ctxt,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (NULL));
 }
 
-
-
-
 /**
  * @brief Simple debug function for block containers
  */
@@ -166,9 +159,6 @@ int   mjr_block_dump(mjrcontext_t *ctxt, container_t *c)
 
   return 0;
 }
-
-
-
 
 /**
  * @brief Inject a symbol associated to a block container
@@ -214,4 +204,3 @@ int     mjr_block_symbol(mjrcontext_t *ctxt, container_t *csrc)
 }
 
 /** @} */
-

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/arm/handlers/asm_arm_pld.c
+ * @file libasm/src/arch/arm/handlers/asm_arm_pld.c
 ** @ingroup ARM_instrs
 */
 #include "libasm.h"

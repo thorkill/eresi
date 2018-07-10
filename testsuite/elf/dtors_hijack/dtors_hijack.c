@@ -1,4 +1,4 @@
-/*
+/**
 ** unlink.c for unlinked
 **
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
@@ -16,7 +16,6 @@
 #define    OUTPUT_FILE "./fake_aout64"
 #endif
 
-
 int   main(int argc, char **argv)
 {
   elfshobj_t  *file;
@@ -32,11 +31,9 @@ int   main(int argc, char **argv)
       exit(-1);
     }
 
-
   /***********************************************************/
   /**************** TEST FOR DTORS HIJACKING *****************/
   /***********************************************************/
-
 
   //ret = elfsh_set_dtors_entry_by_index(file, 1, new_dtors->st_value);
   ret = elfsh_set_dtors_entry_by_name(file, "my_dtors", new_dtors->st_value);
@@ -46,7 +43,6 @@ int   main(int argc, char **argv)
       elfsh_error();
       exit(-1);
     }
-
 
   /* RELINKING THE FILE */
 
@@ -60,4 +56,3 @@ int   main(int argc, char **argv)
   printf("Relinking *%s* \n", ret ? "Error" : "OK");
   return (0);
 }
-

@@ -1,3 +1,4 @@
+
 /* Malloc implementation for multiple threads without lock contention.
    Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
@@ -17,7 +18,6 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If not,
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
-
 
 /* What to do if the standard debugging hooks are in place and a
    corrupt pointer is detected: do nothing (0), print an error message
@@ -581,7 +581,6 @@ const Void_t *caller;
 # endif /* !defiend NO_STARTER */
 #endif /* NO_THREADS */
 
-
 /* Get/set state: aproxy_get_state() records the current state of all
    malloc variables (_except_ for the actual heap contents and `hook'
    function pointers) in a system dependent, opaque data structure.
@@ -799,7 +798,7 @@ public_sET_STATe(Void_t *msptr)
   return 0;
 }
 
-/*
+/**
  * Local variables:
  * c-basic-offset: 2
  * End:

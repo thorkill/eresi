@@ -3,14 +3,13 @@
  * @ingroup librevm
  */
 /**
-* @file librevm/io/io.c
+ * @file librevm/io/io.c
  * @ingroup io
  * @brief Initialize the IO system.
  *
  * Started on  Fri Mar  5 00:55:40 2004 jfv
  */
 #include "revm.h"
-
 
 /**
  * Reset lines counters and ignore output state
@@ -126,7 +125,6 @@ int   revm_fifo_io(revmjob_t *job)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Initialize Input/Output hooks

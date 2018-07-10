@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/analysis/match.c
+ * @file libstderesi/analysis/match.c
 ** @ingroup analysis
 ** @brief Implementation of program transformation in ERESI
 **
@@ -7,7 +7,6 @@
 **
 */
 #include "libstderesi.h"
-
 
 /**
  * Retreive the annotation for a given expression
@@ -43,7 +42,6 @@ revmannot_t *revm_annot_get(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, annot);
 }
-
 
 /**
  * Copy a field value from one expression to another (provided destination indeed has that field)
@@ -125,7 +123,6 @@ static int  revm_field_propagate(revmexpr_t *dest, revmexpr_t *source,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Propagate the link between 2 objects
  * @param dest  Destination expression to copy links to
@@ -154,7 +151,6 @@ static int  revm_links_propagate(revmexpr_t *dest, revmexpr_t *source)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Perform the transformation (can be called from case or into commands)
@@ -296,7 +292,6 @@ static int  revm_case_transform(revmexpr_t *matchme, char *destvalue)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Execute side-effects command at some transformation point
@@ -441,7 +436,6 @@ int   cmd_post()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Check input type, translate if matching
  */
@@ -514,7 +508,6 @@ int   cmd_case()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Beginning of the transform command, open a transformation switch
  */
@@ -560,7 +553,6 @@ int     cmd_match()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * End of match. Do nothing.
  */
@@ -572,7 +564,6 @@ int   cmd_matchend()
   world.curjob->recur[world.curjob->curscope].rwrt.replaced = 0;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Default case of a match when nothing else has matched

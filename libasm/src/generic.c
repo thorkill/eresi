@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/generic.c
+ * @file libasm/src/generic.c
  * @ingroup libasm
  * Latest edition Author : $Author: may $
  * Started : Wed Jul 24 18:45:15 2002
@@ -116,7 +116,6 @@ int     asm_proc_is_protected(asm_processor *proc)
 
   return (0);
 }
-
 
 /**
  * @brief returns the value of the processor's current operand length
@@ -318,7 +317,6 @@ int    asm_operand_set_immediate(asm_instr *ins, int num,
   return (len);
 }
 
-
 /**
  * returns a pointer to a static buffer containing instruction memonic
  */
@@ -333,7 +331,6 @@ char  *asm_instr_get_memonic(asm_instr *ins, asm_processor *proc)
 {
   return (proc->instr_table[ins->instr]);
 }
-
 
 /**
  * @brief Return content field of an operand.
@@ -453,7 +450,6 @@ void  asm_instruction_debug(asm_instr *ins, FILE *out)
       asm_operand_debug(ins, i, 0, out);
     }
 }
-
 
 /**
  * set config flag to specified endian

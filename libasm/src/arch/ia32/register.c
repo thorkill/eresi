@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/register.c
+ * @file libasm/src/arch/ia32/register.c
  * @ingroup ia32
  * @brief Registration of the ia32 disassembling vector.
  *
@@ -384,7 +384,6 @@ int asm_register_ia32_opcodes()
   asm_register_ia32_opcode(0xfd, (unsigned long) op_std);
   asm_register_ia32_opcode(0xfe, (unsigned long) op_incdec_rmb);
   asm_register_ia32_opcode(0xff, (unsigned long) op_indir_rmv);
-
 
   asm_register_ia32_opcode(0x100 + 0x00, (unsigned long) op_group6);
   asm_register_ia32_opcode(0x100 + 0x01, (unsigned long) op_group7);

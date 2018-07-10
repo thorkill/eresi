@@ -1,10 +1,11 @@
-/*
+
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_loopne" opcode="0xe0"/>
 */
 

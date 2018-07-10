@@ -1,15 +1,15 @@
+
 /**
-* @file libelfsh/save.c
+ * @file libelfsh/save.c
  * @ingroup libelfsh
- ** save.c for elfsh
- **
- ** Started on  Tue Mar  4 01:14:01 2003 jfv
- ** Last update Thu Mar 23 23:21:08 2006 thorkill
- **
- **
+ * save.c for elfsh
+ *
+ * Started on  Tue Mar  4 01:14:01 2003 jfv
+ * Last update Thu Mar 23 23:21:08 2006 thorkill
+ *
+ *
  */
 #include "libelfsh.h"
-
 
 /**
  * @brief Find a string in a random buffer of size n
@@ -39,7 +39,6 @@ static char    *elfsh_strstr(char *buffer, char *neddle, int n)
                "Cannot find injected names", NULL);
 }
 
-
 /**
  * @brief Find the number of removed shdr before a given index.
  * @param file The file to look at.
@@ -64,7 +63,6 @@ static int    elfsh_find_previous_rmnbr(elfshobj_t *file, u_int idx)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }
-
 
 /**
  * Save SHT taking care of removed shdr if the file was cleaned up
@@ -187,7 +185,6 @@ int   elfsh_save_relocate(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Prepare the file to be saved on disk. This function is called by elfsh_save_obj.
  * @param file File to be saved on disk.
@@ -240,9 +237,6 @@ elfshobj_t  *elfsh_save_preconds(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file);
 }
 
-
-
-
 /**
  * @brief Save a binary file on disk (interface function).
  * @param file The file to be saved.
@@ -271,8 +265,6 @@ int   elfsh_save_obj(elfshobj_t *file, char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief Store the binary file on disk.

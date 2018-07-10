@@ -1,12 +1,12 @@
+
 /**
-* @file libe2dbg/common/delete.c
+ * @file libe2dbg/common/delete.c
  * @brief Command and API for breakpoint deletion
  * @ingroup common
  *
  * Started on  Tue Aug 16 09:38:03 2005 jfv
  */
 #include "libe2dbg.h"
-
 
 /**
  * Delete a breakpoint for real.
@@ -42,7 +42,6 @@ int   e2dbg_breakpoint_delete(elfshbp_t *bp)
   e2dbg_output(logbuf);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /** Delete breakpoints
  * @return Success (0) or error (-1).

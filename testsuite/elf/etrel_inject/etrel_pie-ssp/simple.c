@@ -1,4 +1,5 @@
-/*
+
+/**
 ** rel.c for elfsh
 **
 ** Contain all tests for ET_REL injection
@@ -12,16 +13,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 //int     glvar_testreloc = 42;
 
-/*
+/**
 int     glvar_testreloc_bss;
 char    glvar_testreloc_bss2;
 short   glvar_testreloc_bss3;
 */
 
-/*
+/**
 int fake_main(int argc, char **argv)
 {
 
@@ -44,9 +44,7 @@ int fake_main(int argc, char **argv)
 }
 */
 
-
-
-/*
+/**
 void  fake_stack_smash_handler(char func[], int damaged)
 {
   static int i = 0;
@@ -59,8 +57,7 @@ void  fake_stack_smash_handler(char func[], int damaged)
 }
 */
 
-
-/*
+/**
 int fake_libc_start_main(void *one, void *two, void *three, void *four, void *five, void *six, void *seven)
 {
   static int i = 0;
@@ -71,7 +68,7 @@ int fake_libc_start_main(void *one, void *two, void *three, void *four, void *fi
 }
 */
 
-/*
+/**
 char* fake_strcpy(char *dst, char *src)
 {
   printf("The binary wants to copy %s at address %08X \n", src, dst);

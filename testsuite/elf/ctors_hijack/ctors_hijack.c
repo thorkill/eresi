@@ -1,4 +1,4 @@
-/*
+/**
 ** ctors_hijack.c for testsuite in ERESI
 **
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
@@ -19,7 +19,6 @@ int   main(int argc, char **argv)
   elfsh_Sym *new_ctors;
   int   ret;
 
-
   file = elfsh_map_obj(TROJANED_FILE);
   new_ctors = elfsh_get_symbol_by_name(file, "new_ctors");
 
@@ -28,7 +27,6 @@ int   main(int argc, char **argv)
       elfsh_error();
       exit(-1);
     }
-
 
   /***********************************************************/
   /**************** TEST FOR CTORS HIJACKING *****************/
@@ -42,7 +40,6 @@ int   main(int argc, char **argv)
       elfsh_error();
       exit(-1);
     }
-
 
   /***********************************************************/
   /************************ RELINKING ************************/
@@ -58,4 +55,3 @@ int   main(int argc, char **argv)
   printf("Relinking *%s* \n", ret ? "Error" : "OK");
   return (0);
 }
-

@@ -1,14 +1,13 @@
 /**
-* @file libstderesi/analysis/argcount.c
-* @ingroup analysis
-* @brief Command argcount (count arguments in a function)
+ * @file libstderesi/analysis/argcount.c
+ * @ingroup analysis
+ * @brief Command argcount (count arguments in a function)
 *
-* Started Jul 2 2005 00:03:44 mxatone
-* $Id: trace.c 1397 2009-09-13 02:19:08Z may $
+ * Started Jul 2 2005 00:03:44 mxatone
+ * $Id: trace.c 1397 2009-09-13 02:19:08Z may $
 *
 */
 #include "libstderesi.h"
-
 
 int   cmd_argcount()
 {

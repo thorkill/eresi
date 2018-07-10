@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/elf.c
+ * @file libelfsh/elf.c
  * @ingroup libelfsh
 ** elf.c for libelfsh
 **
@@ -78,7 +79,6 @@ eresi_Off elfsh_get_shtoff(elfsh_Ehdr *hdr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_shoff));
 }
 
-
 /**
  * Change the section header table entry count
  * @param hdr
@@ -112,7 +112,6 @@ elfsh_Half  elfsh_get_shtnbr(elfsh_Ehdr *hdr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (hdr->e_shnum));
 }
-
 
 /**
  * Change the program header table file offset
@@ -490,7 +489,6 @@ elfsh_Half  elfsh_get_shentsize(elfsh_Ehdr *e)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (e->e_shentsize));
 }
 
-
 /**
  * Return the encoding type
  * @param hdr
@@ -673,7 +671,7 @@ int elfsh_check_hdr_type(elfshobj_t *file)
  * @param file
  * @return
  */
-/*
+/**
 int elfsh_check_hdr_machine(elfshobj_t *file)
 {
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
@@ -689,8 +687,6 @@ int elfsh_check_hdr_machine(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 */
-
-
 
 /**
  * Sanity check of version value
@@ -839,7 +835,6 @@ void  *elfsh_get_hdr(elfshobj_t *file)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->hdr));
 }
-
 
 /**
  *

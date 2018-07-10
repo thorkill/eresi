@@ -1,5 +1,5 @@
-/*
-* @file libetrace/func_match.c
+/**
+ * @file libetrace/func_match.c
 **
 ** Libetrace implementation in the ERESI project.
 **
@@ -257,7 +257,6 @@ int     trace_match_funcname(elfshobj_t *curfile, char *funcname,
   /* Preallocation */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, f_list,
          sizeof(char *) * TRACE_MATCH_ALLOCSTEP, -1);
-
 
   /* Total match case */
   if (TRACE_MATCH_ALL(funcname))

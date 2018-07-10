@@ -1,5 +1,5 @@
-/*
-* @file libui/readln.c
+/**
+ * @file libui/readln.c
 **
 ** Started on  Tue Feb 18 06:24:42 2003 emsi
 ** Updated on  Fri Feb 18 23:59:25 2006 thorkill
@@ -49,7 +49,6 @@ int   readln_quit(int mode, char *history)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, exited);
 }
-
 
 /**
  * @brief Set rl_ctrl
@@ -117,8 +116,6 @@ char    *readln_match(const char *text, int state)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  ((char *) NULL));
 }
 
-
-
 /**
  * @brief Add commands to completion
  */
@@ -126,7 +123,6 @@ void    readln_completion_commands(hash_t *cmd_hash)
 {
   comp.cmds[0] = hash_get_keys(cmd_hash, NULL);
 }
-
 
 /**
  * @brief Install the completion strings
@@ -183,8 +179,6 @@ void    readln_completion_install(char mode, char side)
   rl_catch_sigwinch = 0;
   rl_set_signals();
 }
-
-
 
 /**
  * @brief Perform completion
@@ -262,7 +256,6 @@ char  **readln_completion(const char *text, int start, int end)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matches);
 }
 
-
 /**
  * This function was used to update columns on a readline colored prompt
  *  another solution has been found that work well (see readln_prompt_update).
@@ -277,8 +270,6 @@ int   readln_column_update()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief A prompt need some update to fit correctly on readline (with color)
@@ -376,9 +367,6 @@ int   readln_prompt_update(char *ptr, int size)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
  * @brief readline line handler
  */
@@ -408,8 +396,6 @@ void    readln_ln_handler(char *c)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /**
  * Restore readline prompt that will be display on next
  * rl_forced_update_display() or rl_callback_read_char()
@@ -429,8 +415,6 @@ int   readln_prompt_restore()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Perform some checks on the input given by readline
@@ -464,7 +448,6 @@ char    *readln_input_check()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (strdup(world.curjob->ws.io.buf)));
 }
-
 
 /**
  * Log the input of readline
@@ -529,9 +512,6 @@ void    readln_input_log(char *str)
 
 }
 
-
-
-
 /**
  * @brief Install the shortcut for clearing the screen
  */
@@ -546,7 +526,6 @@ void    readln_install_clearscreen()
   rl_ctrll  = rl_function_of_keyseq(keyseq, map, NULL);
   rl_bind_key(CTRL('l'), (rl_command_func_t *) revm_screen_clear);
 }
-
 
 /**
  * @brief Change the screen content
@@ -589,7 +568,6 @@ void    readln_screen_change(u_short isnew, char prompt_display)
   rl_redisplay();
 }
 
-
 /**
  * @brief Write readline history on quit
  */
@@ -631,4 +609,3 @@ void    readln_terminal_unprepare(char mode)
 }
 
 #endif
-

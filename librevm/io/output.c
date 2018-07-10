@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/output.c
+ * @file librevm/io/output.c
  * @ingroup io
  * @brief The output vector interface.
  *
@@ -9,8 +9,6 @@
  *
  */
 #include "revm.h"
-
-
 
 /**
  * @brief Display str on all term
@@ -59,8 +57,6 @@ int   revm_output_bcast(char *str)
   world.curjob = old;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 /**
  * @brief OUTPUT handler for stdout
@@ -136,8 +132,6 @@ int   revm_output(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,  ret);
 }
 
-
-
 /**
  * @brief  Output without buffering/log
  * @ingroup io
@@ -148,8 +142,6 @@ int   revm_output_nolog(char *str)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 world.curjob->ws.io.output(str));
 }
-
-
 
 /**
  * @brief ERR output function (stderr)
@@ -162,8 +154,6 @@ int   revm_outerr(char *str)
   return (0);
 }
 
-
-
 /**
  * @brief OUTPUT handler for stdout
  * @ingroup io
@@ -175,8 +165,6 @@ int   revm_stdoutput(char *str)
   fflush(stdout);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief Change the Output handler
@@ -204,4 +192,3 @@ int revm_output_get(revmworkspace_t *ws)
 {
   return (ws->io.output_fd);
 }
-

@@ -1,16 +1,12 @@
 /**
-* @file libe2dbg/kernel/page.c
+ * @file libe2dbg/kernel/page.c
  */
 #include "ke2dbg.h"
-
 
 unsigned int pagedir;
 int init_p = 0;
 unsigned int saved_wp_bit = 0;
 unsigned char  flying_page1[0x4000] = {'o'};
-
-
-
 
 /**
  * renvoie l'adresse du repertoire des pages
@@ -37,8 +33,6 @@ unsigned int *ke2dbg_basetp(void)
   pagedir += KERNEL_B;
   return (unsigned int *)pagedir;
 }
-
-
 
 /**
  * affiche (plus) les info des tables
@@ -79,8 +73,6 @@ void ke2dbg_pageinfo_print(void)
 
 }
 
-
-
 /**
  * renvoie l'attribut de la page et affecte le niveau:
  * (si level!=NULL) 0: merdouille; 1: 1er niveau; 2: 2 eme niveau
@@ -94,7 +86,6 @@ void ke2dbg_pageinfo_print(void)
 unsigned int ke2dbg_pageinfo_get(unsigned int adresse, unsigned int *tab_page,
                                  unsigned int *tab_page_entry, unsigned int *level)
 {
-
 
 #if defined FREEBSD
   /*TODO: non quand meme, faudrait faire qq chose pour les *bsd*/
@@ -139,7 +130,6 @@ unsigned int ke2dbg_pageinfo_get(unsigned int adresse, unsigned int *tab_page,
       *tab_page_entry = (unsigned int)PTmap;
     }
 
-
   return PTmap[adresse >> 12];
 
   //return 1;
@@ -151,7 +141,6 @@ unsigned int ke2dbg_pageinfo_get(unsigned int adresse, unsigned int *tab_page,
   unsigned int ke2dbg_pageinfo_print;
   unsigned int sub_ke2dbg_pageinfo_print;
   unsigned int tmp;
-
 
   if (level)
     {
@@ -268,7 +257,6 @@ unsigned int ke2dbg_linear2physical(unsigned int ptr)
   return (info_page_src & 0xfffff000) + (ptr & 0xfff);
 }
 
-
 /**
  * @param ptr
  */
@@ -276,7 +264,6 @@ void ke2dbg_page_display(unsigned int ptr)
 {
   unsigned char debug[80];
   unsigned int page_ad;
-
 
   page_ad = ke2dbg_pageinfo_get(ptr, NULL, NULL, NULL );
 
@@ -325,7 +312,6 @@ void ke2dbg_wpbit_reset(void)
   };
 #endif
 
-
   saved_wp_bit = saved_wp_bit & 0x00010000;
 }
 
@@ -356,9 +342,7 @@ void ke2dbg_wpbit_set(void)
   };
 #endif
 
-
 }
-
 
 /**
  * @param ptr

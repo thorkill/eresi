@@ -1,4 +1,4 @@
-/*
+/**
 ** sht_rebuild.c for testsuite in ERESI
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
@@ -49,10 +49,3 @@ int   main(int argc, char **argv)
   return (0);
 
 }
-
-
-
-
-
-
-

@@ -11,7 +11,6 @@
  */
 #include "libstderesi.h"
 
-
 /**
  * Our own pow
  * @param a
@@ -47,7 +46,6 @@ static int  __eint_pow(int a, int b)
   return (int) res;
 }
 
-
 /**
  * Find a different element than 'file' in the parent hash table
  * @param hash
@@ -76,7 +74,6 @@ static void  *revm_get_another_parent(hash_t *hash, elfshobj_t *file)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to find another parent", NULL);
 }
-
 
 /**
  * Merge the root dependences information for all the children, when a new
@@ -144,8 +141,6 @@ static int  revm_update_depinfo(elfshobj_t  *child,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Enum dependences
@@ -251,8 +246,6 @@ static int  revm_load_enumdep_rec(elfshobj_t *obj, hash_t *rechash,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * This is a front end function for the recursive function above
  * @param obj
@@ -273,7 +266,6 @@ int   revm_load_enumdep(elfshobj_t *obj)
   hash_destroy(&dephash);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Search the lib path for a specific file
@@ -350,7 +342,6 @@ char            *revm_load_searchlib(char *name)
     PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                   strdup(retpath));
 
-
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
 
@@ -423,9 +414,6 @@ elfshobj_t  *revm_is_depid(elfshobj_t *obj, int id)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
-
-
-
 
 /**
  * Search a dependence from a lib name and a loaded object
@@ -546,7 +534,6 @@ int   revm_load_dep(elfshobj_t *parent, char *name,
   snprintf(logbuf, sizeof(logbuf), "%s_roots", name);
   hash_init(&new->root_hash, strdup(logbuf), 11, ASPECT_TYPE_UNKNOW);
 
-
   /* Link with its parent */
   /* Link with all the additional root files of its parent */
   /* Add reference to the private (or shared) list */
@@ -567,7 +554,6 @@ int   revm_load_dep(elfshobj_t *parent, char *name,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Unload all dependence for an object.

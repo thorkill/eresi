@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/error.c
+ * @file libasm/src/error.c
  * @ingroup libasm
 **
 **
@@ -9,7 +9,6 @@
 */
 
 #include <libasm.h>
-
 
 /**
  * Set error
@@ -25,7 +24,6 @@ void  asm_set_error(asm_instr *ins, int err, char *msg)
     }
 }
 
-
 /**
  * Set error message.
  * This is currently not implemented.
@@ -36,7 +34,6 @@ void  asm_set_error(asm_instr *ins, int err, char *msg)
 void  asm_set_errormsg(asm_instr *ins, char *msg)
 {
 }
-
 
 /**
  * Return error code.

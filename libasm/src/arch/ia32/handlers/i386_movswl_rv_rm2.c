@@ -1,13 +1,12 @@
-/*
+/**
 **
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_movswl_rv_rm2" opcode="0xbf"/>
 */
-
 
 int i386_movswl_rv_rm2(asm_instr *new, u_char *opcode, u_int len,
                        asm_processor *proc)

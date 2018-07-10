@@ -3,7 +3,7 @@
 ** @ingroup librevm
 */
 /**
-* @file librevm/vm/tables.c
+ * @file librevm/vm/tables.c
 ** @ingroup vm
 ** @brief This file contains all command and objects definitions for scripting.
 **
@@ -54,7 +54,6 @@ hash_t    instrlists_hash;
 hash_t    inputdf;
 hash_t    outputdf;
 
-
 /**
  * Fill all the Level 1 Objects hash tables
  */
@@ -80,7 +79,6 @@ static void setup_L1hash()
            NULL, NULL,
            sizeof (elfsh_Phdr)));
 
-
   hash_add(&L1_hash, "symtab", (void *) revm_create_L1ENT(elfsh_get_symtab,
            NULL,
            elfsh_get_symbol_by_name,
@@ -105,7 +103,6 @@ static void setup_L1hash()
            elfsh_get_got_entry,
            elfsh_set_got_entry,
            sizeof (eresi_Addr)));
-
 
   hash_add(&L1_hash, "dynamic", (void *) revm_create_L1ENT(elfsh_get_dynamic,
            NULL, NULL,
@@ -204,7 +201,6 @@ static void setup_L1hash()
            NULL, NULL,
            sizeof (int)));
 }
-
 
 /**
  * Hash table for ELF header fields
@@ -325,8 +321,6 @@ static void setup_elfhash()
            NULL, NULL));
 }
 
-
-
 /**
  * Hash table for SHT fields
  */
@@ -430,7 +424,6 @@ static void setup_phthash()
            NULL, NULL, NULL));
 }
 
-
 /**
  * Hash table for symbol table
  */
@@ -469,8 +462,6 @@ static void setup_symhash()
            ASPECT_TYPE_SHORT, NULL,
            NULL, NULL, NULL));
 }
-
-
 
 /**
  * Hash table for dynamic symbol table
@@ -549,8 +540,6 @@ static void setup_dynhash()
            NULL, NULL, NULL));
 }
 
-
-
 /**
  * Hash tables for GOT L2 objects : UNIMPLEMENTED for now, only
  * the value of the entry can be changed in this version of
@@ -571,8 +560,6 @@ static void setup_gothash()
            NULL, NULL, NULL));
 }
 
-
-
 /**
  * Hash tables for sections data
  */
@@ -590,8 +577,6 @@ static void setup_scthash()
            elfsh_get_section_data,
            elfsh_write_section_data));
 }
-
-
 
 /**
  * Hash table for versions sections
@@ -628,7 +613,6 @@ static void   setup_vershash()
            elfsh_set_verdef_aux,
            ASPECT_TYPE_LONG, NULL,
            NULL, NULL, NULL));
-
 
   /* Child & parent */
   hash_add(&verd_L2_hash, "next", revm_create_L2ENT(elfsh_get_verdef_next,
@@ -681,7 +665,6 @@ static void   setup_vershash()
            NULL, NULL, NULL));
 }
 
-
 /**
  * TO COMMENT
  */
@@ -710,9 +693,6 @@ static void   setup_hashhash()
            NULL, NULL, NULL));
 }
 
-
-
-
 /**
  * Now comes Level 2 objects hash functions
  */
@@ -730,7 +710,6 @@ static void setup_L2hash()
   setup_vershash();
   setup_hashhash();
 }
-
 
 /**
  * Mix default library path with LD_LIBRARY_PATH variable
@@ -767,7 +746,6 @@ static char *get_libpath()
   return elfsh_libpath;
 }
 
-
 /**
  * Setup variables hash :
  * - Initialize $_ (last result variable) to 0
@@ -797,7 +775,6 @@ static void setup_varshash()
   f = revm_create_IMMED(ASPECT_TYPE_INT, 1, 0);
   expr = revm_expr_create_from_object(f, REVM_VAR_ESHLEVEL, 1);
 }
-
 
 /**
  * Setup default grammar
@@ -830,8 +807,6 @@ void setup_grammar()
   hash_add(&parser_hash, LOOKUP_LIST, parse_list);
 }
 
-
-
 /**
  * Setup color table
  */
@@ -858,7 +833,6 @@ void setup_color()
   hash_add(&bg_color_hash, "white", (void *) COLOR_BG_WHITE);
 }
 
-
 /**
  * TOCOMMENT
  */
@@ -880,9 +854,6 @@ void setup_color_type()
   hash_add(&t_color_hash, "function", (void *) revm_colorblank());
   hash_add(&t_color_hash, "filename", (void *) revm_colorblank());
 }
-
-
-
 
 /**
  * Setup all hash tables

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/cmd/utils.c
+ * @file libstderesi/cmd/utils.c
  * @ingroup cmd
  * Started on  Fri Nov  2 15:21:56 2001 jfv
  * Updated on  Thu Jan 04 11:26:11 2007 jfv
@@ -7,7 +7,6 @@
  *
  */
 #include "libstderesi.h"
-
 
 /**
  * Useful when you have only one terminal
@@ -28,8 +27,6 @@ int   cmd_meta()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 /**
  * Edit a file
@@ -54,7 +51,6 @@ int             cmd_edit()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
 /**
  * Stop the scripting and pass in interactive mode
  */
@@ -63,7 +59,6 @@ int cmd_stop()
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_STOP);
 }
-
 
 /**
  * Precise a general weak bounded regex for all options
@@ -99,7 +94,6 @@ int   cmd_alert()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Get ASCII string for hash table
  */
@@ -117,7 +111,6 @@ char  *revm_ascii_ltype(list_t *cur)
 {
   return (aspect_typename_get(cur->type));
 }
-
 
 /**
  * Get ASCII string for hash table

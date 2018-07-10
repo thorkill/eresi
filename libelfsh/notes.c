@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/notes.c
+ * @file libelfsh/notes.c
  * @ingroup libelfsh
 ** notes.c for libelfsh
 **
@@ -88,7 +89,6 @@ elfshsect_t   *elfsh_get_notes(elfshobj_t *file, eresi_Addr range)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (notes));
 }
 
-
 /**
  * Free the notes section linked list
  * @param file
@@ -117,4 +117,3 @@ void      elfsh_free_notes(elfshobj_t *file)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-

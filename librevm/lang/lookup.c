@@ -1,12 +1,11 @@
 /**
-* @file librevm/lang/lookup.c
+ * @file librevm/lang/lookup.c
  * @ingroup lang
  * @brief Various object lookup functions built in the language.
  *
  * Started Nov 21 2003 jfv
  */
 #include "revm.h"
-
 
 /**
  * @brief Support for double (or multiple) variables : $$name, $$$name, etc
@@ -60,7 +59,6 @@ revmexpr_t    *revm_lookup_var(char *param)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, e);
 }
-
 
 /**
  * @brief Get address value
@@ -134,8 +132,6 @@ eresi_Addr    revm_lookup_addr(char *param)
                "Unable to lookup address object", 0);
 }
 
-
-
 /**
  * @brief Get immediate value
  */
@@ -202,7 +198,6 @@ revmobj_t   *revm_lookup_immed(char *param, u_char existing)
         }
     }
 
-
   /* FIXME: Constants must be differentiated by their size ! */
   actual = hash_get(&const_hash, param);
 
@@ -257,8 +252,6 @@ good:
   /* We matched -- returns OK */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ptr);
 }
-
-
 
 /**
  * @brief Lookup an index
@@ -334,8 +327,6 @@ u_int         revm_lookup_index(char *param)
                "Unable to lookup valid object", ((u_int) - 1));
 }
 
-
-
 /**
  * @brief Lookup an index
  */
@@ -383,8 +374,6 @@ char      *revm_lookup_string(char *param)
                 (ptr->immed ? ptr->immed_val.str :
                  (char *) ptr->get_obj(ptr->parent)));
 }
-
-
 
 /** @brief Lookup a hash or list key */
 char    *revm_lookup_key(char *param)
@@ -466,7 +455,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, key);
 }
 
-
 /**
  * @brief Lookup the file pointed by name
  */
@@ -518,10 +506,6 @@ elfshobj_t    *revm_lookup_file(char *param)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-
-
-
-
 
 /**
  * Parse the parameter and fill the revmexpr_t

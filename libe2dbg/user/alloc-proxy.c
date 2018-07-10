@@ -1,9 +1,9 @@
 /**
-* @file libe2dbg/user/alloc-proxy.c
+ * @file libe2dbg/user/alloc-proxy.c
 ** @ingroup user
 */
 /**
-* @file libe2dbg/user/alloc-proxy.c
+ * @file libe2dbg/user/alloc-proxy.c
  * Allocator wrapper for the Embedded ELF Debugger
  *
  * Select the allocator depending on the thread ID of the caller
@@ -13,7 +13,6 @@
  *
  */
 #include "libe2dbg.h"
-
 
 /**
  * Wrapper for malloc
@@ -78,9 +77,6 @@ void    *malloc(size_t t)
   return (chunk);
 }
 
-
-
-
 /**
  * Wrapper for valloc
  * @param t
@@ -136,10 +132,6 @@ void    *valloc(size_t t)
 
   return (chunk);
 }
-
-
-
-
 
 /**
  * Wrapper for calloc
@@ -262,8 +254,6 @@ void    *calloc(size_t t, size_t nbr)
   return (chunk);
 }
 
-
-
 /**
  * Wrapper for memalign
  * @param t
@@ -340,8 +330,6 @@ void    *memalign(size_t t, u_int nbr)
 
   return (chunk);
 }
-
-
 
 /**
  * Wrapper for realloc
@@ -470,7 +458,6 @@ void  wait4exit(void *a)
   exit(0);
 }
 
-
 /**
  * Wrapper for _exit
  * @param err Return value.
@@ -510,7 +497,6 @@ void    _exit(int err)
       }
 }
 
-
 /**
  * Wrapper for exit_group
  * @param err Return value.
@@ -521,13 +507,12 @@ int exit_group(int exitcode)
   _exit(exitcode);
 }
 
-
 /**
  * Wrapper for heap initialisation
  * @param first_time
  * @return
  */
-/*
+/**
 void  __libc_malloc_pthread_startup (int first_time)
 {
   void  (*pthstartupptr)();
@@ -545,9 +530,8 @@ void  __libc_malloc_pthread_startup (int first_time)
 }
 */
 
-
 /* Not sure it is useful / bugless, just a try */
-/*
+/**
 void*   _int_malloc(size_t p)             { return (malloc(p));      }
 void*   _int_valloc(size_t p)             { return (valloc(p));      }
 void*   _int_calloc(size_t p, size_t n)   { return (calloc(p, n));   }

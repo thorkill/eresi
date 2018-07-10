@@ -1,8 +1,8 @@
 /**
-* @file libe2dbg/user/dbg-ia32.c
+ * @file libe2dbg/user/dbg-ia32.c
 ** @ingroup user
 */
-/*
+/**
 ** dbg-ia32.c for e2dbg in the ERESI framework
 **
 ** Debugger backend for the IA32 architecture
@@ -14,7 +14,6 @@
 ** Started   Sat Sep 24 07:17:33 2005 jfv
 */
 #include "libe2dbg.h"
-
 
 /* Printregs handlers for the IA32 architecture on FreeBSD */
 void    e2dbg_print_regvars_ia32_freebsd()
@@ -149,7 +148,6 @@ void      e2dbg_get_regvars_ia32_sysv()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /* Regvars handler for the IA32 architecture */
 void      e2dbg_set_regvars_ia32_bsd()
 {
@@ -189,8 +187,6 @@ void      e2dbg_set_regvars_ia32_bsd()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /* Regvars handler for the IA32 architecture on SYSV */
 void      e2dbg_set_regvars_ia32_sysv()
 {
@@ -220,7 +216,6 @@ void      e2dbg_set_regvars_ia32_sysv()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /* Get Program Counter register */
 eresi_Addr   *e2dbg_getpc_bsd_ia32()
 {
@@ -245,8 +240,6 @@ eresi_Addr   *e2dbg_getpc_sysv_ia32()
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
-
-
 
 /* Get Program Counter register */
 eresi_Addr   *e2dbg_getfp_bsd_ia32()
@@ -273,7 +266,6 @@ eresi_Addr   *e2dbg_getfp_sysv_ia32()
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, NULL);
 }
-
 
 /* Enable stepping on BSD */
 void      e2dbg_setstep_bsd_ia32()
@@ -319,7 +311,6 @@ void      e2dbg_resetstep_bsd_ia32()
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * Get the next frame pointer given the current one
  */
@@ -352,7 +343,6 @@ void    *e2dbg_getret_ia32(void *frame)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (void *) (*((long *) frame + 1)));
 }
-
 
 /**
  * Write a breakpoint 0xCC in memory
@@ -390,4 +380,3 @@ int   e2dbg_break_ia32(elfshobj_t *f,
 #endif
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-

@@ -1,4 +1,4 @@
-/*
+/**
 ** section_inject.c for testsuite in ERESI
 **
 ** Started on  Sun Mar 17 05:57:23 2002 jfv
@@ -12,7 +12,6 @@
 #define    TROJANED_FILE "./hijackme64"
 #define    OUTPUT_FILE "./fake_aout64"
 #endif
-
 
 /* the first execve + exit shellcode I found in my tree, not a very short one ;) */
 #if defined(__linux__)
@@ -60,13 +59,8 @@ char sc[] =
 
 #endif
 
-
-
-
 /* test for non-mapped data */
 char  *str = "stop looking at me ! \n";
-
-
 
 /* Here we map the shellcode in a newly inserted mapped section (.devhell) and modify the entry point */
 int   main(int argc, char **argv)
@@ -129,10 +123,3 @@ int   main(int argc, char **argv)
   printf("Relinking *%s* \n", (ret  < 0 ? "Error" : "OK"));
   return (ret);
 }
-
-
-
-
-
-
-

@@ -1,5 +1,6 @@
-/*
-* @file kernsh/main.c
+
+/**
+ * @file kernsh/main.c
 ** @ingroup kernsh
 **
 */
@@ -130,7 +131,6 @@ int   kernsh_main(int ac, char **av)
   return (0);
 }
 
-
 /* The main Kernsh routine */
 int   main(int ac, char **av)
 {
@@ -142,6 +142,3 @@ int   main(int ac, char **av)
 
   return (kernsh_main(ac, av));
 }
-
-
-

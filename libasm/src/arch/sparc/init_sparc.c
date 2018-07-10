@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/init_sparc.c
+ * @file libasm/src/arch/sparc/init_sparc.c
 ** @ingroup sparc
 */
-/*
+/**
 **
 ** init_sparc.c in
 **
@@ -152,7 +152,6 @@ int asm_init_sparc(asm_processor *proc)
   inter->tcc_table = sparc_tcc_list;
   inter->op2_table = sparc_op2_table;
   inter->op3_table = sparc_op3_table;
-
 
   /**
    * XXX: Check this code and update if necessary to follow line developpement.

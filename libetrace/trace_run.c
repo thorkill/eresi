@@ -1,5 +1,5 @@
-/*
-* @file libetrace/trace_run.c
+/**
+ * @file libetrace/trace_run.c
 **
 ** Libetrace implementation in the ERESI project.
 **
@@ -7,7 +7,6 @@
 **
 */
 #include "libetrace.h"
-
 
 char  **traces_lastarg = NULL;
 
@@ -32,7 +31,6 @@ int     trace_param_add(int argc, char **argv)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Run a trace session (used in etrace)

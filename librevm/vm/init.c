@@ -1,5 +1,6 @@
+
 /**
-* @file librevm/vm/init.c
+ * @file librevm/vm/init.c
  * @ingroup vm
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Tue Jun 27 23:51:04 2006 mxatone
@@ -22,7 +23,6 @@ void    sigint_handler(int signum)
       revm_exit(0);
     }
 }
-
 
 /**
  * Only one time initialisations
@@ -55,9 +55,6 @@ int   revm_init()
 
   return (0);
 }
-
-
-
 
 /**
  * Setup ERESI hash tables and structures
@@ -162,8 +159,6 @@ int   revm_setup(int ac, char **av, char mode, char side)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Open the .eresirc file and execute it
  */
@@ -218,8 +213,6 @@ int   revm_config(char *config)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 static elfshobj_t *revm_run_main(int ac, char **av)
 {
 #if __DEBUG_SIGHANDLER__
@@ -238,14 +231,10 @@ static elfshobj_t *revm_run_main(int ac, char **av)
   return (world.curjob->curfile);
 }
 
-
-
 elfshobj_t  *revm_run_no_handler(int ac, char **av)
 {
   return revm_run_main(ac, av);
 }
-
-
 
 /**
  * Interface initialisation && loop entry point

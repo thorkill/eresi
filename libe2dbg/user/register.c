@@ -1,9 +1,9 @@
+
 /**
-* @file libe2dbg/user/register.c
+ * @file libe2dbg/user/register.c
 ** @ingroup user
 */
 #include "libe2dbg.h"
-
 
 static void     e2dbg_user_register_hooks(void)
 {
@@ -98,7 +98,6 @@ static void     e2dbg_user_register_hooks(void)
   e2dbg_register_resetstephook(ELFSH_ARCH_IA32, ELFSH_HOST_USER,
                                ELFSH_OS_SOLARIS, e2dbg_resetstep_sysv_ia32);
 
-
   /* For sparc32 */
 
   e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
@@ -112,7 +111,6 @@ static void     e2dbg_user_register_hooks(void)
   e2dbg_register_gregshook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
                            ELFSH_OS_SOLARIS, e2dbg_get_regvars_sparc32_sysv);
 
-
   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
                            ELFSH_OS_FREEBSD, e2dbg_set_regvars_sparc32_bsd);
   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
@@ -123,7 +121,6 @@ static void     e2dbg_user_register_hooks(void)
                            ELFSH_OS_LINUX, e2dbg_set_regvars_sparc32_sysv);
   e2dbg_register_sregshook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
                            ELFSH_OS_SOLARIS, e2dbg_set_regvars_sparc32_sysv);
-
 
   e2dbg_register_getpchook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
                            ELFSH_OS_FREEBSD, e2dbg_getpc_bsd_sparc32);
@@ -157,7 +154,6 @@ static void     e2dbg_user_register_hooks(void)
                                ELFSH_OS_LINUX, e2dbg_resetstep_sysv_sparc32);
   e2dbg_register_resetstephook(ELFSH_ARCH_SPARC32, ELFSH_HOST_USER,
                                ELFSH_OS_SOLARIS, e2dbg_resetstep_sysv_sparc32);
-
 
   /***********************************/
   /* Now nextfp hooks                */
@@ -207,8 +203,6 @@ static void     e2dbg_user_register_hooks(void)
   e2dbg_register_nextfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,
                             ELFSH_OS_SOLARIS, e2dbg_bt_sparc32);
 
-
-
   /************************************/
   /* Now getfp hooks                */
   /***********************************/
@@ -256,7 +250,6 @@ static void     e2dbg_user_register_hooks(void)
                            ELFSH_OS_OPENBSD, e2dbg_getfp_bsd_sparc32);
   e2dbg_register_getfphook(ELFSH_ARCH_SPARC32, ELFSH_FILE_LIB,
                            ELFSH_OS_SOLARIS, e2dbg_getfp_sysv_sparc32);
-
 
   /***********************************/
   /* Now register getret hooks       */
@@ -357,7 +350,6 @@ static void     e2dbg_user_register_hooks(void)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 int             e2dbg_user_hooks_install(void)
 {

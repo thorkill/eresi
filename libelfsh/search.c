@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/search.c
+ * @file libelfsh/search.c
  * @ingroup libelfsh
 ** search.c for libelfsh
 **
@@ -12,12 +13,9 @@
 */
 #include "libelfsh.h"
 
-
 /* List of loaded objects available for the functions of those files */
 static hash_t *hash_workspace = NULL;
 static hash_t *hash_shared = NULL;
-
-
 
 /**
  * @brief Register list of objects to work with
@@ -33,8 +31,6 @@ int   elfsh_register_working_objects(hash_t *prvhash,
   hash_shared    = sharedhash;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Return the strongest symbol in the object

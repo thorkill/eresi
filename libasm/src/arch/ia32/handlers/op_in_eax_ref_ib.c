@@ -1,9 +1,9 @@
-/*
+/**
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_in_eax_ref_ib" opcode="0xe5"/>
 */
 

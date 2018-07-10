@@ -1,5 +1,6 @@
+
 /**
-* @file libmjollnir/src/symtab.c
+ * @file libmjollnir/src/symtab.c
  * @ingroup libmjollnir
  *
  * (C) 2006-2008 Asgard Labs, thorolf
@@ -7,8 +8,6 @@
  */
 
 #include <libmjollnir.h>
-
-
 
 /**
  * Rebuild the symtab with original names when possible
@@ -77,7 +76,6 @@ int   mjr_symbol_add(mjrsession_t *sess,
                       fname);
   return 1;
 }
-
 
 /**
  * @brief Remove symbol by name

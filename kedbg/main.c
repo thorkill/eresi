@@ -1,12 +1,11 @@
 /**
-* @file kedbg/main.c
+ * @file kedbg/main.c
  * @ingroup kedbg
  */
 
 #include "kedbg.h"
 
 kedbgworld_t    kedbgworld;
-
 
 /**************** Main stuff ****************/
 static void kedbg_create_prompt(char *buf, u_int size)
@@ -26,7 +25,6 @@ static void kedbg_create_prompt(char *buf, u_int size)
            revm_colorget("%s", "pspecial", ")"));
   revm_endline();
 }
-
 
 /**
  * Only called when running a monothread program
@@ -133,7 +131,6 @@ static void     kedbg_find_linkmap(void)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * Propagate the hostype and iotype to all loaded files.
  * @ingroup kedbg
@@ -157,7 +154,6 @@ static void     kedbg_propagate_type(void)
   hash_free_keys(keys);
 }
 
-
 /**
  * Load the BIOS map
  * @ingroup kedbg
@@ -175,7 +171,6 @@ static void kedbg_biosmap_load()
   file->hostype  = ELFSH_HOST_GDB;
   file->id       = ++world.state.lastid;
 }
-
 
 /**
  * If the symbol __ksymtab is found in the file we are analyzing, then
@@ -197,7 +192,6 @@ static Bool       kedbg_file_is_kernel(elfshobj_t *file)
       return FALSE;
     }
 }
-
 
 /**
  * If the file has only one segment of 1MB, we have loaded the biosmap.
@@ -241,7 +235,6 @@ static eresi_Addr kedbg_find_entrypoint(elfshobj_t *file)
   return addr;
 }
 
-
 /**
  * The got[1] entry is filled in at runtime. The idea is to add a
  * breakpoint on the entry point, then "start" and stop when getting
@@ -267,7 +260,6 @@ static void     kedbg_run_to_entrypoint(elfshobj_t *file)
   kedbg_get_regvars_ia32();
   PROFILER_OUTQ();
 }
-
 
 /**
  * There is a mapped symbol table in the kernel that we can try to map,
@@ -299,7 +291,6 @@ static int  kedbg_ksymtab_fixup()
   PROFILER_ROUTQ(0);
 }
 #endif
-
 
 /**
  * Shell related stuff.
@@ -396,7 +387,6 @@ int             main(int argc, char **argv)
   int           fd;
   char          *a;
   char          *b;
-
 
   /* Input checks */
   if (argc != 3)

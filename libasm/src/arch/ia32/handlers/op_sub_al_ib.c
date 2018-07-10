@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_sub_al_ib.c
+ * @file libasm/src/arch/ia32/handlers/op_sub_al_ib.c
  *
  * @ingroup IA32_instrs
 **
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_sub_al_ib" opcode="0x2c"/>
 */
 int op_sub_al_ib(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)

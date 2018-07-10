@@ -3,7 +3,7 @@
  * @ingroup etrace
  */
 /**
-* @file libetrace/trace_create.c
+ * @file libetrace/trace_create.c
 ** @ingroup libetrace
 ** @brief Functions for managing traces creation.
 **
@@ -17,7 +17,6 @@ hash_t    traces_table;
 
 /** @brief Exclude hash table which contain regex */
 hash_t    exclude_table;
-
 
 /**
  * @brief Create a new trace
@@ -86,8 +85,6 @@ hash_t      *etrace_get(char *trace)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, table);
 }
 
-
-
 /**
  * @brief Search the function entry on the uniform debugging format, and return it
  * @param file First element of a edfmtfile_t structure.
@@ -121,7 +118,6 @@ edfmtfunc_t     *trace_func_debug_get(elfshobj_t *file, char *func_name,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, func);
 }
-
 
 /**
  * @brief Construct the argument structure depending of the option we have
@@ -245,8 +241,6 @@ trace_t   *trace_param_create(elfshobj_t *file, char *name,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtrace);
 }
-
-
 
 /**
  * Create a trace

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/cmd/print.c
+ * @file libstderesi/cmd/print.c
 ** @ingroup cmd
 ** Started on  Sat Jan 25 11:19:53 2003 jfv
 **
@@ -7,7 +7,6 @@
 **
 */
 #include "libstderesi.h"
-
 
 /**
  * Print an object
@@ -127,8 +126,6 @@ isptr:
   revm_endline();
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
-
 
 /**
  * Print a string

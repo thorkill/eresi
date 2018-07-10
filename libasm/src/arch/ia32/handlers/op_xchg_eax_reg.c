@@ -1,12 +1,11 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_xchg_eax_reg.c
+ * @file libasm/src/arch/ia32/handlers/op_xchg_eax_reg.c
  *
  * @ingroup IA32_instrs
  * @brief Handler for instruction xchg eax,reg opcode 0x91 to 0x97
 */
 #include <libasm.h>
 #include <libasm-int.h>
-
 
 /**
  * @brief Handler for instruction xchg eax,reg opcode 0x91 to 0x97

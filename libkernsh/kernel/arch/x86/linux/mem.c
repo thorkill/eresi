@@ -1,5 +1,5 @@
 /**
-* @file libkernsh/kernel/arch/x86/linux/mem.c
+ * @file libkernsh/kernel/arch/x86/linux/mem.c
 ** @ingroup kernelmode
 **
 */

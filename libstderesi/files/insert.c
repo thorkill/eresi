@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/files/insert.c
+/**
+ * @file libstderesi/files/insert.c
 ** @ingroup files
 ** @brief First insert functions for easy scripting.
 **
@@ -9,8 +9,6 @@
 **
 */
 #include "libstderesi.h"
-
-
 
 /**
  * sect name maptype size align

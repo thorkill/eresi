@@ -1,9 +1,9 @@
 /**
-* @file libasm/src/arch/mips/tables_mips.c
+ * @file libasm/src/arch/mips/tables_mips.c
 ** @ingroup mips
 */
 /**
-* @file libasm/src/arch/mips/tables_mips.c
+ * @file libasm/src/arch/mips/tables_mips.c
  * @brief MIPS processor mnemonic table.
  *
  * fix and fill
@@ -29,7 +29,6 @@
  */
 struct e_mips_instr e_mips_instrs [] =
 {
-
 
   /* CPU: Arithmetic Instructions => ALL from MIPS Vol. 2 + Extra 2 */
 
@@ -74,7 +73,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"seb", ASM_MIPS_SEB, MIPS_OPCODE_SPECIAL3, MIPS_OPCODE_BSHFL, MIPS_OPCODE_SEB, asm_mips_seb},
   {"seh", ASM_MIPS_SEH, MIPS_OPCODE_SPECIAL3, MIPS_OPCODE_BSHFL, MIPS_OPCODE_SEH, asm_mips_seh},
 
-
   /* CPU: Branch and Jump Instructions => ALL from MIPS Vol. 2 + Extra 2 */
 
   {"b", ASM_MIPS_B, MIPS_OPCODE_BEQ, 0x0, 0x0, asm_mips_b},
@@ -95,14 +93,12 @@ struct e_mips_instr e_mips_instrs [] =
   {"jalr.hb", ASM_MIPS_JALR_HB, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_JALR, 0x0, asm_mips_jalr_hb},
   {"jr.hb", ASM_MIPS_JR_HB, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_JR, 0x0, asm_mips_jr_hb},
 
-
   /* CPU: Instruction Control Instructions => ALL from MIPS Vol. 2 + Extra 1 */
 
   {"nop", ASM_MIPS_NOP, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_SLL, MIPS_OPCODE_NOP, asm_mips_nop},
   {"ssnop", ASM_MIPS_SSNOP, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_SLL, MIPS_OPCODE_SSNOP, asm_mips_ssnop},
   /* Extra 1: */
 //  {"ehb"      ,ASM_MIPS_EHB       ,MIPS_OPCODE_SPECIAL       ,MIPS_OPCODE_SLL       ,MIPS_OPCODE_EHB, asm_mips_ehb},
-
 
   /* CPU: Load, Store, and Memory Control Instructions => ALL from MIPS Vol. 2 + Extra 1 */
 
@@ -142,7 +138,6 @@ struct e_mips_instr e_mips_instrs [] =
   /* Extra: 1 */
   {"synci", ASM_MIPS_SYNCI, MIPS_OPCODE_REGIMM, MIPS_OPCODE_SYNCI, 0x0, asm_mips_synci},
 
-
   /* CPU: Logical Instructions => ALL from MIPS Vol. 2 + Extra 3 */
 
   {"and", ASM_MIPS_AND, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_AND, 0x0, asm_mips_and},
@@ -158,7 +153,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"ins", ASM_MIPS_INS, MIPS_OPCODE_SPECIAL3, MIPS_OPCODE_INS, 0x0, asm_mips_ins},
   {"wsbh", ASM_MIPS_WSBH, MIPS_OPCODE_SPECIAL3, MIPS_OPCODE_BSHFL, MIPS_OPCODE_WSBH, asm_mips_wsbh},
 
-
   /* CPU: Move Instructions => ALL from MIPS Vol. 2 */
 
   {"mfhi", ASM_MIPS_MFHI, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_MFHI, 0x0, asm_mips_mfhi},
@@ -169,7 +163,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"movz", ASM_MIPS_MOVZ, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_MOVZ, 0x0, asm_mips_movz},
   {"mthi", ASM_MIPS_MTHI, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_MTHI, 0x0, asm_mips_mthi},
   {"mtlo", ASM_MIPS_MTLO, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_MTLO, 0x0, asm_mips_mtlo},
-
 
   /* CPU: Shift Instructions => ALL from MIPS Vol. 2 + Extra 3 */
 
@@ -196,7 +189,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"rotr", ASM_MIPS_ROTR, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_SRL, MIPS_OPCODE_ROTR, asm_mips_rotr},
   {"rotrv", ASM_MIPS_ROTRV, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_SRLV, MIPS_OPCODE_ROTRV, asm_mips_rotrv},
 
-
   /* CPU: Trap Instructions => ALL from MIPS Vol. 2 */
 
   {"break", ASM_MIPS_BREAK, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_BREAK, 0x0, asm_mips_break},
@@ -214,7 +206,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"tne", ASM_MIPS_TNE, MIPS_OPCODE_SPECIAL, MIPS_OPCODE_TNE, 0x0, asm_mips_tne},
   {"tnei", ASM_MIPS_TNEI, MIPS_OPCODE_REGIMM, MIPS_OPCODE_TNEI, 0x0, asm_mips_tnei},
 
-
   /* CPU: Obsolete CPU Branch Instructions => ALL from MIPS Vol. 2 */
 
   {"beql", ASM_MIPS_BEQL, MIPS_OPCODE_BEQL, 0x0, 0x0, asm_mips_beql},
@@ -226,17 +217,14 @@ struct e_mips_instr e_mips_instrs [] =
   {"bltzl", ASM_MIPS_BLTZL, MIPS_OPCODE_REGIMM, MIPS_OPCODE_BLTZL, 0x0, asm_mips_bltzl},
   {"bnel", ASM_MIPS_BNEL, MIPS_OPCODE_BNEL, 0x0, 0x0, asm_mips_bnel},
 
-
   /* Coprocessor Branch Instructions - COP2 */
 
   {"bc2f", ASM_MIPS_BC2F, MIPS_OPCODE_COP2, MIPS_OPCODE_BCC2, 0x0, asm_mips_bc2f},
   {"bc2t", ASM_MIPS_BC2T, MIPS_OPCODE_COP2, MIPS_OPCODE_BCC2, 0x1, asm_mips_bc2t},
 
-
   /* Coprocessor Execute Instruction - COP2 */
 
   {"cop2", ASM_MIPS_COP2, MIPS_OPCODE_COP2, 0x1, 0x0, asm_mips_cop2},
-
 
   /* Coprocessor Load and Store Instructions - COP2 */
 
@@ -244,7 +232,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"lwc2", ASM_MIPS_LWC2, MIPS_OPCODE_LWC2, 0x0, 0x0, asm_mips_lwc2},
   {"sdc2", ASM_MIPS_SDC2, MIPS_OPCODE_SDC2, 0x0, 0x0, asm_mips_sdc2},
   {"swc2", ASM_MIPS_SWC2, MIPS_OPCODE_SWC2, 0x0, 0x0, asm_mips_swc2},
-
 
   /* Coprocessor Move Instructions - COP2 */
 
@@ -255,13 +242,10 @@ struct e_mips_instr e_mips_instrs [] =
   {"mfc2", ASM_MIPS_MFC2, MIPS_OPCODE_COP2, MIPS_OPCODE_MFC2, 0x0, asm_mips_mfc2},
   {"mtc2", ASM_MIPS_MTC2, MIPS_OPCODE_COP2, MIPS_OPCODE_MTC2, 0x0, asm_mips_mtc2},
 
-
-
   /* Obsolute Coprocessor Branch Instructions - COP2 */
 
   {"bc2fl", ASM_MIPS_BC2FL, MIPS_OPCODE_COP2, MIPS_OPCODE_BCC2, 0x2, asm_mips_bc2fl},
   {"bc2tl", ASM_MIPS_BC2TL, MIPS_OPCODE_COP2, MIPS_OPCODE_BCC2, 0x3, asm_mips_bc2tl},
-
 
   /* COP1X Instructions */
 
@@ -286,7 +270,6 @@ struct e_mips_instr e_mips_instrs [] =
   {"nmsub.d", ASM_MIPS_NMSUB_D, MIPS_OPCODE_COP1X, MIPS_OPCODE_NMSUB_D, 0x0, asm_mips_nmsub_d},
   {"nmsub.ps", ASM_MIPS_NMSUB_PS, MIPS_OPCODE_COP1X, MIPS_OPCODE_NMSUB_PS, 0x0, asm_mips_nmsub_ps},
 
-
   /* Privileged Instructions - COP0 */
 
   {"mfc0", ASM_MIPS_MFC0, MIPS_OPCODE_COP0, MIPS_OPCODE_MFC0, 0x0, asm_mips_mfc0},                            // !
@@ -304,7 +287,6 @@ struct e_mips_instr e_mips_instrs [] =
 
   {"deret", ASM_MIPS_DERET, MIPS_OPCODE_COP0, MIPS_OPCODE_DERET, 0x0, asm_mips_deret},
   {"sdbbp", ASM_MIPS_SDBBP, MIPS_OPCODE_COP0, MIPS_OPCODE_SDBBP, 0x0, asm_mips_sdbbp},
-
 
   /*TODO
    * - FPU insns
@@ -523,4 +505,3 @@ struct e_mips_register e_mips_registers [] =
   /* ext_mnemonic         mnemonic          fpu_mnemonic      code  */
   { (const char *) -1, (const char *) -1, (const char *) -1, (int) -1 }
 };
-

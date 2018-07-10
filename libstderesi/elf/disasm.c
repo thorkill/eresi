@@ -1,5 +1,6 @@
+
 /**
-* @file libstderesi/elf/disasm.c
+ * @file libstderesi/elf/disasm.c
 ** @ingroup elf
 */
 /**
@@ -10,9 +11,7 @@
 */
 #include "libstderesi.h"
 
-
 static revmlist_t *second = NULL;
-
 
 /**
  * Resolve symbol in one file or all (mapped) if we are in e2dbg
@@ -137,7 +136,6 @@ char    *revm_resolve(elfshobj_t *file, eresi_Addr addr, elfsh_SAddr *roffset)
 
 }
 
-
 /**
  *  Symbol resolving handler for libasm.
  * Runtime compatible
@@ -195,8 +193,6 @@ void    asm_do_resolve(void *data, eresi_Addr vaddr,
       snprintf(buf, maxlen, "0x%X", addr);
     }
 }
-
-
 
 /**
  * Display An instruction.
@@ -320,9 +316,6 @@ int   revm_instr_display(int fd, eresi_Addr vaddr, u_int foffset, u_int size,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
-
 /**
  * @brief Display the content of an objet in hexadecimal and ascii format
  * @param parent The parent section for the object
@@ -445,9 +438,6 @@ int   revm_hexa_display(elfshsect_t *parent, char *name, eresi_Addr vaddr,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief Display the content of an array object
@@ -579,9 +569,6 @@ int   revm_array_display(elfshsect_t *parent, elfsh_Sym *sym, char *buff,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief Display the content of a binary object (wrapper function)
@@ -798,11 +785,6 @@ int             revm_object_display(elfshsect_t *parent, elfsh_Sym *sym,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
-
 /**
  * Print all variables and functions of the section.
  * @param s
@@ -894,10 +876,6 @@ int   revm_section_display(elfshsect_t  *s,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
-
 /**
  * Match regular expressions in a SHT (SHT or RSHT).
  * @param file
@@ -942,10 +920,6 @@ int   revm_match_sht(elfshsect_t *l, revmlist_t *actual)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matchs);
 }
-
-
-
-
 
 /**
  * Match regular expressions in the symbol tables
@@ -1047,11 +1021,6 @@ int   revm_match_symtab(elfshobj_t *file, elfshsect_t *symtab,
   /* Everything went ok */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, matchs);
 }
-
-
-
-
-
 
 /**
  * Match a special regular expression.
@@ -1160,7 +1129,6 @@ int   revm_match_special(elfshobj_t *file, eresi_Addr vaddr,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Find what to match in the file given in parameter
@@ -1279,8 +1247,6 @@ int   revm_match_find(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Display ASM code for a given function, or every functions of a section
  */
@@ -1322,6 +1288,3 @@ int             cmd_disasm()
   revm_output(" [E] Failed to disassemble\n\n");
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-

@@ -1,5 +1,5 @@
 /**
-* @file libkernsh/user/misc.c
+ * @file libkernsh/user/misc.c
 ** @ingroup usermode
 **
 */

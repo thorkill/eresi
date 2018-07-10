@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/type/vectors.c
+ * @file libstderesi/type/vectors.c
  * @ingroup type
  * Started on  Sat Jan 06 06:43:11 2007 jfv
  *
@@ -80,7 +80,6 @@ int   revm_vectors_getdims(char *str, unsigned int *dims)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Check vectors dimensions
  * @param vect
@@ -106,8 +105,6 @@ int   revm_vector_bad_dims(vector_t *vect, unsigned int *dims,
 
   return (0);
 }
-
-
 
 /**
  * Modify a value inside a vector
@@ -176,8 +173,6 @@ static int  revm_vector_modify()
                "You need to supply the vector indexes to be modified", -1);
 }
 
-
-
 /**
  * Print a vector entry with its resolve
  * @param vaddr
@@ -218,8 +213,6 @@ static void revm_vector_entry_display(eresi_Addr vaddr, eresi_Addr def)
   snprintf(log, sizeof(log), " = " XFMT " %s%s%s\n", vaddr, bsep, print, esep);
   revm_output(log);
 }
-
-
 
 /**
  * Display the vector recursively
@@ -271,7 +264,6 @@ static void revm_vector_recdisplay(unsigned long *tab,  unsigned int *dims,
   return;
 }
 
-
 /**
  * Display vector
  * @param cur
@@ -293,8 +285,6 @@ static void  revm_vector_print(vector_t *cur, char *name)
   snprintf(logbuf, sizeof(logbuf), "\n .:: Vector %s printed \n\n", name);
   revm_output(logbuf);
 }
-
-
 
 /**
  * Display the content of a vector
@@ -335,8 +325,6 @@ static void revm_vectors_display()
 
   revm_output("\n Type vector vectname for specific vector details.\n\n");
 }
-
-
 
 /**
  * Display vector content
@@ -399,7 +387,6 @@ static int   revm_vector_display()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Simple internal cat builtin

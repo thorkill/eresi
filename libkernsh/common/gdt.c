@@ -1,5 +1,5 @@
-/*
-* @file libkernsh/common/gdt.c
+/**
+ * @file libkernsh/common/gdt.c
 ** @ingroup common
 **
 */
@@ -103,7 +103,6 @@ int kernsh_gdt_linux(list_t *lgdt)
                    BUFSIZ,
                    "%d",
                    i);
-
 
           /* Add the segment in the list */
           elist_add(lgdt, key, (void *) sgdt);

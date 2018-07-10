@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_scasb.c
+ * @file libasm/src/arch/ia32/handlers/op_scasb.c
  *
  * @ingroup IA32_instrs
 **
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_scasb" opcode="0xae"/>
 */
 

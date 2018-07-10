@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/remap.c
+ * @file libelfsh/remap.c
  * @ingroup libelfsh
 ** remap.c for elfsh
 **
@@ -12,7 +13,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Remap the Program Header Table
@@ -219,7 +219,6 @@ int   elfsh_reloc_dynamic(elfshsect_t *sect, eresi_Addr diff)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (count));
 }
 
-
 /**
  * Remap sections of type SHT_REL and SHT_RELA
  * @param sect
@@ -370,7 +369,6 @@ int   elfsh_reloc_dtors(elfshsect_t *sect, eresi_Addr diff)
                 diff)));
 }
 
-
 /**
  * Not used ATM since it triggers more false positives ;P
  * @param sect
@@ -393,7 +391,6 @@ int   elfsh_reloc_hash(elfshsect_t *sect, eresi_Addr diff)
                 elfsh_readmem(sect),
                 sect->shdr->sh_size / sizeof(eresi_Addr), diff)));
 }
-
 
 /**
  * Call the type dependant remapping routine for this section
@@ -457,8 +454,6 @@ int   elfsh_relocate_section(elfshsect_t *sect, eresi_Addr diff)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 /**
  * XXX .::. TODO for ET_EXEC to ET_DYN :

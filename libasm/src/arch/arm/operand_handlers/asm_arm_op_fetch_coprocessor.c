@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/arm/operand_handlers/asm_arm_op_fetch_coprocessor.c
+ * @file libasm/src/arch/arm/operand_handlers/asm_arm_op_fetch_coprocessor.c
 ** @ingroup ARM_operands
 */
 #include <libasm.h>

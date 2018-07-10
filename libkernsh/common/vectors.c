@@ -2,8 +2,8 @@
  * @defgroup common Common code between user and kernel land.
  * @ingroup libkernsh
  */
-/*
-* @file libkernsh/common/vectors.c
+/**
+ * @file libkernsh/common/vectors.c
 ** @ingroup common
 **
 */
@@ -49,7 +49,6 @@ int kernsh_init_vectors()
                          kernsh_closemem_default,
                          dims, strdims, 3, ASPECT_TYPE_CADDR);
 
-
   /* Syscalls ARCH, OS */
 #if __DEBUG_KERNSH__
   printf("INIT SCT VECTORS\n");
@@ -85,7 +84,6 @@ int kernsh_init_vectors()
   aspect_register_vector(LIBKERNSH_VECTOR_NAME_CALLSC,
                          kernsh_callsc_default,
                          dims, strdims, 1, ASPECT_TYPE_CADDR);
-
 
   /* IDT ARCH, OS */
 #if __DEBUG_KERNSH__
@@ -483,7 +481,6 @@ int kernsh_register_vectors()
   kernsh_register_autotypes(LIBKERNSH_ARCH_I386,
                             LIBKERNSH_OS_LINUX_2_6,
                             kernsh_autotypes_linux_2_6);
-
 
   kernsh_register_relink(LIBKERNSH_OS_LINUX_2_4,
                          kernsh_relink_module_linux);

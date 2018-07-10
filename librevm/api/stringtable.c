@@ -1,5 +1,6 @@
-/*
-* @file librevm/api/stringtable.c
+
+/**
+ * @file librevm/api/stringtable.c
 ** @ingroup api
 ** @brief All functions about string table management
 **

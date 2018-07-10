@@ -1,5 +1,5 @@
-/*
-* @file kernsh/mem.c
+/**
+ * @file kernsh/mem.c
 ** @ingroup kernsh
 **
 */
@@ -413,7 +413,6 @@ int   cmd_kmem_info()
     }
 
   revm_output(buff);
-
 
   val = (int)config_get_data(LIBKERNSH_CONFIG_ALLOC);
 

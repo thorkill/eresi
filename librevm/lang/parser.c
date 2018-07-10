@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/parser.c
+ * @file librevm/lang/parser.c
  * @@ingroup lang
  *
  * The top level parser for ERESI scripting
@@ -43,7 +43,6 @@ retry:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, strdup(buf));
 }
-
 
 /**
  * Recognize a special command pattern
@@ -152,11 +151,6 @@ int     revm_parse_construct(char *curtok)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
-
 
 /**
  * Parse the commands
@@ -288,5 +282,3 @@ int     revm_parseopt(int argc, char **argv)
   /* Return success */
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-

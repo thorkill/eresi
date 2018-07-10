@@ -1,11 +1,10 @@
-/*
+/**
 ** test_usage.c for source level debugging tests in ERESI
 **
 ** Initial version by Eduardo Franklin - 2009
 */
 #include <libelfsh.h>
 #include <libedfmt.h>
-
 
 int     main(int ac, char **av)
 {

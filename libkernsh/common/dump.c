@@ -1,5 +1,5 @@
-/*
-* @file libkernsh/common/dump.c
+/**
+ * @file libkernsh/common/dump.c
 ** @ingroup common
 **
 */
@@ -428,4 +428,3 @@ int kernsh_kdump_vma_kernelland_linux(pid_t pid, hash_t *h)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
-

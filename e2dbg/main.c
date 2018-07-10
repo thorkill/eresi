@@ -2,7 +2,7 @@
  * @defgroup e2dbg e2dbg: The Embedded ERESI debugger.
  */
 /**
-* @file e2dbg/main.c
+ * @file e2dbg/main.c
  * @ingroup e2dbg
  * @brief Implement E2DBG client side entry points.
  *
@@ -10,9 +10,7 @@
  */
 #include "e2dbg.h"
 
-
 char    *version;
-
 
 /**
  * Setup LD_PRELOAD for dynamic binaries debugging
@@ -56,8 +54,6 @@ void    revm_debugger_preload()
       fprintf(stderr, " [*] Preloading %s \n", buf);
     }
 }
-
-
 
 /**
  * Inject the .o debugger file into the static binary
@@ -138,8 +134,6 @@ char   *revm_debugger_inject(elfshobj_t *file)
   return buf;
 }
 
-
-
 /**
  * Execute the debuggee program
  * @param ac Number of arguments.
@@ -192,7 +186,6 @@ int   revm_execute_debuggee(int ac, char **av)
   exit(-1);
 }
 
-
 /**
  * The real main function
  * @param ac
@@ -235,7 +228,6 @@ int   e2dbg_main(int ac, char **av)
   revm_run(ac, av);
   return (0);
 }
-
 
 /**
  * The starting E2dbg routine

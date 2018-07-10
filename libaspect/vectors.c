@@ -1,9 +1,10 @@
+
 /**
  * @defgroup libaspect libaspect: The ERESI aspect library.
  * @ingroup ERESI
  */
 /**
-* @file libaspect/vectors.c
+ * @file libaspect/vectors.c
 ** @ingroup libaspect
 ** @brief Implement the modularity for the framework.
 **
@@ -12,7 +13,6 @@
 #include "libaspect.h"
 
 hash_t         *vector_hash = NULL;
-
 
 /**
  * @brief Retreive a vector from the hash table giving its name
@@ -42,7 +42,6 @@ hash_t   *aspect_vecthash_get()
 {
   return (vector_hash);
 }
-
 
 /**
  * @brief Project each dimension and write the desired function pointer
@@ -74,7 +73,6 @@ void    aspect_vectors_insert(vector_t     *vect,
   *tmp = (unsigned long) fct;
 }
 
-
 /**
  * @brief Project each dimension and get the requested function pointer
  * @param vect Vector to be looked up
@@ -98,7 +96,6 @@ void     *aspect_vectors_select(vector_t *vect, unsigned int *dim)
 
   return (tmp);
 }
-
 
 /**
  * @brief Project each dimension and get the requested vector element pointer
@@ -128,9 +125,6 @@ void    *aspect_vectors_selectptr(vector_t *vect,
 
   return (tmp);
 }
-
-
-
 
 /**
  * @brief Allocate recursively the hook array for a vector (internal function)
@@ -178,14 +172,12 @@ static int  aspect_vectors_recalloc(unsigned long *tab,
                               dims, depth + 1, dimsz);
     }
 
-
   //printf("GETTING OUT OF recalloc with depth = %u and dimentnbr = %u\n",
   // depth, dimsz);
 
   return (0);
   //PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Initialize recursively the hook array in a vector (internal function)
@@ -221,8 +213,6 @@ static int  aspect_vectors_recinit(unsigned long *tab,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief Register a new vector. A vector is an multidimentional array of hooks

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/i386_bts.c
+ * @file libasm/src/arch/ia32/handlers/i386_bts.c
  *
  * @ingroup IA32_instrs
  *
@@ -7,7 +7,7 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <i386 func="i386_bts" opcode="0xab"/>
  */
 

@@ -1,5 +1,5 @@
 /**
-* @file libstderesi/elf/flush.c
+ * @file libstderesi/elf/flush.c
 ** @ingroup elf
 */
 /**

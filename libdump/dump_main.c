@@ -1,4 +1,5 @@
-/*
+
+/**
 ** dump_main.c for elfsh
 **
 ** Started on Tue Feb 20 14:40:34 CET 2005 ym
@@ -62,7 +63,6 @@ int disconnect_from (char *host)
 
   dump_disconnect (socket);
 
-
   for (i = 2; i < sd_num; i++)
     {
       if (sd_list[i] == socket)
@@ -98,7 +98,6 @@ int send_to (char *host, char *data)
 
   return dump_send (serv_addr.sin_addr, data, strlen (data));
 }
-
 
 /* connect to given host */
 int  connect_to (char *host)
@@ -154,7 +153,6 @@ int  connect_to (char *host)
       perror ("[EE] Cannot connect ");
       exit (1);
     }
-
 
   sd_list[sd_num] = sd;
   sd_num ++;
@@ -310,7 +308,6 @@ int main_loop (int main_sd, int input_fd)
   struct sockaddr loc;
   socklen_t   lloc = sizeof (struct sockaddr);
 
-
   fd_set socks;
 
   /* add input fd to socket list */
@@ -320,7 +317,6 @@ int main_loop (int main_sd, int input_fd)
   /* add main socket to socket list */
   sd_list[1] = main_sd;
   sd_num ++;
-
 
   /* loops */
   while (1)
@@ -460,13 +456,10 @@ int main_loop (int main_sd, int input_fd)
             }
         }
 
-
     }
 
   return 0;
 }
-
-
 
 int  main ()
 {

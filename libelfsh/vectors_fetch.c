@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/vectors_fetch.c
+ * @file libelfsh/vectors_fetch.c
 ** @ingroup libelfsh
 **
 ** vectors_fetch.c for libelfsh (The ELF shell library)
@@ -18,7 +18,6 @@ static u_char elfsh_ostype[5] =
   ELFOSABI_OPENBSD,
   ELFOSABI_SOLARIS,
 };
-
 
 /**
  * Translate ELF architecture type into ELFsh architecture type
@@ -79,7 +78,6 @@ u_char    elfsh_get_archtype(elfshobj_t *file)
     }
 }
 
-
 /**
  * Translate ELF object type into ELFsh object type
  * @param file
@@ -112,7 +110,6 @@ u_char    elfsh_get_iotype(elfshobj_t *file)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file->iotype);
 }
-
 
 /**
  * Retreive ELFsh OS type from ELF header
@@ -151,7 +148,6 @@ u_char  elfsh_get_real_ostype(elfshobj_t *file)
     }
 }
 
-
 /**
  * @brief Retreive the host type for a file
  * @param file The working file.
@@ -162,7 +158,6 @@ u_char    elfsh_get_hosttype(elfshobj_t *file)
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, file->hostype);
 }
-
 
 /**
  * Fill up ELFsh Operating System type
@@ -216,7 +211,6 @@ u_char    elfsh_get_ostype(elfshobj_t *file)
                    &elfsh_ostype[ELFSH_OS_SOLARIS]);
 
         }
-
 
       /* Only useful for objects with .interp section */
       /* e.g. : ET_EXEC, and some special ET_DYN like libc */
@@ -322,8 +316,3 @@ u_int       elfsh_get_breaksize(elfshobj_t *file)
                    "Unsupported architecture", 0);
     }
 }
-
-
-
-
-

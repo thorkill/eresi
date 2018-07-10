@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/state.c
+ * @file libelfsh/state.c
  * @ingroup libelfsh
  * @brief Provide initialization and debugger state related functions.
  *
@@ -7,12 +7,9 @@
  */
 #include "libelfsh.h"
 
-
 libworld_t  dbgworld;
 
-
 void    elfsh_init() __attribute__ ((constructor));
-
 
 /**
  * @brief Initialize the elfsh world
@@ -34,7 +31,6 @@ void    elfsh_init()
 
 }
 
-
 /**
  * @brief The functions for simple ondisk/memory state flag
  */
@@ -50,7 +46,6 @@ void  elfsh_set_static_mode()
 {
   elfsh_set_mode(LIBELFSH_MODE_STATIC);
 }
-
 
 /**
  * @ brief check if we are running in debug mode
@@ -95,7 +90,6 @@ u_char  elfsh_debugger_present()
 {
   return (dbgworld.indebug);
 }
-
 
 /**
  * @brief toggle modes

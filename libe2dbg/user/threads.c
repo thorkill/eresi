@@ -1,9 +1,9 @@
 /**
-* @file libe2dbg/user/threads.c
+ * @file libe2dbg/user/threads.c
 ** @ingroup user
 */
-/*
-* @file libe2dbg/user/threads.c
+/**
+ * @file libe2dbg/user/threads.c
  *
  * Hook the threads API for keeping thread debugger information
  * accurately up2date
@@ -14,7 +14,6 @@
  */
 #include "libe2dbg.h"
 #include <pthread.h>
-
 
 /**
  * Hooked start routine for all threads
@@ -128,7 +127,6 @@ static void    *e2dbg_thread_start(void *param)
   return ((*start)(param));
 }
 
-
 /**
  * Hook for pthread_create
  * @param __threadp
@@ -194,8 +192,6 @@ int   pthread_create (pthread_t *__restrict __threadp,
   NOPROFILER_ROUT(ret);
 }
 
-
-
 /**
  * Hook for pthread_exit
  * @param retval
@@ -221,14 +217,13 @@ void  pthread_exit(void *retval)
     }
 }
 
-
 /**
  * Hook for signal
  * @param signum
  * @param fctptr
  * @return
  */
-/*
+/**
 __sighandler_t    signal(int signum, __sighandler_t fctptr)
 {
   __sighandler_t  (*fct)(int signum, __sighandler_t fctptr);
@@ -243,9 +238,6 @@ __sighandler_t    signal(int signum, __sighandler_t fctptr)
   return ((*fct)(signum, fctptr));
 }
 */
-
-
-
 
 /**
  * Print all threads state
@@ -332,7 +324,6 @@ void    e2dbg_threads_print()
     }
 }
 
-
 /**
  * Switch on another thread and and Print all threads
  * @return
@@ -372,9 +363,6 @@ int   cmd_threads()
   e2dbg_threads_print();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Stop all threads when a breakpoint happens
@@ -490,7 +478,6 @@ int   e2dbg_thread_stopall(int signum)
         }
     }
 
-
 #if __DEBUG_THREADS__
   //e2dbg_threads_print();
   //printf("--------- END OF STOPALL %u ------------ \n", called);
@@ -498,10 +485,6 @@ int   e2dbg_thread_stopall(int signum)
 
   return (total);
 }
-
-
-
-
 
 /**
  * Continue all threads after a breakpoint
@@ -593,4 +576,3 @@ void    e2dbg_thread_contall()
 #endif
 
 }
-

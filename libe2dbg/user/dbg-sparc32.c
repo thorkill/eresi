@@ -1,5 +1,6 @@
+
 /**
-* @file libe2dbg/user/dbg-sparc32.c
+ * @file libe2dbg/user/dbg-sparc32.c
 ** @ingroup user
 */
 /*

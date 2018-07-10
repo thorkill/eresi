@@ -1,10 +1,10 @@
+
 /**
-* @file libe2dbg/kernel/idt.c
+ * @file libe2dbg/kernel/idt.c
  *
  *
  */
 #include "ke2dbg.h"
-
 
 /**
  * Get IDT address
@@ -19,7 +19,6 @@ unsigned int *ke2dbg_idt_getbase()
 
   return (unsigned int *)idt_[0];
 }
-
 
 /**
  * Get the linear address for GDT
@@ -84,9 +83,7 @@ unsigned int ke2dbg_virt2lin_convert(unsigned int segment, unsigned int adresse)
   //  printk("local! %X \n", adresse_base);
   return  adresse + adresse_base;
 
-
 }
-
 
 /**
  * Print content of IDT
@@ -145,7 +142,6 @@ void  ke2dbg_idt_print(unsigned long *adresse_idt)
 unsigned long ke2dbg_idt_modify(unsigned int newhandle, unsigned int *idtentry)
 {
   unsigned long aux;
-
 
   aux = ((unsigned long) (*idtentry) & 0xffff);
   *idtentry = (((unsigned long) (*idtentry) & 0xffff0000) | (newhandle & 0xffff));

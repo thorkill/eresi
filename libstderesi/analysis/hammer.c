@@ -1,5 +1,5 @@
-/*
-* @file libstderesi/analysis/hammer.c
+/**
+ * @file libstderesi/analysis/hammer.c
 ** @ingroup analysis
 ** @brief Contains libmjollnir commands bindings.
 **
@@ -8,7 +8,6 @@
 **
 */
 #include "libstderesi.h"
-
 
 /** Check if we have to re-analyse the binary */
 int revm_analysed(eresi_Addr addr)
@@ -41,7 +40,6 @@ int revm_analysed(eresi_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
-
 /**
  * To rebuild symtab use this command
  */
@@ -66,7 +64,6 @@ int cmd_unstrip()
     world.mjr_session.cur->obj->secthash[ELFSH_SECTION_SYMTAB]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * This command construct the call graph and the control flow graph for each function.
@@ -180,8 +177,6 @@ int   cmd_analyse()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Shortcut command to rename symbols
  */
@@ -193,7 +188,6 @@ int cmd_rename()
                     world.curjob->curcmd->param[1]);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Remove previously done analysis

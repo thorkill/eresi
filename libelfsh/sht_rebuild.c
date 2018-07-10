@@ -1,18 +1,16 @@
 /**
-* @file libelfsh/sht_rebuild.c
+ * @file libelfsh/sht_rebuild.c
  * @ingroup libelfsh
- ** sht_rebuild.c for elfsh
- **
- ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- ** This code is functional as it, but it is WORK IN PROGRESS
- ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- **
- ** Started on  Tue Mar 26 19:07:23 2002 jfv
+ * sht_rebuild.c for elfsh
+ *
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This code is functional as it, but it is WORK IN PROGRESS
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ *
+ * Started on  Tue Mar 26 19:07:23 2002 jfv
  */
 #include "libelfsh.h"
 #include "libasm.h"
-
-
 
 /**
  * @brief This function insert a SHT entry without shifting the address space
@@ -128,7 +126,6 @@ int elfsh_merge_shtentry(elfshobj_t *file,
           break;
         }
 
-
       /* The new header defines a section matching the end area of an existing section */
       else if (file->sht[index].sh_offset + file->sht[index].sh_size == shdr.sh_offset
                + shdr.sh_size)
@@ -157,7 +154,6 @@ int elfsh_merge_shtentry(elfshobj_t *file,
           elfsh_update_linkidx(file, index + 1, 1);
           break;
         }
-
 
       /* The new header defines a section strictly included in an already existing section */
       else if (file->sht[index].sh_offset < shdr.sh_offset &&
@@ -907,7 +903,6 @@ static void sht_first_round(elfshobj_t *file, u_int num)
           elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_DYNAMIC);
           break;
 
-
         /* The interpretor segment */
 
         case PT_INTERP:
@@ -918,7 +913,6 @@ static void sht_first_round(elfshobj_t *file, u_int num)
           elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_INTERP);
           break;
 
-
         /* This is the auxiliary information */
 
         case PT_NOTE:
@@ -927,7 +921,6 @@ static void sht_first_round(elfshobj_t *file, u_int num)
                                              0, 0, 0, 0);
           elfsh_merge_shtentry(file, index, shdr, ELFSH_SECTION_NAME_NOTES_ABI);
           break;
-
 
         /* Rebuild the .bss */
 
@@ -944,7 +937,6 @@ static void sht_first_round(elfshobj_t *file, u_int num)
 
           break;
 
-
         default:
           break;
         }
@@ -952,7 +944,6 @@ static void sht_first_round(elfshobj_t *file, u_int num)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * INTERNAL FUNCTION: guess .text, .data, .init, .fini, and .bss bounds

@@ -10,7 +10,6 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-
 /**
  * @brief Decode a modRM operand of size Byte.
  *
@@ -207,7 +206,6 @@ int operand_rmb(asm_operand *op, u_char *opcode, asm_processor *proc)
 
   return (op->len);
 }
-
 
 /***
  *

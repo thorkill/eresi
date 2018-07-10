@@ -1,11 +1,10 @@
 /**
-* @file libe2dbg/common/linkmap.c
+ * @file libe2dbg/common/linkmap.c
 ** @ingroup common
 ** @brief Command and API for accessing the LINKMAP linked list.
 **
 */
 #include "libe2dbg.h"
-
 
 /**
  *  Dump the linkmap
@@ -60,8 +59,6 @@ int    e2dbg_linkmap_print(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Linkmap dump command
  * @return
@@ -95,5 +92,3 @@ int   cmd_linkmap()
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Debug mode only command", (-1));
 }
-
-

@@ -1,12 +1,11 @@
 /**
-* @file libaspect/types.c
+ * @file libaspect/types.c
 ** @ingroup libaspect
 ** @brief The base of the unified type system.
 **
 ** Started on  Sun Jan 9 07:23:58 2007 jfv
 */
 #include "libaspect.h"
-
 
 /**
  * @brief Available types hash
@@ -86,7 +85,6 @@ aspectype_t   *aspect_type_copy(aspectype_t *type,
   newtype->elemnbr    = dims;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);
 }
-
 
 /**
  * @brief Copy the structure representing a data type and change its name to create a new meta-type
@@ -205,7 +203,6 @@ aspectype_t   *aspect_type_copy_by_name(aspectype_t   *type,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, result);
 }
 
-
 /**
  * @brief Add a field to a meta-type
  * @param parent Parent data type
@@ -236,8 +233,6 @@ int   aspect_type_addfield(aspectype_t *parent,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * @brief Find the number of dimensions for a field
@@ -305,7 +300,6 @@ static u_int  *aspect_type_getdims(char *typename, int *dimnbr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, dims);
 }
 
-
 /**
  * @brief Find the size of an union type
  * @param utype Union type whose size is to be infered
@@ -338,8 +332,6 @@ int     aspect_type_find_union_size(aspectype_t *utype)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, biggest);
 }
-
-
 
 /**
  * @brief Create a new (meta description) type
@@ -561,7 +553,6 @@ aspectype_t   *aspect_type_create(u_char isunion,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newtype);
 }
 
-
 /**
  * @brief The real type registering code
  * @param label Name for type to be registered
@@ -598,7 +589,6 @@ int   aspect_type_register_real(char        *label,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Wrapper for easy type creation and registration
  * @param isunion 1 if registered type is a union
@@ -628,7 +618,6 @@ int   aspect_type_register(u_char isunion,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, iret);
 }
 
-
 /**
  * @brief Create a new type with a single field (internal function)
  * @param type Type identifier to be created
@@ -657,7 +646,6 @@ static int  aspect_basetype_create(u_int type, typeinfo_t *info)
   hash_init(newhash, strdup(hashname), 11, ASPECT_TYPE_UNKNOW);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Create all simple types
@@ -746,8 +734,6 @@ aspectype_t *aspect_type_get_by_name(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, type);
 }
 
-
-
 /**
  * @brief Return the list of base types
  * @param nbr Integer pointer that will be filled with the number of base types
@@ -764,7 +750,6 @@ typeinfo_t  *aspect_basetype_get(unsigned int *nbr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, aspect_typeinfo_base);
 }
-
 
 /**
  * @brief Create and register a new simple type
@@ -834,4 +819,3 @@ u_int   aspect_typesize_get(u_int type)
 
   return (aspect_typeinfo[type].size);
 }
-

@@ -1,9 +1,9 @@
-/*
+/**
 */
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   Opcode :              0x0f 0xa0
   Instruction :         PUSH
   <i386 func="i386_push_fs" opcode="0xa0"/>

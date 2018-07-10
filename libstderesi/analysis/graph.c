@@ -1,5 +1,6 @@
-/*
-* @file libstderesi/analysis/graph.c
+
+/**
+ * @file libstderesi/analysis/graph.c
 ** @ingroup analysis
 ** @brief Dump graphviz output of call graph and control flow graph.
 **
@@ -8,7 +9,6 @@
 #include "libstderesi.h"
 
 static hash_t   dumped;
-
 
 /**
  * @brief Same than system() but gives hand without waiting.
@@ -100,7 +100,6 @@ static int  revm_print_block_handler(listent_t *e, void *null)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Print the content of a basic block
  * @param list The expression list for that block
@@ -121,7 +120,6 @@ static void revm_print_block(int fd, list_t *list)
   revm_setoutput_handler(&world.curjob->ws, savedhdl);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * Disassemble a block
@@ -212,8 +210,6 @@ end:
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
-
 /**
  * Create .dot -> .png files and execute the graphic viewer
  * @param dotfile
@@ -243,7 +239,6 @@ int revm_graph_compile_graphic(char *dotfile)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (1));
 }
 
-
 /**
  * Returns converted path name into string without '.'
  * @param path
@@ -269,8 +264,6 @@ char    *revm_flattern_path(char *path)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, r);
 }
-
-
 
 /**
  * Prepare directory tree for graph storage
@@ -376,7 +369,6 @@ u_int   revm_get_vaddr(char *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (min));
 }
 
-
 /**
  * Get color name for string, it does check alert
  * and lookups the color name
@@ -475,7 +467,6 @@ int   revm_graph_get_function_type(mjrfunc_t *fnc)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ftype);
 }
 
-
 /* Write the header dot description for a node */
 char    *revm_write_dotnode(int fd, elfshobj_t *obj, eresi_Addr addr,
                             u_int size)
@@ -510,8 +501,6 @@ int   revm_write_endnode(int fd)
   write(fd, buf, strlen(buf));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /* A recursive function for graphing in dot format */
 int   revm_graph_blocks(container_t   *cntnr,
@@ -638,8 +627,6 @@ int   revm_graph_blocks(container_t   *cntnr,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * This function does dump a function container in graphviz format
  * @param fd
@@ -679,8 +666,6 @@ int   revm_graph_function(container_t   *cntnr,
     {
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
     }
-
-
 
   n1 = elfsh_reverse_metasym(world.curjob->curfile, fnc->vaddr, &offset);
 
@@ -765,8 +750,6 @@ int revm_open_dot_file(char *dotfile, int *fd)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 1);
 }
 
-
-
 eresi_Addr  revm_get_min_param(void)
 {
   revmexpr_t  *expr;
@@ -795,7 +778,6 @@ eresi_Addr  revm_get_min_param(void)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (min));
 }
-
 
 /* Graph the binary */
 int   cmd_graph(void)

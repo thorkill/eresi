@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/interp.c
+ * @file libelfsh/interp.c
  * @ingroup libelfsh
 ** interp.c for libelfsh
 **
@@ -9,8 +9,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * modify the niterpreter string : the new name len must be <= to the old one
@@ -40,9 +38,6 @@ int             elfsh_write_interp(elfshobj_t *file, char *interp)
   strncpy(elfsh_readmem(file->secthash[ELFSH_SECTION_INTERP]), interp, size1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * Find the interpreter (pht lookup method)
@@ -81,6 +76,3 @@ char    *elfsh_get_interp(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 ((char *) elfsh_get_raw(file->secthash[ELFSH_SECTION_INTERP])));
 }
-
-
-

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_iret.c
+ * @file libasm/src/arch/ia32/handlers/op_iret.c
  *
  * @ingroup IA32_instrs
  *

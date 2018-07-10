@@ -1,5 +1,5 @@
 /**
-* @file librevm/lang/access.c
+ * @file librevm/lang/access.c
  * @ingroup lang
  * @brief Implementation of scripting lookups for meta-language variables.
  *
@@ -7,7 +7,6 @@
  *
  */
 #include "revm.h"
-
 
 /**
  * @brief Return the index for an array access giving a string
@@ -71,7 +70,6 @@ int   revm_arrayindex_get(char *strindex)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, index);
 }
-
 
 /**
  * @brief Return the requested projections in case of an array
@@ -151,9 +149,6 @@ int   revm_arrayoff_get(char *field, u_int elmsize,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, offset);
 }
 
-
-
-
 /**
  * @brief Return offset given field name
  */
@@ -209,7 +204,6 @@ aspectype_t *revm_fieldoff_get(aspectype_t *parent, char *field, u_int *off,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Cannot find requested field offset", NULL);
 }
-
 
 /**
  * @brief Recursive function to lookup data from its typed data flow path
@@ -280,8 +274,6 @@ static aspectype_t  *revm_field_get(aspectype_t *type, char *param,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, child);
 }
-
-
 
 /**
  * @brief Create the REVM object that is to be returned
@@ -388,7 +380,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
-
 /**
  * @brief Lookup _for real_ the path of a complex typed object
  */
@@ -446,7 +437,6 @@ revmobj_t *revm_object_lookup_real(aspectype_t *type,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
 
-
 /**
  * @brief Lookup the path for a complex typed object (using syntactic sugar)
  */
@@ -490,8 +480,6 @@ revmobj_t *revm_object_lookup(char *str)
   path = revm_object_lookup_real(type, objectname, str, 1);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, path);
 }
-
-
 
 /**************** Generic handlers *********************************/
 char    *revm_generic_getname(void *type, void *data)
@@ -605,6 +593,5 @@ int   revm_generic_setdata(void *data, int off, void *newdata,
   memcpy((char *) data + (off * sizelm), newdata, size);
   return (0);
 }
-
 
 /**************** End of generic handlers *********************************/

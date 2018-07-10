@@ -1,5 +1,5 @@
 /**
-* @file libetrace/func_status.c
+ * @file libetrace/func_status.c
 ** @ingroup libetrace
 **
 ** @brief add function to a trace table.
@@ -10,7 +10,6 @@
 **
 */
 #include "libetrace.h"
-
 
 /**
  * Change the status of a whole trace

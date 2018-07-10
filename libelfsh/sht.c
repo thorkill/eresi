@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/sht.c
+ * @file libelfsh/sht.c
  * @ingroup libelfsh
 ** sht.c for libelfsh
 **
@@ -135,7 +135,6 @@ int     elfsh_sort_sht(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Synchronize duplicated names for sections
  * @param file
@@ -186,7 +185,6 @@ void    elfsh_sync_sht(elfshobj_t *file)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * Return a pointer on the runtime SHT
  * @param file
@@ -227,7 +225,6 @@ void    *elfsh_get_runtime_sht(elfshobj_t *file, int *num)
       rshstrtab->curend = file->rsht[0].sh_size;
     }
 
-
   /* Everything was OK */
   if (num != NULL)
     {
@@ -236,7 +233,6 @@ void    *elfsh_get_runtime_sht(elfshobj_t *file, int *num)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->rsht));
 }
-
 
 /**
  * @brief Return a ptr on the section header table
@@ -294,7 +290,6 @@ end:
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (file->sht));
 }
-
 
 /**
  * Change endianess of SHT
@@ -696,7 +691,6 @@ int   elfsh_insert_runtime_shdr(elfshobj_t  *file,
   file->rsht[range] = hdr;
   file->rhdr.rshtnbr++;
 
-
 #if __DEBUG_RUNTIME__
   printf("[DEBUG_RUNTIME] Runtime shdr injected on range %d \n", range);
 #endif
@@ -1063,7 +1057,6 @@ char  elfsh_set_section_strflag(elfsh_Shdr *s, eresi_Addr f)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * SET/GET the link flag
  * @param s
@@ -1423,7 +1416,6 @@ int elfsh_set_section_type(elfsh_Shdr *s, eresi_Addr type)
   s->sh_type = (elfsh_Word) type;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * ELFsh handlers

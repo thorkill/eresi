@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/hash.c
+ * @file libelfsh/hash.c
  * @ingroup libelfsh
 ** hash.c for libelfsh
 **
@@ -432,8 +432,6 @@ void    *elfsh_get_hashtable(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
 /**
  * Return a pointer on a symbol hash table (depending of range value) and load it if needed
  * @param file target file
@@ -761,28 +759,3 @@ elfsh_Word  elfsh_get_symbol_hash(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (elfsh_Word) (h));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

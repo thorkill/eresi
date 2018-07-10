@@ -2,8 +2,8 @@
  * @defgroup common
  * @ingroup libe2dbg
  */
-/*
-* @file libe2dbg/common/common.c
+/**
+ * @file libe2dbg/common/common.c
 ** @brief Common generic API for libe2dbg
 ** @ingroup common
 **
@@ -15,7 +15,7 @@ e2dbgworld_t  e2dbgworld;
 
 /**
  * Realize the output.
- ** @todo: XXX: Need a vector
+ * @todo: XXX: Need a vector
  * @param str
  * @return
  */
@@ -25,7 +25,6 @@ int   e2dbg_output(char *str)
   fprintf(stderr, str);
   return (0);
 }
-
 
 /**
  * Get the parent object of a breakpoint.

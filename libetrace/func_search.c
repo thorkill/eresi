@@ -1,5 +1,6 @@
-/*
-* @file libetrace/func_search.c
+
+/**
+ * @file libetrace/func_search.c
 **
 ** Libetrace header file in the ERESI project
 **
@@ -78,4 +79,3 @@ edfmtfunc_t     *trace_search_uni(elfshobj_t *file, char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, func);
 }
-

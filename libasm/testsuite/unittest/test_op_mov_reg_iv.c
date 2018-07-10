@@ -5,8 +5,6 @@
 #define OPCODE_TO_TEST      "\xBE\x7F\x7D\xE8\x34"
 #define OPCODE_VADDR   0x0804000
 
-
-
 /**
  * @return 1 on success, 0 on failure
  */
@@ -53,8 +51,6 @@ int test16(void)
 /**
  * Call both test for protected and real mode
  */
-
-
 
 int main(int ac, char **av)
 {

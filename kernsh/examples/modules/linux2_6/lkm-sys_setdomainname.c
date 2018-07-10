@@ -20,6 +20,5 @@ static void testreladd_exit(void)
   printk(KERN_ALERT "TEST REL ADD EXIT\n");
 }
 
-
 module_init(testreladd_init);
 module_exit(testreladd_exit);

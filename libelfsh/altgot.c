@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/altgot.c
+ * @file libelfsh/altgot.c
  * @ingroup libelfsh
 ** altgot.c for libelfsh
 **
@@ -9,8 +9,6 @@
 ** Started on  Wed Jun 08 21:20:07 2005 mm
 */
 #include "libelfsh.h"
-
-
 
 /**
  * @brief Shift the relocation HI16 and L16 for mips binaries
@@ -73,7 +71,6 @@ void      elfsh_shift_mips_relocs(elfshobj_t *file, eresi_Addr diff)
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
 
-
 /**
  * @brief Shift the ALPHA relocation table.
  * @param file The file where to relocate the table.
@@ -125,8 +122,6 @@ int     elfsh_shift_alpha_relocs(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * @brief Shift the SPARC relocation to make points the entries inside .alt.plt instead of .plt
  * @param file The host file where shift must happens.
@@ -152,7 +147,6 @@ int     elfsh_shift_generic_relocs(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Shift relocation tables at some point for allowing non-present symbol resolving
@@ -222,9 +216,6 @@ int     elfsh_shift_sparc_relocs(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (elfsh_shift_generic_relocs(file, diff, relplt)));
 }
-
-
-
 
 /**
  * @brief Change the DT_PLTGOT entry in the .dynamic section to change
@@ -297,5 +288,3 @@ int     elfsh_redirect_pltgot(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-

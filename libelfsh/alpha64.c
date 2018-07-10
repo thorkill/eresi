@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/alpha64.c
+ * @file libelfsh/alpha64.c
  * @ingroup libelfsh
 ** Alpha64.c for libelfsh
 **
@@ -11,8 +11,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * @brief Static hooking for Alpha64 (UNIMPLEMENTED)
@@ -29,7 +27,6 @@ int elfsh_cflow_alpha64(elfshobj_t  *sect,
 {
   // uint32_t cur;
 
-
   // opcodes to hijack
   // 0xc3 (br)
   // 0xe0 / 0xe1 (blbc)
@@ -44,11 +41,6 @@ int elfsh_cflow_alpha64(elfshobj_t  *sect,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", -1);
 }
-
-
-
-
-
 
 /**
  * @brief ALTPLT hijacking on ALPHA64
@@ -156,7 +148,6 @@ int   elfsh_hijack_altplt_alpha64(elfshobj_t *file,
   elfsh_writememf(file, altpltprolog->shdr->sh_offset,
                   opcode, sizeof(uint32_t) * 12);
 
-
   /* Last but not least : redirect .alt.plt + 0 on .alt.plt.prolog */
   off = ((-52) >> 2);
   off = (off & (~(0xffffffff << 20)));
@@ -166,7 +157,6 @@ int   elfsh_hijack_altplt_alpha64(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief PLT redirection on ALPHA64
@@ -230,9 +220,6 @@ int   elfsh_hijack_plt_alpha64(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief Find the address of modgot entry from its value.
@@ -428,9 +415,6 @@ bad:
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__, "Bad return for modgot", NULL);
 }
 
-
-
-
 /**
  * @brief Perform relocation on entry for ALPHA64 architecture.
  * Only the types that are needed for relocating ET_REL objects
@@ -456,11 +440,9 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
   uint16_t  hi, low;
   eresi_Addr  val;
 
-
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
   printf("relocata_alpha64 Input addr = " XFMT "\n", addr);
-
 
 #define ADD       (cur->r_addend)
 #define BAS       (elfsh_get_object_baseaddr(new->parent))
@@ -510,7 +492,6 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
       printf ("R_ALPHA_GPREL32\n");
       // XXX
       break;
-
 
     /*
     On alpha, each static object in the relocatable file that have
@@ -724,4 +705,3 @@ int       elfsh_relocate_alpha64(elfshsect_t       *new,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
-

@@ -1,5 +1,5 @@
 /**
-* @file libe2dbg/kernel/video.c
+ * @file libe2dbg/kernel/video.c
  *
  */
 #include "ke2dbg.h"
@@ -44,7 +44,6 @@ char  screen_colors[39][80];
 int   accessline[SCREEN_LINE];
 int   CommandLength = 0;
 char  Command[256];
-
 
 /**
  *
@@ -150,8 +149,6 @@ void ke2dbg_screen_prepare(void)
 
 }
 
-
-
 /**
  *------------------------------------------------------------------
  *- bool LoadBMP(char*, GLfloat, GLfloat) --------------------------
@@ -169,8 +166,6 @@ int LoadBMP(char *file_data, unsigned int *width, unsigned int *height,
   *width = 2048;
   *height = 12;
   *font_bpp = 8;
-
-
 
   //  Out_Debug_String("Loaded  correctly \n\r");
 
@@ -202,7 +197,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
   int tmp_font_y_m_y = 0;
   //unsigned char debug[80];
 
-
   x1 = x - screen_offset_x;
   y1 = y - screen_offset_y;
 
@@ -212,7 +206,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
   ke2dbg_sprintf(debug, "%.8X %.8X %.8X\n\r", font_x, x1, y1);
   Out_Debug_String(debug);
   */
-
 
   char_font_x = font_x * (int)a;
   char_screen_x = font_x * x + font_y * y * SCREEN_MAX_X;
@@ -232,10 +225,8 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
           color =  (font_data[(tmp_decal_font_x + y_pix * font_next_line) * byte_per_pixel
                                                                           + 0] >> 3);
 
-
 //      ke2dbg_sprintf(debug, "mode %.8X %.8X \n\r", rasta_mode, fOOl_mode);
 //  Out_Debug_String(debug);
-
 
           if (rasta_mode)
             {
@@ -307,7 +298,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
                   break;
                 }
 
-
             }
 
           if (!rasta_mode && !fOOl_mode)
@@ -363,7 +353,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
           *((char*)screen_adresse+(tmp_decal_screen_x + (tmp_font_y_m_y)))=color&0xff;
           #endif
 
-
           #ifdef BYTE_PER_PIXEL_ONE
           *((char*)screen_adresse+(tmp_decal_screen_x + (tmp_font_y_m_y)))=color&0xff;
           #endif
@@ -406,7 +395,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
 
             }
           */
-
 
         }
     }
@@ -505,7 +493,6 @@ void kedbg_display_end(void)
   ke2dbg_membase_restore();
 };
 
-
 /**
  * @param a
  * @param x
@@ -546,7 +533,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
           color = 0xA;
           break;
         }
-
 
     }
 
@@ -628,7 +614,6 @@ void print_char(unsigned char a, unsigned int x, unsigned int y)
 
 #endif /* VIDEO_AA */
 
-
 /**
  * Draw a string at position x-y
  *
@@ -682,7 +667,6 @@ void ke2dbg_screen_dump(void)
 #endif
 }
 
-
 /**
  * Restore saved screen image
  * @param do_work
@@ -717,7 +701,6 @@ void put_XY_char(int x, int y, unsigned char a)
 {
   screen_lines[y][x] = a;
 }
-
 
 /**
  * Display a message
@@ -800,7 +783,6 @@ void ke2dbg_ClearDW()
     }
 }
 
-
 /**
  * Clear dump window
  */
@@ -879,7 +861,6 @@ void ke2dbg_print_CW(char *ptr, int ligne)
   ke2dbg_text_display(1, code_win_y + ligne, ptr);
 }
 
-
 /**
  * rafraichi la fenetre de log
  */
@@ -945,8 +926,6 @@ void ke2dbg_cursor_top_right(void)
   ke2dbg_outb(0x0, 0x3d5);
 }
 /*end test :)*/
-
-
 
 /**
  *  Look for a modified lines and rewrite them
@@ -1024,12 +1003,10 @@ void ke2dbg_screen_test()
 
   int i;
 
-
   for (i = 0; i < 28; i++)
     {
       Put_String(&screen_lines[i][0], 60, 70 + i);
     }
-
 
 }
 

@@ -1,8 +1,9 @@
+
 /**
-* @file libasm/src/arch/sparc/sparc_convert.c
+ * @file libasm/src/arch/sparc/sparc_convert.c
 ** @ingroup sparc
 */
-/*
+/**
 ** sparc_convert.c for  in /hate/home/hate/code/libasm
 **
 ** Made by #!HATE#@!
@@ -14,7 +15,7 @@
 **
 */
 
-/*
+/**
  * Note: during the development on this code, I got kinda
  * confused about the efficiency of this endian-specific-code
  * approach. I'm not sure if this is doing what it's supposed

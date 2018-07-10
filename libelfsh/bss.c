@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/bss.c
+ * @file libelfsh/bss.c
  * @ingroup libelfsh
 ** bss.c for elfsh
 **
@@ -14,8 +14,6 @@
 **
 */
 #include "libelfsh.h"
-
-
 
 /**
  * Clean the BSS (remove all its data from the file and fixup PHT)
@@ -59,7 +57,6 @@ int     elfsh_flush_bss(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Set memsz and filesz as seemingfull vanilla values by inadvertancy
  * Multiple BSS safe
@@ -91,8 +88,6 @@ int     elfsh_cleanup_bss(elfshobj_t *file, elfsh_Phdr *pht)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Cannot find data PT_LOAD",  -1);
 }
-
-
 
 /**
  * Put the bss physically in the file
@@ -169,8 +164,6 @@ elfshsect_t   *elfsh_fixup_bss(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (last));
 }
 
-
-
 /**
  * The real function that fixup the bss
  * fixflag indicate if the section was nullsized and fixed
@@ -224,7 +217,6 @@ int   elfsh_fixup_bss_real(elfshobj_t *file,
           next->shdr->sh_offset += diff;
         }
     }
-
 
   /* Fixup file offset for section after bss in case they overlap.
      It happens on Solaris 8.0 with ld solaris-ELF 4.0
@@ -313,8 +305,6 @@ int   elfsh_fixup_bss_real(elfshobj_t *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Find the BSS section for this module
@@ -409,7 +399,6 @@ int   elfsh_find_bsslen(elfshobj_t  *host,
               bss_size++;
             }
 
-
         /* Create and inject symbol in ET_EXEC */
         enew = elfsh_create_symbol(bss_size,
                                    symtab[index].st_size,
@@ -431,8 +420,6 @@ int   elfsh_find_bsslen(elfshobj_t  *host,
   elfsh_sync_sorted_symtab(host_symtab);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (bss_size));
 }
-
-
 
 /** THIS SEEMS TO BE BUGGY ON SOLARIS -- TRYING TO FIX IT --- SORRY FOR INCONVENIENCE **/
 
@@ -470,9 +457,6 @@ elfshsect_t *elfsh_insert_bss(elfshobj_t *file, elfshobj_t *rel, char *bssname)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
 }
-
-
-
 
 /**
  * Map a new BSS in the current file or process as an additional section
@@ -519,14 +503,13 @@ elfshsect_t  *elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, newbss);
 }
 
-
 /**
  * Map a new BSS in the current file or process as an additional section
  * @param file
  * @param rel
  * @return
  */
-/*
+/**
 elfshsect_t *elfsh_insert_runtime_bss(elfshobj_t *file, elfshobj_t *rel)
 {
   elfshsect_t *newbss;

@@ -1,4 +1,4 @@
-/*
+/**
 **
 ** recursivite.c in
 **
@@ -20,7 +20,6 @@ void  subfunc(int arg)
   printf("i = %i\n", arg)
   ;
 }
-
 
 int main(int ac, char **av)
 {

@@ -2,10 +2,10 @@
  * @defgroup usermode Usermode running code.
  * @ingroup libkernsh
  */
-/*
-* @file libkernsh/user/kernsh.c
-* @ingroup usermode
-* @brief initialisation, get_raw and mode switch
+/**
+ * @file libkernsh/user/kernsh.c
+ * @ingroup usermode
+ * @brief initialisation, get_raw and mode switch
 **
 */
 #include "libkernsh.h"
@@ -277,7 +277,6 @@ int kernsh_del_ia32()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Called in elfsh_readmem to interact with the memory
  * @param sect The section
@@ -450,7 +449,6 @@ int kernsh_info_linux()
 #if __DEBUG_KERNSH__
   printf("Sys Call Table 0x%lx\n", libkernshworld.sct);
 #endif
-
 
 #if defined(__linux__)
   asm("sgdt %0" : "=m" (gdtr));

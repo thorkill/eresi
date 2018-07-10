@@ -1,5 +1,5 @@
-/*
-* @file libui/color.c
+/**
+ * @file libui/color.c
 **
 ** @brief All functions about colors
 **
@@ -8,7 +8,6 @@
 **
 */
 #include "libui.h"
-
 
 /* Token system */
 static char   tokens[COLOR_TOKENS][COLOR_TOKEN_LEN];

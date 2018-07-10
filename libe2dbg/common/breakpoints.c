@@ -1,12 +1,12 @@
 /**
-* @file libe2dbg/common/breakpoints.c
+ * @file libe2dbg/common/breakpoints.c
 ** @ingroup common
 **
 ** Started on  Tue Aug 16 09:38:03 2005 mayhem
 */
 #include "libe2dbg.h"
 
-/*
+/**
  * @brief Add a breakpoint
 */
 int   elfsh_bp_add(hash_t *bps,
@@ -53,8 +53,6 @@ int   elfsh_bp_add(hash_t *bps,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Add a breakpoint without using a script command */
 int   e2dbg_breakpoint_add(eresi_Addr addr)
 {
@@ -95,8 +93,6 @@ int   e2dbg_breakpoint_add(eresi_Addr addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /* Return 1 if the breakpoint is a watchpoint */
 int   e2dbg_is_watchpoint(elfshbp_t *b)
 {
@@ -104,10 +100,6 @@ int   e2dbg_is_watchpoint(elfshbp_t *b)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 b && b->flags & ELFSH_BP_WATCH);
 }
-
-
-
-
 
 /* Find breakpoint by ID */
 elfshbp_t *e2dbg_breakpoint_from_id(uint32_t bpid)
@@ -133,8 +125,6 @@ elfshbp_t *e2dbg_breakpoint_from_id(uint32_t bpid)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unable to find breakpoing by ID", NULL);
 }
-
-
 
 /* Find a breakpoint by various ways */
 elfshbp_t *e2dbg_breakpoint_lookup(char *name)
@@ -199,10 +189,6 @@ elfshbp_t *e2dbg_breakpoint_lookup(char *name)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, bp);
 }
-
-
-
-
 
 /* Find the correct location for a breakpoint. Avoid putting breakpoints
    on plt entries when possible */
@@ -344,9 +330,6 @@ end:
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, addr);
 }
 
-
-
-
 /* Breakpoint command */
 int   cmd_bp()
 {
@@ -466,8 +449,6 @@ int   cmd_bp()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 /* Watchpoint */
 int   cmd_watch()

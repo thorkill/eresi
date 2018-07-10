@@ -1,4 +1,4 @@
-/*
+/**
 ** unlink.c for unlinked
 **
 ** Started on  Sun Mar 10 01:18:51 2002 jfv
@@ -7,7 +7,6 @@
 **
 */
 #include  "libelfsh.h"
-
 
 #if ERESI32
 #define    TROJANED_FILE "./hijackme32"
@@ -53,4 +52,3 @@ int   main(int argc, char **argv)
   printf("Relinking *%s* \n", ret ? "Error" : "OK");
   return (0);
 }
-

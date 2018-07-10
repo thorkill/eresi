@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/network.c
+ * @file librevm/io/network.c
  * @ingroup io
  * @brief The high-level network interface.
  *
@@ -9,7 +9,6 @@
  *
  */
 #include "revm.h"
-
 
 /* Number of clients connected */
 int           elfsh_net_client_count = 0;
@@ -22,13 +21,11 @@ int             revm_netgdb_output(void)
   return 0;
 }
 
-
 char            *revm_netgdb_input(void)
 {
   fprintf(stderr, "input called :) - input \n");
   return "\n";
 }
-
 
 /* Is net support enable ? */
 #if defined(ERESI_NET)
@@ -82,8 +79,6 @@ revmjob_t *revm_socket_add(int socket, struct sockaddr_in *addr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
-
 
 /**
  * @brief Return the number of buffer in a revmsock_t recvd
@@ -188,13 +183,10 @@ int revm_socket_close(int socket)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
-* @brief Remove a client socket from the list and close it, return (-1) if socket
-* not found
-* @ingroup io
+ * @brief Remove a client socket from the list and close it, return (-1) if socket
+ * not found
+ * @ingroup io
 */
 int    revm_socket_del(char *inet_addr)
 {
@@ -204,7 +196,6 @@ int    revm_socket_del(char *inet_addr)
   listent_t *actual;
   int   index;
   revmjob_t *old;
-
 
   PROFILER_IN(__FILE__, __FUNCTION__, __LINE__);
 
@@ -259,8 +250,6 @@ int    revm_socket_del(char *inet_addr)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * @brief Really send the data
  * @ingroup io
@@ -279,9 +268,6 @@ int revm_netsend(char *buf, unsigned int len)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief send buf on a socket
@@ -314,8 +300,6 @@ int revm_net_output(char *buf)
   ret = revm_netsend(buf, strlen(buf));
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
-
 
 /**
  * @brief  Create le main socket and bind it to ELFSH_LISTEN_PORT.
@@ -361,10 +345,6 @@ int revm_create_server(int      *serv_sock,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-
 
 /**
  * @brief Update revmsock_t recvd buffer
@@ -530,11 +510,6 @@ int   revm_update_recvd(revmsock_t *socket)
                "Should never be reached", -1);
 }
 
-
-
-
-
-
 /**
  * @brief  send buf on a dump connection
  * @ingroup io
@@ -553,10 +528,6 @@ int revm_dump_output(char *buf)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
-
-
 /**
  * @brief Return the first packet data
  * @ingroup io
@@ -570,9 +541,6 @@ char  *revm_dump_input()
   world.curjob->ws.io.new = 0;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (tmp));
 }
-
-
-
 
 /**
  * @brief accept a DUMP connection
@@ -626,9 +594,6 @@ int     revm_dump_accept()
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Failed to accept client", (-1));
 }
-
-
-
 
 /**
  * @brief  Accept new connection if there is
@@ -706,9 +671,6 @@ int     revm_net_accept()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
-
 /**
  * @brief  One listening step
  * @ingroup io
@@ -770,7 +732,6 @@ int     revm_net_recvd(fd_set *sel_sockets)
             }
         }
     }
-
 
   // scan dump
   for (index = 0; index < dump_world.ports.size; index++)
@@ -902,9 +863,6 @@ int     revm_net_recvd(fd_set *sel_sockets)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
-
 /**
  * @brief  Merge buffers
  * @ingroup io
@@ -952,8 +910,6 @@ char  *revm_socket_merge_recvd(revmsock_t *socket)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
 
-
-
 /**
  * @brief  Return the first buffers
  * @ingroup io
@@ -987,7 +943,6 @@ char      *revm_net_input()
             }
 
           temp_socket = & ((revmjob_t *) actual->data)->ws.io.sock;
-
 
           if (temp_socket->recvd_f == NEW &&
               temp_socket->ready_f == YES)
@@ -1025,10 +980,6 @@ char      *revm_net_input()
                 (char *) REVM_INPUT_VOID);
 }
 
-
-
-
-
 /**
  * @brief Listening initialisation
  * @ingroup io
@@ -1064,9 +1015,6 @@ int     revm_net_init()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /**
  * @brief Stopping network | not workspace compliant ...
@@ -1134,8 +1082,6 @@ int         revm_net_stop()
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * @brief Clean jobs
  * @ingroup io
@@ -1175,9 +1121,6 @@ int     revm_clean_jobs()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
 
 /* Case where the network is not enabled */
 #else
@@ -1349,5 +1292,3 @@ int   revm_net_stop()
 }
 
 #endif
-
-

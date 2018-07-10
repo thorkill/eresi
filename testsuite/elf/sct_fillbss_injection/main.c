@@ -1,4 +1,5 @@
-/*
+
+/**
 ** main.c
 **
 ** Started on  Sun Mar 17 06:38:49 2002 jfv

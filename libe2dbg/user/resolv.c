@@ -1,9 +1,9 @@
 /**
-* @file libe2dbg/user/resolv.c
+ * @file libe2dbg/user/resolv.c
 ** @ingroup user
 */
 /**
-* @file libe2dbg/user/resolv.c
+ * @file libe2dbg/user/resolv.c
  *
  * Contains the linkmap related resolving builtins in e2dbg
  *
@@ -17,7 +17,6 @@
 
 /* Reference symbol for the debugger */
 int     reference = 42;
-
 
 /**
  *  Our own dlsect without malloc.
@@ -194,8 +193,6 @@ eresi_Addr    e2dbg_dlsect(char *objname, char *sect2resolve,
   return (got + refaddr - found_ref);
 }
 
-
-
 /**
  * Our own dlsym without malloc.
  * Useful in the early stage of mapping when malloc symbol is not yet known
@@ -357,8 +354,6 @@ eresi_Addr    e2dbg_dlsym(char *sym2resolve)
                "Unable to find looked up symbol in object", 0);
 }
 
-
-
 /**
  * Get the address of the linkmap without any malloc,
  * for early stage resolving
@@ -440,8 +435,6 @@ elfshlinkmap_t   *e2dbg_linkmap_getaddr()
 
   return (lm);
 }
-
-
 
 /**
  * Resolve malloc/realloc/free from standard libc
@@ -560,7 +553,6 @@ int   e2dbg_dlsym_init()
   write(2, buf, len);
 #endif
 
-
   /* Non fatal symbols, especially on BSD */
   e2dbgworld.syms.memalignsym = (eresi_Addr) e2dbg_dlsym("memalign");
   e2dbgworld.syms.pthreadcreate = (eresi_Addr) e2dbg_dlsym("pthread_create");
@@ -604,4 +596,3 @@ int   e2dbg_dlsym_init()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (0));
 }
-

@@ -1,5 +1,6 @@
+
 /**
-* @file libstderesi/elf/findrel.c
+ * @file libstderesi/elf/findrel.c
 ** @ingroup elf
 */
 /**
@@ -11,7 +12,6 @@
 **
 */
 #include "libstderesi.h"
-
 
 /**
  * @brief Print a buffer with a resolved virtual address and offset
@@ -49,7 +49,6 @@ char    *revm_reverse(elfshobj_t *file, u_int vaddr)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (new));
 }
-
 
 #if 0   /* WIP */
 /**
@@ -129,7 +128,6 @@ static __inline__ int revm_catch_relocfp(char *dat, u_int word)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 #endif
-
 
 /**
  * Find the missing relocation table for an ET_EXEC object
@@ -280,7 +278,3 @@ int   cmd_findrel()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
-
-

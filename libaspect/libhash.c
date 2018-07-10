@@ -1,5 +1,5 @@
 /**
-* @file libaspect/libhash.c
+ * @file libaspect/libhash.c
  * @ingroup libaspect
  *
  * @brief Contain ELFsh internal hashtables library calls.
@@ -7,7 +7,6 @@
  * Started on  Fri Jan 24 20:26:18 2003 jfv
  */
 #include "libaspect.h"
-
 
 /* Hash tables of hash tables */
 hash_t  *hash_hash = NULL;
@@ -126,7 +125,6 @@ int   hash_register(hash_t *table, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * @brief Empty a hash table
  * @param name Name of the ash table to empty.
@@ -160,8 +158,6 @@ hash_t    *hash_empty(char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, hash);
 }
 
-
-
 /**
  * Destroy a hash table.
  * @param hash Pointer to the hash to destroy
@@ -192,7 +188,6 @@ void    hash_destroy(hash_t *hash)
   XFREE(__FILE__, __FUNCTION__, __LINE__, hash->ent);
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * @brief Add an entry to the hash table.
@@ -356,8 +351,6 @@ void    *hash_select(hash_t *h, char *key)
   return (actual != NULL ? &actual->data : NULL);
 }
 
-
-
 /**
  * Change the metadata for an existing entry, giving its key
  * @param h
@@ -382,7 +375,6 @@ int   hash_set(hash_t *h, char *key, void *data)
   ent->data = data;
   return (0);
 }
-
 
 /**
  * @brief Retrieve the -entry- for a given key
@@ -423,8 +415,6 @@ listent_t *hash_get_head(hash_t *h, char *backup)
 
   return (&h->ent[index % h->size]);
 }
-
-
 
 /**
  * @brief Used to create arrays of keys for completion
@@ -475,7 +465,6 @@ char    **hash_get_keys(hash_t *h, int *n)
   keys[last] = NULL;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, keys);
 }
-
 
 /**
  * @brief Free the keys returned by hash_get_keys()
@@ -546,7 +535,6 @@ int   hash_apply(hash_t      *h,
   return ret;
 }
 
-
 /* Compare 2 hash tables */
 /* Contributed by zorgon */
 /* Can be used to compare ELF in memory and ELF in file */
@@ -589,7 +577,6 @@ int   hash_compare(hash_t *first, hash_t *two)
   return (0);
 }
 
-
 /* Merge hash tables in the first one */
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
 int   hash_merge(hash_t *dst, hash_t *src)
@@ -615,8 +602,6 @@ int   hash_merge(hash_t *dst, hash_t *src)
 
   return ret;
 }
-
-
 
 /* Intersect hash tables in the first one */
 int   hash_inter(hash_t *dst, hash_t *src)
@@ -647,7 +632,6 @@ int   hash_inter(hash_t *dst, hash_t *src)
   return ret;
 }
 
-
 /* Delete all elements of source hash in destination hash */
 /* We cannot use hash_get_keys() because we dont know the type of hashed objects */
 int   hash_unmerge(hash_t *dst, hash_t *src)
@@ -673,7 +657,6 @@ int   hash_unmerge(hash_t *dst, hash_t *src)
 
   return ret;
 }
-
 
 /* Return the hash size */
 int   hash_size(hash_t *hash)
@@ -720,7 +703,6 @@ void   *hash_get_one(hash_t *hash)
   keys = hash_get_keys(hash, &index);
   return (hash_get(hash, keys[0]));
 }
-
 
 /**
  * Linear typing of list API.

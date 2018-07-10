@@ -1,5 +1,6 @@
+
 /**
-* @file libe2dbg/kernel/strings.c
+ * @file libe2dbg/kernel/strings.c
  *
  *
  * Imported from glibc-2.7
@@ -324,7 +325,6 @@ char  *strcat (char *dest, const char *src)
 
   return dest;
 }
-
 
 /**
  *  Parse S into tokens separated by characters in DELIM.

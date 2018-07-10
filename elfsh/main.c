@@ -1,5 +1,6 @@
+
 /**
-* @file elfsh/main.c
+ * @file elfsh/main.c
  * @ingroup elfsh
  * Started on  Wed Feb 21 22:02:36 2001 jfv
  * Updated on  Wed Jan 03 17:51:04 2007 jfv
@@ -7,8 +8,6 @@
  *
  */
 #include "elfsh.h"
-
-
 
 /**
  * Prompt related functions for elfsh
@@ -52,7 +51,6 @@ void    esh_setup_prompt()
 {
   revm_set_prompt(esh_create_prompt);
 }
-
 
 /**
  * Print the etrace banner
@@ -104,7 +102,6 @@ int   esh_main(int ac, char **av)
   return (0);
 }
 
-
 /**
  * The main ELFsh routine
  * @param ac
@@ -115,6 +112,3 @@ int   main(int ac, char **av)
 {
   return (esh_main(ac, av));
 }
-
-
-

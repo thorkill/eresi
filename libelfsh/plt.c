@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/plt.c
+ * @file libelfsh/plt.c
  * @ingroup libelfsh
 ** plt.c for libelfsh
 **
@@ -9,7 +9,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Load the Procedure Linkage Table
@@ -53,7 +52,6 @@ elfshsect_t *elfsh_get_plt(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (file->secthash[ELFSH_SECTION_PLT]));
 }
-
 
 /**
  * Return 1 if the section is the plt or 0 if its not
@@ -127,7 +125,6 @@ int     elfsh_is_pltentry(elfshobj_t *file, elfsh_Sym *sym)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return the size of 1 PLT entry
  * @param file
@@ -169,7 +166,6 @@ int   elfsh_get_pltentsz(elfshobj_t *file)
                    "Unsupported architecture", -1);
     }
 }
-
 
 /**
  * Return the size of the FIRST PLT entry on this arch
@@ -213,17 +209,3 @@ int    elfsh_get_first_pltentsz(elfshobj_t *file)
                    "Unsupported architecture", -1);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

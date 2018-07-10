@@ -1,5 +1,5 @@
-/*
-* @file libaspect/containers.c
+/**
+ * @file libaspect/containers.c
 ** @ingroup libaspect
 **
 ** @brief Implement generic routines for containers.
@@ -8,7 +8,6 @@
 **
 */
 #include "libaspect.h"
-
 
 /**
  * @brief Create container lists
@@ -95,7 +94,6 @@ int   container_linklists_create(container_t *container,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Create a new container

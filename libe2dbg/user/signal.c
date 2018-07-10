@@ -1,3 +1,4 @@
+
 /**
  * @file libe2dbg/user/signal.c
  * @ingroup user
@@ -14,7 +15,6 @@
  *
  */
 #include "libe2dbg.h"
-
 
 /** ARCH/OS dependent handler for checking values in registers */
 #if defined(__linux__) && defined(__i386__)
@@ -57,8 +57,6 @@ void    e2dbg_watch()
   e2dbg_watch_check_ia32_sysv(REG_EIP, "EIP");
 #endif
 }
-
-
 
 /**
  * Signal handler for SIGSEGV
@@ -166,7 +164,6 @@ void            e2dbg_sigint_handler(int signum, siginfo_t *info,
   SETSIG;
 }
 
-
 /**
  * Signal handler for SIGSTOP
  * @param signum
@@ -228,7 +225,6 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info,
   curthread->context = (ucontext_t *) pcontext;
   curthread->state   = E2DBG_THREAD_SIGUSR2;
 
-
 #if __DEBUG_THREADS__
   fprintf(stderr, " ************ [T] SIGUSR2 received by %u ******** \n",
           (unsigned int) curthread->tid);
@@ -247,9 +243,6 @@ void            e2dbg_thread_sigusr2(int signum, siginfo_t *info,
 #endif
 
 }
-
-
-
 
 /**
  * Signal handler for SIGTRAP
@@ -292,7 +285,6 @@ void            e2dbg_sigtrap_handler(int signum, siginfo_t *info,
   SETSIG;
 }
 
-
 #if __DEBUG_BP__
 /**
  * @param str
@@ -327,9 +319,6 @@ void    bpdebug(char *str, elfshbp_t *bp, eresi_Addr pc, elfshobj_t *parent)
 }
 #endif
 
-
-
-
 /** Reinstall a breakpoint */
 void      e2dbg_breakpoint_reinstall()
 {
@@ -363,9 +352,6 @@ void      e2dbg_breakpoint_reinstall()
             " : not reinstalling ! \n",
             e2dbgworld.stoppedthread->past);
 }
-
-
-
 
 /**
  * The Real routine that handles each thread-specific breakpoint state machine.
@@ -604,7 +590,6 @@ void      e2dbg_breakpoint_process()
     }
 }
 
-
 /**
  * SIGTRAP signal handler (The breakpoint routine). Save registers and callback. Multi-thread safe.
  * @param signum Received signal number.
@@ -721,4 +706,3 @@ void      e2dbg_generic_breakpoint(int    signum,
   fprintf(stderr, " [D] Returning from generic signal handler\n");
 #endif
 }
-

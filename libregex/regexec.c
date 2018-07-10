@@ -2688,7 +2688,6 @@ free_return:
   return err;
 }
 
-
 #ifdef RE_ENABLE_I18N
 static int
 internal_function
@@ -3943,7 +3942,6 @@ check_arrival_expand_ecl_sub (const re_dfa_t *dfa, re_node_set *dst_nodes,
 
   return REG_NOERROR;
 }
-
 
 /* For all the back references in the current state, calculate the
    destination of the back references by the appropriate entry

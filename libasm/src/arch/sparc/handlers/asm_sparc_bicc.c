@@ -1,8 +1,8 @@
 /**
-* @file libasm/src/arch/sparc/handlers/asm_sparc_bicc.c
+ * @file libasm/src/arch/sparc/handlers/asm_sparc_bicc.c
 ** @ingroup SPARC_instrs
 */
-/*
+/**
 **
 **
 */

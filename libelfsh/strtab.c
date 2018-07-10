@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/strtab.c
+ * @file libelfsh/strtab.c
  * @ingroup libelfsh
  * strtab.c for libelfsh
  *
@@ -141,7 +141,6 @@ int   elfsh_insert_in_strtab(elfshobj_t *file, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
 }
 
-
 /**
  * Add a symbol name in .dynstr
  * @param file
@@ -177,7 +176,6 @@ int   elfsh_insert_in_dynstr(elfshobj_t *file, char *name)
     }
 }
 
-
 /**
  * Add a section name in section string table
  * @param file
@@ -207,7 +205,6 @@ int   elfsh_insert_in_shstrtab(elfshobj_t *file, char *name)
     }
 }
 
-
 /**
  * Add a section name in runtime section string table
  * @param file
@@ -236,4 +233,3 @@ int   elfsh_insert_in_rshstrtab(elfshobj_t *file, char *name)
       PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ret);
     }
 }
-

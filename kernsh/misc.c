@@ -1,5 +1,5 @@
-/*
-* @file kernsh/misc.c
+/**
+ * @file kernsh/misc.c
 ** @ingroup kernsh
 */
 #include "kernsh.h"
@@ -74,7 +74,6 @@ int   kernsh_hexdump(unsigned char *data,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 u_int   kernsh_instr_display(u_int index, eresi_Addr vaddr,
                              u_int foffset, u_int size, char *name,

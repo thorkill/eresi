@@ -1,9 +1,8 @@
 /**
-* @file libasm/src/arch/arm/operand_handlers/asm_arm_op_fetch.c
+ * @file libasm/src/arch/arm/operand_handlers/asm_arm_op_fetch.c
 ** @ingroup ARM_operands
 */
 #include <libasm.h>
-
 
 /**
  * Main function, dispatch processing to handler.

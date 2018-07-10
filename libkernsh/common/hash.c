@@ -1,5 +1,5 @@
-/*
-* @file libkernsh/common/hash.c
+/**
+ * @file libkernsh/common/hash.c
 ** @ingroup common
 **
 */

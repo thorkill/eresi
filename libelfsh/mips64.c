@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/mips64.c
+ * @file libelfsh/mips64.c
  * @ingroup libelfsh
 ** mips64.c for libelfsh
 **
@@ -11,7 +12,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 /**
  * Static hooking for Mips64
@@ -30,7 +30,6 @@ int elfsh_cflow_mips64(elfshobj_t   *null,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", -1);
 }
-
 
 /**
  * PLT hijacking on MIPS64
@@ -63,8 +62,6 @@ int   elfsh_hijack_altplt_mips64(elfshobj_t *file,
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Unsupported Arch, ELF type, or OS", -1);
 }
-
-
 
 /**
  * Perform relocation on entry for MIPS64 architecture
@@ -99,5 +96,3 @@ int       elfsh_relocate_mips64(elfshsect_t       *new,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (retval));
 }
-
-

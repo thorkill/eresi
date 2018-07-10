@@ -1,5 +1,5 @@
 /**
-* @file librevm/io/log.c
+ * @file librevm/io/log.c
  * @ingroup io
  * @brief Implement logging facilities.
  *
@@ -8,7 +8,6 @@
  *
  */
 #include "revm.h"
-
 
 /* Strip a group of char */
 static void   __strip_group_char(char *str, char s, char e)
@@ -38,7 +37,6 @@ static void   __strip_group_char(char *str, char s, char e)
 
   NOPROFILER_OUT();
 }
-
 
 /**
  * Log to file
@@ -83,7 +81,6 @@ static void   logtofile(char *str)
   XWRITE(world.curjob->ws.logfd, tmp, len, );
   NOPROFILER_OUT();
 }
-
 
 /**
  * Log a line
@@ -226,10 +223,8 @@ void      revm_log(char *str)
 #undef tail
 #undef head
 
-
   NOPROFILER_OUT();
 }
-
 
 /**
  * Stop logging
@@ -249,5 +244,3 @@ int     revm_closelog()
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-

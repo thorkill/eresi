@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/sym_common.c
+ * @file libelfsh/sym_common.c
  * @ingroup libelfsh
  * sym_common.c for elfsh
  *
@@ -77,7 +77,6 @@ int elfsh_set_symbol_value(elfsh_Sym *s, eresi_Addr value)
   s->st_value = value;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Return the symbol binding
@@ -256,7 +255,6 @@ elfsh_Sym *elfsh_get_metasym_by_value(elfshobj_t *file,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (res));
 }
 
-
 /**
  * Internal generic function for symbol research by value
  * @param sym
@@ -337,7 +335,6 @@ elfsh_Sym   *elfsh_get_sym_by_value(elfsh_Sym *sym, int num,
                "No exact symbol matching", NULL);
 }
 
-
 /**
  * Create a symbol
  * @param value
@@ -363,7 +360,6 @@ elfsh_Sym elfsh_create_symbol(eresi_Addr value, int size, int type,
   enew.st_name  = NULL;
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (enew));
 }
-
 
 /**
  * Just copy the symtab . The returned symbol table need to be freed.
@@ -400,7 +396,6 @@ elfsh_Sym   *elfsh_get_symbol_by_index(elfsh_Sym *symtab,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (symtab + index));
 }
-
 
 /**
  * Get a symbol value by its name
@@ -514,7 +509,6 @@ int   elfsh_endianize_symtab(elfshsect_t *tab)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Shift the symbol table
  * @param file
@@ -546,7 +540,6 @@ int   elfsh_shift_syms(elfshobj_t *file,
          " .::. INC %08u .::. TOT %08u] \n",
          (eresi_Addr) limit, inc, totshift);
 #endif
-
 
   sym = (elfsh_Sym *) symtab->data;
   nbr = symtab->shdr->sh_size / ELFSH_SYMTAB_ENTRY_SIZE;
@@ -638,8 +631,6 @@ int     elfsh_resolv_remote_function(elfshobj_t *filein, eresi_Addr vaddrin,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
-
 
 /**
  * Search a symbol on dependences file

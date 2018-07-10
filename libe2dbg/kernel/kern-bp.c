@@ -1,5 +1,5 @@
 /**
-* @file libe2dbg/kernel/kern-bp.c
+ * @file libe2dbg/kernel/kern-bp.c
  */
 #include "ke2dbg.h"
 
@@ -26,9 +26,6 @@ Bp_struct list_hw_breakpoints[NUM_HW_BREAKPOINTS] =
 int unmapped_bp_to_shoot = -1;
 unsigned int debug_reg_value;
 unsigned int iop;
-
-
-
 
 /**
  * insertion d'un breakpoint:
@@ -58,7 +55,6 @@ int ke2dbg_insert_bp(unsigned int cs, unsigned int dir, unsigned int attrib)
 
   info_page_src = ke2dbg_pageinfo_get((unsigned int)ptr, NULL, NULL, &level );
   padresse = (info_page_src & 0xfffff000) + ((unsigned int)ptr & 0xfff);
-
 
   for (x = 0; x < NUM_BREAKPOINTS; x++)
     {
@@ -95,7 +91,6 @@ int ke2dbg_is_breakpoint(unsigned char *ptr)
   int i;
   unsigned int padresse;
 
-
   if (!ptr)
     {
       return -1;
@@ -111,7 +106,6 @@ int ke2dbg_is_breakpoint(unsigned char *ptr)
     {
       return i;
     }
-
 
   padresse = ke2dbg_linear2physical((unsigned int)ptr);
 
@@ -135,7 +129,6 @@ int ke2dbg_is_breakpoint(unsigned char *ptr)
 
   return -1;
 }
-
 
 /**
  * enleve un break point:
@@ -189,7 +182,6 @@ int ke2dbg_erase_breakpoint(unsigned int bp)
       return -1;
     }
 
-
   if (!ke2dbg_page_exist(list_breakpoints[bp].address))
     {
       ke2dbg_output("yup! bp is not in ram anymore!! system may be unstable");
@@ -216,8 +208,6 @@ int ke2dbg_erase_breakpoint(unsigned int bp)
   list_breakpoints[bp].value = 0;
   return bp;
 }
-
-
 
 /**
  * remet le bon octet ecrasé par le bp, sans
@@ -273,7 +263,6 @@ int ke2dbg_spawn_breakpoint(unsigned int bp)
     }
 }
 
-
 /**
  * affiche la liste des breakpoint
  * (dans la fenetre de log)
@@ -295,7 +284,6 @@ void ke2dbg_display_breakpoints()
         }
     }
 
-
   for (i = 0; i < 4; i++)
     {
       if (list_hw_breakpoints[i].address)
@@ -306,8 +294,6 @@ void ke2dbg_display_breakpoints()
         }
     }
 }
-
-
 
 /**
  * si l'octet de l'adresse specifie a été remplace
@@ -325,7 +311,6 @@ unsigned char ke2dbg_true_byte_bp(unsigned char *ptr)
 
   return *ptr;
 }
-
 
 #if defined(__GNUC__)
 #define get_val(reg) _asm_( "\t" \
@@ -475,7 +460,6 @@ unsigned int ke2dbg_dr7_get()
   return debug_reg_value;
 }
 
-
 /**
  * Set register <COMPLETE> to value
  * @param value
@@ -484,7 +468,6 @@ void ke2dbg_dr0_set(unsigned int value)
 {
   debug_reg_value = value;
 
-
 #if defined(__GNUC__)
   set_val("dr0");
 #elif defined(_MSC_VER)
@@ -492,7 +475,6 @@ void ke2dbg_dr0_set(unsigned int value)
 #endif
 
 }
-
 
 /**
  * Set register <COMPLETE> to value
@@ -657,7 +639,6 @@ void ke2dbg_hwbp_reset()
   ke2dbg_dr2_set(0x0);
   ke2dbg_dr3_set(0x0);
 
-
 }
 
 /**
@@ -694,9 +675,6 @@ void ke2dbg_hwbp_set(unsigned int ad)
         break;
       }
 
-
-
-
   if ((num_debug_reg < 0 ) || (num_debug_reg > 3))
     {
       ke2dbg_output("Oao, only 4 hw bp on 86, man");
@@ -709,12 +687,9 @@ void ke2dbg_hwbp_set(unsigned int ad)
 
   /*TEST TEST*/
 
-
   dr7_val = ke2dbg_dr7_get();
 
-
   dr7_val |= (mask_ge_le | mask_current_bp);
-
 
   ke2dbg_dr7_set(dr7_val);
 
@@ -743,9 +718,7 @@ void ke2dbg_hwbp_set(unsigned int ad)
 
   list_hw_breakpoints[num_debug_reg].address = ad;
 
-
 }
-
 
 /**
  * @return
@@ -817,4 +790,3 @@ void ke2dbg_idhwbp_disable(int id_hw_bp)
         }
     }
 }
-

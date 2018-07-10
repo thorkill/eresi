@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <libaspect.h>
 
-
 #define OPCODE_TO_TEST "\xE8\x00\x00\x5b"
 #define OPCODE_VADDR   0x0000EDA7
 
@@ -14,8 +13,6 @@ typedef struct s_instr2test
   char  *disasm32;
   char  *disasm16;
 } instr2test_t;
-
-
 
 instr2test_t g_instr2test_array[] =
 {
@@ -157,7 +154,6 @@ int main(int ac, char **av)
   int global_failed;
   instr2test_t  *instr2test;
   int number;
-
 
   if (ac < 2)
     {

@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/arm/handlers/asm_arm_qdadd.c
+ * @file libasm/src/arch/arm/handlers/asm_arm_qdadd.c
 n** @ingroup ARM_instrs
 */
 #include "libasm.h"

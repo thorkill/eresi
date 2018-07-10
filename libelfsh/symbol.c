@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/symbol.c
+ * @file libelfsh/symbol.c
  * @ingroup libelfsh
  * symbol.c for libelfsh
  *
@@ -8,7 +9,6 @@
  *
  */
 #include "libelfsh.h"
-
 
 #define ELFSH_SYMTAB_HASH_NAME  "elfsh_symtab_hashbyname"
 
@@ -71,8 +71,6 @@ char    *elfsh_get_symbol_name(elfshobj_t *file, elfsh_Sym *s)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ((char *) data + s->st_name));
 }
 
-
-
 /**
  * Return the used offset in .strtab or -1 if failed
  * @param file
@@ -111,7 +109,6 @@ int     elfsh_set_symbol_name(elfshobj_t  *file,
                      "Unable to get section from its symbol", -1);
     }
 
-
   /* Else use the symbol string table */
   if (file->secthash[ELFSH_SECTION_STRTAB]       == NULL ||
       file->secthash[ELFSH_SECTION_STRTAB]->data == NULL)
@@ -137,8 +134,6 @@ int     elfsh_set_symbol_name(elfshobj_t  *file,
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (s->st_name));
 }
-
-
 
 /**
  * Return a ptr on the symbol table
@@ -211,7 +206,6 @@ void    *elfsh_get_symtab(elfshobj_t *file, int *num)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__,
                 (file->secthash[ELFSH_SECTION_SYMTAB]->data));
 }
-
 
 /**
  * Return the dynamic symbol name giving its value,
@@ -360,7 +354,6 @@ int   elfsh_init_symbol_hashtables(elfshobj_t *file)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Return the symbol entry giving its name
  * @param file target file
@@ -421,7 +414,6 @@ elfsh_Sym *elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
     }
   */
 
-
   for (idx = 0; idx < size; idx++)
     {
       actual = elfsh_get_symbol_name(file, sym + idx);
@@ -444,8 +436,6 @@ elfsh_Sym *elfsh_get_symbol_by_name(elfshobj_t *file, char *name)
   PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                "Symbol not found", NULL);
 }
-
-
 
 /**
  * Shift usual symbols (mandatory on solaris)
@@ -501,7 +491,6 @@ void    elfsh_shift_usualsyms(elfshsect_t *sect, elfsh_Sym *sym)
 
   PROFILER_OUT(__FILE__, __FUNCTION__, __LINE__);
 }
-
 
 /**
  * Insert a symbol in the given symbol table
@@ -593,9 +582,6 @@ int   elfsh_insert_symbol(elfshsect_t *sect,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, sym->st_name);
 }
 
-
-
-
 /**
  * Remove a symbol
  * This function is not e2dbg safe
@@ -665,7 +651,6 @@ int   elfsh_remove_symbol(elfshsect_t *symtab, char *name)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Retreive the file offset giving the virtual address
  * @param file
@@ -734,8 +719,6 @@ elfsh_Sym   *elfsh_get_symbol_by_value(elfshobj_t *file,
                 (elfsh_get_sym_by_value(data, num, vaddr, off, mode)));
 }
 
-
-
 /**
  * Shift the symbol table
  * @param file
@@ -764,7 +747,6 @@ int   elfsh_shift_symtab(elfshobj_t *file, eresi_Addr limit, int inc)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Insert STT_SECTION symbol
@@ -798,7 +780,6 @@ int   elfsh_insert_sectsym(elfshobj_t *file, elfshsect_t *sect)
 
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, (ret));
 }
-
 
 /**
  * Insert STT_SECTION symbol

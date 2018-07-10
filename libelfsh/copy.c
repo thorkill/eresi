@@ -1,5 +1,5 @@
 /**
-* @file libelfsh/copy.c
+ * @file libelfsh/copy.c
  * @ingroup libelfsh
 ** copy.c for elfsh
 **
@@ -38,7 +38,6 @@ elfshobj_t  *elfsh_copy_obj(elfshobj_t *file)
   if (elfsh_read_obj(file) < 0)
     PROFILER_ERR(__FILE__, __FUNCTION__, __LINE__,
                  "Can't copy file object", NULL);
-
 
   /* Do copy */
   XALLOC(__FILE__, __FUNCTION__, __LINE__, copy, sizeof(elfshobj_t), NULL);

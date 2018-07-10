@@ -1,9 +1,10 @@
+
 /**
-* @file libe2dbg/user/continue.c
+ * @file libe2dbg/user/continue.c
 ** @ingroup user
 */
 /**
-* @file libe2dbg/user/continue.c
+ * @file libe2dbg/user/continue.c
  *
  * The continue command in e2dbg
  *
@@ -36,7 +37,6 @@ void    e2dbg_start_proc()
   world.curjob->curfile->running = 1;
 }
 
-
 /**
  * Start cmd
  * @return
@@ -57,7 +57,6 @@ int   cmd_start()
   e2dbg_start_proc();
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, REVM_SCRIPT_CONTINUE);
 }
-
 
 /**
  * Cont makes start 3 times for unlocking mutexes around the signal handlers.

@@ -1,10 +1,9 @@
 /**
-* @file libstderesi/lang/return.c
+ * @file libstderesi/lang/return.c
 ** @ingroup lang
 ** Started on  Sat Jan 25 11:19:53 2003 jfv
 */
 #include "libstderesi.h"
-
 
 /**
  * Unload all the loaded object and exit the shell

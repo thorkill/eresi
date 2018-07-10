@@ -1,5 +1,5 @@
 /**
-* @file libasm/src/arch/ia32/handlers/op_ret.c
+ * @file libasm/src/arch/ia32/handlers/op_ret.c
  *
  * @ingroup IA32_instrs
 **
@@ -7,10 +7,9 @@
 #include <libasm.h>
 #include <libasm-int.h>
 
-/*
+/**
   <instruction func="op_ret" opcode="0xc3"/>
 */
-
 
 int op_ret(asm_instr *new, u_char *opcode, u_int len, asm_processor *proc)
 {

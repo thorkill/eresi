@@ -1,6 +1,6 @@
 /**
-* @file libe2dbg/kernel/libc-wrapper.c
- **/
+ * @file libe2dbg/kernel/libc-wrapper.c
+ */
 
 #include "ke2dbg.h"
 #include "ke2dbg-syscalls.h"
@@ -79,7 +79,6 @@ int mprotect(unsigned long start, size_t len, unsigned long prot)
 // FIXME long sys_wait4(pid_t pid, int *stat_addr, int options, struct rusage *ru)
 
 // FIXME long sys_waitpid(pid_t pid, int *stat_addr, int options)
-
 
 int access(const char *filename, int mode)
 {

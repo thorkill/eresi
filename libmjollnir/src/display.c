@@ -1,5 +1,6 @@
+
 /**
-* @file libmjollnir/src/display.c
+ * @file libmjollnir/src/display.c
  * @ingroup libmjollnir
  * @brief Contain printing functions for debug purpose only
  *
@@ -20,7 +21,6 @@
 //  printf("[B]=(%lX) [V]=(%lX) sz=(%04u) \n",
 //   (unsigned long) b, (unsigned long) b->vaddr, b->size);
 //}
-
 
 /**
  * @brief Display all information about a block
@@ -94,7 +94,6 @@ int     mjr_block_display(mjrcontext_t *ctxt, container_t *cur,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, ++disopt->counter);
 }
 
-
 /**
  * @brief Print the content of the control flow section
  */
@@ -152,7 +151,6 @@ void     mjr_funcs_display(mjrcontext_t *c)
   hash_free_keys(keys);
 }
 
-
 /**
  * @brief Shortcut for vaddr 2 string with allocation ..
  */
@@ -165,4 +163,3 @@ char  *_vaddr2str(eresi_Addr addr)
   snprintf(tmp, BSIZE_SMALL, AFMT, addr);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, tmp);
 }
-

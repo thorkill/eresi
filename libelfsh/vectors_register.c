@@ -1,5 +1,6 @@
+
 /**
-* @file libelfsh/vectors_register.c
+ * @file libelfsh/vectors_register.c
 ** @ingroup libelfsh
 **
 ** vectors_register.c for libelfsh (The ELF shell library)
@@ -8,7 +9,6 @@
 **
 */
 #include "libelfsh.h"
-
 
 int   elfsh_register_readmemf(u_int hostype, u_int exectype, void *fct)
 {
@@ -33,7 +33,6 @@ int   elfsh_register_readmemf(u_int hostype, u_int exectype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 int   elfsh_register_writememf(u_int hostype, u_int exectype, void *fct)
 {
   vector_t  *mem;
@@ -56,7 +55,6 @@ int   elfsh_register_writememf(u_int hostype, u_int exectype, void *fct)
   aspect_vectors_insert(mem, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 int   elfsh_register_readmem(u_int ostype, u_int devicetype, void *fct)
 {
@@ -81,7 +79,6 @@ int   elfsh_register_readmem(u_int ostype, u_int devicetype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 int   elfsh_register_readmema(u_int ostype, u_int devicetype, void *fct)
 {
   vector_t  *mem;
@@ -104,7 +101,6 @@ int   elfsh_register_readmema(u_int ostype, u_int devicetype, void *fct)
   aspect_vectors_insert(mem, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 int   elfsh_register_writemem(u_int ostype, u_int devicetype, void *fct)
 
@@ -129,7 +125,6 @@ int   elfsh_register_writemem(u_int ostype, u_int devicetype, void *fct)
   aspect_vectors_insert(mem, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Registration handlers
@@ -171,7 +166,6 @@ int elfsh_register_altplthook(u_char archtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Register an EXTPLT handler
  *
@@ -212,7 +206,6 @@ int   elfsh_register_extplthook(u_char archtype,
   aspect_vectors_insert(extplt, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Register an PLT handler
@@ -329,8 +322,6 @@ int elfsh_register_encodeplt1hook(u_char archtype, u_char objtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * Register an ET_REL injection handler
  * @param archtype
@@ -367,7 +358,6 @@ int elfsh_register_relhook(u_char archtype, u_char objtype, u_char ostype,
   aspect_vectors_insert(rel, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * Register a control flow redirection handler
@@ -406,7 +396,6 @@ int elfsh_register_cflowhook(u_char archtype, u_char objtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
 /**
  * Register a args counting redirection handler
  * @param archtype
@@ -444,8 +433,6 @@ int elfsh_register_argchook(u_char archtype, u_char objtype,
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * @brief Register a runtime map vector handler
  * @param hostype The host type to register the handler for.
@@ -470,8 +457,6 @@ int   elfsh_register_allochook(u_char hostype, void *fct)
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
 
-
-
 /**
  * @brief Register a mprotect vector handler
  * @param hostype The host type to register the handler for.
@@ -495,7 +480,6 @@ int   elfsh_register_mprotecthook(u_char hostype, void *fct)
   aspect_vectors_insert(mprot, dim, (unsigned long) fct);
   PROFILER_ROUT(__FILE__, __FUNCTION__, __LINE__, 0);
 }
-
 
 /**
  * @brief Register a munprotect vector handler
