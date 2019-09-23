@@ -419,7 +419,7 @@ extern int vsscanf(const char * restrict str, const char * restrict format,
 		     va_list ap);
 #elif defined(__linux__)
 extern int vsscanf (__const char *__restrict __s,
-                    __const char *__restrict __format, _G_va_list __arg);
+                    __const char *__restrict __format, __gnuc_va_list __arg);
 #endif
 
 void		wait4exit(void *);
